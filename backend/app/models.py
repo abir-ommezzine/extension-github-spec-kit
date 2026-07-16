@@ -1,27 +1,3 @@
-"""
-models.py — Modèles SQLAlchemy pour le Documentation Agent (Feature 1 uniquement)
-
-Pipeline couvert (voir schéma) :
-    context.md
-      -> Parsing Agent            -> Structured JSON representation
-      -> Summary / Diagram / Glossary Agents (en parallèle)
-      -> Documentation Writer
-      -> Design/Layout Agent
-      -> Markdown/HTML
-      -> PDF Generator
-
-Tables :
-- projects        : un projet Spec Kit suivi
-- artifacts        : un fichier source (.md) de ce projet, ex specs/003-x/plan.md
-- doc_versions     : chaque PDF généré, versionné
-- pipeline_runs    : une exécution du pipeline d'agents pour un artifact donné,
-                      avec la sortie de chaque étape -> permet de visualiser/
-                      surveiller la progression et de déboguer si le PDF final
-                      est incorrect, sans devoir tout ré-exécuter.
-
-Le Board Sync Agent (Feature 2 : tickets/comments/events) est volontairement
-absent ici, à ajouter dans une migration Alembic ultérieure.
-"""
 
 import uuid
 import enum

@@ -7,21 +7,16 @@ Utilisé par le Documentation Agent (Feature 1) :
         -> Documentation Writer -> Design/Layout Agent
         -> Markdown/HTML -> PDF Generator
 
-DATABASE_URL est lu depuis l'environnement (.env), jamais en dur.
+DATABASE_URL est lu depuis config.py (Pydantic-settings), centralisé et validé.
 """
 
-import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from app.config import settings  # <--- On importe les réglages centralisés
 
-# Charge le fichier .env situé à la racine de backend/
-load_dotenv()
-
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://postgres:0000@localhost:5432/AgentDocx",
-)
+# Plus besoin de load_dotenv() ou d'os.environ ici, 
+# la classe Settings de config.py gère déjà tout ça automatiquement !
+DATABASE_URL = settings.DATABASE_URL
 
 # pool_pre_ping évite les connexions mortes après une inactivité (utile en dev)
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
