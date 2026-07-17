@@ -81,13 +81,72 @@ GABARIT DE RÉPONSE JSON ATTENDU (STRICT) :
 # SQUELETTES POUR LES PROMPTS DES AGENTS SUIVANTS (À COMPLÉTER DURANT LE SPRINT)
 # ==============================================================================
 
-def get_summary_agent_prompt() -> str:
-    """Génère l'invite système pour le Summary Agent (Étape de parallélisation)."""
-    return """
-ROLE :
-Tu es le "Summary Agent". Ton rôle est de rédiger une synthèse exécutive hautement technique et structurée
-à partir des données JSON issues de l'agent de parsing pour faciliter la prise de décision.
+def get_summary_agent_prompt(summary_spec: dict, parser_metrics_summary: dict) -> str:
     """
+    Génère l'invite système enrichie pour le Summary Agent (Niveau Production).
+    Incorpore les métriques d'évaluation (MAS, CPS, ECR) directement dans les consignes
+    pour maximiser le score de fiabilité lors du benchmark.
+    """
+    import json
+    
+    return f"""
+ROLE :
+Tu es le "Summary Agent", un ingénieur de synthèse d'architecture senior au sein du GitHub Spec Kit.
+Ton travail consiste à analyser la structure nettoyée d'un document technique (fournie sous forme de JSON parsé) et à générer une note de synthèse hautement stratégique destinée à cadrer l'exécution de Claude Code.
+
+CONNAISSANCES DE RÉFÉRENCE (CONTRAT DE SORTIE SECTORIEL) :
+<summary_specification_attendue>
+{json.dumps(summary_spec, indent=2, ensure_ascii=False)}
+</summary_specification_attendue>
+
+<ancrage_factuel_du_parser>
+Voici les métriques exactes calculées par l'outil Python sur ce projet. Tu dois OBLIGATOIREMENT baser ton évaluation dessus :
+{json.dumps(parser_metrics_summary, indent=2, ensure_ascii=False)}
+</ancrage_factuel_du_parser>
+
+INSTRUCTIONS DE TRAVAIL & OPTIMISATION DES MÉTRIQUES :
+
+1. RÉDACTION DE L'EXECUTIVE BRIEF (Cible : Conciseness & Precision Score - CPS)
+   - CONTRAINTE DE LANGUE ABSOLUE : Rédige l'intégralité de ta réponse JSON en ANGLAIS TECHNIQUE (English). Le document source et l'environnement d'exécution Claude Code étant en anglais, aucune dérive en français n'est tolérée dans les valeurs textuelles.
+   - Rédige une synthèse technique ultra-dense de l'intention et de la proposition de valeur de l'application.
+   - Contrainte stricte : Ta synthèse doit faire entre 30 et 150 mots maximum (3 à 4 phrases affirmatives). 
+   - Interdiction formelle de faire du remplissage marketing ou d'extrapoler des fonctionnalités non écrites.
+
+2. CARTOGRAPHIE DE LA STACK & DES CONTRAINTES (Cible : Extraction Completeness Rate - ECR)
+   - Analyse le texte épuré pour en extraire TOUS les langages, frameworks et outils tiers nommés (ex: JWT, Resend, FastAPI, Typescript). Ne commets aucune omission.
+   - Isole les contraintes physiques imposées au système (ex: persistance locale via LocalStorage, exécution asynchrone, absence de base de données relationnelle, validation de plage).
+   - INCLUSION DES WORKFLOWS : Ne te limite pas aux packages logiciels. Tu dois obligatoirement capturer les contraintes de processus et de validation (ex: barrières de CI/CD, obligation de linter, règles de branches Git, blocage de compilation, exécution de tests obligatoires avant merge).
+
+3. DIAGNOSTIC DE MATURITÉ DU PROJET (Cible : Maturity Alignment Score - MAS)
+   - RÈGLE ANTI-PARROTAGE : Interdiction stricte de recopier ou de citer textuellement les variables brutes ou les scores chiffrés du bloc <ancrage_factuel_du_parser> (Ne pas écrire "with a completeness score of 100%" ou "status is READY_FOR_EXECUTION"). Traduis ces faits sous forme de diagnostic d'ingénierie fluide.
+   - Regarde le statut 'readiness_status' fourni dans le bloc <ancrage_factuel_du_parser>.
+   - Si le statut est "READY_FOR_EXECUTION", ton texte dans 'maturity_assessment' doit explicitement inclure le mot-clé "READY". Explique pourquoi l'architecture actuelle est suffisamment stable pour coder immédiatement.
+   - Si le statut est "NEEDS_REFINEMENT", ton texte doit explicitement inclure le mot-clé "REFINEMENT". Justifie par les correctifs ou précisions manquantes.
+   - Si le statut est "BLOCKED", ton texte doit explicitement inclure le mot-clé "BLOCKED". Explique l'impact critique des manquements de structure sur le travail futur du développeur.
+
+CONSIGNE DE SÉCURITÉ CRITIQUE :
+Tu dois renvoyer UNIQUEMENT un objet JSON valide conforme au gabarit ci-dessous. Ne renomme pas les clés, n'en invente pas. Tout ton texte doit être en anglais. Aucun texte explicatif avant ou après le JSON. N'utilise PAS de balises markdown de type ```json dans ta réponse brute.
+
+GABARIT DE RÉPONSE JSON ATTENDU :
+{{
+  "executive_brief": "[Provide your 30-150 words technical macro synthesis here in English...]",
+  "technical_stack": {{
+    "languages_and_frameworks": [
+      "Technology 1",
+      "Technology 2"
+    ],
+    "architectural_constraints": [
+      "Physical or workflow constraint 1",
+      "Physical or workflow constraint 2"
+    ]
+  }},
+  "maturity_assessment": "[Your architectural narrative in English containing the required status keyword (READY, REFINEMENT, or BLOCKED) based on the parser, justified with your own technical words...]",
+  "critical_dependencies": [
+    "External dependency, mandatory environment variable or CI/CD gate 1",
+    "External dependency, mandatory environment variable or CI/CD gate 2"
+  ]
+}}
+"""
 
 def get_diagram_agent_prompt() -> str:
     """Génère l'invite système pour le Diagram Agent (Étape de parallélisation)."""

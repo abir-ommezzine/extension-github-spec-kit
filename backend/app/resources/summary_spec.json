@@ -1,0 +1,13 @@
+{
+  "agent_name": "Summary Agent",
+  "expected_output_format": "JSON",
+  "required_fields": {
+  "executive_brief": "A concise architectural overview explaining the core value, host platform, and data pattern (e.g., client-side storage, stateless API). Strict limit: 30 to 150 words.",
+  "technical_stack": {
+    "languages_and_frameworks": "List of core runtimes, frameworks, and testing tools explicitly named in the parsed documentation.",
+    "architectural_constraints": "List of physical boundaries: validation thresholds, accessibility requirements (WCAG), or specific routing paradigms."
+  },
+  "maturity_assessment": "A deep professional judgment on the stability of the specifications. Must highlight logical coherence and technical readiness without parroting raw scores.",
+  "critical_dependencies": "External systems, SDKs, specific environment variables, and non-negotiable workflow gates (such as pre-commit hooks, linting rules, or mandatory branch protection policies)."
+}
+}

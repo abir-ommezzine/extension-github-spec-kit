@@ -1,0 +1,18 @@
+{
+  "agent_name": "Diagram Agent",
+  "expected_output_format": "JSON",
+  "syntax_rules": {
+    "mermaid_version": "v10+",
+    "allowed_types": ["erDiagram", "sequenceDiagram"],
+    "formatting": "Pas de balises de code markdown (comme ```mermaid) à l'intérieur des valeurs du JSON. Uniquement du texte brut."
+  },
+  "required_fields": {
+    "entity_relationship_diagram": "Code Mermaid.js complet débutant strictement par 'erDiagram' représentant les jointures et cardinalités.",
+    "sequence_diagrams": [
+      {
+        "flow_title": "Nom explicite du flux fonctionnel traité (ex: Ajout d'une dépense, Inscription et envoi de mail).",
+        "mermaid_code": "Code Mermaid.js complet débutant strictement par 'sequenceDiagram' modélisant les interactions chronologiques Acteur -> Système -> Stockage."
+      }
+    ]
+  }
+}
