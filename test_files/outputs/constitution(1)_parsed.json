@@ -1,0 +1,80 @@
+{
+    "parsing_rationale": "L'analyse du document montre un projet de création d'API pour une plateforme d'apprentissage. Le vocabulaire utilisé ('must use', 'must be', 'must align') et la définition d'une stack technologique complète suggèrent un projet 'scratch' (greenfield) où les fondations sont établies. Structurellement, le document est solide sur les standards de code et les tests, mais il est très succinct sur le workflow Git (PR, branches) et ne mentionne aucune question ouverte ou incertitude, ce qui est atypique pour un document de conception.",
+    "project_info": {
+        "project_name": "Learning Platform API",
+        "source_type": "scratch",
+        "brief_explanation": "Développement d'une API RESTful pour une plateforme d'apprentissage avec gestion des rôles étudiants/instructeurs et intégration d'emails via Resend.",
+        "source_context": "L'utilisation de termes comme 'approved stack', 'must use' et la définition globale des principes de base indiquent une mise en place initiale du projet."
+    },
+    "doc_type": "constitution",
+    "sections": [
+        {
+            "title": "Learning Platform API Constitution",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Core Principles",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "I. Technology Standardization",
+            "level": 3,
+            "raw_content": "All implementation work must use the approved stack: Python 3.12, FastAPI, PostgreSQL 16, SQLAlchemy 2.0 with async execution, Alembic for migrations, and Pydantic v2 for validation. New features must align with this stack and avoid introducing alternative frameworks or synchronous database access patterns.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "II. Authentication and Authorization",
+            "level": 3,
+            "raw_content": "Authentication must use JWT access tokens with a 15-minute expiry and refresh tokens with a 7-day expiry. The system supports exactly two roles: student and instructor. Instructors are authorized to create, edit, and delete courses. Students are authorized to enroll in courses and submit progress.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "III. API Contract and Response Shape",
+            "level": 3,
+            "raw_content": "The API must be RESTful, return JSON, and be versioned under /api/v1/. All responses must use a consistent envelope of the form {\"data\": ..., \"meta\": ..., \"errors\": []}. API changes must preserve backward compatibility unless a new version is introduced.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "IV. Data Access and Persistence",
+            "level": 3,
+            "raw_content": "All database access must be asynchronous. SQLAlchemy sessions must never be used synchronously, and all data access must be performed through the ORM. Raw SQL is prohibited. Schema changes must be handled through Alembic migrations.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "V. Quality and Testing",
+            "level": 3,
+            "raw_content": "Testing must use pytest with httpx AsyncClient. Business logic coverage should target 80% or higher. Database tests must use a real PostgreSQL test instance and must not mock the database layer.",
+            "mapped_to_template_field": "Testing Discipline & Gates"
+        },
+        {
+            "title": "Additional Constraints",
+            "level": 2,
+            "raw_content": "- Transactional email delivery must use the Resend Python SDK.\n- The Resend API key must be provided through the RESEND_API_KEY environment variable.\n- A welcome email must be sent to students upon registration.\n- Security-sensitive behavior must be validated through integration-style tests wherever practical.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Development Workflow",
+            "level": 2,
+            "raw_content": "- Features must be implemented and validated through tests before being considered complete.\n- Any schema or contract change must include the corresponding migration and API documentation updates.\n- Changes that affect authentication, authorization, or response envelopes require explicit review.",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Governance",
+            "level": 2,
+            "raw_content": "This constitution supersedes ad hoc implementation choices. Any deviation from these standards requires documented justification and review before merge.\n\n**Version**: 1.0.0 | **Ratified**: 2026-06-27 | **Last Amended**: 2026-06-27",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "MOYENNE",
+            "remediation_advice": "Ajouter une section listant les hypothèses techniques non validées ou les points d'arbitrage futurs (ex: stratégie de mise en cache, montée en charge)."
+        }
+    ],
+    "open_questions": []
+}
