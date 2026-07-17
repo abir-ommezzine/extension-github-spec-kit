@@ -1,0 +1,114 @@
+{
+  "project_source_indicators": {
+    "scratch": {
+      "keywords": ["init", "bootstrap", "create", "from scratch", "nouveau projet", "première version", "installation", "setup-db", "greenfield", "initial setup"],
+      "description": "Le projet est créé à partir de zéro, sans base de code existante ou héritée."
+    },
+    "refining": {
+      "keywords": ["update", "add", "refactor", "modify", "align", "fix", "extension", "modifier", "intégrer", "migration", "brownfield", "legacy", "existing codebase", "improvement"],
+      "description": "Le projet modifie, améliore ou étend une application ou une architecture déjà existante."
+    }
+  },
+  "spec": {
+    "doc_type": "spec",
+    "description": "Spécification fonctionnelle axée sur le 'Quoi' et le 'Pourquoi'. C'est la source de vérité métier.",
+    "required_sections": [
+      {
+        "name": "Goals & Objectives",
+        "aliases": ["Goals", "Objectifs", "Contexte", "Introduction", "Why This Project", "Business Value", "Vision", "Problématique"],
+        "description": "Justification métier, objectifs à atteindre et valeur ajoutée. Doit extraire la vision globale et le problème à résoudre.",
+        "extraction_hints": "Chercher des phrases commençant par 'L'objectif est de', 'Le but est', 'We aim to'."
+      },
+      {
+        "name": "Functional Requirements",
+        "aliases": ["Exigences Fonctionnelles", "Functional Specs", "User Stories", "Périmètre", "Features", "Fonctionnalités", "Requirements"],
+        "description": "Description précise des fonctionnalités attendues. Doit être extrait sous forme de liste structurée.",
+        "extraction_hints": "Identifier les listes à puces, les tableaux de fonctionnalités ou les User Stories (As a... I want...)."
+      },
+      {
+        "name": "Non-Functional Requirements",
+        "aliases": ["Exigences Non-Fonctionnelles", "Contraintes Techniques", "NFR", "Qualités", "Performance", "Scalabilité", "Disponibilité"],
+        "description": "Critères de performance, scalabilité, compatibilité, sécurité globale ou exigences de plateforme.",
+        "extraction_hints": "Rechercher des mentions de temps de réponse (ms), de nombre d'utilisateurs simultanés, ou de standards de conformité."
+      },
+      {
+        "name": "Scope & Out-of-Scope",
+        "aliases": ["Périmètre", "Hors-périmètre", "Limites", "Out of Scope", "In Scope", "Exclusions"],
+        "description": "Définition claire de ce qui est inclus et de ce qui est explicitement exclu.",
+        "extraction_hints": "Distinguer les sections 'In Scope' et 'Out of Scope'. Capturer les limites du projet."
+      },
+      {
+        "name": "Open Questions & Uncertainties",
+        "aliases": ["Questions en suspens", "Uncertainties", "Zones d'ombre", "Hypothèses", "Risques", "TBD", "To be defined"],
+        "description": "Éléments non tranchés, risques identifiés, ou questions nécessitant un arbitrage.",
+        "extraction_hints": "Extraire tout ce qui est marqué comme 'Question', 'Hypothèse' ou 'À définir'."
+      }
+    ]
+  },
+  "architecture": {
+    "doc_type": "architecture",
+    "description": "Plan technique et contrats d'intégration. Transforme le 'Quoi' en 'Comment'.",
+    "required_sections": [
+      {
+        "name": "System Architecture & Topology",
+        "aliases": ["Conception", "Architecture", "Schéma", "Composants", "Infrastructure", "Diagramme", "High-Level Design", "HLD", "Topology"],
+        "description": "Structure globale, flux de données et diagramme logique.",
+        "extraction_hints": "Identifier les descriptions de composants, les flux de données et les références à des diagrammes (Mermaid, PlantUML)."
+      },
+      {
+        "name": "Tech Stack & Tooling",
+        "aliases": ["Stack technique", "Outils", "Technologies", "Frameworks", "Langages", "Dependencies", "Environment"],
+        "description": "Choix validés de langages, frameworks, bases de données et outils système.",
+        "extraction_hints": "Extraire la liste des technologies avec leurs versions si précisées."
+      },
+      {
+        "name": "Data Models & Schemas",
+        "aliases": ["Base de données", "Modèle de données", "Database Schema", "Modèles", "Tables", "ERD", "Schema", "Entities"],
+        "description": "Structures des tables PostgreSQL, clés primaires/étrangères, relations et types de données.",
+        "extraction_hints": "Rechercher des descriptions de tables, des colonnes SQL ou des diagrammes Entité-Relation."
+      },
+      {
+        "name": "API Contracts & Flow",
+        "aliases": ["Endpoints", "API", "Contrats", "Routes", "Communication", "Request/Response", "REST", "GraphQL", "Payloads"],
+        "description": "Définition des interfaces d'API (FastAPI), requêtes et réponses attendues.",
+        "extraction_hints": "Extraire les méthodes HTTP (GET, POST, etc.), les URLs d'endpoints et les structures JSON de requête/réponse."
+      },
+      {
+        "name": "Security & Identity",
+        "aliases": ["Sécurité", "Auth", "Authentication", "Chiffrement", "Permissions", "RBAC", "JWT", "OAuth2", "Firewall"],
+        "description": "Gestion de l'accès, clés API, gestion des tokens ou conformité d'accès.",
+        "extraction_hints": "Identifier les mécanismes d'authentification et les rôles utilisateurs."
+      }
+    ]
+  },
+  "task": {
+    "doc_type": "task",
+    "description": "Fiche de tâche unitaire exploitable. C'est le niveau d'exécution final.",
+    "required_sections": [
+      {
+        "name": "Task Description & Objective",
+        "aliases": ["Description", "Objectif", "Task Overview", "But", "Implementation Detail", "Scope of Work"],
+        "description": "Détail fonctionnel de la tâche et son contexte.",
+        "extraction_hints": "Capturer l'action précise à réaliser et le résultat attendu."
+      },
+      {
+        "name": "Acceptance Criteria",
+        "aliases": ["Critères d'acceptation", "Acceptance Criteria", "Definition of Done", "DoD", "Validation"],
+        "description": "Conditions quantifiables et vérifiables pour valider la tâche.",
+        "extraction_hints": "Extraire les points de vérification sous forme de liste (ex: 'L'API doit retourner 200 OK')."
+      },
+      {
+        "name": "Checkboxes Checklist",
+        "aliases": ["Checklist", "Tasks", "Sous-tâches", "Liste de contrôle", "Step-by-step"],
+        "description": "Liste de tâches Markdown (- [ ]) actionnables pour suivre l'avancement.",
+        "extraction_hints": "Extraire tous les éléments de type checkbox Markdown."
+      },
+      {
+        "name": "Security & Performance Constraints",
+        "aliases": ["Contraintes", "Sécurité de la tâche", "Performance Limits", "Edge Cases", "Limitations"],
+        "description": "Limitations de sécurité ou exigences de rapidité spécifiques à ce bloc de code.",
+        "extraction_hints": " la capture des limitations de sécurité ou exigences de rapidité spécifiques à ce bloc de code."
+      }
+    ]
+  }
+}
