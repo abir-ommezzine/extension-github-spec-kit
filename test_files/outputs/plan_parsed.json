@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "L'analyse du document montre qu'il s'agit d'un plan d'implémentation pour un 'Expense Tracker'. Le projet est identifié comme 'scratch' car il s'agit d'une nouvelle fonctionnalité (`feat/expense-tracker`) avec un plan de création complet (Phase 0, 1, etc.) et une structure de fichiers à initialiser. Le document couvre bien la stack technique et l'architecture globale (via la structure de dossiers), mais manque cruellement de détails sur les modèles de données précis, les contrats d'API (bien qu'évoqués comme 'future-ready') et la sécurité. Le contenu est synthétique et orienté vers le démarrage d'un nouveau module.",
+    "parsing_rationale": "L'analyse du document montre la création d'un nouvel outil ('Expense Tracker') avec une définition de structure de dossiers et de stack technique, ce qui correspond à un projet 'scratch'. Le document est globalement bien structuré pour un plan initial, mais il est très léger sur les détails techniques profonds. Le 'Technical Context' couvre la stack, et le 'Project Structure' donne une vue d'ensemble de la topologie. Cependant, il manque des définitions précises de schémas de données (bien qu'un fichier externe data-model.md soit mentionné, il n'est pas présent dans le contenu à parser), des contrats d'API détaillés et une section sur la sécurité (même pour confirmer l'absence d'auth).",
     "project_info": {
         "project_name": "Expense Tracker",
         "source_type": "scratch",
-        "brief_explanation": "Développement d'un gestionnaire de dépenses mono-utilisateur utilisant Next.js avec une persistance locale via localStorage.",
-        "source_context": "L'utilisation du terme 'Implementation Plan', la mention d'une nouvelle branche `feat/expense-tracker` et la définition d'une structure de dossiers complète indiquent la création d'un nouveau module à partir de zéro."
+        "brief_explanation": "Développement d'une application de suivi de dépenses mono-utilisateur utilisant Next.js avec une persistance locale via localStorage.",
+        "source_context": "Le document mentionne la création d'une nouvelle branche `feat/expense-tracker` et définit une structure de projet initiale, indiquant un développement de zéro."
     },
     "doc_type": "plan",
     "sections": [
@@ -18,7 +18,7 @@
             "title": "Summary",
             "level": 2,
             "raw_content": "Small single-user Expense Tracker built with Next.js App Router. UI and persistence run in the browser using localStorage. Use server folder under `src/server` for shared types and validation utilities; route handlers and server actions are included as future-ready contracts but persistence remains client-side per requirements.",
-            "mapped_to_template_field": "System Architecture & Topology"
+            "mapped_to_template_field": null
         },
         {
             "title": "Technical Context",
@@ -49,20 +49,25 @@
         {
             "missing_section": "Data Models & Schemas",
             "priority": "HAUTE",
-            "remediation_advice": "Le document mentionne un fichier 'data-model.md' futur. Il est nécessaire de définir ici la structure des objets 'Expense' (id, amount, category, date, etc.) et le schéma de stockage dans localStorage."
+            "remediation_advice": "Définir explicitement la structure des objets 'Expense' (id, montant, date, catégorie, etc.) pour le localStorage."
         },
         {
             "missing_section": "API Contracts & Flow",
             "priority": "MOYENNE",
-            "remediation_advice": "Bien que la persistance soit client-side, le document mentionne des 'future-ready contracts'. Il faut détailler les endpoints prévus dans 'expenses-api.md' (ex: GET /api/expenses, POST /api/expenses)."
+            "remediation_advice": "Documenter les contrats des route handlers mentionnés comme 'future-ready' dans le résumé."
         },
         {
             "missing_section": "Security & Identity",
             "priority": "MOYENNE",
-            "remediation_advice": "Le document indique 'No authentication'. Il serait pertinent de confirmer explicitement que aucune donnée sensible n'est traitée ou de définir comment la validation des données dans `src/server/validators.ts` sécurise l'entrée des données."
+            "remediation_advice": "Confirmer explicitement l'absence de mécanisme d'authentification et comment les données locales sont protégées/isolées."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "BASSE",
+            "remediation_advice": "Lister les 'minor technical unknowns' mentionnés comme devant être résolus dans le fichier research.md."
         }
     ],
     "open_questions": [
-        "Quels sont les 'minor technical unknowns' qui seront résolus dans le fichier research.md ?"
+        "Minor technical unknowns to be resolved in research.md"
     ]
 }

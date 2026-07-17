@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "Le document est une liste de tâches structurée par phases pour un 'Expense Tracker'. L'analyse des mots-clés ('Create', 'Setup', 'Implement') et la structure (Phase 1: Setup) indiquent clairement un projet de type 'scratch' (greenfield). Le document est très orienté checklist et objectifs, mais il manque de sections formelles sur la sécurité, les contraintes de performance détaillées (bien qu'un point soit mentionné en phase 7) et les questions ouvertes. Le mapping a été fait en regroupant les phases de User Stories car elles contiennent chacune un objectif (Task Description), un test (Acceptance Criteria/Testing) et une checklist (Checkboxes Checklist).",
+    "parsing_rationale": "Le document est une liste de tâches structurée par phases pour un projet d'Expense Tracker. L'utilisation de termes comme 'Create', 'Setup', 'Initial render' et 'from scratch' (implicite via la structure de setup) indique un projet de type 'scratch'. Le document est très riche en checklists et objectifs, mais manque de sections dédiées aux contraintes de sécurité, aux questions ouvertes et aux notes d'implémentation détaillées. Les 'Independent Tests' sont intégrés dans les phases et seront mappés vers 'Testing & Validation'.",
     "project_info": {
         "project_name": "Expense Tracker",
         "source_type": "scratch",
-        "brief_explanation": "Création d'une application de suivi de dépenses permettant d'ajouter, lister, supprimer des dépenses et visualiser un résumé financier.",
-        "source_context": "L'utilisation de termes comme 'Setup', 'Create src/server/types.ts', 'Create UI components folder' et l'organisation en phases de construction initiale confirment un projet partant de zéro."
+        "brief_explanation": "Développement d'une application de suivi de dépenses permettant l'ajout, la visualisation et la suppression d'entrées avec un tableau de bord de totaux.",
+        "source_context": "Le document décrit un processus de création complète : 'Phase 1: Setup (Shared Infrastructure)', 'Create src/server/types.ts', 'Create UI components folder', indiquant l'initialisation d'un nouveau projet."
     },
     "doc_type": "task",
     "sections": [
@@ -12,7 +12,7 @@
             "title": "Tasks: Expense Tracker",
             "level": 1,
             "raw_content": "**Input**: Design documents from `specs/001-expense-tracker/`",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Task Description & Objective"
         },
         {
             "title": "Phase 1: Setup (Shared Infrastructure)",
@@ -54,7 +54,7 @@
             "title": "Phase 7: Polish & Cross-Cutting Concerns",
             "level": 2,
             "raw_content": "- [x] T024 [P] Add ARIA labels and accessibility improvements to form and list components in `app/components/*`\n - [x] T025 [P] Update `specs/001-expense-tracker/quickstart.md` with run & verification steps\n - [x] T026 [P] Add documentation comments and inline TSDoc for `src/server/*`\n - [x] T027 [P] Performance: ensure initial render limits to 50 items in `app/components/ExpenseList.tsx` and lazy-load older items\n\n---",
-            "mapped_to_template_field": "Security & Performance Constraints"
+            "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Dependencies & Execution Order",
@@ -78,18 +78,23 @@
     "structural_gaps": [
         {
             "missing_section": "Acceptance Criteria",
-            "priority": "MOYENNE",
-            "remediation_advice": "Bien que des 'Independent Tests' soient présents, il serait utile de formaliser des critères d'acceptation quantifiables (ex: 'Le champ montant doit rejeter les valeurs négatives')."
+            "priority": "HAUTE",
+            "remediation_advice": "Transformer les 'Independent Tests' et les 'Goals' en critères d'acceptation quantifiables (ex: 'Le système doit charger max 50 items initialement')."
         },
         {
             "missing_section": "Testing & Validation",
             "priority": "MOYENNE",
-            "remediation_advice": "Détailler la stratégie de test globale au-delà des fichiers de tests mentionnés dans les checklists."
+            "remediation_advice": "Centraliser les tests mentionnés (unit tests, integration tests) dans une stratégie de test globale."
+        },
+        {
+            "missing_section": "Security & Performance Constraints",
+            "priority": "MOYENNE",
+            "remediation_advice": "Définir les limites de performance du localStorage et les contraintes de validation des données entrées."
         },
         {
             "missing_section": "Open Questions & Uncertainties",
-            "priority": "BAISSE",
-            "remediation_advice": "Ajouter une section pour lister les hypothèses techniques ou les décisions d'arbitrage restant à prendre."
+            "priority": "MOYENNE",
+            "remediation_advice": "Identifier les zones d'ombre sur la gestion du state (Context vs Props drilling) mentionnée en T022."
         }
     ],
     "open_questions": []
