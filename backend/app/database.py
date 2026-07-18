@@ -18,6 +18,11 @@ from app.config import settings  # <--- On importe les réglages centralisés
 # la classe Settings de config.py gère déjà tout ça automatiquement !
 DATABASE_URL = settings.DATABASE_URL
 
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+elif DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+
 # pool_pre_ping évite les connexions mortes après une inactivité (utile en dev)
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 

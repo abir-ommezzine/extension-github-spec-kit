@@ -31,6 +31,9 @@ class ArtifactType(str, enum.Enum):
     spec = "spec"
     plan = "plan"
     task = "task"
+    constitution = "constitution"
+    contract = "contract"
+    requirements = "requirements"
 
 
 class GeneratedBy(str, enum.Enum):
@@ -80,7 +83,7 @@ class Artifact(Base):
         UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
     )
     source_path = Column(String(500), nullable=False)  # ex: specs/003-x/context.md
-    artifact_type = Column(SAEnum(ArtifactType, name="artifact_type_enum"), nullable=False)
+    artifact_type = Column(String(100), nullable=False, default="unknown")
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     project = relationship("Project", back_populates="artifacts")
@@ -116,7 +119,7 @@ class DocVersion(Base):
     generated_at = Column(DateTime, server_default=func.now(), nullable=False)
     commit_hash = Column(String(40), nullable=True)
     generated_by = Column(
-        SAEnum(GeneratedBy, name="generated_by_enum"),
+        SAEnum(GeneratedBy, name="generated_by_enum", native_enum=False),
         nullable=False,
         default=GeneratedBy.agent,
     )
@@ -156,7 +159,7 @@ class PipelineRun(Base):
     )
 
     current_stage = Column(
-        SAEnum(PipelineStage, name="pipeline_stage_enum"),
+        SAEnum(PipelineStage, name="pipeline_stage_enum", native_enum=False),
         nullable=False,
         default=PipelineStage.parsing,
     )
