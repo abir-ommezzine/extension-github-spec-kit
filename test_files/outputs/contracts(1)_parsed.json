@@ -1,19 +1,13 @@
 {
-    "parsing_rationale": "The document is a technical API contract for 'CourseHub'. It focuses heavily on the 'How' (endpoints, payloads, status codes) rather than the 'Why'. The project type is identified as 'scratch' because it defines the foundational API structure, data types, and initial setup (base URL, authentication) without referencing legacy constraints. While the document is highly detailed regarding technical requirements, it lacks the business context (Goals), non-functional constraints (Performance/Scalability), and explicit scope boundaries required by the functional specification template. Most sections map to 'Functional Requirements' as they describe the system's expected behavior and features via API endpoints.",
+    "parsing_rationale": "The document is a technical API specification for 'CourseHub'. I have mapped the API endpoints to functional requirements and constraints, the data types to entities, and the specific business rules (like ActiveEnrollmentConstraint and Auto-completion) to specific constraints. The 'mapped_to_template_field' aligns with the requested spec template, although the source is heavily focused on the technical interface ('How') rather than just the 'Why'.",
     "project_info": {
         "project_name": "CourseHub",
-        "source_type": "scratch",
-        "brief_explanation": "An e-learning platform allowing instructors to create and manage courses and students to enroll and track their progress.",
-        "source_context": "The document defines a new API version (v1), base URLs, and core data models from the ground up, indicating an initial system design."
+        "source_type": "refining",
+        "brief_explanation": "API specification defining authentication, course management, and student enrollments.",
+        "source_context": "Technical API contracts document including request/response shapes and business rules."
     },
     "doc_type": "spec",
     "sections": [
-        {
-            "title": "API Contracts: CourseHub",
-            "level": 1,
-            "raw_content": "**Created**: 2026-06-27\n\n**Reference**: [spec.md](spec.md) | [plan.md](plan.md)\n\n---",
-            "mapped_to_template_field": null
-        },
         {
             "title": "API Overview",
             "level": 2,
@@ -132,31 +126,31 @@
             "title": "Data Type Reference",
             "level": 2,
             "raw_content": "",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "User",
             "level": 3,
             "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"email\": \"string (unique, valid email)\",\n  \"display_name\": \"string\",\n  \"role\": \"student\" | \"instructor\",\n  \"created_at\": \"ISO 8601 timestamp\",\n  \"hashed_password\": \"bcrypt hash (not returned in responses)\"\n}\n```",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "Course",
             "level": 3,
             "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"instructor_id\": \"uuid (FK → User)\",\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"price_cents\": \"integer (>= 0)\",\n  \"published\": \"boolean\",\n  \"created_at\": \"ISO 8601 timestamp\",\n  \"updated_at\": \"ISO 8601 timestamp\",\n  \"modules\": \"array of Module\"\n}\n```",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "Module",
             "level": 3,
             "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"course_id\": \"uuid (FK → Course)\",\n  \"title\": \"string\",\n  \"order\": \"integer (>= 1)\",\n  \"created_at\": \"ISO 8601 timestamp\"\n}\n```",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "Enrollment",
             "level": 3,
             "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"student_id\": \"uuid (FK → User)\",\n  \"course_id\": \"uuid (FK → Course)\",\n  \"progress\": \"integer (0-100)\",\n  \"completed_at\": \"ISO 8601 timestamp | null\",\n  \"created_at\": \"ISO 8601 timestamp\",\n  \"updated_at\": \"ISO 8601 timestamp\"\n}\n```\n\n---",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "Error Code Reference",
@@ -168,7 +162,7 @@
             "title": "Examples",
             "level": 2,
             "raw_content": "",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "Full Workflow: Register → Create Course → Enroll → Progress",
@@ -177,21 +171,192 @@
             "mapped_to_template_field": "Functional Requirements"
         }
     ],
+    "elements": [
+        {
+            "type": "entity",
+            "identifier": "USER",
+            "content": "User entity representing students or instructors with email, role, and hashed password.",
+            "source_section": "User",
+            "attributes": {
+                "unique_fields": [
+                    "email"
+                ]
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "COURSE",
+            "content": "Course entity containing metadata, pricing, and publication status, linked to an instructor.",
+            "source_section": "Course",
+            "attributes": {
+                "price_min": 0
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "MODULE",
+            "content": "Course module with a specific order, belonging to a course.",
+            "source_section": "Module",
+            "attributes": {
+                "order_min": 1
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENROLLMENT",
+            "content": "Enrollment entity linking a student to a course, tracking progress and completion.",
+            "source_section": "Enrollment",
+            "attributes": {
+                "progress_range": "0-100"
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "AUTH-REG",
+            "content": "Allow students to self-register and receive a welcome email asynchronously.",
+            "source_section": "POST `/api/v1/auth/register`",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "AUTH-LOG",
+            "content": "Allow users to authenticate via email and password to receive JWT tokens.",
+            "source_section": "POST `/api/v1/auth/login`",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "AUTH-REF",
+            "content": "Allow renewal of access tokens using a valid refresh token.",
+            "source_section": "POST `/api/v1/auth/refresh`",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "COURSE-CREATE",
+            "content": "Instructors can create courses with associated modules.",
+            "source_section": "POST `/api/v1/courses`",
+            "attributes": {
+                "role_required": "Instructor"
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "COURSE-READ-PUB",
+            "content": "Public users can view courses that are marked as published.",
+            "source_section": "GET `/api/v1/courses/{course_id}`",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "COURSE-DELETE",
+            "content": "Instructors can delete courses they own, provided there are no active enrollments.",
+            "source_section": "DELETE `/api/v1/courses/{course_id}`",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "ENROLL-CREATE",
+            "content": "Students can enroll in a published course once.",
+            "source_section": "POST `/api/v1/enrollments`",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "ENROLL-UPDATE",
+            "content": "Students can update their course progress.",
+            "source_section": "PUT `/api/v1/enrollments/{enrollment_id}`",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-ACTIVE-ENROLL",
+            "content": "ActiveEnrollmentConstraint: A course cannot be deleted if it has active enrollments.",
+            "source_section": "DELETE `/api/v1/courses/{course_id}`",
+            "attributes": {
+                "error_code": "ACTIVE_ENROLLMENT_CONSTRAINT"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-AUTO-COMPLETE",
+            "content": "If progress reaches 100 and completed_at is null, system automatically sets completed_at to current timestamp.",
+            "source_section": "PUT `/api/v1/enrollments/{enrollment_id}`",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "NFR-JWT",
+            "content": "Authentication must be handled via JWT Bearer tokens in the Authorization header.",
+            "source_section": "API Overview",
+            "attributes": {
+                "access_token_expiry": "15 minutes",
+                "refresh_token_expiry": "7 days"
+            }
+        }
+    ],
+    "relationships": [
+        {
+            "source": "COURSE-CREATE",
+            "to": "COURSE",
+            "relation_type": "implements"
+        },
+        {
+            "source": "COURSE-DELETE",
+            "to": "RULE-ACTIVE-ENROLL",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ENROLL-CREATE",
+            "to": "ENROLLMENT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "ENROLL-UPDATE",
+            "to": "RULE-AUTO-COMPLETE",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ENROLLMENT",
+            "to": "USER",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ENROLLMENT",
+            "to": "COURSE",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "COURSE",
+            "to": "USER",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "MODULE",
+            "to": "COURSE",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "AUTH-REG",
+            "to": "USER",
+            "relation_type": "implements"
+        }
+    ],
     "structural_gaps": [
         {
             "missing_section": "Goals & Objectives",
-            "priority": "HAUTE",
-            "remediation_advice": "Add a section explaining why this API exists, the business value of CourseHub, and the primary problems it solves for students and instructors."
+            "priority": "HIGH",
+            "remediation_advice": "The document describes 'how' the API works but not the business goals or high-level objectives of the CourseHub project."
         },
         {
             "missing_section": "Scope & Out-of-Scope",
-            "priority": "MOYENNE",
-            "remediation_advice": "Define explicitly what the API does (e.g., Course Management, Enrollment) and what it doesn't do (e.g., Payment processing, Video hosting, Real-time chat)."
+            "priority": "MEDIUM",
+            "remediation_advice": "Define what the system will NOT handle (e.g., payment processing is mentioned via price_cents but the flow is not described)."
         },
         {
             "missing_section": "Open Questions & Uncertainties",
-            "priority": "MOYENNE",
-            "remediation_advice": "Identify potential risks or undecided features, such as the strategy for handling large file uploads for course modules."
+            "priority": "LOW",
+            "remediation_advice": "Include a section for pending technical decisions or API ambiguities."
         }
     ],
     "open_questions": []

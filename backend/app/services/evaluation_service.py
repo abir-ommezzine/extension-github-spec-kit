@@ -4,21 +4,21 @@ from typing import Dict, Any, List
 from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.schemas.summary_agent_schema import SummaryOutputModel
 from app.schemas.glossary_agent_schema import GlossaryOutputModel
-
 class ParsingEvaluatorService:
     """
     Service autonome d'évaluation et de calcul de métriques de fiabilité (QA)
     et de pilotage (Gestion de Projet) pour les documents techniques de Spec Kit.
+    Analyse structurelle avancée basée sur la topologie du graphe et la traçabilité macro/micro.
     """
 
     @classmethod
     def evaluate(cls, parsed_data: ParsingAgentOutput, template_config: Dict[str, Any]) -> Dict[str, Any]:
         doc_type = parsed_data.doc_type.value
 
-        # 1. Calcul des métriques de fiabilité technique (QA)
+        # 1. Calcul des métriques de fiabilité technique et topologique (QA)
         technical_metrics = cls._calculate_technical_metrics(parsed_data, template_config, doc_type)
 
-        # 2. Calcul des KPI de gestion de projet (Management)
+        # 2. Calcul des KPI de gestion de projet et maturité (Management)
         management_kpis = cls._calculate_management_kpis(parsed_data, template_config, doc_type)
 
         return {
@@ -35,59 +35,102 @@ class ParsingEvaluatorService:
         doc_type: str
     ) -> Dict[str, Any]:
         """
-        Calcule de façon déterministe les scores attendus par le script de test du parser
-        tout en y injectant les verrous sémantiques stricts (anti-vide, anti-TBD).
+        Évalue la fidélité, la conformité sémantique au gabarit et l'intégrité relationnelle 
+        du graphe d'éléments extrait par le LLM (anti-hallucination topologique).
         """
         filler_words = ["tbd", "n/a", "none", "not specified", "todo", "a definir", "manquant"]
         semantic_voids = 0
         truncations = 0
-        contradictions_list = []
+        quality_alerts = []
 
-        # Scanne le contenu pour intercepter le vide sémantique ou les placeholders
+        # 1. Analyse macro-structurelle et détection de bruit textuel
         for section in parsed_data.sections:
             content_clean = section.raw_content.lower().strip()
             if any(filler == content_clean or f"[{filler}]" in content_clean for filler in filler_words):
                 semantic_voids += 1
-            
-            # Détection de troncatures paresseuses
             if "..." in section.raw_content or "etc." in section.raw_content.lower():
                 truncations += 1
 
-        # --- 1. SCHEMA ADHERENCE RATE (SAR) ---
-        sar_score = 100.0 - (semantic_voids * 20.0)
-        sar_score = max(0.0, sar_score)
+        # Score d'adhérence au schéma basé sur la propreté du contenu
+        sar_score = max(0.0, 100.0 - (semantic_voids * 20.0) - (truncations * 10.0))
 
-        # --- 2. STRUCTURAL INTEGRITY RECALL (SIR) ---
+        # 2. RAPPEL D'INTÉGRITÉ STRUCTURELLE (SIR) - Couverture des sections requises
         required_sections = template_config.get(doc_type, {}).get("required_sections", [])
-        required_names = {sec["name"] for sec in required_sections} if required_sections else set()
-        mapped_fields = {s.mapped_to_template_field for s in parsed_data.sections if s.mapped_to_template_field}
+        required_names = {sec["name"].lower().strip() for sec in required_sections}
+        mapped_fields = {s.mapped_to_template_field.lower().strip() for s in parsed_data.sections if s.mapped_to_template_field}
         
         if required_names:
-            missing_count = len(required_names.difference(mapped_fields))
-            sir_score = 100.0 - (missing_count * (100.0 / len(required_names)))
+            missing_sections = required_names.difference(mapped_fields)
+            sir_score = ((len(required_names) - len(missing_sections)) / len(required_names)) * 100.0
+            for missing in missing_sections:
+                quality_alerts.append(f"Section requise absente des correspondances : {missing}")
         else:
-            empty_sections = sum(1 for s in parsed_data.sections if not s.raw_content.strip())
-            sir_score = 100.0 - (empty_sections * 25.0) if parsed_data.sections else 100.0
-        sir_score = max(0.0, sir_score)
+            sir_score = 100.0
 
-        # --- 3. TEXT FIDELITY SCORE (TFS) ---
-        tfs_score = 100.0 - (truncations * 15.0)
-        tfs_score = max(0.0, tfs_score)
+        # 3. INTÉGRITÉ RELATIONNELLE DU GRAPHE (GRI) - Validation des arcs (Cibles existantes)
+        elements = parsed_data.elements
+        relationships = parsed_data.relationships
+        
+        if not relationships:
+            gri_score = 100.0
+        else:
+            # Dictionnaire des nœuds valides indexés par identifiant et ancre de contenu court
+            valid_nodes = set()
+            for el in elements:
+                if el.identifier:
+                    valid_nodes.add(str(el.identifier).lower().strip())
+                if el.content:
+                    valid_nodes.add(el.content[:30].lower().strip())
 
-        # --- 4. EXTRACTION RECALL (ExR) ---
-        exr_score = 100.0
-        if not parsed_data.project_info.get("project_name") or parsed_data.project_info.get("project_name") == "Inconnu":
-            exr_score -= 30.0
-            contradictions_list.append("Nom du projet non identifié dans la source")
-        if len(parsed_data.sections) == 0:
-            exr_score = 0.0
+            valid_relations = 0
+            for rel in relationships:
+                src = str(rel.source).lower().strip()
+                tgt = str(rel.to).lower().strip()
+                
+                src_valid = any(src in node or node in src for node in valid_nodes)
+                tgt_valid = any(tgt in node or node in tgt for node in valid_nodes)
+                
+                if src_valid and tgt_valid:
+                    valid_relations += 1
+                else:
+                    quality_alerts.append(f"Relation orpheline détectée : Lien brisé entre '{rel.source}' et '{rel.to}'")
+            
+            gri_score = (valid_relations / len(relationships)) * 100.0
+
+        # 4. INDICE DE TRAÇABILITÉ MACRO-MICRO (MMTI) - Ancrage des éléments dans les sections physiques
+        if not elements:
+            mmti_score = 100.0
+        else:
+            valid_section_titles = {s.title.lower().strip() for s in parsed_data.sections}
+            linked_elements = 0
+            
+            for el in elements:
+                if el.source_section and el.source_section.lower().strip() in valid_section_titles:
+                    linked_elements += 1
+                else:
+                    quality_alerts.append(f"Défaut d'ancrage : L'élément '{el.identifier or el.content[:20]}' pointe vers une section introuvable")
+            
+            mmti_score = (linked_elements / len(elements)) * 100.0
+
+        # 5. CONFORMITÉ DU TYPAGE DU GABARIT (MTC) - Respect de la liste restrictive attendue
+        expected_element_types = {t.lower().strip() for t in template_config.get(doc_type, {}).get("expected_element_types", [])}
+        if not elements or not expected_element_types:
+            mtc_score = 100.0
+        else:
+            correct_types = sum(1 for el in elements if el.type.lower().strip() in expected_element_types)
+            mtc_score = (correct_types / len(elements)) * 100.0
+            
+        # Détection de léthargie ou absence complète d'extraction technique
+        if len(elements) == 0 and len(parsed_data.sections) > 0:
+            quality_alerts.append("Extraction stérile : Aucun élément micro-technique (nœud) n'a pu être extrait")
 
         return {
             "schema_adherence_rate": round(sar_score, 1),
-            "contradictions": contradictions_list,
             "structural_integrity_recall": round(sir_score, 1),
-            "text_fidelity_score": round(tfs_score, 1),
-            "extraction_recall": round(exr_score, 1)
+            "graph_relational_integrity": round(gri_score, 1),
+            "macro_micro_traceability_index": round(mmti_score, 1),
+            "model_template_conformity": round(mtc_score, 1),
+            "quality_alerts": quality_alerts
         }
 
     @staticmethod
@@ -96,14 +139,19 @@ class ParsingEvaluatorService:
         template_config: Dict[str, Any], 
         doc_type: str
     ) -> Dict[str, Any]:
-        sections = parsed_data.sections
+        """
+        Analyse l'état de préparation opérationnelle (Readiness) du document sur la base 
+        des Gaps structurels et des zones d'ombre extraites.
+        """
         gaps = parsed_data.structural_gaps
         open_questions = parsed_data.open_questions
+        sections = parsed_data.sections
 
         required_sections = template_config.get(doc_type, {}).get("required_sections", [])
-        required_names = {sec["name"] for sec in required_sections}
-        mapped_fields = {s.mapped_to_template_field for s in sections if s.mapped_to_template_field}
+        required_names = {sec["name"].lower().strip() for sec in required_sections}
+        mapped_fields = {s.mapped_to_template_field.lower().strip() for s in sections if s.mapped_to_template_field}
 
+        # Taux de complétude brute par rapport aux exigences du template
         completeness_score = (
             round((len(mapped_fields.intersection(required_names)) / len(required_names)) * 100, 1)
             if required_names else 100.0
@@ -113,20 +161,23 @@ class ParsingEvaluatorService:
         medium_gaps = sum(1 for g in gaps if g.priority.upper() in ["MOYENNE", "MEDIUM"])
         low_gaps = sum(1 for g in gaps if g.priority.upper() in ["BASSE", "LOW"])
 
+        # Calcul pondéré de l'indice de santé
         health_index = 100.0
-        health_index -= (high_gaps * 15)
-        health_index -= (medium_gaps * 5)
-        health_index -= (len(open_questions) * 10)
+        health_index -= (high_gaps * 15.0)
+        health_index -= (medium_gaps * 5.0)
+        health_index -= (len(open_questions) * 8.0)
         
+        # Pénalité de léthargie du LLM : si le texte est long mais qu'il n'a levé aucun risque/gap
         total_words = sum(len(s.raw_content.split()) for s in sections)
-        if total_words > 300 and len(gaps) == 0 and len(open_questions) == 0:
-            health_index -= 30.0
+        if total_words > 400 and len(gaps) == 0 and len(open_questions) == 0:
+            health_index -= 25.0
 
         health_index = max(0.0, round(health_index, 1))
 
-        if health_index >= 85 and high_gaps == 0:
+        # Décision de passage de jalon (Readiness Status)
+        if health_index >= 85 and high_gaps == 0 and len(open_questions) <= 2:
             readiness_status = "READY_FOR_EXECUTION"
-        elif health_index >= 60:
+        elif health_index >= 55:
             readiness_status = "NEEDS_REFINEMENT"
         else:
             readiness_status = "BLOCKED"
@@ -135,6 +186,10 @@ class ParsingEvaluatorService:
             "health_index": health_index,
             "completeness_score": completeness_score,
             "readiness_status": readiness_status,
+            "extracted_metrics_summary": {
+                "total_nodes_extracted": len(parsed_data.elements),
+                "total_edges_extracted": len(parsed_data.relationships)
+            },
             "gaps_summary": {
                 "high_severity": high_gaps,
                 "medium_severity": medium_gaps,
@@ -142,6 +197,143 @@ class ParsingEvaluatorService:
                 "unresolved_uncertainties": len(open_questions)
             }
         }
+# class ParsingEvaluatorService:
+#     """
+#     Service autonome d'évaluation et de calcul de métriques de fiabilité (QA)
+#     et de pilotage (Gestion de Projet) pour les documents techniques de Spec Kit.
+#     """
+
+#     @classmethod
+#     def evaluate(cls, parsed_data: ParsingAgentOutput, template_config: Dict[str, Any]) -> Dict[str, Any]:
+#         doc_type = parsed_data.doc_type.value
+
+#         # 1. Calcul des métriques de fiabilité technique (QA)
+#         technical_metrics = cls._calculate_technical_metrics(parsed_data, template_config, doc_type)
+
+#         # 2. Calcul des KPI de gestion de projet (Management)
+#         management_kpis = cls._calculate_management_kpis(parsed_data, template_config, doc_type)
+
+#         return {
+#             "document_type": doc_type,
+#             "project_name": parsed_data.project_info.get("project_name", "Inconnu"),
+#             "technical_evaluation": technical_metrics,
+#             "project_management_kpis": management_kpis
+#         }
+
+#     @staticmethod
+#     def _calculate_technical_metrics(
+#         parsed_data: ParsingAgentOutput, 
+#         template_config: Dict[str, Any],
+#         doc_type: str
+#     ) -> Dict[str, Any]:
+#         """
+#         Calcule de façon déterministe les scores attendus par le script de test du parser
+#         tout en y injectant les verrous sémantiques stricts (anti-vide, anti-TBD).
+#         """
+#         filler_words = ["tbd", "n/a", "none", "not specified", "todo", "a definir", "manquant"]
+#         semantic_voids = 0
+#         truncations = 0
+#         contradictions_list = []
+
+#         # Scanne le contenu pour intercepter le vide sémantique ou les placeholders
+#         for section in parsed_data.sections:
+#             content_clean = section.raw_content.lower().strip()
+#             if any(filler == content_clean or f"[{filler}]" in content_clean for filler in filler_words):
+#                 semantic_voids += 1
+            
+#             # Détection de troncatures paresseuses
+#             if "..." in section.raw_content or "etc." in section.raw_content.lower():
+#                 truncations += 1
+
+#         # --- 1. SCHEMA ADHERENCE RATE (SAR) ---
+#         sar_score = 100.0 - (semantic_voids * 20.0)
+#         sar_score = max(0.0, sar_score)
+
+#         # --- 2. STRUCTURAL INTEGRITY RECALL (SIR) ---
+#         required_sections = template_config.get(doc_type, {}).get("required_sections", [])
+#         required_names = {sec["name"] for sec in required_sections} if required_sections else set()
+#         mapped_fields = {s.mapped_to_template_field for s in parsed_data.sections if s.mapped_to_template_field}
+        
+#         if required_names:
+#             missing_count = len(required_names.difference(mapped_fields))
+#             sir_score = 100.0 - (missing_count * (100.0 / len(required_names)))
+#         else:
+#             empty_sections = sum(1 for s in parsed_data.sections if not s.raw_content.strip())
+#             sir_score = 100.0 - (empty_sections * 25.0) if parsed_data.sections else 100.0
+#         sir_score = max(0.0, sir_score)
+
+#         # --- 3. TEXT FIDELITY SCORE (TFS) ---
+#         tfs_score = 100.0 - (truncations * 15.0)
+#         tfs_score = max(0.0, tfs_score)
+
+#         # --- 4. EXTRACTION RECALL (ExR) ---
+#         exr_score = 100.0
+#         if not parsed_data.project_info.get("project_name") or parsed_data.project_info.get("project_name") == "Inconnu":
+#             exr_score -= 30.0
+#             contradictions_list.append("Nom du projet non identifié dans la source")
+#         if len(parsed_data.sections) == 0:
+#             exr_score = 0.0
+
+#         return {
+#             "schema_adherence_rate": round(sar_score, 1),
+#             "contradictions": contradictions_list,
+#             "structural_integrity_recall": round(sir_score, 1),
+#             "text_fidelity_score": round(tfs_score, 1),
+#             "extraction_recall": round(exr_score, 1)
+#         }
+
+#     @staticmethod
+#     def _calculate_management_kpis(
+#         parsed_data: ParsingAgentOutput, 
+#         template_config: Dict[str, Any], 
+#         doc_type: str
+#     ) -> Dict[str, Any]:
+#         sections = parsed_data.sections
+#         gaps = parsed_data.structural_gaps
+#         open_questions = parsed_data.open_questions
+
+#         required_sections = template_config.get(doc_type, {}).get("required_sections", [])
+#         required_names = {sec["name"] for sec in required_sections}
+#         mapped_fields = {s.mapped_to_template_field for s in sections if s.mapped_to_template_field}
+
+#         completeness_score = (
+#             round((len(mapped_fields.intersection(required_names)) / len(required_names)) * 100, 1)
+#             if required_names else 100.0
+#         )
+
+#         high_gaps = sum(1 for g in gaps if g.priority.upper() in ["HAUTE", "HIGH"])
+#         medium_gaps = sum(1 for g in gaps if g.priority.upper() in ["MOYENNE", "MEDIUM"])
+#         low_gaps = sum(1 for g in gaps if g.priority.upper() in ["BASSE", "LOW"])
+
+#         health_index = 100.0
+#         health_index -= (high_gaps * 15)
+#         health_index -= (medium_gaps * 5)
+#         health_index -= (len(open_questions) * 10)
+        
+#         total_words = sum(len(s.raw_content.split()) for s in sections)
+#         if total_words > 300 and len(gaps) == 0 and len(open_questions) == 0:
+#             health_index -= 30.0
+
+#         health_index = max(0.0, round(health_index, 1))
+
+#         if health_index >= 85 and high_gaps == 0:
+#             readiness_status = "READY_FOR_EXECUTION"
+#         elif health_index >= 60:
+#             readiness_status = "NEEDS_REFINEMENT"
+#         else:
+#             readiness_status = "BLOCKED"
+
+#         return {
+#             "health_index": health_index,
+#             "completeness_score": completeness_score,
+#             "readiness_status": readiness_status,
+#             "gaps_summary": {
+#                 "high_severity": high_gaps,
+#                 "medium_severity": medium_gaps,
+#                 "low_severity": low_gaps,
+#                 "unresolved_uncertainties": len(open_questions)
+#             }
+#         }
 
 class SummaryEvaluatorService:
     """

@@ -1,87 +1,178 @@
 # app/core/prompts.py
 
 import json
-def get_parsing_agent_prompt(inferred_type: str, sdd_template: dict, project_indicators: dict) -> str:
+from typing import Dict, Any
+
+def get_parsing_agent_prompt(inferred_type: str, sdd_template: Dict[str, Any], project_indicators: Dict[str, Any]) -> str:
     """
-    Génère l'invite système unifiée pour l'agent de Parsing (Core Ingestion).
-    Fusionne la validation de gabarit plat (Gouvernance) avec l'extraction d'entités 
-    et de relations sous forme de graphe (Traçabilité technique).
+    Génère un System Prompt ultra-directif forçant le LLM à respecter la double échelle
+    Macro (sections physiques) et Micro (graphe topologique ancré).
     """
-    return f"""
-ROLE :
-Tu es l'agent "Core Ingestion & Parsing Agent", un expert en rétro-ingénierie documentaire et analyse topologique pour GitHub Spec Kit.
-Ton travail consiste à traiter une liste de sections Markdown déjà isolées techniquement pour valider sa conformité fonctionnelle et en extraire le graphe de dépendances logiques.
+    expected_types = sdd_template.get("expected_element_types", [])
+    required_sections = [sec["name"] for sec in sdd_template.get("required_sections", [])]
+    
+    prompt = f"""Vous êtes un Agent d'Ingestion Technique de niveau Expert (Parsing Agent). Your absolute goal is to transform a raw markdown document into a strict, unified JSON compliance graph.
 
-CONNAISSANCES DE RÉFÉRENCE (GABARIT DE VALIDATION) :
-<sdd_gabarit_attendu>
-Type de document : {inferred_type}
-Description : {sdd_template.get('description', 'Aucune description disponible.')}
-Sections obligatoires à valider :
-{json.dumps(sdd_template.get('required_sections', []), indent=2, ensure_ascii=False)}
-</sdd_gabarit_attendu>
+### TYPE DE DOCUMENT PRÉVU
+- **Doc Type Cible** : {inferred_type}
+- **Description attendue** : {sdd_template.get('description', '')}
 
-<indicateurs_type_projet>
-{json.dumps(project_indicators, indent=2, ensure_ascii=False)}
-</indicateurs_type_projet>
+---
 
-INSTRUCTIONS DE TRAVAIL :
-1. ANALYSE DU CONTEXTE : Évalue le type de projet (scratch ou refining) et consigne tes observations architecturales dans 'parsing_rationale'. Détermine l'identité du projet dans 'project_info'.
-2. MAPPING DES SECTIONS : Pour CHAQUE section physique reçue en entrée, conserve STRICTEMENT son 'title', 'level' et 'raw_content'. Associe-la à sa clé cible du gabarit dans 'mapped_to_template_field' (ou null si hors-gabarit).
-3. EXTRACTION DU GRAPHE (NOEUDS) : Extrais tous les éléments atomiques identifiables dans le texte sous forme d'objets dans la liste 'elements'. Chaque élément doit avoir un type naturel (requirement, task, user_story, acceptance_criterion, entity, decision, constraint, assumption, milestone). Conserve l'identifiant d'origine (ex: FR-001, US-1) s'il existe.
-4. TRAÇABILITÉ DU GRAPHE (LIENS) : Identifie les relations explicites ou fortement induites entre ces éléments dans 'relationships' (ex: une User Story qui implémente une exigence, une tâche qui dépend d'une autre). Utilise les types : depends_on, implements, contains, relates_to. Ne pas inventer de relations non motivées.
-5. GOUVERNANCE ET RISQUES : Remplis 'structural_gaps' pour les sections du gabarit absentes et extrais l'intégralité des incertitudes dans 'open_questions'.
+### DIRECTIVES CRITIQUES DE STRUCTURE JSON (ZÉRO HALLUCINATION)
 
-CONSIGNE STRICTE SUR LES ÉCARTS (structural_gaps) :
-- Une section est considérée comme "missing_section" UNIQUEMENT si elle est 100% absente du document. Si au moins une section d'entrée est mappée vers un champ du gabarit, ce champ NE DOIT PAS figurer dans 'structural_gaps'.
+1. **sections (Échelle Macro)** :
+   - Vous devez copier fidèlement les sections reçues.
+   - Associez CHAQUE section physique à un champ du gabarit de référence via `mapped_to_template_field`.
+   - Les valeurs autorisées pour `mapped_to_template_field` sont UNIQUEMENT : {required_sections} (ou null si aucun alignement n'est pertinent).
 
-CONSIGNE DE SÉCURITÉ CRITIQUE :
-Renvoie UNIQUEMENT un objet JSON valide conforme au gabarit strict ci-dessous. Tout texte conversationnel est interdit.
+2. **elements (Échelle Micro - LE GRAPH)** :
+   - Extrayez les atomes techniques importants sous forme de nœuds.
+   - **`type` REQUIS** : Vous devez OBLIGATOIREMENT choisir le type de l'élément parmi cette liste stricte : {expected_types}. Interdiction d'utiliser 'constraint' ou 'requirement' si ils ne sont pas dans cette liste !
+   - **`identifier` REQUIS (NE JAMAIS METTRE NULL)** : Créez un identifiant court, unique et en majuscules pour chaque élément (ex: `STACK-01`, `AUTH-JWT`, `RULE-PR`).
+   - **`source_section` REQUIS (TRAÇABILITÉ OBLIGATOIRE)** : Renseignez le TITRE EXACT de la section physique d'où provient cet élément. Cette chaîne doit correspondre au caractère près à l'un des titres présents dans le tableau `sections`.
 
-GABARIT DE RÉPONSE JSON ATTENDU (STRICT) :
+3. **relationships (Les Arcs du Graphe)** :
+   - Connectez les éléments techniques entre eux.
+   - **`source` et `to`** : Doivent UNIQUEMENT contenir l'identifiant court (`identifier`) créé dans le tableau `elements` (ex: source: "STACK-01", to: "RULE-PR"). 
+   - INTERDICTION ABSOLUE de mettre des longues phrases ou des descriptions textuelles brutes dans les champs `source` et `to`.
+   - `relation_type` doit être choisi parmi : ["depends_on", "implements", "contains", "relates_to"].
+
+4. **structural_gaps (Gouvernance)** :
+   - Si une section requise parmi {required_sections} est absente ou vide dans le document d'origine, déclarez-la obligatoirement ici comme manquante avec une priorité (HAUTE, MOYENNE, BASSE).
+   - *Règle d'or* : Si une section est dans `structural_gaps`, son `mapped_to_template_field` ne doit apparaître nulle part dans le tableau `sections` (Garde-fou anti-contradiction).
+
+---
+
+### SCHÉMA JSON DE SORTIE ATTENDU
+Vous devez retourner exclusivement un objet JSON valide respectant cette structure exacte :
 {{
-  "parsing_rationale": "Analyse et raisonnement pas-à-pas ici...",
+  "parsing_rationale": "Explication claire de la logique d'analyse...",
   "project_info": {{
-    "project_name": "Nom du projet",
+    "project_name": "Nom extrait du projet",
     "source_type": "scratch" ou "refining",
-    "brief_explanation": "Explication succincte du but du projet.",
-    "source_context": "Justification du choix de source_type basée sur le document."
+    "brief_explanation": "Résumé court...",
+    "source_context": "Contexte d'extraction..."
   }},
   "doc_type": "{inferred_type}",
   "sections": [
     {{
       "title": "Titre exact de la section",
-      "level": 2,
-      "raw_content": "Contenu brut complet...",
-      "mapped_to_template_field": "Nom du champ du gabarit sdd_gabarit_attendu (ou null)"
+      "level": 3,
+      "raw_content": "Contenu brut complet sans altération",
+      "mapped_to_template_field": "Nom du champ du gabarit ou null"
     }}
   ],
   "elements": [
     {{
-      "type": "requirement" ou "task" ou "user_story" ou "acceptance_criterion" ou "entity" ou "decision" ou "constraint" ou "assumption",
-      "identifier": "Identifiant d'origine (ex: FR-001) ou null",
-      "content": "Texte intégral de l'élément",
+      "type": "Un type parmis {expected_types}",
+      "identifier": "CODE_UNIQUE_MAJUSCULE",
+      "content": "Description atomique de la règle technique",
+      "source_section": "Titre exact de la section physique d'origine",
       "attributes": {{}}
     }}
   ],
   "relationships": [
     {{
-      "from": "identifier ou texte court source",
-      "to": "identifier ou texte court destination",
-      "relation_type": "depends_on" ou "implements" ou "contains" ou "relates_to"
+      "source": "CODE_UNIQUE_MAJUSCULE_SOURCE",
+      "to": "CODE_UNIQUE_MAJUSCULE_CIBLE",
+      "relation_type": "depends_on"
     }}
   ],
   "structural_gaps": [
     {{
       "missing_section": "Nom de la section manquante",
-      "priority": "HAUTE" ou "MOYENNE",
-      "remediation_advice": "Conseil précis pour rédiger cette section manquante."
+      "priority": "HIGH",
+      "remediation_advice": "Conseil..."
     }}
   ],
-  "open_questions": [
-    "Question ou incertitude extraite"
-  ]
+  "open_questions": []
 }}
+
+Ne retournez aucun texte conversationnel, pas d'explication en dehors du bloc JSON. Finissez proprement le JSON.
 """
+    return prompt
+# def get_parsing_agent_prompt(inferred_type: str, sdd_template: dict, project_indicators: dict) -> str:
+#     """
+#     Génère l'invite système unifiée pour l'agent de Parsing (Core Ingestion).
+#     Fusionne la validation de gabarit plat (Gouvernance) avec l'extraction d'entités 
+#     et de relations sous forme de graphe (Traçabilité technique).
+#     """
+#     return f"""
+# ROLE :
+# Tu es l'agent "Core Ingestion & Parsing Agent", un expert en rétro-ingénierie documentaire et analyse topologique pour GitHub Spec Kit.
+# Ton travail consiste à traiter une liste de sections Markdown déjà isolées techniquement pour valider sa conformité fonctionnelle et en extraire le graphe de dépendances logiques.
+
+# CONNAISSANCES DE RÉFÉRENCE (GABARIT DE VALIDATION) :
+# <sdd_gabarit_attendu>
+# Type de document : {inferred_type}
+# Description : {sdd_template.get('description', 'Aucune description disponible.')}
+# Sections obligatoires à valider :
+# {json.dumps(sdd_template.get('required_sections', []), indent=2, ensure_ascii=False)}
+# </sdd_gabarit_attendu>
+
+# <indicateurs_type_projet>
+# {json.dumps(project_indicators, indent=2, ensure_ascii=False)}
+# </indicateurs_type_projet>
+
+# INSTRUCTIONS DE TRAVAIL :
+# 1. ANALYSE DU CONTEXTE : Évalue le type de projet (scratch ou refining) et consigne tes observations architecturales dans 'parsing_rationale'. Détermine l'identité du projet dans 'project_info'.
+# 2. MAPPING DES SECTIONS : Pour CHAQUE section physique reçue en entrée, conserve STRICTEMENT son 'title', 'level' et 'raw_content'. Associe-la à sa clé cible du gabarit dans 'mapped_to_template_field' (ou null si hors-gabarit).
+# 3. EXTRACTION DU GRAPHE (NOEUDS) : Extrais tous les éléments atomiques identifiables dans le texte sous forme d'objets dans la liste 'elements'. Chaque élément doit avoir un type naturel (requirement, task, user_story, acceptance_criterion, entity, decision, constraint, assumption, milestone). Conserve l'identifiant d'origine (ex: FR-001, US-1) s'il existe.
+# 4. TRAÇABILITÉ DU GRAPHE (LIENS) : Identifie les relations explicites ou fortement induites entre ces éléments dans 'relationships' (ex: une User Story qui implémente une exigence, une tâche qui dépend d'une autre). Utilise les types : depends_on, implements, contains, relates_to. Ne pas inventer de relations non motivées.
+# 5. GOUVERNANCE ET RISQUES : Remplis 'structural_gaps' pour les sections du gabarit absentes et extrais l'intégralité des incertitudes dans 'open_questions'.
+
+# CONSIGNE STRICTE SUR LES ÉCARTS (structural_gaps) :
+# - Une section est considérée comme "missing_section" UNIQUEMENT si elle est 100% absente du document. Si au moins une section d'entrée est mappée vers un champ du gabarit, ce champ NE DOIT PAS figurer dans 'structural_gaps'.
+
+# CONSIGNE DE SÉCURITÉ CRITIQUE :
+# Renvoie UNIQUEMENT un objet JSON valide conforme au gabarit strict ci-dessous. Tout texte conversationnel est interdit.
+
+# GABARIT DE RÉPONSE JSON ATTENDU (STRICT) :
+# {{
+#   "parsing_rationale": "Analyse et raisonnement pas-à-pas ici...",
+#   "project_info": {{
+#     "project_name": "Nom du projet",
+#     "source_type": "scratch" ou "refining",
+#     "brief_explanation": "Explication succincte du but du projet.",
+#     "source_context": "Justification du choix de source_type basée sur le document."
+#   }},
+#   "doc_type": "{inferred_type}",
+#   "sections": [
+#     {{
+#       "title": "Titre exact de la section",
+#       "level": 2,
+#       "raw_content": "Contenu brut complet...",
+#       "mapped_to_template_field": "Nom du champ du gabarit sdd_gabarit_attendu (ou null)"
+#     }}
+#   ],
+#   "elements": [
+#     {{
+#       "type": "requirement" ou "task" ou "user_story" ou "acceptance_criterion" ou "entity" ou "decision" ou "constraint" ou "assumption",
+#       "identifier": "Identifiant d'origine (ex: FR-001) ou null",
+#       "content": "Texte intégral de l'élément",
+#       "attributes": {{}}
+#     }}
+#   ],
+#   "relationships": [
+#     {{
+#       "from": "identifier ou texte court source",
+#       "to": "identifier ou texte court destination",
+#       "relation_type": "depends_on" ou "implements" ou "contains" ou "relates_to"
+#     }}
+#   ],
+#   "structural_gaps": [
+#     {{
+#       "missing_section": "Nom de la section manquante",
+#       "priority": "HAUTE" ou "MOYENNE",
+#       "remediation_advice": "Conseil précis pour rédiger cette section manquante."
+#     }}
+#   ],
+#   "open_questions": [
+#     "Question ou incertitude extraite"
+#   ]
+# }}
+# """
 # def get_parsing_agent_prompt(inferred_type: str, sdd_template: dict, project_indicators: dict) -> str:
 #     """
 #     Génère l'invite système pour l'agent de Parsing (Core Ingestion).

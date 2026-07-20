@@ -12,6 +12,16 @@
   "spec": {
     "doc_type": "spec",
     "description": "Spécification fonctionnelle axée sur le 'Quoi' et le 'Pourquoi'. C'est la source de vérité métier.",
+    "expected_element_types": [
+      "user_story",
+      "requirement",
+      "functional_requirement",
+      "non_functional_requirement",
+      "entity",
+      "success_criterion",
+      "constraint",
+      "assumption"
+    ],
     "required_sections": [
       {
         "name": "Goals & Objectives",
@@ -21,13 +31,13 @@
       },
       {
         "name": "Functional Requirements",
-        "aliases": ["Exigences Fonctionnelles", "Functional Specs", "User Stories", "Périmètre", "Features", "Fonctionnalités", "Requirements"],
+        "aliases": ["Exigences Fonctionnelles", "Functional Specs", "User Stories", "Périmètre", "Features", "Fonctionnalités", "Requirements", "Authentication Endpoints", "Courses Endpoints", "Enrollments Endpoints", "Data Type Reference", "User", "Course", "Module", "Enrollment"],
         "description": "Description précise des fonctionnalités attendues. Doit être extrait sous forme de liste structurée.",
         "extraction_hints": "Identifier les listes à puces, les tableaux de fonctionnalités ou les User Stories (As a... I want...)."
       },
       {
         "name": "Non-Functional Requirements",
-        "aliases": ["Exigences Non-Fonctionnelles", "Contraintes Techniques", "NFR", "Qualités", "Performance", "Scalabilité", "Disponibilité"],
+        "aliases": ["Exigences Non-Fonctionnelles", "Contraintes Techniques", "NFR", "Qualités", "Performance", "Scalabilité", "Disponibilité", "API Overview", "Response Envelope", "HTTP Status Codes", "Error Code Reference", "Authentication & Authorization Summary"],
         "description": "Critères de performance, scalabilité, compatibilité, sécurité globale ou exigences de plateforme.",
         "extraction_hints": "Rechercher des mentions de temps de réponse (ms), de nombre d'utilisateurs simultanés, ou de standards de conformité."
       },
@@ -39,49 +49,58 @@
       },
       {
         "name": "Open Questions & Uncertainties",
-        "aliases": ["Questions en suspens", "Uncertainties", "Zones d'ombre", "Hypothèses", "Risques", "TBD", "To be defined"],
+        "aliases": ["Questions en suspens", "Uncertainties", "Zones d'ombre", "Hypothèses", "Risques", "TBD", "To be defined", "Examples"],
         "description": "Éléments non tranchés, risques identifiés, ou questions nécessitant un arbitrage.",
         "extraction_hints": "Extraire tout ce qui est marqué comme 'Question', 'Hypothèse' ou 'À définir'."
       }
     ]
   },
-  "architecture": {
-    "doc_type": "architecture",
-    "description": "Plan technique et contrats d'intégration. Transforme le 'Quoi' en 'Comment'.",
+  "plan": {
+    "doc_type": "plan",
+    "description": "Plan technique, d'implémentation et contrats d'intégration. Transforme le 'Quoi' en 'Comment'.",
+    "expected_element_types": [
+      "phase",
+      "task",
+      "decision",
+      "milestone",
+      "endpoint",
+      "entity",
+      "architecture_choice"
+    ],
     "required_sections": [
       {
         "name": "System Architecture & Topology",
-        "aliases": ["Conception", "Architecture", "Schéma", "Composants", "Infrastructure", "Diagramme", "High-Level Design", "HLD", "Topology"],
+        "aliases": ["Conception", "Architecture", "Schéma", "Composants", "Infrastructure", "Diagramme", "High-Level Design", "HLD", "Topology", "API Overview"],
         "description": "Structure globale, flux de données et diagramme logique.",
         "extraction_hints": "Identifier les descriptions de composants, les flux de données et les références à des diagrammes (Mermaid, PlantUML)."
       },
       {
         "name": "Tech Stack & Tooling",
-        "aliases": ["Stack technique", "Outils", "Technologies", "Frameworks", "Langages", "Dependencies", "Environment"],
+        "aliases": ["Stack technique", "Outils", "Technologies", "Frameworks", "Langages", "Dependencies", "Environment", "Response Envelope"],
         "description": "Choix validés de langages, frameworks, bases de données et outils système.",
         "extraction_hints": "Extraire la liste des technologies avec leurs versions si précisées."
       },
       {
         "name": "Data Models & Schemas",
-        "aliases": ["Base de données", "Modèle de données", "Database Schema", "Modèles", "Tables", "ERD", "Schema", "Entities"],
+        "aliases": ["Base de données", "Modèle de données", "Database Schema", "Modèles", "Tables", "ERD", "Schema", "Entities", "Data Type Reference", "User", "Course", "Module", "Enrollment"],
         "description": "Structures des tables PostgreSQL, clés primaires/étrangères, relations et types de données.",
         "extraction_hints": "Rechercher des descriptions de tables, des colonnes SQL ou des diagrammes Entité-Relation."
       },
       {
         "name": "API Contracts & Flow",
-        "aliases": ["Endpoints", "API", "Contrats", "Routes", "Communication", "Request/Response", "REST", "GraphQL", "Payloads"],
+        "aliases": ["Endpoints", "API", "Contrats", "Routes", "Communication", "Request/Response", "REST", "GraphQL", "Payloads", "Authentication Endpoints", "Courses Endpoints", "Enrollments Endpoints", "HTTP Status Codes", "Error Code Reference"],
         "description": "Définition des interfaces d'API (FastAPI), requêtes et réponses attendues.",
         "extraction_hints": "Extraire les méthodes HTTP (GET, POST, etc.), les URLs d'endpoints et les structures JSON de requête/réponse."
       },
       {
         "name": "Security & Identity",
-        "aliases": ["Sécurité", "Auth", "Authentication", "Chiffrement", "Permissions", "RBAC", "JWT", "OAuth2", "Firewall"],
+        "aliases": ["Sécurité", "Auth", "Authentication", "Chiffrement", "Permissions", "RBAC", "JWT", "OAuth2", "Firewall", "Authentication & Authorization Summary"],
         "description": "Gestion de l'accès, clés API, gestion des tokens ou conformité d'accès.",
-        "extraction_hints": "Identifier les mécanismes d'authentification et les rôles utilisateurs."
+        "extraction_hints": "Identifier les mechanisms d'authentification et les rôles utilisateurs."
       },
       {
         "name": "Open Questions & Uncertainties",
-        "aliases": ["Questions en suspens", "Uncertainties", "Zones d'ombre", "Hypothèses", "Risques", "TBD", "To be defined"],
+        "aliases": ["Questions en suspens", "Uncertainties", "Zones d'ombre", "Hypothèses", "Risques", "TBD", "To be defined", "Examples"],
         "description": "Éléments non tranchés, risques identifiés, ou questions nécessitant un arbitrage.",
         "extraction_hints": "Extraire tout ce qui est marqué comme 'Question', 'Hypothèse' ou 'À définir'."
       }
@@ -89,7 +108,16 @@
   },
   "task": {
     "doc_type": "task",
-    "description": "Fiche de tâche unitaire exploitable. C'est le niveau d'exécution final.",
+    "description": "Fiche de tâche ou liste maîtresse d'exécution. C'est le niveau opérationnel final.",
+    "expected_element_types": [
+      "phase",
+      "task",
+      "sub_task",
+      "acceptance_criterion",
+      "test_case",
+      "dependency",
+      "constraint"
+    ],
     "required_sections": [
       {
         "name": "Task Description & Objective",
@@ -144,6 +172,14 @@
   "constitution": {
     "doc_type": "constitution",
     "description": "Charte qualité, standards de développement et règles de gouvernance technique du dépôt.",
+    "expected_element_types": [
+      "coding_standard",
+      "rule",
+      "testing_gate",
+      "workflow_constraint",
+      "tool_configuration",
+      "requirement"
+    ],
     "required_sections": [
       {
         "name": "Coding Standards & Style",

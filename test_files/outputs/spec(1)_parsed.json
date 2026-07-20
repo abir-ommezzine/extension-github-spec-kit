@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "L'analyse du document montre qu'il s'agit d'un projet 'scratch' car il décrit la création complète d'une nouvelle API (CourseHub) avec la définition des entités de base, des flux d'inscription et de gestion de cours. Structurellement, le document est très riche en exigences fonctionnelles (FR-001 à FR-011) et en scénarios de test, mais il manque totalement de sections dédiées aux exigences non-fonctionnelles (performances, sécurité technique, scalabilité) et à la définition du hors-périmètre (Out-of-Scope). La section 'Assumptions' a été mappée vers 'Open Questions & Uncertainties' car elle contient les hypothèses de base du projet. Les 'Edge Cases' ont également été analysées pour en extraire des contraintes fonctionnelles et des questions implicites.",
+    "parsing_rationale": "The document is a functional specification for the CourseHub API. I have mapped the user stories to 'Functional Requirements' and the explicit FR list to 'Functional Requirements'. The 'Key Entities' section was parsed into 'entity' types. 'Measurable Outcomes' are mapped to 'success_criterion'. 'Assumptions' are mapped to 'assumption'. 'Edge Cases' are treated as 'functional_requirement' or 'constraint'. I have identified a gap in 'Scope & Out-of-Scope' and 'Open Questions' as they are not explicitly defined in the source.",
     "project_info": {
         "project_name": "CourseHub API",
         "source_type": "scratch",
-        "brief_explanation": "Développement d'une API REST pour une plateforme d'apprentissage en ligne permettant aux instructeurs de créer des cours et aux étudiants de s'y inscrire et de suivre leur progression.",
-        "source_context": "Le document mentionne 'Build CourseHub, a REST API', définit les entités de base (User, Course, Module, Enrollment) et décrit un flux d'initialisation complet."
+        "brief_explanation": "REST API for an online learning platform allowing instructors to manage courses and students to enroll and track progress.",
+        "source_context": "Feature Branch: 001-coursehub-api"
     },
     "doc_type": "spec",
     "sections": [
@@ -13,12 +13,6 @@
             "level": 1,
             "raw_content": "**Feature Branch**: `001-coursehub-api`\n\n**Created**: 2026-06-27\n\n**Status**: Draft\n\n**Input**: User description: \"Build CourseHub, a REST API for an online learning platform. Instructors can create courses with a title, description, price (in cents), and a published flag. Each course has multiple modules in a fixed order. Students can register with email and password, then enrol in published courses. Enrolment tracks progress (0–100%) and completion date. Instructors should only be able to manage their own courses. Students should only be able to see their own enrolments. Both roles share the same user table but are distinguished by a role field. On successful student registration, send a welcome email via Resend containing the student's name and a link to browse published courses. The API must handle the case where an instructor tries to delete a course that has active enrolments — this should be rejected with a clear error message.\"",
             "mapped_to_template_field": "Goals & Objectives"
-        },
-        {
-            "title": "User Scenarios & Testing *(mandatory)*",
-            "level": 2,
-            "raw_content": "",
-            "mapped_to_template_field": null
         },
         {
             "title": "User Story 1 - Instructor manages courses (Priority: P1)",
@@ -45,12 +39,6 @@
             "mapped_to_template_field": "Functional Requirements"
         },
         {
-            "title": "Requirements *(mandatory)*",
-            "level": 2,
-            "raw_content": "",
-            "mapped_to_template_field": null
-        },
-        {
             "title": "Functional Requirements",
             "level": 3,
             "raw_content": "- **FR-001**: The system MUST allow instructors to create courses with a title, description, price in cents, a published flag, and multiple modules in a fixed order.\n- **FR-002**: The system MUST associate each course with a single instructor and restrict course management actions to that instructor.\n- **FR-003**: The system MUST reject course deletion when the course has active enrolments and return a clear error message.\n- **FR-004**: The system MUST allow students to register with email and password and assign them the student role.\n- **FR-005**: The system MUST send a welcome email through Resend after successful student registration, including the student's name and a link to browse published courses.\n- **FR-006**: The system MUST allow students to enroll only in published courses.\n- **FR-007**: The system MUST track enrolment progress as a value between 0 and 100 percent and record a completion date when progress reaches 100 percent.\n- **FR-008**: The system MUST ensure students can view and update only their own enrolments.\n- **FR-009**: The system MUST expose REST endpoints under /api/v1/ and return JSON responses using the envelope {\"data\": ..., \"meta\": ..., \"errors\": []}.\n- **FR-010**: The system MUST use a shared user table with a role field to distinguish students and instructors.\n- **FR-011**: The system MUST preserve the defined ordering of modules within each course.",
@@ -63,40 +51,298 @@
             "mapped_to_template_field": "Functional Requirements"
         },
         {
-            "title": "Success Criteria *(mandatory)*",
-            "level": 2,
-            "raw_content": "",
-            "mapped_to_template_field": null
-        },
-        {
             "title": "Measurable Outcomes",
             "level": 3,
             "raw_content": "- **SC-001**: An instructor can publish a course and make it available to students through the API in a single workflow.\n- **SC-002**: A student can register, enroll in a published course, and update progress without accessing another student's enrolment data.\n- **SC-003**: At least 90% of the core course, enrollment, and authorization behaviors are covered by automated end-to-end tests.\n- **SC-004**: The system returns a clear, consistent error when an instructor attempts to delete a course with active enrolments.",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "Assumptions",
             "level": 2,
             "raw_content": "- Each course has one instructor owner, while an instructor may own multiple courses.\n- Published courses are the only courses available for student enrollment in the initial release.\n- Student and instructor accounts are created through the platform's API and authenticated with the standard role-based access model.\n- The Resend integration is available when the RESEND_API_KEY environment variable is configured.",
-            "mapped_to_template_field": "Open Questions & Uncertainties"
+            "mapped_to_template_field": "Non-Functional Requirements"
+        }
+    ],
+    "elements": [
+        {
+            "type": "user_story",
+            "identifier": "US-01",
+            "content": "An instructor can create a course with ordered modules, publish it, and manage that course without affecting other instructors' content.",
+            "source_section": "User Story 1 - Instructor manages courses (Priority: P1)",
+            "attributes": {
+                "priority": "P1"
+            }
+        },
+        {
+            "type": "user_story",
+            "identifier": "US-02",
+            "content": "A student can register, receive a welcome email, enroll in a published course, and view only their own enrolment records.",
+            "source_section": "User Story 2 - Student registers and enrols (Priority: P1)",
+            "attributes": {
+                "priority": "P1"
+            }
+        },
+        {
+            "type": "user_story",
+            "identifier": "US-03",
+            "content": "Students can update their own enrolment progress and completion status without accessing other students' enrolment data.",
+            "source_section": "User Story 3 - Progress is tracked and exposed safely (Priority: P2)",
+            "attributes": {
+                "priority": "P2"
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-001",
+            "content": "The system MUST allow instructors to create courses with a title, description, price in cents, a published flag, and multiple modules in a fixed order.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-002",
+            "content": "The system MUST associate each course with a single instructor and restrict course management actions to that instructor.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-003",
+            "content": "The system MUST reject course deletion when the course has active enrolments and return a clear error message.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-004",
+            "content": "The system MUST allow students to register with email and password and assign them the student role.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-005",
+            "content": "The system MUST send a welcome email through Resend after successful student registration, including the student's name and a link to browse published courses.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-006",
+            "content": "The system MUST allow students to enroll only in published courses.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-007",
+            "content": "The system MUST track enrolment progress as a value between 0 and 100 percent and record a completion date when progress reaches 100 percent.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-008",
+            "content": "The system MUST ensure students can view and update only their own enrolments.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-009",
+            "content": "The system MUST expose REST endpoints under /api/v1/ and return JSON responses using the envelope {\"data\": ..., \"meta\": ..., \"errors\": []}.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-010",
+            "content": "The system MUST use a shared user table with a role field to distinguish students and instructors.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-011",
+            "content": "The system MUST preserve the defined ordering of modules within each course.",
+            "source_section": "Functional Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-USER",
+            "content": "A shared account identity with role, email, password credential, and display name.",
+            "source_section": "Key Entities *(include if feature involves data)*",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-COURSE",
+            "content": "A learning offering owned by an instructor, with title, description, price in cents, published status, and ordered modules.",
+            "source_section": "Key Entities *(include if feature involves data)*",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-MODULE",
+            "content": "A child record of a course that represents a lesson or section in a fixed sequence.",
+            "source_section": "Key Entities *(include if feature involves data)*",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-ENROL",
+            "content": "A student-course relationship that records progress and completion date.",
+            "source_section": "Key Entities *(include if feature involves data)*",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-001",
+            "content": "An instructor can publish a course and make it available to students through the API in a single workflow.",
+            "source_section": "Measurable Outcomes",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-002",
+            "content": "A student can register, enroll in a published course, and update progress without accessing another student's enrolment data.",
+            "source_section": "Measurable Outcomes",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-003",
+            "content": "At least 90% of the core course, enrollment, and authorization behaviors are covered by automated end-to-end tests.",
+            "source_section": "Measurable Outcomes",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-004",
+            "content": "The system returns a clear, consistent error when an instructor attempts to delete a course with active enrolments.",
+            "source_section": "Measurable Outcomes",
+            "attributes": {}
+        },
+        {
+            "type": "assumption",
+            "identifier": "ASM-01",
+            "content": "Each course has one instructor owner, while an instructor may own multiple courses.",
+            "source_section": "Assumptions",
+            "attributes": {}
+        },
+        {
+            "type": "assumption",
+            "identifier": "ASM-02",
+            "content": "Published courses are the only courses available for student enrollment in the initial release.",
+            "source_section": "Assumptions",
+            "attributes": {}
+        },
+        {
+            "type": "assumption",
+            "identifier": "ASM-03",
+            "content": "Student and instructor accounts are created through the platform's API and authenticated with the standard role-based access model.",
+            "source_section": "Assumptions",
+            "attributes": {}
+        },
+        {
+            "type": "assumption",
+            "identifier": "ASM-04",
+            "content": "The Resend integration is available when the RESEND_API_KEY environment variable is configured.",
+            "source_section": "Assumptions",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CON-01",
+            "content": "Progress values outside the 0–100% range must be rejected.",
+            "source_section": "Edge Cases",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "US-01",
+            "to": "FR-001",
+            "relation_type": "implements"
+        },
+        {
+            "source": "US-01",
+            "to": "FR-002",
+            "relation_type": "implements"
+        },
+        {
+            "source": "US-01",
+            "to": "FR-003",
+            "relation_type": "implements"
+        },
+        {
+            "source": "US-02",
+            "to": "FR-004",
+            "relation_type": "implements"
+        },
+        {
+            "source": "US-02",
+            "to": "FR-005",
+            "relation_type": "implements"
+        },
+        {
+            "source": "US-02",
+            "to": "FR-006",
+            "relation_type": "implements"
+        },
+        {
+            "source": "US-03",
+            "to": "FR-007",
+            "relation_type": "implements"
+        },
+        {
+            "source": "US-03",
+            "to": "FR-008",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FR-001",
+            "to": "ENT-COURSE",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "FR-001",
+            "to": "ENT-MODULE",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "FR-010",
+            "to": "ENT-USER",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "FR-007",
+            "to": "ENT-ENROL",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "FR-003",
+            "to": "SC-004",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "FR-007",
+            "to": "CON-01",
+            "relation_type": "depends_on"
         }
     ],
     "structural_gaps": [
         {
-            "missing_section": "Non-Functional Requirements",
-            "priority": "HAUTE",
-            "remediation_advice": "Définir les attentes en termes de temps de réponse, de sécurité (hachage des mots de passe), de volume de données supporté et de disponibilité de l'API."
+            "missing_section": "Scope & Out-of-Scope",
+            "priority": "MEDIUM",
+            "remediation_advice": "Define what the API will NOT do to prevent scope creep."
         },
         {
-            "missing_section": "Scope & Out-of-Scope",
-            "priority": "MOYENNE",
-            "remediation_advice": "Préciser ce qui n'est pas géré (ex: paiement réel des cours, gestion des contenus multimédias des modules, interface frontend)."
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "List any remaining technical ambiguities regarding the Resend integration or authentication flow."
         }
     ],
-    "open_questions": [
-        "Each course has one instructor owner, while an instructor may own multiple courses.",
-        "Published courses are the only courses available for student enrollment in the initial release.",
-        "Student and instructor accounts are created through the platform's API and authenticated with the standard role-based access model.",
-        "The Resend integration is available when the RESEND_API_KEY environment variable is configured."
-    ]
+    "open_questions": []
 }
