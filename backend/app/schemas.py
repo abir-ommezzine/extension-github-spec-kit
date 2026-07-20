@@ -82,5 +82,6 @@ class ParseRequest(BaseModel):
 class ParseResponse(BaseModel):
     success: bool
     source_path: str
-    structured_json: dict
+    structured_json: Any
     pipeline_run_id: UUID
+    

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.agents.parsing_agent import parse_context_md
 from app.models import PipelineRun, PipelineStage, Artifact
+from app.agents.diagram_agent import generate_diagrams
 
 
 async def run_parsing_stage(db: Session, artifact: Artifact, file_path: str = None) -> PipelineRun:
@@ -68,5 +69,30 @@ async def run_parsing_stage(db: Session, artifact: Artifact, file_path: str = No
         # 6. Save failure
         pipeline_run.current_stage = PipelineStage.failed
         pipeline_run.error_message = str(e)
+        db.commit()
+        raise
+
+async def run_diagram_stage(db: Session, pipeline_run: PipelineRun, force: bool = False) -> None:
+    """
+    Runs the Diagram Agent on the structured_json output.
+    """
+    if not pipeline_run.structured_json:
+        raise ValueError("Pipeline run must have completed parsing with structured_json")
+
+    # Only skip if not forcing
+    if pipeline_run.diagram_output and not force:
+        return  # already done
+
+    pipeline_run.current_stage = PipelineStage.parallel_enrichment
+    db.commit()
+
+    try:
+        diagram_result = await generate_diagrams(pipeline_run.structured_json)
+        pipeline_run.diagram_output = diagram_result
+        pipeline_run.current_stage = PipelineStage.parallel_enrichment
+        db.commit()
+    except Exception as exc:
+        pipeline_run.current_stage = PipelineStage.failed
+        pipeline_run.error_message = f"Diagram stage failed: {exc}"
         db.commit()
         raise

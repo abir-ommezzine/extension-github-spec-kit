@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 
 try:
-    from fastapi import FastAPI
+    from fastapi import FastAPI,Request
     from fastapi.middleware.cors import CORSMiddleware
     from app.config import settings
     from app.database import engine, Base
@@ -106,3 +106,20 @@ def read_root():
 @app.get("/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
+
+@app.exception_handler(Exception)
+async def catch_all_exceptions(request: Request, exc: Exception):
+    tb = traceback.format_exc()
+    logger.error("=" * 70)
+    logger.error(f"UNHANDLED EXCEPTION on {request.method} {request.url}")
+    logger.error(f"Exception: {type(exc).__name__}: {exc}")
+    logger.error(tb)
+    logger.error("=" * 70)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": type(exc).__name__,
+            "message": str(exc),
+            "traceback": tb.split("\n")[-10:],  # last 10 lines
+        },
+    )
