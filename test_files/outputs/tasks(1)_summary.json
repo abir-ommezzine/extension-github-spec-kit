@@ -1,0 +1,38 @@
+{
+    "executive_brief": "CourseHub API is a structured course management system designed for FastAPI and PostgreSQL. It implements a role-based architecture separating Instructor CRUD operations from Student enrollment and progress tracking. The system utilizes a JWT-based authentication layer, asynchronous database sessions, and an external email integration via Resend for onboarding, all wrapped in a standardized API response envelope.",
+    "technical_stack": {
+        "languages_and_frameworks": [
+            "FastAPI",
+            "SQLAlchemy 2.0 async",
+            "asyncpg",
+            "Pydantic v2",
+            "Alembic",
+            "pytest",
+            "httpx",
+            "python-jose",
+            "passlib",
+            "resend"
+        ],
+        "architectural_constraints": [
+            "Coverage: Target >= 80% on business logic (routes, services, security)",
+            "Data Validation: Enrollment progress must be an integer between 0 and 100 inclusive",
+            "Data Validation: Course price_cents must be stored as an integer (cents)",
+            "Data Integrity: Unique constraint on Module (course_id, order)",
+            "Data Integrity: Unique constraint on Enrollment (student_id, course_id)",
+            "Isolation: Instructors can only manage/update courses where instructor_id == current_user.id",
+            "Isolation: Students can only access/update enrollments where student_id == current_user.id",
+            "Business Rule: Course deletion rejected with 409 Conflict (ACTIVE_ENROLLMENT_CONSTRAINT) if active enrollments exist",
+            "Auth: Access token expiration 15 minutes; Refresh token expiration 7 days",
+            "Response Pattern: All endpoints must be wrapped in APIResponse envelope (data, meta, errors)"
+        ]
+    },
+    "maturity_assessment": "The specification is exceptionally detailed, covering everything from directory structure to specific HTTP status codes and async session management. With a health index of 100.0 and no high or medium severity gaps, the project is professionally framed. Only a low-severity absence of an 'Open Questions' section is noted, which does not impede technical execution. Status: READY.",
+    "critical_dependencies": [
+        "RESEND_API_KEY: Mandatory environment variable for email service",
+        "PostgreSQL: Async database instance required for migrations and runtime",
+        "JWT: Dependency for all protected routes via HTTPBearer",
+        "Cascade Deletion: Modules must be deleted automatically upon Course deletion",
+        "Referential Integrity: Enrollment strict foreign key dependence on User and Course entities",
+        "AsyncSession: Dependency injection required for all service-layer database interactions"
+    ]
+}

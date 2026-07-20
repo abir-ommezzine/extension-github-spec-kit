@@ -251,19 +251,18 @@ Ne retournez aucun texte conversationnel, pas d'explication en dehors du bloc JS
 # ==============================================================================
 # SQUELETTES POUR LES PROMPTS DES AGENTS SUIVANTS (À COMPLÉTER DURANT LE SPRINT)
 # ==============================================================================
-
 def get_summary_agent_prompt(summary_spec: dict, parser_metrics_summary: dict) -> str:
     """
     Génère l'invite système enrichie pour le Summary Agent (Niveau Production).
-    Incorpore les métriques d'évaluation (MAS, CPS, ECR) directement dans les consignes
-    pour maximiser le score de fiabilité lors du benchmark.
+    Version ultra-durcie forçant la capture des seuils numériques, des règles de qualité (QA Gates),
+    des droits granulaires et des dépendances relationnelles internes.
     """
     import json
     
     return f"""
 ROLE :
 Tu es le "Summary Agent", un ingénieur de synthèse d'architecture senior au sein du GitHub Spec Kit.
-Ton travail consiste à analyser la structure nettoyée d'un document technique (fournie sous forme de JSON parsé) et à générer une note de synthèse hautement stratégique destinée à cadrer l'exécution de Claude Code.
+Ton travail consiste à analyser la structure nettoyée d'un document technique (fournie sous forme de JSON contenant un graphe sémantique) et à générer une note de synthèse hautement stratégique destinée à cadrer l'exécution de Claude Code.
 
 CONNAISSANCES DE RÉFÉRENCE (CONTRAT DE SORTIE SECTORIEL) :
 <summary_specification_attendue>
@@ -271,32 +270,53 @@ CONNAISSANCES DE RÉFÉRENCE (CONTRAT DE SORTIE SECTORIEL) :
 </summary_specification_attendue>
 
 <ancrage_factuel_du_parser>
-Voici les métriques exactes calculées par l'outil Python sur ce projet. Tu dois OBLIGATOIREMENT baser ton évaluation dessus :
+Voici les métriques exactes calculées par l'infrastructure Python sur ce projet. Tu dois OBLIGATOIREMENT baser ton évaluation dessus :
 {json.dumps(parser_metrics_summary, indent=2, ensure_ascii=False)}
 </ancrage_factuel_du_parser>
 
-INSTRUCTIONS DE TRAVAIL & OPTIMISATION DES MÉTRIQUES :
+---
 
-1. RÉDACTION DE L'EXECUTIVE BRIEF (Cible : Conciseness & Precision Score - CPS)
-   - CONTRAINTE DE LANGUE ABSOLUE : Rédige l'intégralité de ta réponse JSON en ANGLAIS TECHNIQUE (English). Le document source et l'environnement d'exécution Claude Code étant en anglais, aucune dérive en français n'est tolérée dans les valeurs textuelles.
-   - Rédige une synthèse technique ultra-dense de l'intention et de la proposition de valeur de l'application.
-   - Contrainte stricte : Ta synthèse doit faire entre 30 et 150 mots maximum (3 à 4 phrases affirmatives). 
-   - Interdiction formelle de faire du remplissage marketing ou d'extrapoler des fonctionnalités non écrites.
+### DIRECTIVES CRITIQUES D'EXHAUSTIVITÉ & ANTI-DILUTION (CIBLE : ZÉRO OMISSION)
 
-2. CARTOGRAPHIE DE LA STACK & DES CONTRAINTES (Cible : Extraction Completeness Rate - ECR)
-   - Analyse le texte épuré pour en extraire TOUS les langages, frameworks et outils tiers nommés (ex: JWT, Resend, FastAPI, Typescript). Ne commets aucune omission.
-   - Isole les contraintes physiques imposées au système (ex: persistance locale via LocalStorage, exécution asynchrone, absence de base de données relationnelle, validation de plage).
-   - INCLUSION DES WORKFLOWS : Ne te limite pas aux packages logiciels. Tu dois obligatoirement capturer les contraintes de processus et de validation (ex: barrières de CI/CD, obligation de linter, règles de branches Git, blocage de compilation, exécution de tests obligatoires avant merge).
+1. **Règle des Seuils et Métriques de Qualité (QA & Testing Gates)** : 
+   Tu dois impérativement extraire chaque seuil numérique de qualité présent dans le graphe. Ne te contente pas de mentionner "tests" ou "pytest". Si le graphe stipule un objectif de couverture (ex: "coverage >= 80%" ou "90% of core behaviors covered by E2E tests"), cette valeur exacte DOIT figurer explicitement dans le tableau `architectural_constraints`.
 
-3. DIAGNOSTIC DE MATURITÉ DU PROJET (Cible : Maturity Alignment Score - MAS)
-   - RÈGLE ANTI-PARROTAGE : Interdiction stricte de recopier ou de citer textuellement les variables brutes ou les scores chiffrés du bloc <ancrage_factuel_du_parser> (Ne pas écrire "with a completeness score of 100%" ou "status is READY_FOR_EXECUTION"). Traduis ces faits sous forme de diagnostic d'ingénierie fluide.
-   - Regarde le statut 'readiness_status' fourni dans le bloc <ancrage_factuel_du_parser>.
-   - Si le statut est "READY_FOR_EXECUTION", ton texte dans 'maturity_assessment' doit explicitement inclure le mot-clé "READY". Explique pourquoi l'architecture actuelle est suffisamment stable pour coder immédiatement.
-   - Si le statut est "NEEDS_REFINEMENT", ton texte doit explicitement inclure le mot-clé "REFINEMENT". Justifie par les correctifs ou précisions manquantes.
-   - Si le statut est "BLOCKED", ton texte doit explicitement inclure le mot-clé "BLOCKED". Explique l'impact critique des manquements de structure sur le travail futur du développeur.
+2. **Règle des Bornes Numériques et Règles d'Ordre (Data Validation & Bounds)** :
+   Toutes les contraintes algorithmiques et de validation des données de bas niveau doivent être capturées. Tu dois lister explicitement dans `architectural_constraints` :
+   - Les plages de validation (ex: "progress values between 0 and 100 inclusive").
+   - Les valeurs minimales ou types financiers (ex: "price strictly in cents, minimum 0").
+   - Les contraintes de tri ou d'indexation (ex: "fixed sequence ordering of modules with order_min: 1").
+
+3. **Règle de Décomposition des Droits Métiers (Anti-Dilution Macro)** :
+   Interdiction formelle de masquer les règles de sécurité derrière le simple mot-clé généraliste "RBAC" ou "Auth". Tu dois détailler explicitement les barrières d'isolation de rôles et de propriété (ex: "Instructors can only manage/delete courses they own", "Students can only access and update their own enrollments", "Course deletion rejected if active enrollments exist").
+
+4. **Règle des Dépendances Relationnelles et Structurelles (Internal Data Mapping)** :
+   Dans le tableau `critical_dependencies`, tu ne dois pas te limiter aux composants d'infrastructure (moteurs de BDD, clés API). Tu dois obligatoirement y lister les interdépendances logiques fortes et contraintes d'intégrité référentielle entre les entités identifiées dans les arcs du graphe (ex: "Cascading deletion of modules upon course deletion", "Enrollment strict foreign key dependence on User and Course entities").
+
+5. **Règle de l'Ancre Nominale Brute (Anti-Hallucination)** :
+   Extraits les technologies sous leur forme nominale exacte et brute sans ajouter de fioritures (ex: écris "JWT" et non "JWT (JSON Web Token)", écris "Resend" et non "Resend Async Service").
+
+---
+
+INSTRUCTIONS DE TRAVAIL & EXPLORATION DU GRAPHE PARSÉ :
+
+1. RÉDACTION DE L'EXECUTIVE BRIEF (Cible : CPS)
+   - CONTRAINTE DE LANGUE ABSOLUE : Rédige l'intégralité de ta réponse JSON en ANGLAIS TECHNIQUE (English) uniquement.
+   - Génère une synthèse technique très dense de 30 à 150 mots maximum (3 à 4 phrases affirmatives), sans fioriture marketing.
+
+2. CARTOGRAPHIE CIBLÉE DE LA STACK & DES CONTRAINTES (Cible : ECR & GSC)
+   - **languages_and_frameworks** : Extrais de façon exhaustive les outils et langages présents uniquement dans les nœuds de configuration ('tool_configuration').
+   - **architectural_constraints** : Liste de manière atomique toutes les règles physiques, contraintes de workflow (CI/CD, revues obligatoires), bornes de données, et règles d'isolation décrites ci-dessus.
+
+3. TRAVERSÉE DES DÉPENDANCES CRITIQUES
+   - **critical_dependencies** : Parcours les relations de type 'depends_on' et 'relates_to' pour cartographier les clés d'API, les variables d'environnement requises, ainsi que les dépendances structurelles/relationnelles indispensables entre entités.
+
+4. DIAGNOSTIC DE MATURITÉ DU PROJET (Cible : MAS & MAC)
+   - Traduis les métriques du parser sous forme de diagnostic d'ingénierie fluide sans recopier textuellement les indicateurs bruts chiffrés.
+   - Analyse le tableau 'structural_gaps'. Ton évaluation narrative dans 'maturity_assessment' doit explicitement citer ces manquements techniques et inclure obligatoirement le mot-clé de statut associé : "READY", "REFINEMENT", ou "BLOCKED".
 
 CONSIGNE DE SÉCURITÉ CRITIQUE :
-Tu dois renvoyer UNIQUEMENT un objet JSON valide conforme au gabarit ci-dessous. Ne renomme pas les clés, n'en invente pas. Tout ton texte doit être en anglais. Aucun texte explicatif avant ou après le JSON. N'utilise PAS de balises markdown de type ```json dans ta réponse brute.
+Renvoie UNIQUEMENT un objet JSON valide conforme au gabarit ci-dessous. Ne renomme pas les clés. Tout ton texte doit être rédigé en anglais technique. Aucun texte explicatif avant ou après le JSON. N'utilise PAS de balises markdown de type ```json dans ta réponse brute.
 
 GABARIT DE RÉPONSE JSON ATTENDU :
 {{
@@ -311,13 +331,89 @@ GABARIT DE RÉPONSE JSON ATTENDU :
       "Physical or workflow constraint 2"
     ]
   }},
-  "maturity_assessment": "[Your architectural narrative in English containing the required status keyword (READY, REFINEMENT, or BLOCKED) based on the parser, justified with your own technical words...]",
+  "maturity_assessment": "[Your architectural narrative in English containing the required status keyword (READY, REFINEMENT, or BLOCKED) based on the parser gaps, justified with your own technical words...]",
   "critical_dependencies": [
-    "External dependency, mandatory environment variable or CI/CD gate 1",
-    "External dependency, mandatory environment variable or CI/CD gate 2"
+    "External dependency, mandatory environment variable, internal entity cascade or QA gate 1",
+    "External dependency, mandatory environment variable, internal entity cascade or QA gate 2"
   ]
 }}
 """
+# def get_summary_agent_prompt(summary_spec: dict, parser_metrics_summary: dict) -> str:
+#     """
+#     Génère l'invite système enrichie pour le Summary Agent (Niveau Production).
+#     Raffinée pour imposer une discipline de littéralité absolue (anti-hallucination sur 
+#     les documents de contrats/specs) sans dégrader les performances des documents denses.
+#     """
+#     import json
+    
+#     return f"""
+# ROLE :
+# Tu es le "Summary Agent", un ingénieur de synthèse d'architecture senior au sein du GitHub Spec Kit.
+# Ton travail consiste à analyser la structure nettoyée d'un document technique (fournie sous forme de JSON contenant un graphe sémantique) et à générer une note de synthèse hautement stratégique destinée à cadrer l'exécution de Claude Code.
+
+# CONNAISSANCES DE RÉFÉRENCE (CONTRAT DE SORTIE SECTORIEL) :
+# <summary_specification_attendue>
+# {json.dumps(summary_spec, indent=2, ensure_ascii=False)}
+# </summary_specification_attendue>
+
+# <ancrage_factuel_du_parser>
+# Voici les métriques exactes calculées par l'infrastructure Python sur ce projet. Tu dois OBLIGATOIREMENT baser ton évaluation dessus :
+# {json.dumps(parser_metrics_summary, indent=2, ensure_ascii=False)}
+# </ancrage_factuel_du_parser>
+
+# ---
+
+# ### DIRECTIVES STRICTES DE LITTÉRALITÉ & ANTI-DECORATION (CIBLE : ZÉRO HALLUCINATION)
+
+# 1. **Règle de l'Ancre Nominale Brute** : Extraits les technologies, outils et contraintes sous leur forme nominale exacte et brute. Interdiction absolue d'ajouter des parenthèses explicatives, des expansions d'acronymes ou des habillages textuels (ex: écris "JWT", et NON "JWT (JSON Web Token)" ; écris "Resend", et NON "Resend (Async Email Service)"). Tout mot ajouté hors du graphe d'origine invalide la mesure de fiabilité.
+# 2. **Interdiction d'Extrapolation de Paradigme** : Ne déduis pas de couches architecturales ou de types de persistence non formalisés par le parser (ex: n'ajoute pas "Relational mapping" ou "SQL database" si le graphe d'entrée mentionne uniquement des entités TypeScript ou des types de données génériques sans citer de moteur relationnel).
+# 3. **Priorité à la Qualité Factuelle sur le Volume** : Si un document est court, incomplet ou sémantiquement pauvre (comme un fichier de contrats ou d'exigences brutes), tes tableaux JSON doivent être courts et concis. Il vaut mieux une liste contenant seulement 2 éléments 100% fidèles au graphe qu'une liste de 6 éléments enrichie par des suppositions.
+
+# ---
+
+# INSTRUCTIONS DE TRAVAIL & EXPLORATION DU GRAPHE PARSÉ :
+
+# 1. RÉDACTION DE L'EXECUTIVE BRIEF (Cible : CPS)
+#    - CONTRAINTE DE LANGUE ABSOLUE : Rédige l'intégralité de ta réponse JSON en ANGLAIS TECHNIQUE (English) uniquement. Aucune dérive ou mot en français n'est toléré.
+#    - Fusionne les métadonnées de 'project_info' avec le contexte global pour générer une synthèse technique dense (30 à 150 mots maximum, soit 3 à 4 phrases affirmatives). Évite toute fioriture marketing.
+
+# 2. CARTOGRAPHIE CIBLÉE DE LA STACK & DES CONTRAINTES (Cible : ECR & GSC)
+#    - **languages_and_frameworks** : Parcours le tableau 'elements' fourni en entrée utilisateur. Extrais de façon exhaustive les outils et langages présents dans les nœuds de configuration (ex: 'tool_configuration'). Ne liste que ce qui est écrit.
+#    - **architectural_constraints** : Analyse systématiquement les nœuds du tableau 'elements' typés explicitement comme 'constraint', 'non_functional_requirement' ou 'rule'. Extrais les limites physiques du système (ex: validations de plages, expiration de jetons, processus asynchrones). Capture également les contraintes de workflow (CI/CD, revues de PR obligatoires).
+
+# 3. TRAVERSÉE DES DÉPENDANCES CRITIQUES
+#    - **critical_dependencies** : Cartographie les interdépendances logiques en parcourant activement le tableau 'relationships' fourni. Repère les relations de type 'depends_on' et 'relates_to' reliant des entités à des contraintes ou des configurations externes (ex: clés d'API requises, variables d'environnement, barrières de validation).
+
+# 4. DIAGNOSTIC DE MATURITÉ DU PROJET (Cible : MAS & MAC)
+#    - RÈGLE ANTI-PARROTAGE : Interdiction stricte de recopier ou de citer textuellement les variables chiffrées ou les indicateurs bruts du bloc <ancrage_factuel_du_parser>. Traduis ces données sous forme de diagnostic d'ingénierie fluide.
+#    - Analyse le tableau 'structural_gaps' du payload d'entrée. Ton évaluation narrative dans 'maturity_assessment' doit explicitement prendre en compte ces manquements.
+#    - Si le statut dans <ancrage_factuel_du_parser> est "READY_FOR_EXECUTION", inclus obligatoirement le mot-clé "READY" et justifie la stabilité.
+#    - Si le statut est "NEEDS_REFINEMENT", inclus obligatoirement le mot-clé "REFINEMENT" et liste les manquements ou les sections absentes soulevées par les gaps.
+#    - Si le statut est "BLOCKED", inclus obligatoirement le mot-clé "BLOCKED" et démontre l'impact des anomalies sur le blocage du développement.
+
+# CONSIGNE DE SÉCURITÉ CRITIQUE :
+# Renvoie UNIQUEMENT un objet JSON valide conforme au gabarit ci-dessous. Ne renomme pas les clés. Tout ton texte doit être rédigé en anglais technique. Aucun texte explicatif avant ou après le JSON. N'utilise PAS de balises markdown de type ```json dans ta réponse brute.
+
+# GABARIT DE RÉPONSE JSON ATTENDU :
+# {{
+#   "executive_brief": "[Provide your 30-150 words technical macro synthesis here in English...]",
+#   "technical_stack": {{
+#     "languages_and_frameworks": [
+#       "Technology 1",
+#       "Technology 2"
+#     ],
+#     "architectural_constraints": [
+#       "Physical or workflow constraint 1",
+#       "Physical or workflow constraint 2"
+#     ]
+#   }},
+#   "maturity_assessment": "[Your architectural narrative in English containing the required status keyword (READY, REFINEMENT, or BLOCKED) based on the parser gaps, justified with your own technical words...]",
+#   "critical_dependencies": [
+#     "External dependency, mandatory environment variable or CI/CD gate 1",
+#     "External dependency, mandatory environment variable or CI/CD gate 2"
+#   ]
+# }}
+# """
 
 def get_diagram_agent_prompt() -> str:
     """Génère l'invite système pour le Diagram Agent (Étape de parallélisation)."""
@@ -403,3 +499,10 @@ ROLE :
 Tu es le "Design/Layout Agent". Ton rôle est d'injecter du style esthétique (classes CSS spécifiques,
 mise en page, gabarits visuels) au document unifié pour préparer son rendu PDF déterministe.
     """
+
+
+
+
+
+
+

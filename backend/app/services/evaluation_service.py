@@ -197,148 +197,11 @@ class ParsingEvaluatorService:
                 "unresolved_uncertainties": len(open_questions)
             }
         }
-# class ParsingEvaluatorService:
-#     """
-#     Service autonome d'évaluation et de calcul de métriques de fiabilité (QA)
-#     et de pilotage (Gestion de Projet) pour les documents techniques de Spec Kit.
-#     """
-
-#     @classmethod
-#     def evaluate(cls, parsed_data: ParsingAgentOutput, template_config: Dict[str, Any]) -> Dict[str, Any]:
-#         doc_type = parsed_data.doc_type.value
-
-#         # 1. Calcul des métriques de fiabilité technique (QA)
-#         technical_metrics = cls._calculate_technical_metrics(parsed_data, template_config, doc_type)
-
-#         # 2. Calcul des KPI de gestion de projet (Management)
-#         management_kpis = cls._calculate_management_kpis(parsed_data, template_config, doc_type)
-
-#         return {
-#             "document_type": doc_type,
-#             "project_name": parsed_data.project_info.get("project_name", "Inconnu"),
-#             "technical_evaluation": technical_metrics,
-#             "project_management_kpis": management_kpis
-#         }
-
-#     @staticmethod
-#     def _calculate_technical_metrics(
-#         parsed_data: ParsingAgentOutput, 
-#         template_config: Dict[str, Any],
-#         doc_type: str
-#     ) -> Dict[str, Any]:
-#         """
-#         Calcule de façon déterministe les scores attendus par le script de test du parser
-#         tout en y injectant les verrous sémantiques stricts (anti-vide, anti-TBD).
-#         """
-#         filler_words = ["tbd", "n/a", "none", "not specified", "todo", "a definir", "manquant"]
-#         semantic_voids = 0
-#         truncations = 0
-#         contradictions_list = []
-
-#         # Scanne le contenu pour intercepter le vide sémantique ou les placeholders
-#         for section in parsed_data.sections:
-#             content_clean = section.raw_content.lower().strip()
-#             if any(filler == content_clean or f"[{filler}]" in content_clean for filler in filler_words):
-#                 semantic_voids += 1
-            
-#             # Détection de troncatures paresseuses
-#             if "..." in section.raw_content or "etc." in section.raw_content.lower():
-#                 truncations += 1
-
-#         # --- 1. SCHEMA ADHERENCE RATE (SAR) ---
-#         sar_score = 100.0 - (semantic_voids * 20.0)
-#         sar_score = max(0.0, sar_score)
-
-#         # --- 2. STRUCTURAL INTEGRITY RECALL (SIR) ---
-#         required_sections = template_config.get(doc_type, {}).get("required_sections", [])
-#         required_names = {sec["name"] for sec in required_sections} if required_sections else set()
-#         mapped_fields = {s.mapped_to_template_field for s in parsed_data.sections if s.mapped_to_template_field}
-        
-#         if required_names:
-#             missing_count = len(required_names.difference(mapped_fields))
-#             sir_score = 100.0 - (missing_count * (100.0 / len(required_names)))
-#         else:
-#             empty_sections = sum(1 for s in parsed_data.sections if not s.raw_content.strip())
-#             sir_score = 100.0 - (empty_sections * 25.0) if parsed_data.sections else 100.0
-#         sir_score = max(0.0, sir_score)
-
-#         # --- 3. TEXT FIDELITY SCORE (TFS) ---
-#         tfs_score = 100.0 - (truncations * 15.0)
-#         tfs_score = max(0.0, tfs_score)
-
-#         # --- 4. EXTRACTION RECALL (ExR) ---
-#         exr_score = 100.0
-#         if not parsed_data.project_info.get("project_name") or parsed_data.project_info.get("project_name") == "Inconnu":
-#             exr_score -= 30.0
-#             contradictions_list.append("Nom du projet non identifié dans la source")
-#         if len(parsed_data.sections) == 0:
-#             exr_score = 0.0
-
-#         return {
-#             "schema_adherence_rate": round(sar_score, 1),
-#             "contradictions": contradictions_list,
-#             "structural_integrity_recall": round(sir_score, 1),
-#             "text_fidelity_score": round(tfs_score, 1),
-#             "extraction_recall": round(exr_score, 1)
-#         }
-
-#     @staticmethod
-#     def _calculate_management_kpis(
-#         parsed_data: ParsingAgentOutput, 
-#         template_config: Dict[str, Any], 
-#         doc_type: str
-#     ) -> Dict[str, Any]:
-#         sections = parsed_data.sections
-#         gaps = parsed_data.structural_gaps
-#         open_questions = parsed_data.open_questions
-
-#         required_sections = template_config.get(doc_type, {}).get("required_sections", [])
-#         required_names = {sec["name"] for sec in required_sections}
-#         mapped_fields = {s.mapped_to_template_field for s in sections if s.mapped_to_template_field}
-
-#         completeness_score = (
-#             round((len(mapped_fields.intersection(required_names)) / len(required_names)) * 100, 1)
-#             if required_names else 100.0
-#         )
-
-#         high_gaps = sum(1 for g in gaps if g.priority.upper() in ["HAUTE", "HIGH"])
-#         medium_gaps = sum(1 for g in gaps if g.priority.upper() in ["MOYENNE", "MEDIUM"])
-#         low_gaps = sum(1 for g in gaps if g.priority.upper() in ["BASSE", "LOW"])
-
-#         health_index = 100.0
-#         health_index -= (high_gaps * 15)
-#         health_index -= (medium_gaps * 5)
-#         health_index -= (len(open_questions) * 10)
-        
-#         total_words = sum(len(s.raw_content.split()) for s in sections)
-#         if total_words > 300 and len(gaps) == 0 and len(open_questions) == 0:
-#             health_index -= 30.0
-
-#         health_index = max(0.0, round(health_index, 1))
-
-#         if health_index >= 85 and high_gaps == 0:
-#             readiness_status = "READY_FOR_EXECUTION"
-#         elif health_index >= 60:
-#             readiness_status = "NEEDS_REFINEMENT"
-#         else:
-#             readiness_status = "BLOCKED"
-
-#         return {
-#             "health_index": health_index,
-#             "completeness_score": completeness_score,
-#             "readiness_status": readiness_status,
-#             "gaps_summary": {
-#                 "high_severity": high_gaps,
-#                 "medium_severity": medium_gaps,
-#                 "low_severity": low_gaps,
-#                 "unresolved_uncertainties": len(open_questions)
-#             }
-#         }
 
 class SummaryEvaluatorService:
     """
     Service autonome d'évaluation pour le Summary Agent.
-    Version durcie et corrigée des faux négatifs sémantiques.
+    Version durcie exploitant la topologie du graphe et les contraintes du Parsing Agent.
     """
 
     @classmethod
@@ -359,7 +222,6 @@ class SummaryEvaluatorService:
         parsed_data: ParsingAgentOutput
     ) -> Dict[str, Any]:
         # --- 1. MATURITY ALIGNMENT SCORE (MAS) ---
-        from app.services.evaluation_service import ParsingEvaluatorService
         parser_kpis = ParsingEvaluatorService._calculate_management_kpis(parsed_data, {}, parsed_data.doc_type.value)
         real_status = parser_kpis.get("readiness_status", "BLOCKED")
         narrative_assessment = summary_data.maturity_assessment.upper()
@@ -374,11 +236,21 @@ class SummaryEvaluatorService:
 
         mas_score = 100.0 if alignment_success else 40.0
 
-        # --- 2. VERROU ANTI-HALLUCINATION CORRIGÉ (Token-based & Allowlist) ---
+        # --- 2. ANTI-HALLUCINATION ENRICHI PAR LE GRAPHE (Cross-Validation) ---
         full_parsed_text = " ".join([s.raw_content.lower() for s in parsed_data.sections])
-        hallucinated_entities = 0
         
-        # Dictionnaire d'implications sémantiques légitimes (Stack Web de base pour LocalStorage/WCAG)
+        # Collecte exhaustive des tokens issus du graphe de connaissances (nœuds, ID et attributs)
+        valid_graph_tokens = set()
+        for el in parsed_data.elements:
+            if el.content:
+                valid_graph_tokens.add(el.content.lower().strip())
+            if el.identifier:
+                valid_graph_tokens.add(str(el.identifier).lower().strip())
+            if el.attributes and isinstance(el.attributes, dict):
+                for val in el.attributes.values():
+                    valid_graph_tokens.add(str(val).lower().strip())
+
+        hallucinated_entities = 0
         web_base_tokens = ["html5", "html", "css3", "css", "javascript", "js", "typescript", "api"]
         is_web_project = "localstorage" in full_parsed_text or "wcag" in full_parsed_text
 
@@ -390,21 +262,31 @@ class SummaryEvaluatorService:
 
         for item in all_extracted_tech:
             item_clean = item.lower().strip()
-            
-            # Découpage de l'exigence en mots significatifs (longueur > 3)
             item_replaced = item_clean.replace("/", " ")
             words = [w.strip(",.()\"'") for w in item_replaced.split() if len(w.strip(",.()\"'")) > 3]
             
-            # Une entité est validée si au moins un de ses mots clés significatifs est dans le texte source
-            # OU s'il s'agit d'une déduction de langage Web légitime pour un projet local-first
-            match_found = any(word in full_parsed_text for word in words)
+            # Validation croisée : recherche dans le texte brut OU dans le graphe extrait
+            match_text = any(word in full_parsed_text for word in words)
+            match_graph = any(any(word in token for token in valid_graph_tokens) for word in words)
+            
+            match_found = match_text or match_graph
             if not match_found and is_web_project:
                 match_found = any(word in web_base_tokens for word in words)
                 
-            if not match_found and words:  # Si aucun mot clé n'est ancré ou déduit
+            if not match_found and words:
                 hallucinated_entities += 1
 
-        # --- 3. EXTRACTION COMPLETENESS RATE (ECR) GRANULAIRE ---
+        # --- 3. COHÉRENCE CRITIQUE AUX ÉCARTS STRUCTURELS (Anti-Omission) ---
+        # S'assure que le résumé mentionne explicitement les manquements majeurs détectés par le parser
+        gaps_score_penalty = 0.0
+        if parsed_data.structural_gaps and summary_data.maturity_assessment:
+            assessment_lower = summary_data.maturity_assessment.lower()
+            for gap in parsed_data.structural_gaps:
+                missing_sec = gap.missing_section.lower().strip()
+                if missing_sec not in assessment_lower and not any(k in assessment_lower for k in ["gap", "miss", "manqu", "lacune"]):
+                    gaps_score_penalty += 10.0
+
+        # --- 4. EXTRACTION COMPLETENESS RATE (ECR) ---
         lang_count = len(summary_data.technical_stack.languages_and_frameworks)
         const_count = len(summary_data.technical_stack.architectural_constraints)
         dep_count = len(summary_data.critical_dependencies)
@@ -418,11 +300,10 @@ class SummaryEvaluatorService:
 
         if dep_count >= 1: ecr_score += 30.0
 
-        # Application des pénalités d'hallucination réelles
-        final_mas = max(0.0, mas_score - (hallucinated_entities * 20.0))
+        final_mas = max(0.0, mas_score - (hallucinated_entities * 20.0) - gaps_score_penalty)
         final_ecr = max(0.0, ecr_score - (hallucinated_entities * 15.0))
 
-        # --- 4. CONCISENESS & PRECISION SCORE (CPS) ---
+        # --- 5. CONCISENESS & PRECISION SCORE (CPS) ---
         word_count = len(summary_data.executive_brief.split())
         if word_count == 0:
             cps_score = 0.0
@@ -463,6 +344,7 @@ class SummaryEvaluatorService:
 # class SummaryEvaluatorService:
 #     """
 #     Service autonome d'évaluation pour le Summary Agent.
+#     Version durcie et corrigée des faux négatifs sémantiques.
 #     """
 
 #     @classmethod
@@ -478,7 +360,11 @@ class SummaryEvaluatorService:
 #         }
 
 #     @staticmethod
-#     def _calculate_technical_metrics(summary_data: SummaryOutputModel, parsed_data: ParsingAgentOutput) -> Dict[str, Any]:
+#     def _calculate_technical_metrics(
+#         summary_data: SummaryOutputModel, 
+#         parsed_data: ParsingAgentOutput
+#     ) -> Dict[str, Any]:
+#         # --- 1. MATURITY ALIGNMENT SCORE (MAS) ---
 #         from app.services.evaluation_service import ParsingEvaluatorService
 #         parser_kpis = ParsingEvaluatorService._calculate_management_kpis(parsed_data, {}, parsed_data.doc_type.value)
 #         real_status = parser_kpis.get("readiness_status", "BLOCKED")
@@ -494,20 +380,37 @@ class SummaryEvaluatorService:
 
 #         mas_score = 100.0 if alignment_success else 40.0
 
+#         # --- 2. VERROU ANTI-HALLUCINATION CORRIGÉ (Token-based & Allowlist) ---
 #         full_parsed_text = " ".join([s.raw_content.lower() for s in parsed_data.sections])
 #         hallucinated_entities = 0
         
+#         # Dictionnaire d'implications sémantiques légitimes (Stack Web de base pour LocalStorage/WCAG)
+#         web_base_tokens = ["html5", "html", "css3", "css", "javascript", "js", "typescript", "api"]
+#         is_web_project = "localstorage" in full_parsed_text or "wcag" in full_parsed_text
+
 #         all_extracted_tech = (
 #             summary_data.technical_stack.languages_and_frameworks +
 #             summary_data.technical_stack.architectural_constraints +
 #             summary_data.critical_dependencies
 #         )
 
-#         for tech in all_extracted_tech:
-#             tech_clean = tech.lower().strip()
-#             if tech_clean and tech_clean not in full_parsed_text:
+#         for item in all_extracted_tech:
+#             item_clean = item.lower().strip()
+            
+#             # Découpage de l'exigence en mots significatifs (longueur > 3)
+#             item_replaced = item_clean.replace("/", " ")
+#             words = [w.strip(",.()\"'") for w in item_replaced.split() if len(w.strip(",.()\"'")) > 3]
+            
+#             # Une entité est validée si au moins un de ses mots clés significatifs est dans le texte source
+#             # OU s'il s'agit d'une déduction de langage Web légitime pour un projet local-first
+#             match_found = any(word in full_parsed_text for word in words)
+#             if not match_found and is_web_project:
+#                 match_found = any(word in web_base_tokens for word in words)
+                
+#             if not match_found and words:  # Si aucun mot clé n'est ancré ou déduit
 #                 hallucinated_entities += 1
 
+#         # --- 3. EXTRACTION COMPLETENESS RATE (ECR) GRANULAIRE ---
 #         lang_count = len(summary_data.technical_stack.languages_and_frameworks)
 #         const_count = len(summary_data.technical_stack.architectural_constraints)
 #         dep_count = len(summary_data.critical_dependencies)
@@ -521,9 +424,11 @@ class SummaryEvaluatorService:
 
 #         if dep_count >= 1: ecr_score += 30.0
 
+#         # Application des pénalités d'hallucination réelles
 #         final_mas = max(0.0, mas_score - (hallucinated_entities * 20.0))
 #         final_ecr = max(0.0, ecr_score - (hallucinated_entities * 15.0))
 
+#         # --- 4. CONCISENESS & PRECISION SCORE (CPS) ---
 #         word_count = len(summary_data.executive_brief.split())
 #         if word_count == 0:
 #             cps_score = 0.0
@@ -561,7 +466,6 @@ class SummaryEvaluatorService:
 #             "external_dependencies_count": dependencies_count,
 #             "external_risk_exposure": risk_exposure
 #         }
-
 
 class GlossaryEvaluatorService:
     """
