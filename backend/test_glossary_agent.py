@@ -1,5 +1,7 @@
+# test_glossary_agent.py
 """
 test_glossary_agent.py — Validation isolée et évaluation par métriques colorisées de l'agent de glossaire sémantique.
+Version finale synchronisée avec la topologie multi-échelles et les indices d'ancrage.
 """
 
 import os
@@ -17,8 +19,8 @@ from app.schemas.parsing_agent_schema import ParsingAgentOutput
 # ==============================================================================
 # CONFIGURATION : Spécifiez le fichier parsé à évaluer
 # ==============================================================================
-TARGET_PARSED_NAME = "spec_parsed.json"  # Modifiez le nom ici pour vos fichiers en série
-SPEC_FILE_NAME = "spec_glossary.json"           
+TARGET_PARSED_NAME = "tasks(1)_parsed.json"  # Fichier généré par le Parser Agent
+SPEC_FILE_NAME = "glossary_spec.json"     # Spécification sémantique enrichie
 # ==============================================================================
 
 def get_metric_color_tag(score: float) -> str:
@@ -42,6 +44,7 @@ def run_isolated_glossary_test():
     print("        TEST D'ÉVALUATION ET DE FIABILITÉ - GLOSSARY AGENT")
     print("=" * 75)
 
+    # Vérifications de l'existence des répertoires et fichiers cibles
     if not outputs_dir.exists():
         print(f"[❌] Erreur : Le dossier des sorties '{outputs_dir}' n'existe pas.")
         sys.exit(1)
@@ -50,9 +53,12 @@ def run_isolated_glossary_test():
         print(f"[❌] Erreur : Le fichier parsé '{TARGET_PARSED_NAME}' est introuvable sous '{outputs_dir.relative_to(project_root)}'.")
         sys.exit(1)
 
+    # 1. Chargement du fichier JSON issu du Parsing Agent
+    print(f"[📂] Lecture du fichier parsé : {TARGET_PARSED_NAME}")
     with open(target_parsed_path, "r", encoding="utf-8") as f:
         parsed_json_dict = json.load(f)
 
+    # 2. Chargement de la spécification de glossaire (glossary_spec.json)
     glossary_spec_dict = {}
     if spec_path.exists():
         print(f"[⚙️] Spécification '{SPEC_FILE_NAME}' chargée avec succès.")
@@ -62,37 +68,50 @@ def run_isolated_glossary_test():
         print(f"[⚠️] Spécification '{SPEC_FILE_NAME}' introuvable. Gabarit par défaut actif.")
         glossary_spec_dict = {"core_mission": "Extract terms.", "validation_contract": {}}
 
+    # 3. Génération du cache topologique et récolte déterministe des termes candidats
+    valid_anchors = GlossaryHarvesterService.generate_and_cache_anchors(parsed_json_dict)
     candidate_terms = GlossaryHarvesterService.harvest_candidates(parsed_json_dict)
+    
     print(f"[🔍] Outil Harvester : {len(candidate_terms)} termes critiques identifiés sémantiquement.")
+    print(f"[💾] Cache Topologique : {len(valid_anchors)} ancres valides sauvegardées sous backend/ressources/.")
     print("-" * 75)
 
-    print("[⌛] Génération du glossaire en cours (Gemma/Ollama)...")
+    # 4. Exécution de l'Agent Glossary
+    print("[⌛] Génération du glossaire en cours (Gemma/Ollama via Client centralisé)...")
     glossary_doc = None
     success = False
     
     try:
         agent_service = GlossaryAgentService()
+        # Passage des données du cache (valid_anchors) à la méthode de génération
         glossary_doc = agent_service.generate_glossary(
             parsed_json_dict=parsed_json_dict,
-            glossary_spec_dict=glossary_spec_dict
+            glossary_spec_dict=glossary_spec_dict,
+            valid_anchors=valid_anchors
         )
         success = True
         print("[OK] Glossaire généré et validé par Pydantic !\n")
         
-        output_glossary_path = outputs_dir / f"{TARGET_PARSED_NAME.replace('_parsed.json', '_summary.json').replace('_summary.json', '_glossary.json')}"
+        # Sauvegarde physique du glossaire
+        output_glossary_path = outputs_dir / f"{TARGET_PARSED_NAME.replace('_parsed.json', '_glossary.json')}"
         with open(output_glossary_path, "w", encoding="utf-8") as out_f:
             out_f.write(glossary_doc.model_dump_json(indent=4))
+        print(f"[💾] Glossaire sauvegardé sous : {output_glossary_path.relative_to(project_root)}")
 
     except Exception as e:
         print(f"[❌] ÉCHEC DE LA GÉNÉRATION DU GLOSSAIRE : {e}")
 
+    # 5. ÉVALUATION DES MÉTRIQUES VIA LE SERVICE ISOLE (DASHBOARD)
     print("\n📊 ÉVALUATION DES MÉTRIQUES DE FIABILITÉ (DASHBOARD)")
     print("-" * 75)
     
-    tcr_score, car_score, dps_score = 0.0, 0.0, 0.0
+    tcr_score, car_score, dps_score, ata_score, cap_score = 0.0, 0.0, 0.0, 0.0, 0.0
     
     if success and glossary_doc:
+        # Reconstitution de l'objet d'entrée pour le croisement des données du validateur
         parsed_data_obj = ParsingAgentOutput(**parsed_json_dict)
+        
+        # Calcul des métriques de fiabilité (QA) et KPIs sémantiques
         report = GlossaryEvaluatorService.evaluate(glossary_doc, parsed_data_obj, candidate_terms)
         tech = report["technical_evaluation"]
         mgmt = report["project_management_kpis"]
@@ -100,22 +119,26 @@ def run_isolated_glossary_test():
         tcr_score = tech["term_coverage_rate"]
         car_score = tech["categorization_accuracy_rate"]
         dps_score = tech["definition_precision_score"]
+        ata_score = tech["anti_tautology_adherence"]
+        cap_score = tech["contextual_anchor_precision"]
         
-        # Affichage avec injection dynamique de l'émoji correspondant au score
+        # Affichage étendu des 5 métriques de fiabilité technique (QA)
         print(f"1. Term Coverage Rate (TCR)        : {get_metric_color_tag(tcr_score)} {tcr_score:.1f}%")
         print(f"2. Categorization Accuracy (CAR)    : {get_metric_color_tag(car_score)} {car_score:.1f}%")
         print(f"3. Definition Precision Score (DPS) : {get_metric_color_tag(dps_score)} {dps_score:.1f}%")
+        print(f"4. Anti-Tautology Adherence (ATA)   : {get_metric_color_tag(ata_score)} {ata_score:.1f}%")
+        print(f"5. Contextual Anchor Precision (CAP): {get_metric_color_tag(cap_score)} {cap_score:.1f}%")
         print("-" * 75)
         
+        # Affichage des KPIs Sémantiques pour la Gestion de Projet
         print("📈 KPIs D'ARCHITECTURE ET ANCRAGE SÉMANTIQUE")
         print("-" * 75)
         print(f"• Projet identifié                  : {report['project_name']}")
         
-        # Coloration du statut global de blocage/validité
         status_colors = {
-            "READY_FOR_ANCHORING": "🟢 READY_FOR_ANCHORING (Aucun blocage)",
-            "NEEDS_REFINEMENT": "🟡 NEEDS_REFINEMENT (Qualité intermédiaire)",
-            "BLOCKED": "🔴 BLOCKED (Échec critique ou omissions lourdes)"
+            "READY_FOR_ANCHORING": "🟢 READY_FOR_ANCHORING (Aucun blocage topologique)",
+            "NEEDS_REFINEMENT": "🟡 NEEDS_REFINEMENT (Qualité intermédiaire nécessitant révision)",
+            "BLOCKED": "🔴 BLOCKED (Échec critique ou ruptures d'ancrage lourdes)"
         }
         print(f"• ANCRAGE SÉMANTIQUE GLOBAL         : {status_colors.get(report['semantic_anchoring_status'])}")
         print(f"• Total des termes documentés       : {mgmt['total_extracted_terms']}")
@@ -127,6 +150,8 @@ def run_isolated_glossary_test():
         print(f"1. Term Coverage Rate (TCR)        : 🔴 0.0%")
         print(f"2. Categorization Accuracy (CAR)    : 🔴 0.0%")
         print(f"3. Definition Precision Score (DPS) : 🔴 0.0%")
+        print(f"4. Anti-Tautology Adherence (ATA)   : 🔴 0.0%")
+        print(f"5. Contextual Anchor Precision (CAP): 🔴 0.0%")
         print("-" * 75)
         print("📈 KPIs D'ARCHITECTURE ET ANCRAGE SÉMANTIQUE")
         print("-" * 75)
@@ -134,28 +159,37 @@ def run_isolated_glossary_test():
         
     print("-" * 75)
 
+    # 6. DIAGNOSTIC DU RAPPORT DE FIABILITÉ
     print("📝 ANALYSE DIAGNOSTIQUE DU PIPELINE GLOSSAIRE :")
     if not success or not glossary_doc:
         print("   ❌ Alerte : Le format de sortie du LLM a violé la structure Pydantic.")
     else:
         print("   ✅ Succès : Schéma JSON 100% valide et intègre.")
+        
         if tcr_score < 90.0:
-            print(f"   ⚠️ Attention : Le LLM a omis des termes identifiés par le Harvester ({tcr_score:.1f}%).")
+            print(f"   ⚠️ Attention : Le LLM a omis des termes identifiés par le Harvester sémantique ({tcr_score:.1f}%).")
         else:
             print("   ✅ Succès : Alignement de couverture optimal (>90%). Zéro omission critique.")
 
         if car_score < 100.0:
-            print(f"   ❌ Alerte : Le modèle a commis {int((100 - car_score)/15)} erreur(s) d'étagement d'architecture.")
+            print(f"   ❌ Alerte : Le modèle a commis {int(tech.get('classification_errors_count', 0))} erreur(s) d'étagement d'architecture.")
         else:
             print("   ✅ Succès : Classification rigoureuse des couches logicielle et métier (CAR : 100%).")
 
-        if tech.get("tautology_violations_count", 0) > 0:
-            print(f"   ❌ Alerte : {tech['tautology_violations_count']} violation(s) anti-tautologie interceptée(s).")
+        # Extraction dynamique et affichage du compteur exact des violations ATA
+        if ata_score < 100.0:
+            violations = tech.get("tautology_violations_count", 1)
+            print(f"   ❌ Alerte : {int(violations)} violation(s) anti-tautologie interceptée(s) dans les définitions.")
         else:
             print("   ✅ Succès : Définitions à haute densité opérationnelle (zéro redondance tautologique).")
 
+        if cap_score < 100.0:
+            print(f"   ❌ Alerte : Défaut d'ancrage géométrique détecté. Des termes pointent vers des identifiants invalides.")
+        else:
+            print("   ✅ Succès : Traçabilité géométrique parfaite (100% des ancres sont valides et mappées).")
+
         if tech.get("language_drift_detected", False):
-            print("   ❌ Alerte : Dérive linguistique détectée (mots français présents).")
+            print("   ❌ Alerte : Dérive linguistique détectée (mots français présents dans les définitions).")
         else:
             print("   ✅ Succès : Strict respect de la gouvernance linguistique (100% English technique).")
 
@@ -163,8 +197,10 @@ def run_isolated_glossary_test():
 
 if __name__ == "__main__":
     run_isolated_glossary_test()
+# # test_glossary_agent.py
 # """
-# test_glossary_agent.py — Validation isolée et évaluation par métriques de l'agent de glossaire sémantique.
+# test_glossary_agent.py — Validation isolée et évaluation par métriques colorisées de l'agent de glossaire sémantique.
+# Version finale synchronisée avec la topologie multi-échelles et les indices d'ancrage.
 # """
 
 # import os
@@ -182,9 +218,17 @@ if __name__ == "__main__":
 # # ==============================================================================
 # # CONFIGURATION : Spécifiez le fichier parsé à évaluer
 # # ==============================================================================
-# TARGET_PARSED_NAME = "spec_parsed.json"  # Fichier généré par le Parser Agent
-# SPEC_FILE_NAME = "spec_glossary.json"           # Spécification sémantique enrichie
+# TARGET_PARSED_NAME = "spec(1)_parsed.json"  # Fichier généré par le Parser Agent
+# SPEC_FILE_NAME = "glossary_spec.json"     # Spécification sémantique enrichie
 # # ==============================================================================
+
+# def get_metric_color_tag(score: float) -> str:
+#     """Attribue un émoji de couleur selon les seuils critiques de performance."""
+#     if score == 100.0:
+#         return "🟢"
+#     elif score >= 80.0:
+#         return "🟡"
+#     return "🔴"
 
 # def run_isolated_glossary_test():
 #     backend_dir = Path(__file__).resolve().parent          # .../StageTalan/backend
@@ -206,7 +250,6 @@ if __name__ == "__main__":
 
 #     if not target_parsed_path.exists():
 #         print(f"[❌] Erreur : Le fichier parsé '{TARGET_PARSED_NAME}' est introuvable sous '{outputs_dir.relative_to(project_root)}'.")
-#         print("      Veuillez d'abord exécuter test_parsing_agent.py pour le générer.")
 #         sys.exit(1)
 
 #     # 1. Chargement du fichier JSON issu du Parsing Agent
@@ -214,30 +257,26 @@ if __name__ == "__main__":
 #     with open(target_parsed_path, "r", encoding="utf-8") as f:
 #         parsed_json_dict = json.load(f)
 
-#     # 2. Chargement de la spécification de glossaire (spec_glossary.json)
+#     # 2. Chargement de la spécification de glossaire (glossary_spec.json)
 #     glossary_spec_dict = {}
 #     if spec_path.exists():
 #         print(f"[⚙️] Spécification '{SPEC_FILE_NAME}' chargée avec succès.")
 #         with open(spec_path, "r", encoding="utf-8") as f:
 #             glossary_spec_dict = json.load(f)
 #     else:
-#         print(f"[⚠️] Spécification '{SPEC_FILE_NAME}' introuvable. Utilisation d'un gabarit par défaut.")
-#         glossary_spec_dict = {
-#             "core_mission": "Extract all technical and business terms.",
-#             "validation_contract": {}
-#         }
+#         print(f"[⚠️] Spécification '{SPEC_FILE_NAME}' introuvable. Gabarit par défaut actif.")
+#         glossary_spec_dict = {"core_mission": "Extract terms.", "validation_contract": {}}
 
-#     # 3. Récolte déterministe des termes candidats pour affichage informatif et calcul QA
+#     # 3. Récolte déterministe des termes candidats pour le calcul QA
 #     candidate_terms = GlossaryHarvesterService.harvest_candidates(parsed_json_dict)
 #     print(f"[🔍] Outil Harvester : {len(candidate_terms)} termes critiques identifiés sémantiquement.")
-    
 #     print("-" * 75)
 
 #     # 4. Exécution de l'Agent Glossary
 #     print("[⌛] Génération du glossaire en cours (Gemma/Ollama via Client centralisé)...")
-    
 #     glossary_doc = None
 #     success = False
+    
 #     try:
 #         agent_service = GlossaryAgentService()
 #         glossary_doc = agent_service.generate_glossary(
@@ -248,7 +287,7 @@ if __name__ == "__main__":
 #         print("[OK] Glossaire généré et validé par Pydantic !\n")
         
 #         # Sauvegarde physique du glossaire
-#         output_glossary_path = outputs_dir / f"{TARGET_PARSED_NAME.replace('_parsed.json', '_summary.json').replace('_summary.json', '_glossary.json')}"
+#         output_glossary_path = outputs_dir / f"{TARGET_PARSED_NAME.replace('_parsed.json', '_glossary.json')}"
 #         with open(output_glossary_path, "w", encoding="utf-8") as out_f:
 #             out_f.write(glossary_doc.model_dump_json(indent=4))
 #         print(f"[💾] Glossaire sauvegardé sous : {output_glossary_path.relative_to(project_root)}")
@@ -257,10 +296,10 @@ if __name__ == "__main__":
 #         print(f"[❌] ÉCHEC DE LA GÉNÉRATION DU GLOSSAIRE : {e}")
 
 #     # 5. ÉVALUATION DES MÉTRIQUES VIA LE SERVICE ISOLE (DASHBOARD)
-#     print("\n" + "📊" + " " + "ÉVALUATION DES MÉTRIQUES DE FIABILITÉ (DASHBOARD)")
+#     print("\n📊 ÉVALUATION DES MÉTRIQUES DE FIABILITÉ (DASHBOARD)")
 #     print("-" * 75)
     
-#     tcr_score, car_score, dps_score = 0.0, 0.0, 0.0
+#     tcr_score, car_score, dps_score, ata_score, cap_score = 0.0, 0.0, 0.0, 0.0, 0.0
     
 #     if success and glossary_doc:
 #         # Reconstitution de l'objet d'entrée pour le croisement des données du validateur
@@ -274,63 +313,77 @@ if __name__ == "__main__":
 #         tcr_score = tech["term_coverage_rate"]
 #         car_score = tech["categorization_accuracy_rate"]
 #         dps_score = tech["definition_precision_score"]
+#         ata_score = tech["anti_tautology_adherence"]
+#         cap_score = tech["contextual_anchor_precision"]
         
-#         # Affichage des scores de fiabilité technique (QA)
-#         print(f"1. Term Coverage Rate (TCR)        : {tcr_score:.1f}%")
-#         print(f"2. Categorization Accuracy (CAR)    : {car_score:.1f}%")
-#         print(f"3. Definition Precision Score (DPS) : {dps_score:.1f}%")
+#         # Affichage étendu des 5 métriques de fiabilité technique (QA)
+#         print(f"1. Term Coverage Rate (TCR)        : {get_metric_color_tag(tcr_score)} {tcr_score:.1f}%")
+#         print(f"2. Categorization Accuracy (CAR)    : {get_metric_color_tag(car_score)} {car_score:.1f}%")
+#         print(f"3. Definition Precision Score (DPS) : {get_metric_color_tag(dps_score)} {dps_score:.1f}%")
+#         print(f"4. Anti-Tautology Adherence (ATA)   : {get_metric_color_tag(ata_score)} {ata_score:.1f}%")
+#         print(f"5. Contextual Anchor Precision (CAP): {get_metric_color_tag(cap_score)} {cap_score:.1f}%")
 #         print("-" * 75)
         
 #         # Affichage des KPIs Sémantiques pour la Gestion de Projet
 #         print("📈 KPIs D'ARCHITECTURE ET ANCRAGE SÉMANTIQUE")
 #         print("-" * 75)
 #         print(f"• Projet identifié                  : {report['project_name']}")
+        
+#         status_colors = {
+#             "READY_FOR_ANCHORING": "🟢 READY_FOR_ANCHORING (Aucun blocage topologique)",
+#             "NEEDS_REFINEMENT": "🟡 NEEDS_REFINEMENT (Qualité intermédiaire nécessitant révision)",
+#             "BLOCKED": "🔴 BLOCKED (Échec critique ou ruptures d'ancrage lourdes)"
+#         }
+#         print(f"• ANCRAGE SÉMANTIQUE GLOBAL         : {status_colors.get(report['semantic_anchoring_status'])}")
 #         print(f"• Total des termes documentés       : {mgmt['total_extracted_terms']}")
 #         print(f"• Termes métiers (Domain Objects)   : {mgmt['business_domain_terms_count']}")
 #         print(f"• Couche technique (Stack & Infra)  : {mgmt['technical_stack_terms_count']}")
 #         print(f"• Standards explicites capturés     : {mgmt['explicit_terms_count']}")
 #         print(f"• Standards implicites déduits      : {mgmt['implicit_terms_inferred_count']}")
 #     else:
-#         print(f"1. Term Coverage Rate (TCR)        : 0.0%")
-#         print(f"2. Categorization Accuracy (CAR)    : 0.0%")
-#         print(f"3. Definition Precision Score (DPS) : 0.0%")
+#         print(f"1. Term Coverage Rate (TCR)        : 🔴 0.0%")
+#         print(f"2. Categorization Accuracy (CAR)    : 🔴 0.0%")
+#         print(f"3. Definition Precision Score (DPS) : 🔴 0.0%")
+#         print(f"4. Anti-Tautology Adherence (ATA)   : 🔴 0.0%")
+#         print(f"5. Contextual Anchor Precision (CAP): 🔴 0.0%")
 #         print("-" * 75)
 #         print("📈 KPIs D'ARCHITECTURE ET ANCRAGE SÉMANTIQUE")
 #         print("-" * 75)
-#         print("• ANCRAGE SÉMANTIQUE GLOBAL         : 🔴 ÉCHOUÉ (GLOSSARY AGENT FAILED)")
+#         print("• ANCRAGE SÉMANTIQUE GLOBAL         : 🔴 BLOCKED (GLOSSARY FAILED)")
         
 #     print("-" * 75)
 
 #     # 6. DIAGNOSTIC DU RAPPORT DE FIABILITÉ
 #     print("📝 ANALYSE DIAGNOSTIQUE DU PIPELINE GLOSSAIRE :")
-    
 #     if not success or not glossary_doc:
 #         print("   ❌ Alerte : Le format de sortie du LLM a violé la structure Pydantic.")
-#         print("      Veuillez ajuster les guardrails linguistiques ou vérifier la casse des Enums.")
 #     else:
 #         print("   ✅ Succès : Schéma JSON 100% valide et intègre.")
         
 #         if tcr_score < 90.0:
-#             print(f"   ⚠️ Attention : Le LLM a omis des termes identifiés par le Harvester sémantique.")
-#             print(f"      Taux de complétude insuffisant pour blinder complètement Aider/Cline ({tcr_score:.1f}%).")
+#             print(f"   ⚠️ Attention : Le LLM a omis des termes identifiés par le Harvester sémantique ({tcr_score:.1f}%).")
 #         else:
 #             print("   ✅ Succès : Alignement de couverture optimal (>90%). Zéro omission critique.")
 
 #         if car_score < 100.0:
-#             print(f"   ❌ Alerte : Le modèle a commis {int((100 - car_score)/15)} erreur(s) d'étagement d'architecture.")
-#             print("      Des packages ou acronymes informatiques ont été classés à tort dans la zone métier.")
+#             print(f"   ❌ Alerte : Le modèle a commis {int(tech.get('classification_errors_count', 0))} erreur(s) d'étagement d'architecture.")
 #         else:
 #             print("   ✅ Succès : Classification rigoureuse des couches logicielle et métier (CAR : 100%).")
 
-#         if tech.get("tautology_violations_count", 0) > 0:
-#             print(f"   ❌ Alerte : {tech['tautology_violations_count']} violation(s) anti-tautologie interceptée(s).")
-#             print("      L'agent a utilisé le terme lui-même pour construire sa propre définition.")
+#         # Extraction dynamique et affichage du compteur exact des violations ATA
+#         if ata_score < 100.0:
+#             violations = tech.get("tautology_violations_count", 1)
+#             print(f"   ❌ Alerte : {int(violations)} violation(s) anti-tautologie interceptée(s) dans les définitions.")
 #         else:
 #             print("   ✅ Succès : Définitions à haute densité opérationnelle (zéro redondance tautologique).")
 
+#         if cap_score < 100.0:
+#             print(f"   ❌ Alerte : Défaut d'ancrage géométrique détecté. Des termes pointent vers des identifiants invalides.")
+#         else:
+#             print("   ✅ Succès : Traçabilité géométrique parfaite (100% des ancres sont valides et mappées).")
+
 #         if tech.get("language_drift_detected", False):
-#             print("   ❌ Alerte : Dérive linguistique détectée. Des expressions ou mots français se sont glissés")
-#             print("      dans le glossaire. Risque de pollution de contexte pour le prompt TDD.")
+#             print("   ❌ Alerte : Dérive linguistique détectée (mots français présents dans les définitions).")
 #         else:
 #             print("   ✅ Succès : Strict respect de la gouvernance linguistique (100% English technique).")
 

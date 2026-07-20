@@ -1,0 +1,26 @@
+{
+    "project_name": "CourseHub API",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "NFR-ABSTRACTION",
+            "project_definition": "The primary interface layer that must remain decoupled from functional definitions to prevent implementation leakage."
+        },
+        {
+            "term": "CourseHub",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "GOAL-VALIDATE",
+            "project_definition": "The overarching educational platform ecosystem subject to the quality validation process."
+        },
+        {
+            "term": "Feature",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Readiness",
+            "project_definition": "A discrete unit of deliverable functionality aligned with measurable outcomes and documented acceptance criteria."
+        }
+    ]
+}

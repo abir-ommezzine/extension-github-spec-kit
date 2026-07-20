@@ -1,0 +1,131 @@
+{
+    "project_name": "CourseHub API",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-009",
+            "project_definition": "The technical interface exposing v1 endpoints to handle requests and return standardized data envelopes."
+        },
+        {
+            "term": "Acceptance Scenarios",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "US-01",
+            "project_definition": "Concrete behavioral examples used to validate that the developed logic meets the defined requirements."
+        },
+        {
+            "term": "Course",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-COURSE",
+            "project_definition": "A learning offering owned by an instructor, containing pricing in cents, visibility status, and a sequenced set of lessons."
+        },
+        {
+            "term": "CourseHub",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification: CourseHub API",
+            "project_definition": "The online learning platform enabling instructional content management and learner progress tracking."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-004",
+            "project_definition": "The underlying security mechanism used to store account credentials safely without plaintext exposure."
+        },
+        {
+            "term": "Enrollment",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-ENROL",
+            "project_definition": "A relationship record linking a student to a specific offering, capturing completion dates and percentage of progress."
+        },
+        {
+            "term": "FR",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Unique identifiers for specific mandatory system behaviors that must be implemented."
+        },
+        {
+            "term": "Feature Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification: CourseHub API",
+            "project_definition": "The specific git reference 001-coursehub-api isolating development for this set of requirements."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-001",
+            "project_definition": "The requirement to handle pricing as integers in cents to avoid floating-point precision errors."
+        },
+        {
+            "term": "ISO",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-007",
+            "project_definition": "The international standard applied to the storage and transmission of completion date stamps."
+        },
+        {
+            "term": "Independent Test",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "US-01",
+            "project_definition": "A standalone validation case used to verify a specific workflow from start to finish."
+        },
+        {
+            "term": "Input",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification: CourseHub API",
+            "project_definition": "The raw user-provided description used to derive the initial technical specifications."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-009",
+            "project_definition": "The lightweight data-interchange format used for all system responses and request bodies."
+        },
+        {
+            "term": "Module",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MODULE",
+            "project_definition": "A child component of a learning offering representing a specific section in a mandatory sequence."
+        },
+        {
+            "term": "REST",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-009",
+            "project_definition": "The architectural style using stateless request-response patterns for resource manipulation."
+        },
+        {
+            "term": "SC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Identifiers for quantifiable benchmarks used to verify successful implementation of behaviors."
+        },
+        {
+            "term": "Story",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "US-01",
+            "project_definition": "A high-level description of a feature from the perspective of a system actor to define a specific value."
+        },
+        {
+            "term": "User",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "A shared account identity containing credentials, a display name, and a role that determines access levels."
+        }
+    ]
+}

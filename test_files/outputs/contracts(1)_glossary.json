@@ -1,0 +1,180 @@
+{
+    "project_name": "CourseHub",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API Overview",
+            "project_definition": "The set of v1 endpoints hosted at localhost:8000 serving as the primary interface for system interaction."
+        },
+        {
+            "term": "ActiveEnrollmentConstraint",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-ACTIVE-ENROLL",
+            "project_definition": "A logic gate preventing the removal of a learning resource if it currently possesses linked student associations."
+        },
+        {
+            "term": "Authentication",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "NFR-JWT",
+            "project_definition": "The verification process using bearer tokens passed within the authorization header."
+        },
+        {
+            "term": "BackgroundTask",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "POST `/api/v1/auth/register`",
+            "project_definition": "An asynchronous operation used for sending welcome emails without delaying the HTTP response."
+        },
+        {
+            "term": "Behavior",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "GET `/api/v1/courses`",
+            "project_definition": "The operational logic determining which data is returned based on the requester's identity and resource publication status."
+        },
+        {
+            "term": "Business Rule",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DELETE `/api/v1/courses/{course_id}`",
+            "project_definition": "Specific organizational constraints that dictate successful or failed state transitions for domain entities."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "API Overview",
+            "project_definition": "The cross-origin resource sharing protocol implied by the base URL and endpoint structure for browser-based access."
+        },
+        {
+            "term": "COURSE",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "COURSE",
+            "project_definition": "A learning entity containing a title, price in cents, and a collection of instructional modules."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "USER",
+            "project_definition": "The one-way transformation process using the bcrypt algorithm to secure user passwords."
+        },
+        {
+            "term": "ENROLLMENT",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENROLLMENT",
+            "project_definition": "The association between a learner and a specific learning resource, tracking completion percentage."
+        },
+        {
+            "term": "Error Response",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Response Envelope",
+            "project_definition": "A structured payload containing a status code, a timestamp, and a list of failure details."
+        },
+        {
+            "term": "FK",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "COURSE",
+            "project_definition": "A relational database pointer linking one entity's primary identifier to another's."
+        },
+        {
+            "term": "ISO",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "USER",
+            "project_definition": "The 8601 standard utilized for consistent representation of timestamps across all date fields."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API Overview",
+            "project_definition": "The primary data interchange format specified for all request and response bodies."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "NFR-JWT",
+            "project_definition": "Compact, URL-safe signed tokens used for identity propagation and access control."
+        },
+        {
+            "term": "MODULE",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "MODULE",
+            "project_definition": "A sequential component of a learning resource defined by a title and a numerical position."
+        },
+        {
+            "term": "NOT",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "POST `/api/v1/auth/register`",
+            "project_definition": "The logical negation used to specify that a side effect must not block the primary execution flow."
+        },
+        {
+            "term": "OR",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "GET `/api/v1/courses/{course_id}`",
+            "project_definition": "The logical disjunction allowing access if either the resource is public or the user is the owner."
+        },
+        {
+            "term": "Python",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "POST `/api/v1/courses`",
+            "project_definition": "The specific programming language used as the subject matter for the sample educational content."
+        },
+        {
+            "term": "Query Parameters",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "GET `/api/v1/courses`",
+            "project_definition": "Optional URLK-value pairs used for pagination, specifically skip and limit integers."
+        },
+        {
+            "term": "Request",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "POST `/api/v1/auth/register`",
+            "project_definition": "The incoming HTTP payload containing the necessary data to trigger a specific server operation."
+        },
+        {
+            "term": "Response",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Response Envelope",
+            "project_definition": "The server's output consisting of a status code and a structured data envelope."
+        },
+        {
+            "term": "Role",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "USER",
+            "project_definition": "The classification of a user account, restricted to either student or instructor, determining permission levels."
+        },
+        {
+            "term": "USER",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "USER",
+            "project_definition": "The primary account entity containing a unique email, display name, and security credentials."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "USER",
+            "project_definition": "The 128-bit universally unique identifier used as the primary key for all entities."
+        }
+    ]
+}
