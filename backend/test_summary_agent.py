@@ -16,7 +16,7 @@ from app.schemas.parsing_agent_schema import ParsingAgentOutput
 # ==============================================================================
 # CONFIGURATION : Spécifiez le fichier parsé à évaluer
 # ==============================================================================
-TARGET_PARSED_NAME = "contracts(1)_parsed.json"  # Fichier généré par le Parser Agent
+TARGET_PARSED_NAME = "constitution(1)_parsed.json"  # Fichier généré par le Parser Agent
 SPEC_FILE_NAME = "summary_spec.json"            # Fichier de spécification sémantique
 # ==============================================================================
 

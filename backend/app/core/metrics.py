@@ -1,13 +1,13 @@
 # app/core/metrics.py
 """
-metrics.py — Calculateur de métriques d'évaluation pour la tâche de parsing.
-Permet d'évaluer la fidélité, l'intégrité structurelle et le rappel d'extraction.
+metrics.py — Calculateur de métriques d'évaluation pour la tâche de parsing (Version Fusionnée).
+Évalue la fidélité, l'intégrité structurelle, le rappel d'extraction et la topologie du graphe.
 """
 
 import re
 import difflib
 from typing import List, Dict, Any
-from app.schemas.parsing_agent_schema import ParsingAgentOutput
+
 def calculate_sar(success: bool) -> float:
     """
     Schema Adherence Rate (SAR) :
@@ -24,52 +24,60 @@ def calculate_sir(input_sections: List[Dict[str, Any]], output_sections: List[An
     """
     if not input_sections:
         return 100.0
+    if not output_sections:
+        return 0.0
     return (len(output_sections) / len(input_sections)) * 100
 
 
 def calculate_tfs(input_sections: List[Dict[str, Any]], output_sections: List[Any]) -> float:
     """
-    Text Fidelity Score (TFS) :
-    Compare textuellement le 'raw_content' d'origine et le 'raw_content' de sortie
-    pour s'assurer que le LLM n'a pas résumé ou altéré les exigences.
+    Text Fidelity Score (TFS) Amélioré :
+    Compare le contenu textuel brut pour s'assurer qu'aucune information n'a été 
+    altérée ou résumée. Plus robuste face aux déplacements ou changements de casse des titres.
     """
-    input_map = {sec["title"].strip().lower(): sec["raw_content"].strip() for sec in input_sections}
-    output_map = {sec.title.strip().lower(): sec.raw_content.strip() for sec in output_sections}
-    
-    if not input_map:
+    if not input_sections:
         return 100.0
+        
+    input_map = {sec["title"].strip().lower(): sec["raw_content"].strip() for sec in input_sections}
+    output_map = {getattr(sec, "title", sec.get("title", "")).strip().lower(): getattr(sec, "raw_content", sec.get("raw_content", "")).strip() for sec in output_sections}
 
     scores = []
     for title, in_content in input_map.items():
+        if not in_content: # Ignore les sections vides qui servent uniquement de conteneurs structurels
+            continue
+            
         if title in output_map:
             out_content = output_map[title]
             if in_content == out_content:
                 scores.append(1.0)
             else:
-                # Utilisation du ratio de similarité de Gestalt (SequenceMatcher)
                 ratio = difflib.SequenceMatcher(None, in_content, out_content).ratio()
                 scores.append(ratio)
         else:
-            # Section perdue lors de la génération
-            scores.append(0.0)
+            # Recherche textuelle globale fallback au cas où le titre a légèrement bougé
+            matched_fallback = False
+            for out_title, out_content in output_map.items():
+                if in_content in out_content or out_content in in_content:
+                    scores.append(difflib.SequenceMatcher(None, in_content, out_content).ratio())
+                    matched_fallback = True
+                    break
+            if not matched_fallback:
+                scores.append(0.0)
             
-    return (sum(scores) / len(scores)) * 100 if scores else 0.0
+    return (sum(scores) / len(scores)) * 100 if scores else 100.0
 
 
 def extract_heuristic_questions(raw_markdown: str) -> List[str]:
     """
     Extrait de manière déterministe les questions réelles présentes dans le texte source
     en cherchant les lignes contenant un point d'interrogation (?).
-    Sert de 'Ground Truth' heuristique pour évaluer le rappel.
     """
     lines = raw_markdown.splitlines()
     questions = []
     for line in lines:
         line = line.strip()
         if "?" in line:
-            # Nettoyage des listes Markdown, des préfixes 'Q:' ou 'Dialogue'
             cleaned = re.sub(r"^[-*\s]*([Qq]uestion|[Qq])?\s*[:\-\s]*", "", line)
-            # Récupération de la phrase interrogative
             match = re.search(r"([^?]+\?)", cleaned)
             if match:
                 questions.append(match.group(1).strip())
@@ -85,10 +93,7 @@ def calculate_exr(raw_markdown: str, open_questions: List[str]) -> float:
     """
     gt_questions = extract_heuristic_questions(raw_markdown)
     
-    # AJUSTEMENT : Si le texte source ne contient aucun "?" explicite
     if not gt_questions:
-        # Si le LLM trouve des questions pertinentes par déduction, c'est un bonus (100%)
-        # Si le LLM n'en trouve pas, c'est correct aussi (100%)
         return 100.0
         
     found_count = 0
@@ -102,3 +107,37 @@ def calculate_exr(raw_markdown: str, open_questions: List[str]) -> float:
                 break
                 
     return (found_count / len(gt_questions)) * 100
+
+
+def calculate_gri(elements: List[Any], relationships: List[Any]) -> float:
+    """
+    Graph Relational Integrity (GRI) - NOUVELLE MÉTRIQUE FUSIONNÉE :
+    S'assure de la cohérence interne du graphe extrait. Valide que les liens 
+    pointent vers des nœuds existants dans la liste des éléments.
+    """
+    if not relationships:
+        return 100.0 # Pas de relation extraite, cohérence nominale valide
+        
+    # Collecte de tous les identifiants valides et des extraits de contenus courts
+    valid_nodes = set()
+    for el in elements:
+        ident = getattr(el, "identifier", el.get("identifier"))
+        content = getattr(el, "content", el.get("content", ""))
+        if ident:
+            valid_nodes.add(str(ident).lower())
+        if content:
+            valid_nodes.add(content[:30].strip().lower()) # Ancre de contenu court
+
+    valid_relations = 0
+    for rel in relationships:
+        source = str(getattr(rel, "from", rel.get("from", ""))).lower()
+        target = str(getattr(rel, "to", rel.get("to", ""))).lower()
+        
+        # Vérification si la source et la cible se rattachent à des entités réelles
+        source_valid = any(source in node or node in source for node in valid_nodes)
+        target_valid = any(target in node or node in target for node in valid_nodes)
+        
+        if source_valid and target_valid:
+            valid_relations += 1
+            
+    return (valid_relations / len(relationships)) * 100

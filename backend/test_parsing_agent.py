@@ -17,7 +17,7 @@ from app.services.evaluation_service import ParsingEvaluatorService
 # ==============================================================================
 # CONFIGURATION : Spécifiez le fichier à évaluer
 # ==============================================================================
-TARGET_FILE_NAME = "tasks.md"  # Le fichier de la constitution
+TARGET_FILE_NAME = "constitution(1).md"  # Le fichier de la constitution
 TEMPLATE_FILE_NAME = "sdd_templates.json"
 # ==============================================================================
 

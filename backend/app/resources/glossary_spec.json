@@ -1,14 +1,26 @@
 {
-  "agent_name": "Glossary Agent",
-  "expected_output_format": "JSON",
-  "structure": {
-    "entities": [
+  "agent_identity": {
+    "name": "Glossary & Technology Anchor Agent",
+    "target_schema": "schemas.glossary_schema.GlossaryOutputModel",
+    "expected_output_format": "JSON (Strict Pydantic Validation)"
+  },
+  "core_mission": "Extract, classify, and anchor all domain entities, explicit technologies, and implicit architectural standards. This output serves as the single source of truth to eliminate semantic hallucinations when downstream coding assistants (Aider, Cline) generate implementations.",
+  "validation_contract": {
+    "project_name": "String. The explicit or logically inferred name of the target application.",
+    "items": [
       {
-        "term": "Nom strict de l'entité ou du concept métier (ex: Expense, Course, User, Module, Enrolment).",
-        "definition": "Définition technique et fonctionnelle rigoureuse dans le contexte exclusif du projet.",
-        "data_type": "Type primitif ou structure (ex: String, Integer, Decimal, ISO Date, Object) ou null si concept immatériel.",
-        "validation_rules": ["Liste des contraintes physiques associées (ex: montant strictement positif, format d'email, index d'ordre)."]
+        "term": "String. Unique token, acronym, domain entity, design pattern, or standard impacting the system architecture.",
+        "category": "String (Enum). Must be exactly: 'BUSINESS_DOMAIN' (entities, roles, core workflows) or 'TECHNICAL_STACK' (frameworks, protocols, APIs, storage layers).",
+        "discovery": "String (Enum). Must be exactly: 'EXPLICIT' (directly named in text) or 'IMPLICIT' (deduced from validation behaviors, code signatures, or infrastructure limits).",
+        "contextual_anchor": "String. The exact functional requirement, rule code, file location, or structural constraint tying this term to the project.",
+        "project_definition": "String. High-density, operational constraint definition. Explains exactly how the term behaves within the boundaries of this specific project. Generic Wikipedia/dictionary definitions are strictly forbidden."
       }
     ]
+  },
+  "extraction_guardrails": {
+    "language_governance": "The entire JSON output payload, including definitions and anchors, must be generated strictly in English.",
+    "implicit_harvesting_policy": "The agent must actively discover latent standards. For example, if a date rule is specified, harvest 'ISO 8601' or 'Unix Timestamp' as an IMPLICIT technical stack item. If access restrictions exist, harvest 'RBAC' or 'ABAC'.",
+    "anti_tautology_filter": "The 'project_definition' field must never reuse the 'term' word to define itself (e.g., defining 'Expense Tracker' as 'A tool that tracks expenses' triggers an immediate failure).",
+    "context_leakage_isolation": "Complete isolation per execution file. The agent must never carry over technology definitions or terminology from prior test files or projects."
   }
 }
