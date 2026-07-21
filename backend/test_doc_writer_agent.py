@@ -22,7 +22,7 @@ from app.schemas.diagram_agent_schema import DiagramOutputModel
 # ==============================================================================
 # CONFIGURATION : Préfixe du fichier cible à évaluer (ex: "tasks(1)" ou "spec(1)")
 # ==============================================================================
-TARGET_PREFIX = "constitution(1)"  # Exige : tasks(1)_parsed.json, tasks(1)_summary.json, etc.
+TARGET_PREFIX = "tasks(1)"  # Exige : tasks(1)_parsed.json, tasks(1)_summary.json, etc.
 SPEC_FILE_NAME = "doc_writer_spec.json"  # Spécification de structure
 # ==============================================================================
 

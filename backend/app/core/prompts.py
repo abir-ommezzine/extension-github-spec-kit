@@ -351,210 +351,62 @@ GABARIT DE RÉPONSE JSON ATTENDU :
     }}
   ]
 }}"""
-# app/utils/glossary_tools.py
-import os
-import re
-import json
-from typing import Dict, Any, List, Set
+# Remplacer la fonction get_doc_writer_prompt dans app/core/prompts.py par celle-ci :
 
-class GlossaryHarvesterService:
-    ARCHITECTURAL_SIGNALS = {
-        "jwt", "rbac", "abac", "cors", "rest", "graphql", "crud", "spa", "ssr", "rsc",
-        "api", "sdk", "orm", "uuid", "ci/cd", "json", "localstorage", "sessionstorage",
-        "db", "sql", "nosql", "middleware", "webhook", "tls", "ssl", "oauth", "oidc"
-    }
+def get_doc_writer_prompt(doc_writer_spec: dict) -> str:
+    """
+    Génère l'invite système pour le Documentation Writer Agent
+    en injectant la spécification/gabarit de structure de référence.
+    """
+    spec_json = json.dumps(doc_writer_spec, indent=2, ensure_ascii=False)
 
-    IMPLICIT_MAPPING = {
-        r"\b(date|time|timestamp|created_at|updated_at)\b": "ISO 8601",
-        r"\b(password|hash|salt|bcrypt|argon2)\b": "Cryptographic Hashing",
-        r"\b(currency|amount|price|decimal|monetary)\b": "Fixed-Point Numeric Constraint",
-        r"\b(role|permission|admin|instructor|student|owner)\b": "Role-Based Access Control (RBAC)",
-        r"\b(origin|cross-origin|domain|header)\b": "CORS Standard"
-    }
+    return f"""ROLE :
+Tu es le "Documentation Writer Agent", un Senior Technical Writer et Lead Software Architect au sein du pipeline GitHub Spec Kit.
+Ta mission est de consolider, unifier et synthétiser l'ensemble des données JSON produites par les agents en amont (Parsing Agent, Summary Agent, Glossary Agent, Diagram Agent) afin de rédiger un document de spécification technique unique, cohérent et dense au format Markdown.
 
-    @classmethod
-    def generate_and_cache_anchors(cls, parsed_data: Dict[str, Any]) -> List[str]:
-        """
-        Extrait les identifiants physiques du graphe et génère un fichier de cache 
-        sous backend/ressources/ pour guider géométriquement l'agent LLM.
-        """
-        elements = parsed_data.get("elements", [])
-        sections = parsed_data.get("sections", [])
-        valid_anchors: Set[str] = set()
+=== GABARIT DE STRUCTURE DU DOCUMENT FINAL (CONTRAT À RESPECTER STRICTEMENT) ===
+<document_specification_attendue>
+{spec_json}
+</document_specification_attendue>
 
-        for el in elements:
-            ident = el.get("identifier", "").strip()
-            if ident:
-                valid_anchors.add(ident)
+---
 
-        for sec in sections:
-            title = sec.get("title", "").strip()
-            if title:
-                valid_anchors.add(title)
+### DIRECTIVES ÉDITORIALES & RÈGLES DE QUALITÉ
 
-        # Règle d'exclusion des ancres invalides ou trop génériques
-        filtered_anchors = [
-            a for a in valid_anchors 
-            if (a.startswith("T") and a[1:].isdigit()) 
-            or ("-" in a) 
-            or a.isupper() 
-            or len(a.split()) > 1
-        ]
+1. **Hiérarchie Strictement Numérotée (Sous-titres H3)** :
+   - Respecte scrupuleusement la numérotation hiérarchique :
+     * Titre principal H1 (`# Title`)
+     * Sections principales H2 (`## 1. Executive Summary...`, `## 2. Architecture Workflows...`)
+     * Sous-sections H3 (`### 1.1 Executive Brief`, `### 1.2 Maturity Assessment`, `### 1.3 Technical Stack`, `### 1.4 Architectural Constraints`, `### 3.1 Requirements Traceability`, etc.)
 
-        # Détermination du chemin du dossier ressources
-        base_dir = "backend" if os.path.exists("backend") else "."
-        cache_dir = os.path.join(base_dir, "ressources")
-        os.makedirs(cache_dir, exist_ok=True)
-        
-        cache_path = os.path.join(cache_dir, "topological_anchors_cache.json")
-        
-        with open(cache_path, "w", encoding="utf-8") as f:
-            json.dump(sorted(filtered_anchors), f, indent=2, ensure_ascii=False)
-            
-        return filtered_anchors
+2. **Séparation Stricte entre Stack (1.3) et Contraintes (1.4) (ZÉRO REDONDANCE)** :
+   - **Section 1.3 Technical Stack** : Liste exclusivement les langages, frameworks, BDD, et SDKs avec leurs versions sous forme de liste à puces. Ne place PAS de sous-liste de contraintes ici.
+   - **Section 1.4 Architectural Constraints** : Rédige uniquement les contraintes d'architecture haut niveau (mode async obligatoire, fenêtres d'expiration JWT, absence de mocking DB).
 
-    @classmethod
-    def harvest_candidates(cls, parsed_data: Dict[str, Any]) -> List[str]:
-        """
-        Moissonneur universel déterministe invariant. Élimine le bruit logique, 
-        chiffres romains et métadonnées via des règles syntaxiques agnostiques.
-        """
-        candidates: Set[str] = set()
-        sections = parsed_data.get("sections", [])
-        elements = parsed_data.get("elements", [])
+3. **Complétude Exhaustive des Tableaux (ZÉRO TRONCATURE)** :
+   - **Section 3 (Requirements Traceability)** : Le tableau DOIT inclure UNE LIGNE POUR CHAQUE identifiant atomique présent dans `parsed_data` (ex: STACK-01, AUTH-JWT, DB-ASYNC, DB-MIGRATION, TOOL-RESEND, TEST-PYTEST, TEST-DB, ROLE-RBAC, WF-VALIDATION, WF-REVIEW, etc.).
+   - **Section 5 (Glossaire)** : Le tableau DOIT inclure L'INTÉGRALITÉ des N termes présents dans `glossary_data` sans aucune omission ni résumé.
 
-        project_name = parsed_data.get("project_info", {}).get("project_name", "").strip()
-        
-        # Collecte des identifiants explicites déclarés dans les nœuds
-        explicit_identifiers = set()
-        for el in elements:
-            identifier = el.get("identifier", "")
-            content = el.get("content", "")
-            if identifier:
-                clean_id = identifier.strip()
-                explicit_identifiers.add(clean_id)
-                if not ("-" in clean_id or "_" in clean_id or (clean_id.startswith("T") and clean_id[1:].isdigit())):
-                    candidates.add(clean_id)
-            cls._extract_from_text(content, candidates)
-            cls._deduce_implicit_standards(content, candidates)
+4. **Interdiction du LaTeX et Formatage Propre** :
+   - Interdiction formelle d'utiliser du code mathématique LaTeX (ex: pas de `$\\ge$`). Utilise des symboles UTF-8 ou texte brut (ex: `>= 80%`).
 
-        for section in sections:
-            cls._extract_from_text(section.get("title", ""), candidates)
-            cls._extract_from_text(section.get("raw_content", ""), candidates)
-            cls._deduce_implicit_standards(section.get("raw_content", ""), candidates)
+5. **Placement & En-têtes du Glossaire (Position Terminale)** :
+   - Le Glossaire DOIT figurer en toute fin de document (Section 5).
+   - Formate-le sous forme d'un tableau Markdown à 4 colonnes avec ces en-têtes exacts en ANGLAIS :
+     `| Term | Category | Context Anchor | Project Definition |`
 
-        # Normalisation initiale des espaces
-        pre_clean = set()
-        for term in candidates:
-            clean_term = term.replace("\n", " ").strip()
-            clean_term = re.sub(r'\s+\d+$', '', clean_term)
-            if len(clean_term) >= 2 and not clean_term.isdigit():
-                pre_clean.add(clean_term)
+6. **Conservation Stricte de la Traçabilité** :
+   - Conserve l'INTÉGRALITÉ des identifiants exacts (`STACK-01`, `AUTH-JWT`, `US-01`, `FR-001`, `ENT-USER`, `T001`, etc.) dans tout le document.
 
-        # Matrice globale d'exclusion des bruits et métadonnées
-        EXCLUSION_MATRIX = {
-            "get", "post", "put", "delete", "patch", "options", "head", "http", "https", 
-            "url", "uri", "base url", "content-type", "authorization header", "response envelope",
-            "application/json", "mime", "host", "port", "endpoint", "endpoints", "route", "routes",
-            "given", "when", "then", "and", "but", "between", "reaches", "at least", 
-            "greater", "less", "equals", "must", "should", "contains",
-            "purpose", "needs", "status", "created", "ratified", "amended", "governance", 
-            "last amended", "stack", "core", "auth", "test", "app", "main", "total", "ok", "true", "false", 
-            "project", "version", "step", "checklist", "priority",
-            "limit", "skip", "page", "offset", "client", "async_session", "session", "fixture",
-            "emailstr", "str", "int", "float", "bool", "dict", "list", "set", "tuple", "jsonresponse"
-        }
-        
-        DOCUMENT_ABBREVIATIONS = {"fr", "sc", "us", "con", "asm", "ii", "iii", "iv", "v", "vi"}
-        ROMAN_NUMERALS_REGEX = re.compile(r'^[IVXLC]+$', re.IGNORECASE)
+7. **Langue et Style** :
+   - Anglais Technique professionnel, neutre et concis.
+   - Génère exclusivement du Markdown valide sans texte conversationnel d'introduction ou de conclusion.
 
-        normalized_map = {}
-        for term in pre_clean:
-            term_lower = term.lower()
-            words = term.split()
+---
 
-            # 1. Filtre contre les chiffres romains (II, III, IV) et abréviations
-            if ROMAN_NUMERALS_REGEX.match(term) or term_lower in DOCUMENT_ABBREVIATIONS:
-                continue
-
-            # 2. RÈGLE D'INVARIANT SYNTAXIQUE CONTRE LES FUITES GRAMMATICALES (ATA/TCR)
-            if len(words) == 1 and term.islower():
-                if term not in explicit_identifiers and term_lower not in cls.ARCHITECTURAL_SIGNALS:
-                    continue
-
-            if project_name and (term_lower == project_name.lower() or term_lower == f"{project_name.lower()} api"):
-                continue
-
-            if term.startswith("/") or "\\" in term or any(term_lower.endswith(ext) for ext in [".py", ".md", ".json", ".yaml"]):
-                continue
-
-            if term_lower.startswith("phase") or "phase" in term_lower.split() or term_lower.startswith("task"):
-                continue
-
-            if ("-" in term or "_" in term) and term.isupper():
-                continue
-
-            if any(char in term for char in ["(", ")", "[", "]", "{", "}", "...", "=", ":"]):
-                continue
-
-            if term_lower in EXCLUSION_MATRIX:
-                continue
-
-            # Élimination des chaînes d'exemples alphanumériques (ex: pass123)
-            if any(c.isdigit() for c in term) and not any(tech in term_lower for tech in ["python", "postgresql", "sqlalchemy", "16", "3.12", "2.0"]):
-                continue
-
-            if term_lower in normalized_map:
-                if term.isupper() and not normalized_map[term_lower].isupper():
-                    normalized_map[term_lower] = term
-            else:
-                normalized_map[term_lower] = term
-
-        return sorted(list(set(normalized_map.values())))
-
-    @classmethod
-    def _extract_from_text(cls, text: str, candidate_set: Set[str]) -> None:
-        if not text:
-            return
-        acronyms = re.findall(r"\b[A-Z]{2,6}\b", text)
-        for acro in acronyms:
-            candidate_set.add(acro)
-
-        camel_cases = re.findall(r"\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b", text)
-        for camel in camel_cases:
-            candidate_set.add(camel)
-
-        tech_versions = re.findall(r"\b[A-Za-z]{3,}(?:\.[A-Za-z]+)?\s?\d+(?:\.\d+)*\+?\b", text)
-        for tech in tech_versions:
-            candidate_set.add(tech.strip())
-
-        inline_highlights = re.findall(r"`([^`]+)`|\*\*([^*]+)\*\*", text)
-        for match in inline_highlights:
-            highlighted = match[0] if match[0] else match[1]
-            if highlighted and len(highlighted.strip().split()) <= 2:
-                if not (highlighted.endswith(".py") or "/" in highlighted):
-                    candidate_set.add(highlighted.strip())
-
-        words = re.findall(r"\b[a-zA-Z\-]+\b", text.lower())
-        for word in words:
-            if word in cls.ARCHITECTURAL_SIGNALS:
-                if word in ["jwt", "rbac", "abac", "cors", "crud", "spa", "ssr", "rsc", "api", "sdk", "orm", "uuid", "json", "tls", "ssl", "oauth", "oidc"]:
-                    candidate_set.add(word.upper())
-                elif word == "localstorage":
-                    candidate_set.add("LocalStorage")
-                elif word == "sessionstorage":
-                    candidate_set.add("SessionStorage")
-                else:
-                    candidate_set.add(word.capitalize())
-
-    @classmethod
-    def _deduce_implicit_standards(cls, text: str, candidate_set: Set[str]) -> None:
-        if not text:
-            return
-        text_lower = text.lower()
-        for regex, implicit_term in cls.IMPLICIT_MAPPING.items():
-            if re.search(regex, text_lower):
-                candidate_set.add(implicit_term)
+CONTRAINTES DE SORTIE STRICTES :
+Renvoie UNIQUEMENT le texte Markdown complet structuré selon la <document_specification_attendue>. N'ajoute aucun commentaire d'introduction ou de conclusion en dehors du document Markdown.
+"""
 # def get_doc_writer_prompt(doc_writer_spec: dict) -> str:
 #     """
 #     Génère l'invite système pour le Documentation Writer Agent
