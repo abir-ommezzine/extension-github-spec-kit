@@ -321,3 +321,106 @@ def calculate_sra(diagrams: List[Dict[str, Any]]) -> float:
             compliant_diagrams += 1
 
     return (compliant_diagrams / len(diagrams)) * 100
+# ===========================================================================
+# 5. MÉTRIQUES POUR LE DOCUMENTATION WRITER AGENT
+# ===========================================================================
+
+EXPECTED_DOC_WRITER_SECTIONS = [
+    "Executive Summary",
+    "Architecture Workflows",
+    "Detailed Technical Specifications",
+    "Project Governance",
+    "Glossary"
+]
+
+def calculate_dsc(markdown_text: str) -> float:
+    """
+    Document Structure Completeness (DSC) :
+    Mesure la présence des 5 sections obligatoires définies dans la structure
+    du System Prompt du Documentation Writer.
+    """
+    if not markdown_text:
+        return 0.0
+    
+    md_lower = markdown_text.lower()
+    found = sum(1 for sec in EXPECTED_DOC_WRITER_SECTIONS if sec.lower() in md_lower)
+    return (found / len(EXPECTED_DOC_WRITER_SECTIONS)) * 100.0
+
+
+def calculate_tpr(markdown_text: str, parsed_elements: List[Dict[str, Any]]) -> float:
+    """
+    Traceability Preservation Rate (TPR) :
+    Vérifie que les identifiants exacts du graphe (ex: US-01, FR-001, ENT-USER)
+    sont intégralement conservés dans le document Markdown final.
+    """
+    if not parsed_elements:
+        return 100.0
+    if not markdown_text:
+        return 0.0
+
+    target_identifiers = [
+        str(el.get("identifier")).strip() 
+        for el in parsed_elements 
+        if el.get("identifier")
+    ]
+
+    if not target_identifiers:
+        return 100.0
+
+    found_count = sum(1 for ident in target_identifiers if ident in markdown_text)
+    return (found_count / len(target_identifiers)) * 100.0
+
+
+def calculate_dev(markdown_text: str, diagrams: List[Dict[str, Any]]) -> float:
+    """
+    Diagram Embedding Validity (DEV) :
+    S'assure que 100% des diagrammes générés par le Diagram Agent sont 
+    correctement intégrés sous forme de blocs ```mermaid dans le document Markdown.
+    """
+    if not diagrams:
+        return 100.0
+    if not markdown_text:
+        return 0.0
+
+    embedded_count = 0
+    for diag in diagrams:
+        title = str(diag.get("title", "")).strip().lower()
+        code_snippet = str(diag.get("mermaid_code", "")).strip()[:30].lower()
+        
+        # Vérification de la présence du titre ou du début du code dans un bloc mermaid
+        if (title and title in markdown_text.lower()) or (code_snippet and code_snippet in markdown_text.lower()):
+            embedded_count += 1
+
+    return (embedded_count / len(diagrams)) * 100.0
+
+
+def calculate_gff(markdown_text: str, glossary_items: List[Dict[str, Any]]) -> float:
+    """
+    Glossary Format & Placement (GFF) :
+    Vérifie deux critères cumulatifs :
+    1. Le glossaire apparaît en position terminale (dernière section du Markdown).
+    2. Les termes sont formatés dans un tableau Markdown avec séparateurs '|'.
+    """
+    if not glossary_items:
+        return 100.0
+    if not markdown_text:
+        return 0.0
+
+    lines = [line.strip() for line in markdown_text.splitlines() if line.strip()]
+    if not lines:
+        return 0.0
+
+    # 1. Vérification du placement terminal (présence du glossaire dans les 35% derniers du document)
+    last_third_content = "\n".join(lines[-int(len(lines) * 0.35):]).lower()
+    has_terminal_placement = "glossary" in last_third_content or "glossaire" in last_third_content
+
+    # 2. Vérification du format tableau Markdown (|---|---|)
+    has_table_format = any("|" in line and "---" in line for line in lines)
+
+    score = 0.0
+    if has_terminal_placement:
+        score += 50.0
+    if has_table_format:
+        score += 50.0
+
+    return score

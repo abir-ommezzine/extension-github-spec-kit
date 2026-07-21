@@ -6,119 +6,56 @@
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "FR-009",
-            "project_definition": "The primary interface exposing endpoints under /api/v1/ and returning structured data envelopes."
-        },
-        {
-            "term": "Acceptance Scenarios",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "US-01",
-            "project_definition": "The set of conditional behavioral tests used to verify that a feature meets its defined success criteria."
+            "project_definition": "The set of endpoints located under /api/v1/ providing programmatic access to learning platform resources."
         },
         {
             "term": "Course",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-COURSE",
-            "project_definition": "A learning offering owned by an instructor containing a title, description, price in cents, published status, and ordered modules."
-        },
-        {
-            "term": "CourseHub",
-            "category": "BUSINESS_DOMAIN",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Feature Specification: CourseHub API",
-            "project_definition": "The online learning platform enabling instructional content management and student progress tracking."
+            "project_definition": "A learning offering owned by an instructor, containing a title, description, price in cents, published status, and ordered modules."
         },
         {
             "term": "Cryptographic Hashing",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
             "contextual_anchor": "ENT-USER",
-            "project_definition": "The latent mechanism required to securely store the password credential mentioned in the account identity."
+            "project_definition": "The required security mechanism for storing password credentials within the shared identity table."
         },
         {
             "term": "Enrollment",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-ENROLLMENT",
-            "project_definition": "A relationship between a student and a learning offering that records a completion date and progress percentage."
-        },
-        {
-            "term": "FR",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Functional Requirements",
-            "project_definition": "Specific system mandates that define the necessary behaviors to implement user stories."
-        },
-        {
-            "term": "Feature Branch",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Feature Specification: CourseHub API",
-            "project_definition": "The isolated version control stream identified as 001-coursehub-api for developing this specific set of capabilities."
+            "project_definition": "A student-course relationship that records progress and completion date."
         },
         {
             "term": "Fixed-Point Numeric Constraint",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
             "contextual_anchor": "FR-001",
-            "project_definition": "The requirement to handle pricing as an integer value in cents to avoid floating point inaccuracies."
-        },
-        {
-            "term": "ISO",
-            "category": "TECHNICAL_STACK",
-            "discovery": "IMPLICIT",
-            "contextual_anchor": "FR-007",
-            "project_definition": "The assumed international standard for representing the completion date recorded during learning progress."
-        },
-        {
-            "term": "Independent Test",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "US-01",
-            "project_definition": "A standalone verification procedure used to confirm that a specific user journey can be completed successfully."
-        },
-        {
-            "term": "Input",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Feature Specification: CourseHub API",
-            "project_definition": "The raw user description providing the initial logic for the online learning platform's requirements."
+            "project_definition": "The requirement to store pricing exclusively in cents to avoid floating-point precision errors."
         },
         {
             "term": "JSON",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "FR-009",
-            "project_definition": "The lightweight data-interchange format used for the API responses' data, meta, and errors envelopes."
+            "project_definition": "The mandatory data interchange format for all responses, following a specific envelope containing data, meta, and errors."
         },
         {
             "term": "Module",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-MODULE",
-            "project_definition": "A child record of a learning offering representing a lesson or section within a fixed sequence."
+            "project_definition": "A child record of a learning offering representing a lesson or section in a fixed sequence."
         },
         {
             "term": "REST",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "FR-009",
-            "project_definition": "The architectural style used for the network endpoints to ensure stateless communication between the client and server."
-        },
-        {
-            "term": "SC",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Measurable Outcomes",
-            "project_definition": "Quantifiable metrics used to determine if the implemented functionality meets the project goals."
-        },
-        {
-            "term": "Story",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "US-01",
-            "project_definition": "A high-level description of a feature from the perspective of an end-user, used to drive implementation."
+            "project_definition": "The architectural style governing the design of the network endpoints for the platform."
         },
         {
             "term": "User",

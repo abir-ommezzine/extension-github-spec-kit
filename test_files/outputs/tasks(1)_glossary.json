@@ -6,112 +6,98 @@
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T033",
-            "project_definition": "The set of endpoints and response envelopes defining the communication interface between the client and the server."
+            "project_definition": "The programmatic interface providing structured response envelopes for course management operations."
         },
         {
             "term": "All",
             "category": "BUSINESS_DOMAIN",
-            "discovery": "IMPLICIT",
+            "discovery": "EXPLICIT",
             "contextual_anchor": "Success Criteria",
-            "project_definition": "The complete set of 36 implementation tasks required for full system validation."
+            "project_definition": "The complete set of 36 mandated implementation tasks required for system validation."
         },
         {
             "term": "AsyncSession",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T001",
-            "project_definition": "An asynchronous database connection lifecycle handler used to ensure clean resource teardown."
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The non-blocking database connection handler managed within the project initialization lifecycle."
         },
         {
             "term": "BackgroundTask",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "PHASE-3",
-            "project_definition": "An asynchronous execution mechanism used to offload email delivery from the main request-response cycle."
+            "project_definition": "The asynchronous execution mechanism used for dispatching transactional email notifications."
         },
         {
             "term": "CORS Standard",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
-            "contextual_anchor": "T001",
-            "project_definition": "The industry protocol for managing cross-origin resource sharing within the project's network configuration."
+            "contextual_anchor": "PHASE-8",
+            "project_definition": "The cross-origin resource sharing security policy governing browser-based request accessibility."
         },
         {
             "term": "CRUD",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T020",
-            "project_definition": "The four foundational persistent storage mutation primitives applied to course management."
+            "project_definition": "The four foundational persistent storage mutation primitives applied to course entities."
         },
         {
             "term": "ConfigError",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T015",
-            "project_definition": "A fatal exception raised at application startup when critical environment keys are missing."
-        },
-        {
-            "term": "CourseHub",
-            "category": "BUSINESS_DOMAIN",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Tasks: CourseHub API Implementation",
-            "project_definition": "The domain entity representing the central course management system."
+            "project_definition": "The exception triggered during startup when mandatory external service keys are absent."
         },
         {
             "term": "Feature",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Tasks: CourseHub API Implementation",
-            "project_definition": "A high-level functional unit of delivery identified by the 001-coursehub-api token."
+            "project_definition": "The high-level functional capability identified as 001-coursehub-api."
         },
         {
-            "term": "ISO",
-            "category": "TECHNICAL_STACK",
-            "discovery": "IMPLICIT",
-            "contextual_anchor": "T009",
-            "project_definition": "The global standard for date and time representation used in token expiration claims."
+            "term": "ISOlation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T025",
+            "project_definition": "The security boundary ensuring a learner cannot modify or access another user's progress data."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T009",
-            "project_definition": "The signed token format used for stateless authentication and session persistence with a 7-day refresh window."
+            "project_definition": "The signed token standard used for stateless authentication and session expiry claims."
         },
         {
             "term": "MVP",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "MVP Scope (Phase 1 Delivery)",
-            "project_definition": "The subset of implementation phases (1-5 and 7) required for the initial viable delivery."
+            "project_definition": "The initial deliverable subset comprising phases 1-5 and phase 7."
         },
         {
             "term": "ORM",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T005",
-            "project_definition": "The object-relational mapping layer used to define User, Course, Module, and Enrollment schemas."
+            "project_definition": "The object-relational mapping layer defining the structure for User, Course, Module, and Enrollment."
         },
         {
             "term": "Reference",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Tasks: CourseHub API Implementation",
-            "project_definition": "The external documentation files spec.md and plan.md used as architectural blueprints."
+            "project_definition": "The external documentation links including spec.md and plan.md."
         },
         {
             "term": "SDK",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T015",
-            "project_definition": "The external software development kit provided by Resend for programmatic email delivery."
-        },
-        {
-            "term": "User Story",
-            "category": "BUSINESS_DOMAIN",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Phase 4: Courses Router — Instructor Management (US1)",
-            "project_definition": "A functional requirement mapping a specific actor's goal to a set of technical tasks."
+            "project_definition": "The external software development kit used to integrate the Resend email platform."
         }
     ]
 }

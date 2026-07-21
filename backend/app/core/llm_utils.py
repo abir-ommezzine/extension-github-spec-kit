@@ -9,7 +9,40 @@ from typing import Type, TypeVar
 from pydantic import BaseModel
 
 T = TypeVar("T", bound=BaseModel)
+import re
 
+def clean_markdown_response(raw_response: str) -> str:
+    """
+    Nettoie la réponse brute du LLM pour garantir un document Markdown pur :
+    1. Supprime les balises englobantes ```markdown ... ``` ou ``` ... ``` si le LLM a entouré tout son texte.
+    2. Élimine le texte conversationnel d'introduction (ex: "Voici le document :") avant le premier titre (#).
+    3. Normalise les fin de lignes et supprime les espaces superflus au début/fin.
+    """
+    if not raw_response:
+        return ""
+
+    text = raw_response.strip()
+
+    # 1. Supprime le bloc de code englobant complet (ex: ```markdown # Titre ... ```)
+    pattern_full_fence = r"^```(?:markdown|md)?\s*\n(.*?)\n```$"
+    match = re.search(pattern_full_fence, text, re.DOTALL | re.IGNORECASE)
+    if match:
+        text = match.group(1).strip()
+
+    # 2. Supprime les phrases d'introduction conversationnelles avant le premier titre (#)
+    first_header_idx = text.find("#")
+    if first_header_idx > 0:
+        preamble = text[:first_header_idx].strip()
+        # Si le préambule est court (< 250 car) et conversationnel, on le retire
+        if len(preamble) < 250 and not preamble.startswith(">"):
+            text = text[first_header_idx:].strip()
+
+    # 3. Supprime les remarques de conclusion courantes après la dernière section
+    # Si le texte se termine par un bloc de clôture isolé ``` qui traîne
+    if text.endswith("```"):
+        text = re.sub(r"\n```$", "", text).strip()
+
+    return text
 def extract_json_from_text(text: str) -> str:
     """
     Isole et extrait la première structure JSON valide (délimitée par { et }) 
