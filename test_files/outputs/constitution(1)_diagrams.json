@@ -1,0 +1,22 @@
+{
+    "diagrams": [
+        {
+            "title": "Technical Constitution Traceability Map",
+            "type": "flowchart",
+            "description": "Maps the relationships between technology standards, coding rules, and workflow constraints using exact identifiers.",
+            "mermaid_code": "flowchart TD\n    subgraph \"Technology Stack\"\n        STACK-01[\"STACK-01: Approved Stack (Python 3.12, FastAPI, PG16)\"]\n    end\n\n    subgraph \"Data & API Standards\"\n        DB-ASYNC[\"DB-ASYNC: Async SQLAlchemy ORM Only\"]\n        DB-MIGRATION[\"DB-MIGRATION: Alembic Migrations\"]\n        API-REST[\"API-REST: RESTful JSON /api/v1/ Envelope\"]\n        AUTH-JWT[\"AUTH-JWT: JWT Access/Refresh Tokens\"]\n    end\n\n    subgraph \"Quality & Workflow\"\n        TEST-PYTEST[\"TEST-PYTEST: Pytest + httpx AsyncClient\"]\n        TEST-DB[\"TEST-DB: Real PostgreSQL Instance (No Mocking)\"]\n        WF-VALIDATION[\"WF-VALIDATION: Test-driven Feature Completion\"]\n        WF-REVIEW[\"WF-REVIEW: Explicit Review for Auth/API Changes\"]\n    end\n\n    DB-ASYNC -->|implements| STACK-01\n    DB-MIGRATION -->|depends_on| STACK-01\n    TEST-DB -->|relates_to| STACK-01\n    WF-VALIDATION -->|depends_on| TEST-PYTEST\n    WF-REVIEW -->|relates_to| AUTH-JWT\n    WF-REVIEW -->|relates_to| API-REST"
+        },
+        {
+            "title": "Feature Implementation & Review Workflow",
+            "type": "flowchart",
+            "description": "Models the development lifecycle from implementation to merge, incorporating the mandatory review and testing gates.",
+            "mermaid_code": "flowchart TD\n    START[Start Feature Development] --> IMPL[Implement Feature using STACK-01]\n    IMPL --> TEST_DEV[Write Pytest/httpx Tests]\n    \n    TEST_DEV --> DEC_VALID{\"WF-VALIDATION: Tests Pass?\"}\n    DEC_VALID -- \"No\" --> IMPL\n    DEC_VALID -- \"Yes\" --> DEC_SENSITIVE{\"WF-REVIEW: Affects Auth or API Envelope?\"}\n\n    DEC_SENSITIVE -- \"Yes\" --> EXP_REV[\"Perform Explicit Technical Review\"]\n    DEC_SENSITIVE -- \"No\" --> PR_SUBMIT[Submit Pull Request]\n\n    EXP_REV --> DEC_REV{\"Review Approved?\"}\n    DEC_REV -- \"No\" --> IMPL\n    DEC_REV -- \"Yes\" --> PR_SUBMIT\n\n    PR_SUBMIT --> END[Merge to Main]"
+        },
+        {
+            "title": "Authentication & Authorization Sequence",
+            "type": "sequenceDiagram",
+            "description": "Illustrates the interaction between the User, API, and Auth system based on the JWT and RBAC rules.",
+            "mermaid_code": "sequenceDiagram\n    participant User\n    participant API as \"API (/api/v1/)\"\n    participant Auth as \"Auth System (AUTH-JWT)\"\n    participant DB as \"PostgreSQL (DB-ASYNC)\"\n\n    User ->> API: Request Resource (with JWT Access Token)\n    API ->> Auth: Validate Token (15-min expiry)\n    Auth -->> API: Token Valid + Role (Student/Instructor)\n    \n    API ->> API: Check ROLE-RBAC Permissions\n    \n    alt Role Authorized\n        API ->> DB: Async Fetch Data\n        DB -->> API: Data Result\n        API -->> User: Return JSON Envelope {data, meta, errors}\n    else Role Unauthorized\n        API -->> User: Return 403 Forbidden (JSON Envelope)\n    end"
+        }
+    ]
+}

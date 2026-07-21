@@ -1,0 +1,71 @@
+# test_workflow_pipeline.py
+import sys
+from pathlib import Path
+from app.graph.workflow import create_pipeline_workflow
+
+TARGET_FILE_NAME = "requirements(1).md"
+
+def print_unified_dashboard(final_state: dict):
+    """Affiche le tableau de bord consolidé des 4 agents."""
+    print("\n" + "=" * 80)
+    print("      DASHBOARD DE FIABILITÉ MULTI-AGENTS (PIPELINE LANGGRAPH)")
+    print("=" * 80)
+    
+    # 1. METRIQUES PARSER
+    p_metrics = final_state.get("parsing_metrics", {}).get("technical_evaluation", {})
+    print("1. PARSING AGENT METRICS:")
+    print(f"   • Schema Adherence (SAR)          : {p_metrics.get('schema_adherence_rate', 0):.1f}%")
+    print(f"   • Structural Integrity (SIR)     : {p_metrics.get('structural_integrity_recall', 0):.1f}%")
+    print(f"   • Graph Relational Integrity (GRI): {p_metrics.get('graph_relational_integrity', 0):.1f}%")
+    
+    # 2. METRIQUES SUMMARY
+    s_metrics = final_state.get("summary_metrics", {}).get("technical_evaluation", {})
+    print("\n2. SUMMARY AGENT METRICS (PARALLÈLE A):")
+    print(f"   • Maturity Alignment (MAS)       : {s_metrics.get('maturity_alignment_score', 0):.1f}%")
+    print(f"   • Conciseness & Precision (CPS)  : {s_metrics.get('conciseness_precision_score', 0):.1f}%")
+    print(f"   • Extraction Completeness (ECR)  : {s_metrics.get('extraction_completeness_rate', 0):.1f}%")
+    
+    # 3. METRIQUES GLOSSARY
+    g_metrics = final_state.get("glossary_metrics", {}).get("technical_evaluation", {})
+    print("\n3. GLOSSARY AGENT METRICS (PARALLÈLE B):")
+    print(f"   • Term Coverage Rate (TCR)        : {g_metrics.get('term_coverage_rate', 0):.1f}%")
+    print(f"   • Categorization Accuracy (CAR)   : {g_metrics.get('categorization_accuracy_rate', 0):.1f}%")
+    print(f"   • Anti-Tautology Adherence (ATA)  : {g_metrics.get('anti_tautology_adherence', 0):.1f}%")
+    print(f"   • Contextual Anchor Precision(CAP): {g_metrics.get('contextual_anchor_precision', 0):.1f}%")
+
+    # 4. METRIQUES DIAGRAM
+    d_metrics = final_state.get("diagram_metrics", {}).get("technical_evaluation", {})
+    print("\n4. DIAGRAM AGENT METRICS (PARALLÈLE C):")
+    print(f"   • Syntax Validity Rate (SVR)      : {d_metrics.get('syntax_validity_rate', 0):.1f}%")
+    print(f"   • Diagram Coverage Rate (DCR)     : {d_metrics.get('diagram_coverage_rate', 0):.1f}%")
+    print(f"   • Relational Completeness (RCR)  : {d_metrics.get('relational_completeness_rate', 0):.1f}%")
+    print(f"   • Structural Rule Adherence (SRA) : {d_metrics.get('structural_rule_adherence', 0):.1f}%")
+    if final_state.get("diagram_pdf_path"):
+        print(f"   • Export PDF                      : {final_state.get('diagram_pdf_path')}")
+    print("=" * 80)
+
+def main():
+    project_root = Path(__file__).resolve().parent.parent
+    target_path = project_root / "test_files" / TARGET_FILE_NAME
+    
+    if not target_path.exists():
+        print(f"[❌] Erreur : Fichier '{target_path}' introuvable.")
+        sys.exit(1)
+        
+    with open(target_path, "r", encoding="utf-8") as f:
+        file_content = f.read()
+
+    initial_state = {
+        "file_name": TARGET_FILE_NAME,
+        "file_content": file_content
+    }
+
+    pipeline = create_pipeline_workflow()
+    print("[⚙️] Lancement de l'orchestration LangGraph Multi-Agents...")
+    
+    final_state = pipeline.invoke(initial_state)
+    
+    print_unified_dashboard(final_state)
+
+if __name__ == "__main__":
+    main()

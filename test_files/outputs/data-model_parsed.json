@@ -1,0 +1,44 @@
+{
+    "parsing_rationale": "L'analyse du document 'data-model.md' révèle un contenu extrêmement focalisé sur la définition technique des données (entité Expense). Le document utilise des termes comme 'initial setup' et 'initially', suggérant la création d'une nouvelle application ('scratch'). Structurellement, le document est très lacunaire car il ne contient qu'une seule section technique sans contexte métier, sans objectifs, ni périmètre défini. Le contenu brut a été mappé aux 'Functional Requirements' car la définition d'un modèle de données et ses règles de validation constituent des exigences fonctionnelles implicites sur la gestion des données.",
+    "project_info": {
+        "project_name": "Expense Tracker (déduit du modèle de données)",
+        "source_type": "scratch",
+        "brief_explanation": "Création d'une application de suivi de dépenses permettant de gérer des entités de dépenses avec montant, devise et date.",
+        "source_context": "Le texte mentionne 'For this simple app' et 'initially', indiquant un démarrage de projet et non une évolution d'un système existant."
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "data-model.md",
+            "level": 1,
+            "raw_content": "Entity: Expense\n- `id`: string (generated via `Date.now().toString()`)\n- `amount`: number (in user's currency, required, >0)\n- `currency`: string (ISO code, default `USD`)\n- `category`: string (optional)\n- `description`: string (optional)\n- `date`: string (ISO 8601 date, required)\n\nValidation rules:\n- `amount` must be a positive number\n- `date` must be a valid ISO date not in the future (optional constraint)\n\nState transitions: For this simple app, expenses are created and deleted; no soft-delete or edits initially (edits can be added later).",
+            "mapped_to_template_field": "Functional Requirements"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Goals & Objectives",
+            "priority": "HAUTE",
+            "remediation_advice": "Rédiger une introduction expliquant pourquoi l'application est créée et quelle valeur elle apporte à l'utilisateur."
+        },
+        {
+            "missing_section": "Non-Functional Requirements",
+            "priority": "MOYENNE",
+            "remediation_advice": "Préciser les contraintes de performance, de stockage des données (local vs cloud) et de sécurité."
+        },
+        {
+            "missing_section": "Scope & Out-of-Scope",
+            "priority": "HAUTE",
+            "remediation_advice": "Définir clairement les limites du projet, notamment confirmer que les éditions de dépenses sont hors-périmètre pour la V1."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "MOYENNE",
+            "remediation_advice": "Lister les incertitudes sur la gestion des devises ou les futures évolutions mentionnées."
+        }
+    ],
+    "open_questions": [
+        "Faut-il implémenter la contrainte de date non future (mentionnée comme 'optional constraint') ?",
+        "Quand et comment les fonctionnalités d'édition ('edits can be added later') seront-elles intégrées ?"
+    ]
+}

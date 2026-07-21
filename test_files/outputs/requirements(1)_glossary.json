@@ -1,0 +1,26 @@
+{
+    "project_name": "CourseHub API",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "QUAL-NO-IMP",
+            "project_definition": "The interface layer whose implementation details must remain hidden within the functional definition to ensure technology-agnostic requirements."
+        },
+        {
+            "term": "CourseHub",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Specification Quality Checklist: CourseHub API",
+            "project_definition": "The primary ecosystem for educational content delivery and management being validated for planning readiness."
+        },
+        {
+            "term": "Feature",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Readiness",
+            "project_definition": "A functional unit of value that must align with measurable outcomes and possess clear acceptance criteria for primary user flows."
+        }
+    ]
+}

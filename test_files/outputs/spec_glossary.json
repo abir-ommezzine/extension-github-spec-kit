@@ -1,0 +1,411 @@
+{
+    "project_name": "Expense Tracker",
+    "items": [
+        {
+            "term": "001-expense-tracker",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification",
+            "project_definition": "The unique identifier for the Git feature branch dedicated to the initial implementation of the application."
+        },
+        {
+            "term": "AA",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "SC-007",
+            "project_definition": "The specific conformance level of the Web Content Accessibility Guidelines requiring the most common accessibility barriers to be removed."
+        },
+        {
+            "term": "Acceptance Scenarios",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 1, 2, 3, 4",
+            "project_definition": "A set of Gherkin-style conditions that must be met to verify a user story is functionally complete."
+        },
+        {
+            "term": "Category",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Key Entities",
+            "project_definition": "A classification label from a predefined list (Food, Transport, etc.) used to group spending entries."
+        },
+        {
+            "term": "Created",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification",
+            "project_definition": "The timestamp marking when the technical specification document was first established."
+        },
+        {
+            "term": "Expense",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Key Entities",
+            "project_definition": "The primary data entity containing financial outlay details including id, amount, date, category, description, and createdAt."
+        },
+        {
+            "term": "Expense Tracker",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Project Info",
+            "project_definition": "A personal financial utility for recording, listing, and aggregating spending without user authentication."
+        },
+        {
+            "term": "FR",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Abbreviation for Functional Requirements, referencing the specific mandatory system behaviors."
+        },
+        {
+            "term": "FR-001",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for the creation of a new spending entry via a form with amount, date, category, and description."
+        },
+        {
+            "term": "FR-002",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for input validation ensuring the financial amount is strictly positive and greater than zero."
+        },
+        {
+            "term": "FR-003",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for date validation that permits future dates but triggers a warning notification."
+        },
+        {
+            "term": "FR-004",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for a restricted selection of spending labels to ensure data consistency."
+        },
+        {
+            "term": "FR-005",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for sorting the spending list in descending chronological order."
+        },
+        {
+            "term": "FR-006",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for the removal of spending entries subject to a user confirmation prompt."
+        },
+        {
+            "term": "FR-007",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for the calculation and display of the cumulative sum of all spending entries."
+        },
+        {
+            "term": "FR-008",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for the calculation and display of the total number of spending records."
+        },
+        {
+            "term": "FR-009",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement to save data into the browser's local key-value store for persistence between page reloads."
+        },
+        {
+            "term": "FR-010",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement to retrieve previously stored spending data from the browser's local storage upon app initialization."
+        },
+        {
+            "term": "FR-011",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement to show a specific UI state when no spending records are found in the system."
+        },
+        {
+            "term": "FR-012",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for the immediate recalculation of totals following any data modification."
+        },
+        {
+            "term": "FR-013",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Explicit constraint forbidding the update of existing records in v1; changes require a delete-and-recreate cycle."
+        },
+        {
+            "term": "FR-014",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "Requirement for partial data loading, limiting the initial dashboard view to the 50 most recent records."
+        },
+        {
+            "term": "Feature Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification",
+            "project_definition": "The isolated Git development line where the feature implementation occurs before merging into main."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Edge Cases",
+            "project_definition": "The implicit requirement to handle currency values as decimals with two-point precision to avoid floating-point errors."
+        },
+        {
+            "term": "Given",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Acceptance Scenarios",
+            "project_definition": "A Gherkin keyword describing the initial state or precondition of a test scenario."
+        },
+        {
+            "term": "ISO",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Key Entities",
+            "project_definition": "The international standardization organization providing the format for date representations."
+        },
+        {
+            "term": "ISO 8601",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Key Entities",
+            "project_definition": "The specific international standard for representing dates and times as strings (YYYY-MM-DD) used for expense date attributes."
+        },
+        {
+            "term": "Independent Test",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 1, 2, 3, 4",
+            "project_definition": "A verification method that can be executed in isolation to validate a specific user story without external dependencies."
+        },
+        {
+            "term": "Input",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification",
+            "project_definition": "The original user-provided description and constraints used as the seed for the project requirements."
+        },
+        {
+            "term": "LocalStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Edge Cases",
+            "project_definition": "The sole mechanism for client-side data persistence in v1, ensuring data survives browser restarts without a backend server."
+        },
+        {
+            "term": "MUST",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "A RFC 2119-style keyword indicating an absolute requirement that cannot be omitted from the implementation."
+        },
+        {
+            "term": "NOT",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-013",
+            "project_definition": "An explicit negative constraint used to define out-of-scope functionality for the current version."
+        },
+        {
+            "term": "P1",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 1, 2, 3",
+            "project_definition": "The highest priority level assigned to critical core functionalities required for the basic application to be viable."
+        },
+        {
+            "term": "P2",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 4",
+            "project_definition": "The medium priority level assigned to value-added features that are not strictly necessary for basic data entry."
+        },
+        {
+            "term": "SC",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Abbreviation for Success Criteria, defining the quantitative and qualitative benchmarks for a successful delivery."
+        },
+        {
+            "term": "SC-001",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Performance benchmark requiring a new expense to be added in less than 30 seconds from dashboard load."
+        },
+        {
+            "term": "SC-002",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Performance benchmark requiring immediate rendering of local data without asynchronous loading indicators."
+        },
+        {
+            "term": "SC-003",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Performance benchmark requiring a deletion and confirmation flow to be completed in under 5 seconds."
+        },
+        {
+            "term": "SC-004",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Accuracy benchmark ensuring the aggregate total matches the sum of all individual line items."
+        },
+        {
+            "term": "SC-005",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Persistence benchmark requiring data to remain available across different browser sessions."
+        },
+        {
+            "term": "SC-006",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Interactivity benchmark requiring the application to become usable within 2 seconds of loading."
+        },
+        {
+            "term": "SC-007",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "Compliance benchmark requiring zero critical accessibility errors according to WCAG AA standards."
+        },
+        {
+            "term": "Session 2026",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Clarifications",
+            "project_definition": "The temporal marker for the synchronization session where final scope decisions (like the removal of editing) were made."
+        },
+        {
+            "term": "Status",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification",
+            "project_definition": "The current lifecycle stage of the specification document (currently marked as Draft)."
+        },
+        {
+            "term": "Story 1",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 1",
+            "project_definition": "The functional requirement for creating new spending records."
+        },
+        {
+            "term": "Story 2",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 2",
+            "project_definition": "The functional requirement for retrieving and displaying spending history."
+        },
+        {
+            "term": "Story 3",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 3",
+            "project_definition": "The functional requirement for removing erroneous spending records."
+        },
+        {
+            "term": "Story 4",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 4",
+            "project_definition": "The functional requirement for displaying aggregated spending statistics."
+        },
+        {
+            "term": "Then",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Acceptance Scenarios",
+            "project_definition": "A Gherkin keyword describing the expected outcome or post-condition of a test scenario."
+        },
+        {
+            "term": "USD",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Assumptions",
+            "project_definition": "The fixed monetary unit used for all financial calculations and displays in v1."
+        },
+        {
+            "term": "WCAG",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "SC-007",
+            "project_definition": "The Web Content Accessibility Guidelines used as the standard to ensure the dashboard is usable by people with disabilities."
+        },
+        {
+            "term": "When",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Acceptance Scenarios",
+            "project_definition": "A Gherkin keyword describing the specific action or trigger performed by the user."
+        },
+        {
+            "term": "last 2",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Assumptions",
+            "project_definition": "The browser compatibility target limiting support to the most recent two versions of major web browsers."
+        },
+        {
+            "term": "recent 50",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-014",
+            "project_definition": "The specific limit of records to be rendered initially on the dashboard to optimize performance."
+        },
+        {
+            "term": "under 30",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "SC-001",
+            "project_definition": "The maximum acceptable time in seconds for a user to successfully add an expense."
+        },
+        {
+            "term": "under 5",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "SC-003",
+            "project_definition": "The maximum acceptable time in seconds for a user to complete a deletion flow."
+        },
+        {
+            "term": "v1",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-013",
+            "project_definition": "The initial version of the project, characterized by limited scope: add/view/delete functionality and local persistence only."
+        },
+        {
+            "term": "within 2",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "SC-006",
+            "project_definition": "The performance target for application Time-to-Interactive (TTI) on a standard broadband connection."
+        }
+    ]
+}
