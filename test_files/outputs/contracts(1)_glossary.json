@@ -1,0 +1,89 @@
+{
+    "project_name": "CourseHub",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API Overview",
+            "project_definition": "The set of RESTful endpoints under version v1 providing programmatic access to educational resource management."
+        },
+        {
+            "term": "ActiveEnrollmentConstraint",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-ACTIVE-ENROLL",
+            "project_definition": "A business rule preventing the removal of a pedagogical unit if linked registrations exist."
+        },
+        {
+            "term": "Authentication",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "NFR-AUTH-JWT",
+            "project_definition": "The mechanism verifying identity via Bearer tokens within the request headers."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "API Overview",
+            "project_definition": "The security protocol governing cross-origin resource sharing for the specified base URL."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "The application of the bcrypt algorithm to secure passwords before persistence."
+        },
+        {
+            "term": "FK",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-COURSE",
+            "project_definition": "A relational database link ensuring referential integrity between dependent and parent records."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "ENT-COURSE",
+            "project_definition": "The representation of monetary values as integers in cents to avoid floating-point precision errors."
+        },
+        {
+            "term": "ISO",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "The 8601 standard utilized for consistent temporal formatting across all timestamps."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "NFR-RESPONSE-ENVELOPE",
+            "project_definition": "The primary data interchange format used for request bodies and response envelopes."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "NFR-AUTH-JWT",
+            "project_definition": "The signed token format used to maintain stateless session authorization."
+        },
+        {
+            "term": "Role",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "A classification assigning specific permissions, such as student or instructor, to a system user."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "A 128-bit universally unique identifier used as the primary key for all main entities."
+        }
+    ]
+}

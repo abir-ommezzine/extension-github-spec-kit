@@ -1,0 +1,292 @@
+{
+    "parsing_rationale": "The document is a comprehensive task list for the CourseHub API implementation. I have extracted the structural phases as 'phase' elements and the specific checklist items as 'task' or 'sub_task' elements. The dependency graph provided in the markdown was used to build the relationship arcs. The test criteria from each section were mapped to 'test_case' and 'acceptance_criterion' elements to ensure full traceability from implementation to validation.",
+    "project_info": {
+        "project_name": "CourseHub API",
+        "source_type": "refining",
+        "brief_explanation": "Technical implementation plan for a course management API including auth, enrollment, and progress tracking.",
+        "source_context": "Task list derived from spec.md and plan.md"
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Tasks: CourseHub API Implementation",
+            "level": 1,
+            "raw_content": "**Feature**: CourseHub API (`001-coursehub-api`)\n\n**Created**: 2026-06-27\n\n**Status**: Ready for Implementation\n\n**Reference**: [spec.md](spec.md) | [plan.md](plan.md)\n\n---",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Implementation Strategy",
+            "level": 2,
+            "raw_content": "This task list follows a dependency-ordered, phase-based approach:\n\n1. **Phase 1 (Setup)**: Project initialization, database schema, migrations\n2. **Phase 2 (Foundation)**: Auth layer with JWT and role-based access control\n3. **Phase 3 (Integration)**: Resend email service via BackgroundTask\n4. **Phase 4 (Domain - US1)**: Instructor course management (CRUD, ownership, deletion constraint)\n5. **Phase 5 (Domain - US2)**: Student registration, enrollment, discovery\n6. **Phase 6 (Domain - US3)**: Progress tracking and student data isolation\n7. **Phase 7 (Testing)**: Comprehensive test suite and coverage validation\n8. **Phase 8 (Polish)**: Error handling, response envelope, observability\n\nEach phase is independently testable. Phases 4–6 map to user stories and can be developed in parallel after Phase 3.\n\n---",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Phase 1: Project Setup & Database Schema",
+            "level": 2,
+            "raw_content": "- [ ] T001 Create project structure... [Full Content] ...AsyncSession can be created and cleaned up without errors",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Phase 2: Auth Router & JWT Flow",
+            "level": 2,
+            "raw_content": "- [ ] T009 Create `app/core/security.py`... [Full Content] ...Refresh token expires after 7 days (verify JWT exp claim)",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Phase 3: Resend Email Integration & BackgroundTask",
+            "level": 2,
+            "raw_content": "- [ ] T015 Create `app/services/email.py`... [Full Content] ...Missing RESEND_API_KEY raises ConfigError at startup (not at request time)",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Phase 4: Courses Router — Instructor Management (US1)",
+            "level": 2,
+            "raw_content": "**User Story**: Instructor manages courses... [Full Content] ...DELETE without enrollments succeeds (204)",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
+            "level": 2,
+            "raw_content": "**User Story**: Student registers and enrols... [Full Content] ...Progress == 100 auto-sets completed_at (200)",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Phase 6: Progress Tracking & Data Isolation (US3)",
+            "level": 2,
+            "raw_content": "**User Story**: Progress is tracked and exposed safely... [Full Content] ...Student cannot update another student's progress (403)",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Phase 7: Testing & Coverage",
+            "level": 2,
+            "raw_content": "- [ ] T027 Create `tests/conftest.py`... [Full Content] ...No mocking of PostgreSQL; uses real test instance",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "Phase 8: Response Envelope & Error Handling",
+            "level": 2,
+            "raw_content": "- [ ] T033 [P] Create global exception handler... [Full Content] ...Envelope format consistent across all endpoints",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        },
+        {
+            "title": "Dependency Graph",
+            "level": 2,
+            "raw_content": "Phase 1 (Setup) -> Phase 2 (Auth) -> Phase 3 (Email) -> [Phase 4, 5] -> Phase 6 -> Phase 7 -> Phase 8",
+            "mapped_to_template_field": "Dependencies & Integration Points"
+        },
+        {
+            "title": "Success Criteria",
+            "level": 2,
+            "raw_content": "- All 36 tasks completed... [Full Content] ...HTTP status codes match contract",
+            "mapped_to_template_field": "Acceptance Criteria"
+        },
+        {
+            "title": "MVP Scope (Phase 1 Delivery)",
+            "level": 2,
+            "raw_content": "For a minimal viable product, focus on: Phases 1–3, Phase 4, Phase 5, Phase 7",
+            "mapped_to_template_field": "Implementation Notes & References"
+        }
+    ],
+    "elements": [
+        {
+            "type": "phase",
+            "identifier": "PHASE-1",
+            "content": "Project Setup & Database Schema",
+            "source_section": "Phase 1: Project Setup & Database Schema",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T001",
+            "content": "Create project structure: app/, app/core/, etc.",
+            "source_section": "Phase 1: Project Setup & Database Schema",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T005",
+            "content": "Define ORM models: User, Course, Module, Enrollment",
+            "source_section": "Phase 1: Project Setup & Database Schema",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-2",
+            "content": "Auth Router & JWT Flow",
+            "source_section": "Phase 2: Auth Router & JWT Flow",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T009",
+            "content": "Create security utilities (JWT, hashing)",
+            "source_section": "Phase 2: Auth Router & JWT Flow",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T013",
+            "content": "Implement /auth/register, /auth/login, /auth/refresh",
+            "source_section": "Phase 2: Auth Router & JWT Flow",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-3",
+            "content": "Resend Email Integration & BackgroundTask",
+            "source_section": "Phase 3: Resend Email Integration & BackgroundTask",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T015",
+            "content": "Implement async welcome email service using Resend SDK",
+            "source_section": "Phase 3: Resend Email Integration & BackgroundTask",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-4",
+            "content": "Courses Router — Instructor Management (US1)",
+            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T020",
+            "content": "Implement Course CRUD endpoints for instructors",
+            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "ACTIVE_ENROLLMENT_CONSTRAINT",
+            "content": "Prevent course deletion if active enrollments exist",
+            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-5",
+            "content": "Enrollments Router — Student Discovery & Enrollment (US2)",
+            "source_section": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T023",
+            "content": "Implement enrollment endpoints for students",
+            "source_section": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-6",
+            "content": "Progress Tracking & Data Isolation (US3)",
+            "source_section": "Phase 6: Progress Tracking & Data Isolation (US3)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T025",
+            "content": "Implement student data isolation checks",
+            "source_section": "Phase 6: Progress Tracking & Data Isolation (US3)",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-7",
+            "content": "Testing & Coverage",
+            "source_section": "Phase 7: Testing & Coverage",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-E2E",
+            "content": "End-to-end workflow: Register -> Create Course -> Enroll -> Progress",
+            "source_section": "Phase 7: Testing & Coverage",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-8",
+            "content": "Response Envelope & Error Handling",
+            "source_section": "Phase 8: Response Envelope & Error Handling",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T033",
+            "content": "Implement global exception handler and APIResponse envelope",
+            "source_section": "Phase 8: Response Envelope & Error Handling",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-COVERAGE",
+            "content": "80%+ coverage on business logic",
+            "source_section": "Success Criteria",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "PHASE-2",
+            "to": "PHASE-1",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-3",
+            "to": "PHASE-2",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "PHASE-3",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-5",
+            "to": "PHASE-3",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-6",
+            "to": "PHASE-5",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-7",
+            "to": "PHASE-6",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-8",
+            "to": "PHASE-7",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "T020",
+            "to": "ACTIVE_ENROLLMENT_CONSTRAINT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T001",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T005",
+            "relation_type": "contains"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "The document is very detailed; however, no specific open questions were listed. Check if any edge cases for the Resend API are unknown."
+        }
+    ],
+    "open_questions": []
+}

@@ -32,8 +32,6 @@ class ArtifactType(str, enum.Enum):
     plan = "plan"
     task = "task"
     constitution = "constitution"
-    contract = "contract"
-    requirements = "requirements"
 
 
 class GeneratedBy(str, enum.Enum):
@@ -82,6 +80,7 @@ class Artifact(Base):
     project_id = Column(
         UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
     )
+    current_file_hash = Column(String(64), nullable=True)
     source_path = Column(String(500), nullable=False)  # ex: specs/003-x/context.md
     artifact_type = Column(String(100), nullable=False, default="unknown")
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
@@ -116,7 +115,9 @@ class DocVersion(Base):
     )
     version_no = Column(Integer, nullable=False)
     pdf_path = Column(String(500), nullable=False)
+    source_file_hash = Column(String(64), nullable=False)
     generated_at = Column(DateTime, server_default=func.now(), nullable=False)
+    sections_summary = Column(JSONB, nullable=True)
     commit_hash = Column(String(40), nullable=True)
     generated_by = Column(
         SAEnum(GeneratedBy, name="generated_by_enum", native_enum=False),

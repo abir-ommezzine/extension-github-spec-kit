@@ -1,0 +1,229 @@
+{
+    "project_name": "Expense Tracker",
+    "items": [
+        {
+            "term": "001-expense-tracker",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Development Workflow & Quality Gates > Branching Policy",
+            "project_definition": "Naming convention for initial feature branches used to isolate development work from the main integration line."
+        },
+        {
+            "term": "AA",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "V. Strict Accessibility (WCAG AA)",
+            "project_definition": "The specific conformance level of accessibility standards that the UI must satisfy to ensure usability for people with disabilities."
+        },
+        {
+            "term": "ARIA",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "V. Strict Accessibility (WCAG AA)",
+            "project_definition": "Semantic attributes added to HTML elements to provide descriptive labels for assistive technologies."
+        },
+        {
+            "term": "Branching Policy",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Development Workflow & Quality Gates",
+            "project_definition": "Strict workflow governing the creation of feature branches and forbidding direct commits to the main branch."
+        },
+        {
+            "term": "CD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Open Questions & Uncertainties > CI/CD pipeline",
+            "project_definition": "Automated deployment phase of the pipeline following successful testing and integration."
+        },
+        {
+            "term": "CI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Open Questions & Uncertainties > CI/CD pipeline",
+            "project_definition": "Automated process for integrating code changes, running linters, and executing the Jest suite before merging."
+        },
+        {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack",
+            "project_definition": "Styling layer implemented via Tailwind's utility-first approach for responsive layouts."
+        },
+        {
+            "term": "Data Schemas",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack",
+            "project_definition": "Formal structural definitions and validation rules for the internal representation of financial records."
+        },
+        {
+            "term": "Expense",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack > Data Schemas",
+            "project_definition": "The primary data entity containing a unique identifier, monetary value, currency type, category, description, and timestamp."
+        },
+        {
+            "term": "Expense Tracker",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Expense Tracker Constitution",
+            "project_definition": "A local-first, single-user financial monitoring application that prohibits backend infrastructure in its first version."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack > Data Schemas",
+            "project_definition": "Validation logic requiring the amount field to be a positive number strictly greater than zero."
+        },
+        {
+            "term": "II",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "II. Next.js App Router & Server Components Integrity",
+            "project_definition": "Structural section identifier designating the architecture guidelines for Next.js implementation."
+        },
+        {
+            "term": "III",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "III. Client-Side Persistence via LocalStorage",
+            "project_definition": "Structural section identifier designating the persistence layer requirements."
+        },
+        {
+            "term": "ISO 8601",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack > Data Schemas > date",
+            "project_definition": "The international standard format for the date attribute within the Expense object to ensure temporal consistency."
+        },
+        {
+            "term": "IV",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "IV. Testing Discipline & Quality Gates",
+            "project_definition": "Structural section identifier designating the quality assurance and testing mandates."
+        },
+        {
+            "term": "Last Amended",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Open Questions & Uncertainties",
+            "project_definition": "The timestamp of the most recent modification to the project's governing constitution."
+        },
+        {
+            "term": "LocalStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "III. Client-Side Persistence via LocalStorage",
+            "project_definition": "The exclusive browser-based storage mechanism used for state persistence, excluding any external databases."
+        },
+        {
+            "term": "Merge Requirements",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Development Workflow & Quality Gates",
+            "project_definition": "The three-gate validation process (compilation, linting, testing) that must be passed before a branch can enter the main line."
+        },
+        {
+            "term": "NON",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "IV. Testing Discipline & Quality Gates (NON-NEGOTIABLE)",
+            "project_definition": "Emphasis marker indicating that the quality gates are mandatory and cannot be bypassed under any circumstance."
+        },
+        {
+            "term": "Node 18",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack",
+            "project_definition": "The minimum required JavaScript runtime environment for executing the application and its build tools."
+        },
+        {
+            "term": "RSC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "II. Next.js App Router & Server Components Integrity",
+            "project_definition": "Default rendering paradigm used to minimize client-side JavaScript by processing components on the server."
+        },
+        {
+            "term": "Ratified",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Open Questions & Uncertainties",
+            "project_definition": "The date on which the project's core architectural principles were formally approved."
+        },
+        {
+            "term": "TBD",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Open Questions & Uncertainties",
+            "project_definition": "Placeholder identifying unresolved technical decisions regarding the placement of the Jest test runner."
+        },
+        {
+            "term": "Testing Engine",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack",
+            "project_definition": "The combination of Jest and React Testing Library used to verify utility and component logic."
+        },
+        {
+            "term": "TypeScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack",
+            "project_definition": "The statically typed superset of JavaScript used to ensure type safety and zero compilation errors during merge."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "V. Strict Accessibility (WCAG AA)",
+            "project_definition": "The presentation layer of the application, which must adhere to accessibility and contrast standards."
+        },
+        {
+            "term": "Version",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Open Questions & Uncertainties",
+            "project_definition": "The current iteration identifier of the project constitution, currently set to 1.0.0."
+        },
+        {
+            "term": "WCAG",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "V. Strict Accessibility (WCAG AA)",
+            "project_definition": "The global web accessibility guidelines used to audit the user interface for critical violations."
+        },
+        {
+            "term": "amount",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Constraints & Stack > Data Schemas",
+            "project_definition": "The specific attribute of an Expense that must be a positive numeric value greater than zero."
+        },
+        {
+            "term": "feat/expense-tracker",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Development Workflow & Quality Gates > Branching Policy",
+            "project_definition": "Example of a compliant feature branch name used for developing the core tracking functionality."
+        },
+        {
+            "term": "localStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "III. Client-Side Persistence via LocalStorage",
+            "project_definition": "The web API used by the client adapter to persist application state without a backend."
+        },
+        {
+            "term": "v1",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "I. Local-First & Zero-Auth Architecture",
+            "project_definition": "The initial release phase where backend, cloud sync, and authentication are explicitly prohibited."
+        }
+    ]
+}
