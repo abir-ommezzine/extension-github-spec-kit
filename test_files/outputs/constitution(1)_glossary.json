@@ -5,106 +5,99 @@
             "term": "API",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "API-CONTRACT",
-            "project_definition": "RESTful interface versioned under /api/v1/ employing a standardized response envelope containing data, meta, and error fields."
+            "contextual_anchor": "API-REST",
+            "project_definition": "RESTful interface versioned under /api/v1/ utilizing a standardized envelope containing data, meta, and errors."
         },
         {
             "term": "AsyncClient",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "TEST-FRAMEWORK",
-            "project_definition": "The httpx non-blocking request handler utilized within pytest for executing integration tests."
-        },
-        {
-            "term": "DB",
-            "category": "TECHNICAL_STACK",
-            "discovery": "IMPLICIT",
-            "contextual_anchor": "DB-ASYNC",
-            "project_definition": "The persistent storage layer requiring strictly non-blocking access patterns."
+            "contextual_anchor": "TEST-PYTEST",
+            "project_definition": "httpx component utilized within pytest to perform non-blocking request validation."
         },
         {
             "term": "II",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "II. Authentication and Authorization",
-            "project_definition": "Sectional identifier for the security and permissions governance rules."
+            "project_definition": "Structural section identifier designating the security and access control specifications."
         },
         {
             "term": "III",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "III. API Contract and Response Shape",
-            "project_definition": "Sectional identifier for the communication protocol and data exchange format."
+            "project_definition": "Structural section identifier designating the interface exchange format and response structure."
         },
         {
             "term": "IV",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "IV. Data Access and Persistence",
-            "project_definition": "Sectional identifier for the storage interaction and migration constraints."
+            "project_definition": "Structural section identifier designating the persistence layer and data retrieval constraints."
         },
         {
             "term": "JSON",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "API-CONTRACT",
-            "project_definition": "The required lightweight data-interchange format for all network responses."
+            "contextual_anchor": "API-REST",
+            "project_definition": "The mandatory lightweight data-interchange format for all system responses."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "AUTH-JWT",
-            "project_definition": "Compact, URL-safe means of representing claims to be informationally exchanged, configured with a 15-minute access and 7-day refresh lifespan."
+            "project_definition": "Compact, URL-safe means of representing claims to be transferred between two parties, with a 15-minute access and 7-day refresh lifespan."
         },
         {
             "term": "Last Amended",
-            "category": "TECHNICAL_STACK",
+            "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Learning Platform API Constitution",
-            "project_definition": "The timestamp marking the final modification of the technical governance document."
+            "project_definition": "The most recent date of modification for the governing technical document."
         },
         {
             "term": "ORM",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "DB-ASYNC",
-            "project_definition": "The exclusive abstraction layer for mapping object-oriented code to relational tables, prohibiting direct query execution."
+            "project_definition": "The exclusive mechanism for performing database interactions, prohibiting the use of direct query strings."
         },
         {
             "term": "PostgreSQL",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "STACK-CORE",
-            "project_definition": "The relational database engine version 16 used for both production and testing environments."
+            "contextual_anchor": "STACK-01",
+            "project_definition": "Version 16 relational database engine used for primary storage and testing instances."
         },
         {
             "term": "Python 3.12",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "STACK-CORE",
-            "project_definition": "The mandatory runtime environment version for all backend implementation."
+            "contextual_anchor": "STACK-01",
+            "project_definition": "The mandatory runtime environment and language specification for all project implementations."
         },
         {
             "term": "SDK",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "MAIL-RESEND",
-            "project_definition": "The official Resend Python library used for transactional email dispatch."
+            "contextual_anchor": "TOOL-RESEND",
+            "project_definition": "The specific Python library provided by the external transactional mail platform for message delivery."
         },
         {
             "term": "SQL",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "DB-ASYNC",
-            "project_definition": "The structured query language whose raw execution is strictly forbidden in favor of the abstraction layer."
+            "project_definition": "Raw structured query language, the use of which is strictly forbidden in favor of the mapped persistence layer."
         },
         {
             "term": "SQLAlchemy 2.0",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "STACK-CORE",
-            "project_definition": "The database toolkit used for async execution and relational mapping."
+            "contextual_anchor": "STACK-01",
+            "project_definition": "The toolkit used for database abstraction, strictly requiring asynchronous execution patterns."
         }
     ]
 }

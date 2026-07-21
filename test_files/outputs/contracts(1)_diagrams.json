@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "CourseHub Data Model",
+            "type": "erDiagram",
+            "description": "Entity Relationship Diagram representing the core data structures for Users, Courses, Modules, and Enrollments.",
+            "mermaid_code": "erDiagram\n    ENT-USER ||--o{ ENT-COURSE : \"instructs\"\n    ENT-USER ||--o{ ENT-ENROLLMENT : \"registers\"\n    ENT-COURSE ||--o{ ENT-MODULE : \"contains\"\n    ENT-COURSE ||--o{ ENT-ENROLLMENT : \"has\"\n\n    ENT-USER {\n        uuid id PK\n        string email\n        string display_name\n        string role\n        timestamp created_at\n    }\n    ENT-COURSE {\n        uuid id PK\n        uuid instructor_id FK\n        string title\n        string description\n        integer price_cents\n        boolean published\n        timestamp created_at\n        timestamp updated_at\n    }\n    ENT-MODULE {\n        uuid id PK\n        uuid course_id FK\n        string title\n        integer order\n        timestamp created_at\n    }\n    ENT-ENROLLMENT {\n        uuid id PK\n        uuid student_id FK\n        uuid course_id FK\n        integer progress\n        timestamp completed_at\n        timestamp created_at\n        timestamp updated_at\n    }"
+        },
+        {
+            "title": "Course Deletion & Enrollment Workflow",
+            "type": "flowchart",
+            "description": "Business logic flow for deleting a course and updating enrollment progress, incorporating system constraints.",
+            "mermaid_code": "flowchart TD\n    START[Start]\n    \n    subgraph CourseManagement\n        REQ-COURSE-DELETE[\"Request DELETE /api/v1/courses/course_id\"]\n        DEC_ENROLL{\"Any active enrollments?\"}\n        RULE-ACTIVE-ENROLL[\"Error: ACTIVE_ENROLLMENT_CONSTRAINT\"]\n        DEL_SUCCESS[\"Course Deleted Successfully\"]\n    end\n\n    subgraph ProgressManagement\n        REQ-ENROLL-PROGRESS[\"Request PUT /api/v1/enrollments/enrollment_id\"]\n        DEC_PROGRESS{\"Progress == 100?\"}\n        RULE-AUTO-COMPLETE[\"Set completed_at to current timestamp\"]\n        UPDATE_SUCCESS[\"Enrollment Updated\"]\n    end\n\n    START --> REQ-COURSE-DELETE\n    REQ-COURSE-DELETE --> DEC_ENROLL\n    DEC_ENROLL -- \"Yes\" --> RULE-ACTIVE-ENROLL\n    DEC_ENROLL -- \"No\" --> DEL_SUCCESS\n    \n    START --> REQ-ENROLL-PROGRESS\n    REQ-ENROLL-PROGRESS --> DEC_PROGRESS\n    DEC_PROGRESS -- \"Yes\" --> RULE-AUTO-COMPLETE\n    DEC_PROGRESS -- \"No\" --> UPDATE_SUCCESS\n    RULE-AUTO-COMPLETE --> UPDATE_SUCCESS\n\n    RULE-ACTIVE-ENROLL --> END[End]\n    DEL_SUCCESS --> END\n    UPDATE_SUCCESS --> END"
+        },
+        {
+            "title": "Requirements Traceability Matrix",
+            "type": "flowchart",
+            "description": "Mapping of functional requirements to their implementing entities and governing business rules.",
+            "mermaid_code": "flowchart LR\n    subgraph FunctionalRequirements\n        REQ-AUTH-REG[\"REQ-AUTH-REG: Student Registration\"]\n        REQ-COURSE-CREATE[\"REQ-COURSE-CREATE: Course Creation\"]\n        REQ-COURSE-DELETE[\"REQ-COURSE-DELETE: Course Deletion\"]\n        REQ-ENROLL-POST[\"REQ-ENROLL-POST: Course Enrollment\"]\n        REQ-ENROLL-PROGRESS[\"REQ-ENROLL-PROGRESS: Progress Update\"]\n    end\n\n    subgraph DataEntities\n        ENT-USER[\"ENT-USER: User\"]\n        ENT-COURSE[\"ENT-COURSE: Course\"]\n        ENT-MODULE[\"ENT-MODULE: Module\"]\n        ENT-ENROLLMENT[\"ENT-ENROLLMENT: Enrollment\"]\n    end\n\n    subgraph BusinessRules\n        RULE-ACTIVE-ENROLL[\"RULE-ACTIVE-ENROLL: ActiveEnrollmentConstraint\"]\n        RULE-AUTO-COMPLETE[\"RULE-AUTO-COMPLETE: Auto-completion Logic\"]\n    end\n\n    REQ-AUTH-REG -->|implements| ENT-USER\n    REQ-COURSE-CREATE -->|implements| ENT-COURSE\n    REQ-COURSE-CREATE -->|contains| ENT-MODULE\n    REQ-COURSE-DELETE -->|depends_on| RULE-ACTIVE-ENROLL\n    REQ-ENROLL-POST -->|implements| ENT-ENROLLMENT\n    REQ-ENROLL-PROGRESS -->|depends_on| RULE-AUTO-COMPLETE"
+        },
+        {
+            "title": "Course Enrollment Sequence",
+            "type": "sequenceDiagram",
+            "description": "Interaction flow between a Student, the API Gateway, and the Backend for course enrollment.",
+            "mermaid_code": "sequenceDiagram\n    actor Student\n    participant API as API Gateway\n    participant BE as Backend Service\n    participant DB as Database\n\n    Student ->> API: POST /api/v1/enrollments (JWT Token)\n    API ->> API: Validate JWT (NFR-AUTH-JWT)\n    API ->> BE: Forward Enrollment Request\n    BE ->> DB: Check if Course is Published (ENT-COURSE)\n    DB -->> BE: Course Status\n    \n    alt Course is Published\n        BE ->> DB: Create Enrollment Record (ENT-ENROLLMENT)\n        DB -->> BE: Success\n        BE -->> API: 201 Created (NFR-RESPONSE-ENVELOPE)\n        API -->> Student: Response Envelope {data: Enrollment}\n    else Course is Private\n        BE -->> API: 403 Forbidden\n        API -->> Student: Response Envelope {errors: [\"Course not published\"]}\n    end"
+        }
+    ]
+}

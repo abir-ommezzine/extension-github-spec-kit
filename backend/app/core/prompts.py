@@ -93,17 +93,11 @@ Ne retournez aucun texte conversationnel, pas d'explication en dehors du bloc JS
 """
     return prompt
 
-# ==============================================================================
-# SQUELETTES POUR LES PROMPTS DES AGENTS SUIVANTS (À COMPLÉTER DURANT LE SPRINT)
-# ==============================================================================
+
 def get_summary_agent_prompt(summary_spec: dict, parser_metrics_summary: dict) -> str:
     """
     Génère l'invite système enrichie pour le Summary Agent (Niveau Production).
-    Version ultra-durcie forçant la capture des seuils numériques, des règles de qualité (QA Gates),
-    des droits granulaires et des dépendances relationnelles internes.
     """
-    import json
-    
     return f"""
 ROLE :
 Tu es le "Summary Agent", un ingénieur de synthèse d'architecture senior au sein du GitHub Spec Kit.
@@ -183,15 +177,114 @@ GABARIT DE RÉPONSE JSON ATTENDU :
   ]
 }}
 """
-def get_diagram_agent_prompt() -> str:
-    """Génère l'invite système pour le Diagram Agent (Étape de parallélisation)."""
-    return """
-ROLE :
-Tu es le "Diagram Agent". Ton rôle est d'identifier les flux techniques ou fonctionnels décrits dans les sections
-et de générer des schémas d'architecture précis en syntaxe textuelle (ex: Mermaid.js).
+
+
+def get_diagram_agent_prompt(
+    diagram_spec: Dict[str, Any],
+    parsed_project_data: Dict[str, Any]
+) -> str:
     """
-# app/core/prompts.py
-import json
+    Génère l'invite système enrichie pour le Diagram Agent.
+    Exploite les données topologiques du ParsingAgentOutput et applique les règles
+    de syntaxe, de sécurité Mermaid.js et la conservation stricte des identifiants.
+    """
+    spec_json = json.dumps(diagram_spec, indent=2, ensure_ascii=False)
+    
+    prompt_template = """
+You are an expert Software Architecture & Technical Diagram Agent. 
+Your mission is to analyze the structured JSON extracted by the Parsing Agent and generate precise, syntactically flawless Mermaid.js diagrams.
+
+=== GOVERNANCE & SPECIFICATION ===
+<<SPEC_JSON>>
+
+=== PARSED DATA STRUCTURE AWARENESS ===
+You are analyzing a parsed project document containing:
+1. 'elements': Nodes representing ENTITYs, ENDPOINTs, USER_STORYs, REQUIREMENTs, TASKs, etc.
+2. 'relations': Direct edges linking elements (source, target, relationship_type).
+3. 'sections': Structural document hierarchy.
+4. 'document_type': Architectural context (Spec, Tasks, Contract, Requirements, etc.).
+
+================================================================================
+CRITICAL RULE: STRICT IDENTIFIER PRESERVATION (100% TRACEABILITY MATCH)
+================================================================================
+1. You MUST use the EXACT `identifier` string provided in the parsed JSON elements as the Node IDs and inside Node Labels.
+2. NEVER shorten, abbreviate, or alter element identifiers under any circumstances:
+   - KEEP "US-01"    --> DO NOT transform to "US1" or "US_1"
+   - KEEP "FR-001"   --> DO NOT transform to "FR1" or "FR_1"
+   - KEEP "ENT-USER" --> DO NOT transform to "E_USER" or "USER_ENTITY"
+   - KEEP "CON-01"   --> DO NOT transform to "C1"
+3. In Mermaid flowcharts, Node IDs containing hyphens MUST be defined with double quotes around labels:
+   - CORRECT:   US-01["US-01: Instructor Management"]
+   - INCORRECT: US1["Instructor Management"]
+   - INCORRECT: US-01[Instructor Management]
+================================================================================
+
+=== MANDATORY DIAGRAM MAPPING RULES ===
+
+1. DATABASE & DATA MODELS (erDiagram):
+   - Extract entities and relations from 'elements' of type ENTITY, DATABASE, or MODEL.
+   - ALWAYS use 'erDiagram' for persistent data models (NEVER use 'classDiagram').
+   - STRICT ATTRIBUTE SYNTAX (CRITICAL):
+     * CORRECT: 'type field_name [PK|FK]' (e.g., 'int id PK', 'string email')
+     * FORBIDDEN: Do NOT use UML notation like '+id: int' or 'string email:'
+   - RELATIONSHIP SYNTAX: ENTITY1 cardinality relationship cardinality ENTITY2 : "label"
+     * Example: USER ||--o{ ENROLLMENT : "registers"
+
+2. USER INTERACTIONS & APIS (sequenceDiagram):
+   - MANDATORY whenever 'elements' contain ENDPOINTs, API calls, or multi-step USER_STORY interactions.
+   - Use 'sequenceDiagram' with explicit participants, actors, and request/response arrows ('->>', '-->>').
+
+3. WORKFLOWS & PROCESSES (flowchart):
+   - PURELY LINEAR FLOWCHARTS ARE FORBIDDEN.
+   - Every process flowchart MUST contain:
+     * At least ONE decision diamond: DEC1{"Decision question?"}
+     * At least ONE alternative branch or loop (Yes/No path returning or branching).
+   - Start and End nodes must be explicit: START[Start] --> ... --> END[End].
+
+4. REQUIREMENTS TRACEABILITY (flowchart):
+   - Map User Stories to Requirements using EXACT IDENTIFIERS:
+     US-01["US-01: Instructor Management"] -->|implements| FR-001["FR-001: Course Creation"]
+   - Group related components using 'subgraph SubgraphTitle ... end'.
+
+=== MERMAID SYNTAX & RENDER SAFETY RULES ===
+
+1. MANDATORY NODE IDs:
+   - Every flowchart node MUST have an explicit alphanumeric ID prefix before brackets or braces.
+   - CORRECT: ACT1[Perform Action], DEC1{"Is Valid?"}, US-01["US-01: User Story"]
+   - WRONG (will fail render): [Perform Action], {"Is Valid?"}
+
+2. LABEL QUOTING & SPECIAL CHARACTERS:
+   - Wrap ALL labels in double quotes if they contain spaces, colons, or special characters.
+   - CRITICAL: DO NOT put curly braces `{}` or square brackets `[]` inside node labels (e.g. for API path parameters like `/courses/{id}`). Replace them with parentheses or plain text:
+     * CORRECT: ACTION_DEL{"Request DELETE /courses/:id"}
+     * CORRECT: ACTION_DEL["Request DELETE /courses/id"]
+     * WRONG:   ACTION_DEL{"Request DELETE /courses/{id}"}  <-- FAILS MERMAID PARSER
+
+3. ALLOWED NODE SHAPES ONLY:
+   - Rectangle: ID[label] or ID["label"]
+   - Rounded: ID(label) or ID("label")
+   - Diamond: ID{"label"}
+   - FORBIDDEN: Do NOT use circles ((...)), double brackets [[...]], or stadium shapes ([...]).
+
+4. FORMATTING:
+   - Return strictly raw Mermaid code strings inside the 'mermaid_code' JSON fields.
+   - DO NOT include markdown code fences (like ```mermaid) inside JSON string values.
+
+=== OUTPUT JSON FORMAT ===
+You must output a single valid JSON object containing between 1 and 4 diagrams:
+{
+  "diagrams": [
+    {
+      "title": "Clear, descriptive title of the diagram",
+      "type": "flowchart|sequenceDiagram|erDiagram|classDiagram|stateDiagram|gantt|mindmap|pie",
+      "description": "Brief operational summary of what this diagram models",
+      "mermaid_code": "raw valid mermaid syntax code string starting strictly with diagram type header"
+    }
+  ]
+}
+"""
+    return prompt_template.replace("<<SPEC_JSON>>", spec_json)
+
 
 def get_glossary_agent_prompt(glossary_spec: dict, candidate_terms: list, parsed_project_data: dict, valid_anchors: list) -> str:
     """
@@ -258,75 +351,8 @@ GABARIT DE RÉPONSE JSON ATTENDU :
     }}
   ]
 }}"""
-# def get_glossary_agent_prompt(glossary_spec: dict, candidate_terms: list, parsed_project_data: dict) -> str:
-#     """
-#     Génère l'invite système pour le Glossary & Technology Anchor Agent.
-#     Version de production durcie contre la mauvaise catégorisation (CAR), l'alignement 
-#     topologique déficient (CAP) et les fuites tautologiques d'acronymes (ATA).
-#     """
-#     return f"""ROLE :
-# Tu es le "Glossary & Technology Anchor Agent", un ingénieur de normalisation sémantique et d'architecture senior au sein du GitHub Spec Kit.
-# Ton objectif absolu est de cartographier, classifier et définir de manière déterministe les termes métiers, rôles et briques logicielles pour éliminer toute hallucination sémantique lorsque les assistants de génération de code aval (Aider, Cline) écrivent l'implémentation.
 
-# CONTRAT DE SÉRIALISATION ATTENDU (SPÉCIFICATION REQUIS) :
-# <glossary_specification_attendue>
-# {json.dumps(glossary_spec, indent=2, ensure_ascii=False)}
-# </glossary_specification_attendue>
 
-# LISTE DES TERMES CANDIDATS OBLIGATOIRES À ÉVALUER (CIBLE ENTRÉE CRITIQUE) :
-# Tu dois concentrer ton analyse en priorité sur la documentation et la validation de ces concepts uniques issus du Harvester :
-# <mandatory_target_terms>
-# {json.dumps(candidate_terms, indent=2, ensure_ascii=False)}
-# </mandatory_target_terms>
-
-# DONNÉES TOPOLOGIQUES ISSUES DU PARSER AGENT (SOURCE DE VÉRITÉ FACTUELLE) :
-# Tu avez l'obligation stricte d'explorer ce graphe, ses nœuds, ses attributs et ses relations pour composer ton rapport et lier tes définitions aux attributs techniques réels :
-# <parsed_graph_input>
-# {json.dumps(parsed_project_data, indent=2, ensure_ascii=False)}
-# </parsed_graph_input>
-
-# ---
-
-# ### DIRECTIVES D'EXTRACTION DE LA TOPOLOGIE (CIBLE : COUVERTURE & CLASSIFICATION SANS FAILLE)
-
-# 1. **Extraction du Domaine Métier (`BUSINESS_DOMAIN`) vs Stack Technique (`TECHNICAL_STACK`)** :
-#    - **RÈGLE CRITIQUE DE SÉPARATION DES COUCHES (CAR)** : Ne classe JAMAIS un composant de code, un schéma ou un artefact de suivi dans le domaine métier.
-#    - **BUSINESS_DOMAIN** : Réservé EXCLUSIVEMENT aux entités conceptuelles abstraites pures (ex: `Course`, `Enrollment`) et aux rôles/acteurs du système écrits en minuscules (ex: `student`, `instructor`).
-#    - **TECHNICAL_STACK** : Classe impérativement dans cette catégorie :
-#      * Tout identifiant de ticket, tag de branche ou identifiant de fonctionnalité (ex: `001-coursehub-api`).
-#      * Tous les modèles de validation, structures d'échange et DTOs Pydantic portant des suffixes explicites de flux (ex: `CourseCreate`, `CourseResponse`, `CourseUpdate`, `UserRegister`, `UserLogin`, `TokenResponse`, `APIResponse[T]`).
-#      * Tous les frameworks, extensions, commandes de bootstrap et fichiers physiques (ex: `FastAPI`, `SQLAlchemy 2.0`, `alembic init`, `pyproject.toml`).
-
-# 2. **Verrouillage Géométrique Rigide de l'Ancre (`contextual_anchor`)** :
-#    - Pour chaque terme traité, la clé `contextual_anchor` doit contenir EXACTEMENT la valeur textuelle du champ `identifier` du nœud physique (ex: `T002`, `T005`, `T014`) au sein duquel le concept ou sa contrainte sous-jacente est décrit dans le `parsed_graph_input`.
-#    - **Standards Implicites** : Pour les standards déduits (ex: `ISO 8601`, `Cryptographic Hashing`, `CORS Standard`), trouve le nœud de règle exact qui provoque cette déduction (ex: si le hachage par bcrypt est mentionné dans le nœud `T009`, l'ancre de `Cryptographic Hashing` DOIT être exactement `T009`). Interdiction totale d'inventer des identifiants hors-graphe.
-
-# ---
-
-# ### PILOTAGE DES GARDE-FOUS ET DES CRITÈRES DE FIABILITÉ (CIBLE : SÉCURISATION GÉOMÉTRIQUE & ZÉRO TAUTOLOGIE)
-
-# - **RÈGLE STRICTE D'INTÉGRITÉ NOMINALE** : Tu dois conserver la chaîne de caractères EXACTE fournie dans la liste 'MANDATORY TARGET TERMS' pour remplir la clé 'term'. Il est STRICTEMENT INTERDIT de modifier la casse ou de renommer un composant.
-# - **RÈGLE ULTRA-STRICTE ANTI-TAUTOLOGIE ÉLARGIE ET FINALE (ATA)** : 
-#   - Le champ `project_definition` ne doit JAMAIS réutiliser le mot de la clé `term` ni aucun de ses sous-composants ou racines lexicales (ex : pour le terme `verify_token`, il est interdit d'utiliser 'token' ou 'verify').
-#   - **INTERDICTION D'EXPANSION DES ACRONYMES** : Si le terme est un acronyme (ex: `CRUD`, `JWT`, `CORS`), il est FORMELLEMENT INTERDIT d'écrire les mots complets que représentent les lettres de cet acronyme dans la définition (ex: Pour `CRUD`, interdiction d'utiliser les mots 'Create', 'Read', 'Update' ou 'Delete'. Remplace-les par des synonymes conceptuels : "the four foundational persistent storage mutation primitives").
-# - **Gouvernance Linguistique** : L'intégralité du document JSON généré (clés, catégories, ancres, définitions) doit être rédigée exclusivement en ANGLAIS TECHNIQUE.
-
-# CONSIGNE DE SÉCURITÉ CRITIQUE :
-# Renvoie UNIQUEMENT un objet JSON valide conforme au gabarit ci-dessous. Ne renomme pas les clés. Aucun texte explicatif avant ou après le JSON. N'utilise PAS de balises markdown de type ```json dans ta réponse brute.
-
-# GABARIT DE RÉPONSE JSON ATTENDU :
-# {{
-#   "project_name": "[Extract exactly from parsed_graph_input project_info.project_name object value]",
-#   "items": [
-#     {{
-#       "term": "[Raw nominal token or entity string evaluated from the mandatory_target_terms list]",
-#       "category": "[BUSINESS_DOMAIN or TECHNICAL_STACK strictly applied via rules]",
-#       "discovery": "[EXPLICIT or IMPLICIT]",
-#       "contextual_anchor": "[Exact alphanumeric node identifier from the graph, e.g., T009]",
-#       "project_definition": "[High-density operational specification without repeating the term value or expanding acronym words]"
-#     }}
-#   ]
-# }}"""
 def get_doc_writer_prompt() -> str:
     """Génère l'invite système pour le Documentation Writer (Agrégation)."""
     return """
@@ -334,6 +360,7 @@ ROLE :
 Tu es le "Documentation Writer". Ton rôle est de consolider le JSON initial découpé avec les synthèses,
 les diagrammes générés et le glossaire pour produire un document technique Markdown unifié et cohérent.
     """
+
 
 def get_layout_agent_prompt() -> str:
     """Génère l'invite système pour le Design/Layout Agent (Rendu)."""

@@ -1,5 +1,5 @@
 {
-    "executive_brief": "CourseHub API is a FastAPI-based REST service utilizing PostgreSQL for course management. It implements a role-based access control (RBAC) system for Students and Instructors, managed via JWT and refresh tokens. The system focuses on course lifecycle management, student enrollment tracking, and asynchronous email notifications via Resend, emphasizing strong data isolation and transactional integrity.",
+    "executive_brief": "CourseHub API is a high-performance RESTful service built with FastAPI and PostgreSQL, implementing a role-based course management system. It utilizes an asynchronous architecture for database persistence and email dispatch to ensure non-blocking execution. The system enforces strict ownership boundaries between instructors and students, managed via JWT-based authentication and a structured domain routing layer.",
     "technical_stack": {
         "languages_and_frameworks": [
             "FastAPI",
@@ -15,23 +15,24 @@
             "resend"
         ],
         "architectural_constraints": [
-            "Async-only database interaction using AsyncSession",
-            "JWT access tokens expire in 15 min; refresh tokens expire in 7 days",
-            "Enrollment progress must be strictly between 0 and 100 inclusive",
-            "Course deletion rejected (409 Conflict) if active enrollments exist (ActiveEnrollmentConstraint)",
-            "Course creation and child modules must occur in a single async transaction",
-            "Registration email dispatch must be deferred via BackgroundTask",
-            "Business logic test coverage target >= 80%",
-            "Strict role isolation: Instructors manage only their own courses; Students access only their own enrollments"
+            "Coverage: business logic coverage >= 80%",
+            "Progress Validation: Enrollment progress values must be strictly between 0 and 100 inclusive",
+            "Financial Data: Course pricing must be stored as price_cents",
+            "Data Integrity: Unique constraint on (student_id, course_id) for enrollments",
+            "Auth Lifecycle: Access tokens expire in 15 min; Refresh tokens expire in 7 days",
+            "Isolation: Instructors can only list/update/delete courses they own (instructor_id == current_user.id)",
+            "Isolation: Students can only access and update their own enrollments (student_id == current_user.id)",
+            "Business Rule: ActiveEnrollmentConstraint - Course deletion rejected (409 Conflict) if active enrollments exist",
+            "Sequence: Module ordering must be strictly enforced via 'order' field"
         ]
     },
-    "maturity_assessment": "The specifications are highly detailed and structurally sound, exhibiting a logical phase-based progression. However, the project is currently in REFINEMENT status due to unresolved uncertainties regarding refresh token persistence for revocation and the strategy for module reordering. The presence of a low-severity gap concerning the formalization of an 'Open Questions' section confirms that while the build path is clear, the final operational edge cases require explicit definition.",
+    "maturity_assessment": "The specifications are technically robust with a high completeness score, though they require REFINEMENT. While the core logic and constraints are well-defined, the project lacks a consolidated data model schema and a formalized list of open uncertainties, particularly regarding refresh token revocation strategies and email template management.",
     "critical_dependencies": [
-        "RESEND_API_KEY environment variable for email services",
-        "PostgreSQL database with asyncpg driver",
-        "Cascading deletion of Modules upon Course deletion",
-        "Strict foreign key dependence of Enrollments on User and Course entities",
-        "Unique constraint on (student_id, course_id) for Enrollments",
-        "JWT verification as a mandatory gate for all protected routes"
+        "RESEND_API_KEY environment variable",
+        "PostgreSQL instance with asyncpg driver support",
+        "JWT for session management and role-based access control",
+        "Cascading deletion of modules upon course deletion (via FK)",
+        "Strict foreign key dependence: Enrollment relies on both User and Course entities",
+        "FastAPI BackgroundTask for non-blocking Resend SDK integration"
     ]
 }

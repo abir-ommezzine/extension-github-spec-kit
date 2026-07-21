@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "The document was parsed by mapping the technical requirements into a graph. Sections were mapped to the required template fields: 'Technology Standardization' and 'API Contract' to 'Coding Standards & Style', 'Quality and Testing' to 'Testing Discipline & Gates', and 'Development Workflow' to 'Branching & PR Workflow'. Specific technical constraints (JWT, Async DB, Resend SDK) were extracted as atomic elements and linked via relationships to ensure traceability.",
+    "parsing_rationale": "The document was parsed by mapping the 'Technology Standardization', 'API Contract', and 'Data Access' sections to 'Coding Standards & Style'. 'Quality and Testing' was mapped to 'Testing Discipline & Gates', and 'Development Workflow' to 'Branching & PR Workflow'. Elements were atomized into technical rules with unique identifiers and linked based on functional dependencies (e.g., migrations depending on the stack).",
     "project_info": {
         "project_name": "Learning Platform API",
         "source_type": "refining",
-        "brief_explanation": "Technical constitution defining the stack, API contracts, auth rules, and testing standards for a Learning Platform API.",
-        "source_context": "Constitution document extracted from markdown"
+        "brief_explanation": "Technical constitution defining the stack, API standards, security roles, and testing requirements for a Learning Platform API.",
+        "source_context": "constitution(1).md"
     },
     "doc_type": "constitution",
     "sections": [
@@ -72,104 +72,78 @@
     "elements": [
         {
             "type": "tool_configuration",
-            "identifier": "STACK-CORE",
-            "content": "Python 3.12, FastAPI, PostgreSQL 16, SQLAlchemy 2.0 (async), Alembic, Pydantic v2",
+            "identifier": "STACK-01",
+            "content": "Approved stack: Python 3.12, FastAPI, PostgreSQL 16, SQLAlchemy 2.0 (async), Alembic, Pydantic v2.",
             "source_section": "I. Technology Standardization",
-            "attributes": {
-                "python_version": "3.12",
-                "db_engine": "PostgreSQL 16"
-            }
-        },
-        {
-            "type": "rule",
-            "identifier": "AUTH-JWT",
-            "content": "JWT access tokens (15min expiry) and refresh tokens (7day expiry)",
-            "source_section": "II. Authentication and Authorization",
-            "attributes": {
-                "access_expiry": "15m",
-                "refresh_expiry": "7d"
-            }
-        },
-        {
-            "type": "rule",
-            "identifier": "AUTH-ROLES",
-            "content": "Two roles: student (enroll/progress) and instructor (create/edit/delete courses)",
-            "source_section": "II. Authentication and Authorization",
-            "attributes": {
-                "roles": [
-                    "student",
-                    "instructor"
-                ]
-            }
+            "attributes": {}
         },
         {
             "type": "coding_standard",
-            "identifier": "API-CONTRACT",
-            "content": "RESTful, JSON, versioned under /api/v1/, standard envelope {data, meta, errors}",
+            "identifier": "AUTH-JWT",
+            "content": "JWT authentication: 15-min expiry access tokens, 7-day expiry refresh tokens.",
+            "source_section": "II. Authentication and Authorization",
+            "attributes": {}
+        },
+        {
+            "type": "rule",
+            "identifier": "ROLE-RBAC",
+            "content": "Two roles only: student (enroll/submit progress) and instructor (create/edit/delete courses).",
+            "source_section": "II. Authentication and Authorization",
+            "attributes": {}
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "API-REST",
+            "content": "RESTful JSON API versioned under /api/v1/ with envelope: {'data': ..., 'meta': ..., 'errors': []}.",
             "source_section": "III. API Contract and Response Shape",
-            "attributes": {
-                "version": "v1",
-                "format": "JSON"
-            }
+            "attributes": {}
         },
         {
             "type": "rule",
             "identifier": "DB-ASYNC",
-            "content": "All DB access must be asynchronous via ORM; raw SQL is prohibited",
+            "content": "Asynchronous database access only via SQLAlchemy ORM; raw SQL prohibited.",
             "source_section": "IV. Data Access and Persistence",
-            "attributes": {
-                "sync_forbidden": true,
-                "raw_sql_forbidden": true
-            }
+            "attributes": {}
         },
         {
-            "type": "tool_configuration",
+            "type": "rule",
             "identifier": "DB-MIGRATION",
-            "content": "Schema changes must be handled through Alembic migrations",
+            "content": "Schema changes must be managed exclusively via Alembic migrations.",
             "source_section": "IV. Data Access and Persistence",
-            "attributes": {
-                "tool": "Alembic"
-            }
+            "attributes": {}
         },
         {
             "type": "testing_gate",
-            "identifier": "TEST-FRAMEWORK",
-            "content": "Use pytest with httpx AsyncClient; Business logic coverage >= 80%",
+            "identifier": "TEST-PYTEST",
+            "content": "Use pytest with httpx AsyncClient; target 80% business logic coverage.",
             "source_section": "V. Quality and Testing",
-            "attributes": {
-                "min_coverage": "80%",
-                "client": "httpx AsyncClient"
-            }
+            "attributes": {}
         },
         {
             "type": "testing_gate",
-            "identifier": "TEST-DB-STRATEGY",
-            "content": "Database tests must use a real PostgreSQL instance; no mocking of the DB layer",
+            "identifier": "TEST-DB",
+            "content": "Database tests must use a real PostgreSQL instance; no mocking of the database layer.",
             "source_section": "V. Quality and Testing",
-            "attributes": {
-                "mocking_allowed": false
-            }
+            "attributes": {}
         },
         {
             "type": "tool_configuration",
-            "identifier": "MAIL-RESEND",
-            "content": "Transactional emails via Resend Python SDK using RESEND_API_KEY env var",
+            "identifier": "TOOL-RESEND",
+            "content": "Email delivery via Resend Python SDK using RESEND_API_KEY env variable.",
             "source_section": "Additional Constraints",
-            "attributes": {
-                "provider": "Resend"
-            }
-        },
-        {
-            "type": "workflow_constraint",
-            "identifier": "WF-PR-REVIEW",
-            "content": "Changes affecting auth, authorization, or response envelopes require explicit review",
-            "source_section": "Development Workflow",
             "attributes": {}
         },
         {
             "type": "workflow_constraint",
             "identifier": "WF-VALIDATION",
-            "content": "Features must be validated through tests and include migrations/docs before completion",
+            "content": "Features must be validated through tests before completion.",
+            "source_section": "Development Workflow",
+            "attributes": {}
+        },
+        {
+            "type": "workflow_constraint",
+            "identifier": "WF-REVIEW",
+            "content": "Explicit review required for changes to auth, authorization, or response envelopes.",
             "source_section": "Development Workflow",
             "attributes": {}
         }
@@ -177,32 +151,32 @@
     "relationships": [
         {
             "source": "DB-ASYNC",
-            "to": "STACK-CORE",
+            "to": "STACK-01",
             "relation_type": "implements"
         },
         {
             "source": "DB-MIGRATION",
-            "to": "STACK-CORE",
-            "relation_type": "implements"
+            "to": "STACK-01",
+            "relation_type": "depends_on"
         },
         {
-            "source": "TEST-FRAMEWORK",
-            "to": "DB-ASYNC",
-            "relation_type": "depends_on"
+            "source": "TEST-DB",
+            "to": "STACK-01",
+            "relation_type": "relates_to"
         },
         {
             "source": "WF-VALIDATION",
-            "to": "TEST-FRAMEWORK",
+            "to": "TEST-PYTEST",
             "relation_type": "depends_on"
         },
         {
-            "source": "WF-PR-REVIEW",
+            "source": "WF-REVIEW",
             "to": "AUTH-JWT",
             "relation_type": "relates_to"
         },
         {
-            "source": "WF-PR-REVIEW",
-            "to": "API-CONTRACT",
+            "source": "WF-REVIEW",
+            "to": "API-REST",
             "relation_type": "relates_to"
         }
     ],
@@ -210,7 +184,7 @@
         {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "Add a section to document pending technical decisions or known unknowns for the project."
+            "remediation_advice": "The document is a formal ratification; add a section for evolving technical debt or undecided architectural patterns."
         }
     ],
     "open_questions": []
