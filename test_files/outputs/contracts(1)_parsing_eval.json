@@ -8,9 +8,9 @@
         "macro_micro_traceability_index": 100.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
+            "Section requise absente des correspondances : open questions & uncertainties",
             "Section requise absente des correspondances : scope & out-of-scope",
-            "Section requise absente des correspondances : goals & objectives",
-            "Section requise absente des correspondances : open questions & uncertainties"
+            "Section requise absente des correspondances : goals & objectives"
         ]
     },
     "project_management_kpis": {
@@ -18,8 +18,8 @@
         "completeness_score": 40.0,
         "readiness_status": "NEEDS_REFINEMENT",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 19,
-            "total_edges_extracted": 9
+            "total_nodes_extracted": 14,
+            "total_edges_extracted": 10
         },
         "gaps_summary": {
             "high_severity": 1,

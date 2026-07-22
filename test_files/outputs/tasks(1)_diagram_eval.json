@@ -5,7 +5,7 @@
     "technical_evaluation": {
         "syntax_validity_rate": 75.0,
         "diagram_coverage_rate": 100.0,
-        "relational_completeness_rate": 64.3,
+        "relational_completeness_rate": 100.0,
         "structural_rule_adherence": 75.0
     },
     "project_management_kpis": {
@@ -15,7 +15,7 @@
             "flowchart": 2,
             "sequenceDiagram": 1
         },
-        "total_mermaid_lines_count": 102,
-        "average_lines_per_diagram": 25.5
+        "total_mermaid_lines_count": 104,
+        "average_lines_per_diagram": 26.0
     }
 }

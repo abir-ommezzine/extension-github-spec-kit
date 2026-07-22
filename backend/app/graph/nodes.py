@@ -1,7 +1,7 @@
 import json
 import asyncio
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 # Services & Outils
 from app.services.parser_service import run_parsing_agent
@@ -9,6 +9,7 @@ from app.services.summary_service import SummaryAgentService
 from app.services.glossary_service import GlossaryAgentService
 from app.services.diagram_service import DiagramAgentService
 from app.services.doc_writer_service import DocWriterAgentService
+from app.services.layout_service import LayoutAgentService
 from app.utils.glossary_tools import GlossaryHarvesterService
 from app.utils.diagram_tools import DiagramExporterTool
 
@@ -21,11 +22,13 @@ from app.services.evaluation_service import (
     DocWriterEvaluatorService
 )
 
-# Schemas
+# Schemas & State
 from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.schemas.diagram_agent_schema import DiagramOutputModel
+from app.schemas.layout_agent_schema import LayoutOutputModel
 from app.graph.state import GraphState
 
+# Chemins globaux
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
 OUTPUTS_DIR = BASE_DIR.parent / "test_files" / "outputs"
 
@@ -219,7 +222,6 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
     markdowns_dir = OUTPUTS_DIR / "markdowns"
     markdowns_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Extraction et formatage des données amont
     parsed_json_dict = state.get("parsed_json_dict") or {}
     parsed_doc = state.get("parsed_doc")
     
@@ -237,14 +239,12 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
     else:
         diagrams_json_dict = {"project_name": base_stem, "diagrams": []}
 
-    # 2. Chargement de la spec doc_writer
     spec_path = BASE_DIR / "app" / "resources" / "doc_writer_spec.json"
     doc_writer_spec_dict = {}
     if spec_path.exists():
         with open(spec_path, "r", encoding="utf-8") as f:
             doc_writer_spec_dict = json.load(f)
 
-    # 3. Exécution du service DocWriter
     service = DocWriterAgentService()
     doc_writer_output = None
     eval_report = {}
@@ -260,14 +260,12 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
             doc_writer_spec_dict=doc_writer_spec_dict
         )
 
-        # Sauvegarde du fichier Markdown généré dans outputs/markdowns/
         output_md_path = markdowns_dir / f"{base_stem}_doc.md"
         with open(output_md_path, "w", encoding="utf-8") as f:
             f.write(doc_writer_output.markdown_content)
         md_path_str = str(output_md_path)
         print(f"[💾] Markdown généré enregistré : {output_md_path.name}")
 
-        # 4. Évaluation via DocWriterEvaluatorService
         fallback_diagram = diagram_doc if isinstance(diagram_doc, DiagramOutputModel) else DiagramOutputModel(**diagrams_json_dict)
 
         eval_report = DocWriterEvaluatorService.evaluate(
@@ -278,7 +276,6 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
             diagram_data=fallback_diagram
         )
 
-        # Sauvegarde du JSON d'évaluation dans outputs/markdowns/
         eval_json_path = markdowns_dir / f"{base_stem}_doc_eval.json"
         _save_json(eval_json_path, eval_report)
         eval_path_str = str(eval_json_path)
@@ -293,19 +290,95 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
         "doc_writer_md_path": md_path_str,
         "doc_writer_eval_path": eval_path_str
     }
-# # app/graph/nodes.py
+
+
+# ------------------------------------------------------------------------------
+# 6. LAYOUT NODE (Certification & Rendu PDF Final)
+# ------------------------------------------------------------------------------
+def layout_node(state: GraphState) -> Dict[str, Any]:
+    print("\n[🚀 NODE] Exécution du Layout Agent (Publication PDF & Évaluation)...")
+    file_name = state["file_name"]
+    base_stem = _get_base_stem(file_name)
+    
+    documents_dir = OUTPUTS_DIR / "documents"
+    documents_dir.mkdir(parents=True, exist_ok=True)
+    
+    doc_writer_doc = state.get("doc_writer_doc")
+    markdown_text = ""
+    if doc_writer_doc and hasattr(doc_writer_doc, "markdown_content"):
+        markdown_text = doc_writer_doc.markdown_content
+    else:
+        output_md_path = OUTPUTS_DIR / "markdowns" / f"{base_stem}_doc.md"
+        if output_md_path.exists():
+            with open(output_md_path, "r", encoding="utf-8") as f:
+                markdown_text = f.read()
+
+    spec_path = BASE_DIR / "app" / "resources" / "layout_spec.json"
+    layout_spec_dict = {}
+    if spec_path.exists():
+        with open(spec_path, "r", encoding="utf-8") as f:
+            layout_spec_dict = json.load(f)
+
+    output_pdf_path = documents_dir / f"{base_stem}_spec.pdf"
+    eval_json_path = documents_dir / f"{base_stem}_layout_eval.json"
+
+    layout_result = None
+    eval_report = {}
+    pdf_path_str = None
+    eval_path_str = None
+
+    try:
+        service = LayoutAgentService()
+        layout_result = service.process_layout_and_render(
+            markdown_text=markdown_text,
+            layout_spec_dict=layout_spec_dict,
+            project_name=base_stem,
+            output_pdf_path=str(output_pdf_path)
+        )
+
+        if layout_result and layout_result.pdf_generated:
+            pdf_path_str = str(output_pdf_path)
+            print(f"[📄] Document PDF généré avec succès : {output_pdf_path.name}")
+            
+            eval_report = {
+                "project_name": layout_result.project_name,
+                "layout_publication_status": str(
+                    layout_result.layout_publication_status.value 
+                    if hasattr(layout_result.layout_publication_status, 'value') 
+                    else layout_result.layout_publication_status
+                ),
+                "page_count": layout_result.page_count,
+                "file_size_kb": layout_result.file_size_kb,
+                "rendered_diagrams_count": layout_result.rendered_diagrams_count,
+                "technical_evaluation": layout_result.technical_evaluation,
+                "project_management_kpis": layout_result.project_management_kpis,
+                "execution_warnings": layout_result.execution_warnings
+            }
+
+            _save_json(eval_json_path, eval_report)
+            eval_path_str = str(eval_json_path)
+            print(f"[💾] Évaluation Layout JSON enregistrée : {eval_json_path.name}")
+
+    except Exception as exc:
+        print(f"[❌ ERROR] Échec lors de l'exécution du LayoutAgent : {exc}")
+
+    return {
+        "layout_doc": layout_result,
+        "layout_metrics": eval_report,
+        "layout_pdf_path": pdf_path_str,
+        "layout_eval_path": eval_path_str
+    }
 # import json
 # import asyncio
 # from pathlib import Path
 # from typing import Dict, Any
-# from typing import Type, TypeVar
-# from pydantic import BaseModel
-# import re
+
 # # Services & Outils
 # from app.services.parser_service import run_parsing_agent
 # from app.services.summary_service import SummaryAgentService
 # from app.services.glossary_service import GlossaryAgentService
 # from app.services.diagram_service import DiagramAgentService
+# from app.services.doc_writer_service import DocWriterAgentService
 # from app.utils.glossary_tools import GlossaryHarvesterService
 # from app.utils.diagram_tools import DiagramExporterTool
 
@@ -314,11 +387,13 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
 #     ParsingEvaluatorService,
 #     SummaryEvaluatorService,
 #     GlossaryEvaluatorService,
-#     DiagramEvaluatorService
+#     DiagramEvaluatorService,
+#     DocWriterEvaluatorService
 # )
 
 # # Schemas
 # from app.schemas.parsing_agent_schema import ParsingAgentOutput
+# from app.schemas.diagram_agent_schema import DiagramOutputModel
 # from app.graph.state import GraphState
 
 # BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
@@ -446,13 +521,7 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
 # # ------------------------------------------------------------------------------
 # # 4. DIAGRAM NODE (Exécution Parallèle C)
 # # ------------------------------------------------------------------------------
-# # app/graph/nodes.py (extrait pour diagram_node)
-
 # def diagram_node(state: GraphState) -> Dict[str, Any]:
-#     """
-#     Nœud 4 : Exécute le Diagram Agent. En cas d'échec sur le JSON de diagramme,
-#     le workflow ne plante pas et poursuit son exécution.
-#     """
 #     print("\n[🚀 NODE] Exécution du Diagram Agent (Branche C)...")
 #     file_name = state["file_name"]
 #     parsed_json_dict = state["parsed_json_dict"]
@@ -469,7 +538,6 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
 #     diagram_output = None
     
 #     try:
-#         # Inférence LLM
 #         diagram_output = agent_service.generate_diagrams(
 #             parsed_json_dict=parsed_json_dict,
 #             diagram_spec_dict=diagram_spec_dict
@@ -483,7 +551,6 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
 #             "diagram_pdf_path": None
 #         }
 
-#     # Rendu PDF et Sauvegarde uniquement si le diagram_json est valide
 #     pdf_path_str = None
 #     try:
 #         diagrams_dict = diagram_output.model_dump()
@@ -496,7 +563,6 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
 #     except Exception as exc:
 #         print(f"[⚠️] Erreur lors du rendu PDF : {exc}")
 
-#     # Évaluation des métriques
 #     report = DiagramEvaluatorService.evaluate(
 #         diagram_data=diagram_output,
 #         parsed_data=parsed_doc
@@ -510,4 +576,90 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
 #         "diagram_doc": diagram_output,
 #         "diagram_metrics": report,
 #         "diagram_pdf_path": pdf_path_str
+#     }
+
+
+# # ------------------------------------------------------------------------------
+# # 5. DOC WRITER NODE (Convergence Finale)
+# # ------------------------------------------------------------------------------
+# def doc_writer_node(state: GraphState) -> Dict[str, Any]:
+#     print("\n[🚀 NODE] Exécution du Documentation Writer Agent (Convergence)...")
+#     file_name = state["file_name"]
+#     base_stem = _get_base_stem(file_name)
+#     markdowns_dir = OUTPUTS_DIR / "markdowns"
+#     markdowns_dir.mkdir(parents=True, exist_ok=True)
+
+#     # 1. Extraction et formatage des données amont
+#     parsed_json_dict = state.get("parsed_json_dict") or {}
+#     parsed_doc = state.get("parsed_doc")
+    
+#     summary_doc = state.get("summary_doc")
+#     summary_json_dict = summary_doc.model_dump() if hasattr(summary_doc, "model_dump") else (summary_doc or {})
+    
+#     glossary_doc = state.get("glossary_doc")
+#     glossary_json_dict = glossary_doc.model_dump() if hasattr(glossary_doc, "model_dump") else (glossary_doc or {})
+    
+#     diagram_doc = state.get("diagram_doc")
+#     if diagram_doc and hasattr(diagram_doc, "model_dump"):
+#         diagrams_json_dict = diagram_doc.model_dump()
+#     elif isinstance(diagram_doc, dict):
+#         diagrams_json_dict = diagram_doc
+#     else:
+#         diagrams_json_dict = {"project_name": base_stem, "diagrams": []}
+
+#     # 2. Chargement de la spec doc_writer
+#     spec_path = BASE_DIR / "app" / "resources" / "doc_writer_spec.json"
+#     doc_writer_spec_dict = {}
+#     if spec_path.exists():
+#         with open(spec_path, "r", encoding="utf-8") as f:
+#             doc_writer_spec_dict = json.load(f)
+
+#     # 3. Exécution du service DocWriter
+#     service = DocWriterAgentService()
+#     doc_writer_output = None
+#     eval_report = {}
+#     md_path_str = None
+#     eval_path_str = None
+
+#     try:
+#         doc_writer_output = service.generate_documentation(
+#             parsed_json_dict=parsed_json_dict,
+#             summary_json_dict=summary_json_dict,
+#             glossary_json_dict=glossary_json_dict,
+#             diagrams_json_dict=diagrams_json_dict,
+#             doc_writer_spec_dict=doc_writer_spec_dict
+#         )
+
+#         # Sauvegarde du fichier Markdown généré dans outputs/markdowns/
+#         output_md_path = markdowns_dir / f"{base_stem}_doc.md"
+#         with open(output_md_path, "w", encoding="utf-8") as f:
+#             f.write(doc_writer_output.markdown_content)
+#         md_path_str = str(output_md_path)
+#         print(f"[💾] Markdown généré enregistré : {output_md_path.name}")
+
+#         # 4. Évaluation via DocWriterEvaluatorService
+#         fallback_diagram = diagram_doc if isinstance(diagram_doc, DiagramOutputModel) else DiagramOutputModel(**diagrams_json_dict)
+
+#         eval_report = DocWriterEvaluatorService.evaluate(
+#             markdown_text=doc_writer_output.markdown_content,
+#             parsed_data=parsed_doc,
+#             summary_data=summary_doc,
+#             glossary_data=glossary_doc,
+#             diagram_data=fallback_diagram
+#         )
+
+#         # Sauvegarde du JSON d'évaluation dans outputs/markdowns/
+#         eval_json_path = markdowns_dir / f"{base_stem}_doc_eval.json"
+#         _save_json(eval_json_path, eval_report)
+#         eval_path_str = str(eval_json_path)
+#         print(f"[💾] Évaluation Markdown enregistrée : {eval_json_path.name}")
+
+#     except Exception as exc:
+#         print(f"[❌ ERROR] Échec lors de l'exécution du DocWriterAgent : {exc}")
+
+#     return {
+#         "doc_writer_doc": doc_writer_output,
+#         "doc_writer_metrics": eval_report,
+#         "doc_writer_md_path": md_path_str,
+#         "doc_writer_eval_path": eval_path_str
 #     }

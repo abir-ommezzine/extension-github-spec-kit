@@ -1,9 +1,9 @@
 {
-    "executive_brief": "CourseHub API is a FastAPI-based RESTful service leveraging PostgreSQL for course management and student enrollments. The architecture implements a strict role-based access control (RBAC) system via JWT and refresh tokens, ensuring a clear trust boundary between students and instructors. The system utilizes an asynchronous data pattern with SQLAlchemy 2.0 and asyncpg to maintain non-blocking I/O, integrating Resend for asynchronous email notifications via FastAPI BackgroundTasks.",
+    "executive_brief": "CourseHub API is a high-performance RESTful system built with FastAPI and PostgreSQL, utilizing an asynchronous SQLAlchemy 2.0 architecture. The platform implements a strict role-based access control (RBAC) model separating 'student' and 'instructor' personas, focusing on secure course lifecycle management and student enrollment tracking with a non-blocking email notification pattern.",
     "technical_stack": {
         "languages_and_frameworks": [
             "FastAPI",
-            "SQLAlchemy 2.0",
+            "SQLAlchemy 2.0 async",
             "asyncpg",
             "Pydantic v2",
             "Alembic",
@@ -15,23 +15,24 @@
             "resend"
         ],
         "architectural_constraints": [
-            "Code coverage: target >= 80% on business logic via pytest-cov",
-            "Enrollment progress values: strictly between 0 and 100 inclusive",
-            "Course deletion: rejected (HTTP 409) if active enrollments exist (ActiveEnrollmentConstraint)",
-            "Module ordering: enforced sequence via order column",
-            "Course ownership: Only the instructor who created a course can update or delete it",
-            "Student isolation: Students can only access/update their own enrollments",
-            "Registration: Email sending must be deferred to BackgroundTask to prevent API blocking",
-            "Course access: Students can only enroll in courses where published is true"
+            "DB Access: Exclusive use of AsyncSession; synchronous SQLAlchemy is prohibited.",
+            "Email Integration: Resend SDK calls must be wrapped in FastAPI BackgroundTask to prevent registration blocking.",
+            "Data Validation: Enrollment progress must be an integer strictly between 0 and 100 inclusive.",
+            "Quality Gate: Target minimum 80% code coverage on business logic via pytest-cov.",
+            "Business Rule (ActiveEnrollmentConstraint): Course deletion must return 409 Conflict if any associated Enrollment rows exist.",
+            "Role Isolation: Instructors can only access/update courses where instructor_id == current_user.id.",
+            "Role Isolation: Students can only access/update enrollments where student_id == current_user.id.",
+            "Data Integrity: Enrollment must enforce a unique constraint on (student_id, course_id).",
+            "Data Integrity: Course deletion triggers cascading delete of associated Modules via Foreign Key."
         ]
     },
-    "maturity_assessment": "The specifications are highly comprehensive with a complete structural mapping of the development phases, leading to a REFINEMENT status. While the architectural blueprint and data models are fully defined, the presence of unresolved uncertainties regarding refresh token persistence and email template externalization requires final design decisions before full execution.",
+    "maturity_assessment": "The specifications are structurally complete with a high degree of implementation detail, although the project remains in the REFINEMENT status. While the core domain logic is well-defined, there are unresolved uncertainties regarding refresh token persistence for revocation and the strategy for email template management. No high-severity structural gaps were identified, only a low-priority lack of a formal uncertainty section.",
     "critical_dependencies": [
-        "RESEND_API_KEY: Mandatory environment variable for email service",
-        "PostgreSQL: External database engine with asyncpg driver",
-        "JWT: Core dependency for authentication and role extraction",
-        "Cascading deletion: Course deletion must trigger removal of associated Modules via Foreign Key",
-        "Referential Integrity: Enrollment depends on existing User (student) and Course entities",
-        "Role-Based Gating: Course and Enrollment routers depend on the successful implementation of the Auth router"
+        "RESEND_API_KEY environment variable (Mandatory for Email Service)",
+        "PostgreSQL database with asyncpg driver support",
+        "JWT for stateless authentication and role-based session management",
+        "Cascading deletion dependency: Modules depend on Course entity existence",
+        "Referential integrity: Enrollment depends on both User (student) and Course entities",
+        "Pytest-asyncio for asynchronous test execution environment"
     ]
 }

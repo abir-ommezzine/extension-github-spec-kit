@@ -5,71 +5,85 @@
             "term": "API",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "API-REST",
-            "project_definition": "A RESTful interface versioned under /api/v1/ that utilizes a consistent envelope comprising data, meta, and errors fields."
+            "contextual_anchor": "API-REST-V1",
+            "project_definition": "The RESTful interface versioned under /api/v1/ using a standardized data envelope for all responses."
         },
         {
             "term": "AsyncClient",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "TEST-PYTEST",
-            "project_definition": "The httpx non-blocking requester used within pytest to validate business logic and endpoints."
+            "project_definition": "The httpx non-blocking request utility employed for validating business logic within the test suite."
+        },
+        {
+            "term": "CRUD",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-ROLES",
+            "project_definition": "The four foundational persistent storage mutation primitives permitted for instructors regarding course management."
+        },
+        {
+            "term": "DB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "DB-ASYNC-ORM",
+            "project_definition": "The persistent storage layer requiring non-blocking access and prohibiting direct query execution."
         },
         {
             "term": "JSON",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "API-REST",
-            "project_definition": "The mandatory data interchange format for all network responses."
+            "contextual_anchor": "API-REST-V1",
+            "project_definition": "The mandated lightweight data-interchange format for all system responses."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "AUTH-JWT",
-            "project_definition": "Security tokens with a 15-minute validity period for access and a 7-day period for refreshing sessions."
+            "project_definition": "The token-based security mechanism utilizing 15-minute short-lived access and 7-day refresh durations."
         },
         {
             "term": "ORM",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "DB-ASYNC",
-            "project_definition": "The exclusive mechanism for executing database queries to ensure all persistence logic remains asynchronous."
+            "contextual_anchor": "DB-ASYNC-ORM",
+            "project_definition": "The exclusive abstraction layer used for object-relational mapping to avoid manual query strings."
         },
         {
             "term": "PostgreSQL",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "STACK-CORE",
-            "project_definition": "The relational database version 16 used for both production and non-mocked testing environments."
+            "project_definition": "The approved version 16 relational database engine used across development and test environments."
         },
         {
             "term": "Python 3.12",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "STACK-CORE",
-            "project_definition": "The mandatory runtime environment for all backend implementation and SDK integration."
+            "project_definition": "The mandated runtime environment for all implementation work."
         },
         {
             "term": "SDK",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "EMAIL-RESEND",
-            "project_definition": "The official Python library utilized for transactional email delivery via an external service."
+            "project_definition": "The provided software development kit for integrating the external transactional email platform."
         },
         {
             "term": "SQL",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "DB-ASYNC",
-            "project_definition": "The raw query language which is strictly forbidden for direct use in the codebase."
+            "contextual_anchor": "DB-ASYNC-ORM",
+            "project_definition": "The structured query language which is explicitly prohibited in raw form for data access."
         },
         {
             "term": "SQLAlchemy 2.0",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "STACK-CORE",
-            "project_definition": "The asynchronous toolkit providing the interface for object-relational mapping and session management."
+            "project_definition": "The toolkit for database interaction requiring non-blocking execution and strict session management."
         }
     ]
 }

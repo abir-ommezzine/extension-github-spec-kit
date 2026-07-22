@@ -1,16 +1,16 @@
 {
     "diagrams": [
         {
-            "title": "CourseHub API Specification Quality Traceability",
+            "title": "Specification Readiness Workflow",
             "type": "flowchart",
-            "description": "Maps the relationship between quality constraints, completeness requirements, and feature readiness for the CourseHub API specification.",
-            "mermaid_code": "flowchart TD\n    subgraph \"Content Quality\"\n        QUAL-NO-IMPL[\"QUAL-NO-IMPL: No implementation details exposed\"]\n        QUAL-USER-VAL[\"QUAL-USER-VAL: Focus on user value and business needs\"]\n    end\n\n    subgraph \"Requirement Completeness\"\n        COMP-TESTABLE[\"COMP-TESTABLE: Requirements are testable and unambiguous\"]\n        COMP-MEASURABLE[\"COMP-MEASURABLE: Success criteria are measurable\"]\n        COMP-SCOPE[\"COMP-SCOPE: Scope is clearly bounded\"]\n    end\n\n    subgraph \"Feature Readiness\"\n        READY-AC[\"READY-AC: Functional requirements have clear AC\"]\n    end\n\n    READY-AC -->|depends_on| COMP-TESTABLE\n    COMP-MEASURABLE -->|relates_to| QUAL-USER-VAL"
+            "description": "Models the validation process of the CourseHub API specification based on the quality checklist constraints.",
+            "mermaid_code": "flowchart TD\n    START[Start Validation] --> CHECK_IMPL{\"Check Implementation Leakage?\"}\n    \n    CHECK_IMPL -- \"Details Found\" --> FIX_IMPL[\"Refine Feature Definition (QUAL-NO-IMPL)\"]\n    FIX_IMPL --> CHECK_IMPL\n    \n    CHECK_IMPL -- \"Clean\" --> CHECK_TEST{\"Are Requirements Testable?\"}\n    \n    CHECK_TEST -- \"Ambiguous\" --> FIX_TEST[\"Clarify Requirements (QUAL-TESTABLE)\"]\n    FIX_TEST --> CHECK_TEST\n    \n    CHECK_TEST -- \"Testable\" --> CHECK_AGNOSTIC{\"Is Success Criteria Agnostic?\"}\n    \n    CHECK_AGNOSTIC -- \"Tech-Specific\" --> FIX_AGNOSTIC[\"Remove Tech References (QUAL-AGNOSTIC)\"]\n    FIX_AGNOSTIC --> CHECK_AGNOSTIC\n    \n    CHECK_AGNOSTIC -- \"Agnostic\" --> READY[\"ASSUM-READY: Specification Ready for Planning\"]\n    READY --> END[End]"
         },
         {
-            "title": "Specification Validation Workflow",
+            "title": "Quality Constraint Traceability",
             "type": "flowchart",
-            "description": "The operational process for validating the CourseHub API specification based on the provided checklist criteria.",
-            "mermaid_code": "flowchart TD\n    START[Start Validation] --> CHECK_CONTENT{\"Content Quality Validated?\"}\n    \n    CHECK_CONTENT -- \"No\" --> FIX_CONTENT[\"Remove implementation details and align with user value\"]\n    FIX_CONTENT --> CHECK_CONTENT\n    \n    CHECK_CONTENT -- \"Yes\" --> CHECK_COMP{\"Requirements Complete?\"}\n    \n    CHECK_COMP -- \"No\" --> FIX_COMP[\"Define scope, identify edge cases and ensure testability\"]\n    FIX_COMP --> CHECK_COMP\n    \n    CHECK_COMP -- \"Yes\" --> CHECK_READY{\"Feature Ready for Planning?\"}\n    \n    CHECK_READY -- \"No\" --> FIX_READY[\"Map requirements to acceptance criteria\"]\n    FIX_READY --> CHECK_READY\n    \n    CHECK_READY -- \"Yes\" --> END[Specification Ready for Planning]"
+            "description": "Maps the relationship between the final readiness assumption and the underlying quality constraints.",
+            "mermaid_code": "flowchart LR\n    subgraph \"Quality Constraints\"\n        QUAL-NO-IMPL[\"QUAL-NO-IMPL: No Implementation Details\"]\n        QUAL-TESTABLE[\"QUAL-TESTABLE: Testable Requirements\"]\n        QUAL-AGNOSTIC[\"QUAL-AGNOSTIC: Technology Agnostic\"]\n    end\n\n    subgraph \"Final Conclusion\"\n        ASSUM-READY[\"ASSUM-READY: Ready to Proceed to Planning\"]\n    end\n\n    ASSUM-READY -->|depends_on| QUAL-NO-IMPL\n    ASSUM-READY -->|depends_on| QUAL-TESTABLE\n    ASSUM-READY -->|depends_on| QUAL-AGNOSTIC"
         }
     ]
 }

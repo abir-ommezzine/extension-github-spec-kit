@@ -5,13 +5,13 @@
         "maturity_alignment_score": 100.0,
         "conciseness_precision_score": 100.0,
         "extraction_completeness_rate": 100.0,
-        "brief_word_count": 50,
+        "brief_word_count": 52,
         "hallucinations_detected_count": 0
     },
     "project_management_kpis": {
         "extracted_technologies_count": 10,
-        "architectural_constraints_count": 7,
-        "external_dependencies_count": 6,
+        "architectural_constraints_count": 10,
+        "external_dependencies_count": 7,
         "external_risk_exposure": "ÉLEVÉ"
     }
 }

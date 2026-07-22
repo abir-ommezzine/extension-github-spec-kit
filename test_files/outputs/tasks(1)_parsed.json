@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "The document is a comprehensive technical task list for the CourseHub API. I have mapped the sequential phases to 'phase' types and individual checkboxes (T001-T036) to 'task' or 'sub_task' types. I've extracted specific business constraints (like the Active Enrollment Constraint) as 'constraint' elements. The relationship graph strictly follows the phase-based dependency chain and the link between tasks and their respective phases.",
+    "parsing_rationale": "The document is a detailed task list for the CourseHub API implementation. I have mapped the phases to tasks and sub-tasks, extracted specific test criteria as test_cases, and identified technical constraints (like the Active Enrollment Constraint). The dependency graph provided in the markdown was used to build the relationship arcs between phases and tasks.",
     "project_info": {
         "project_name": "CourseHub API",
         "source_type": "refining",
-        "brief_explanation": "Implementation of a course management API including authentication, instructor CRUD, student enrollments, and progress tracking.",
-        "source_context": "Task list for feature 001-coursehub-api based on spec and plan documents."
+        "brief_explanation": "Implementation of a course management API including authentication, instructor course CRUD, student enrollment, and progress tracking.",
+        "source_context": "Technical task list focusing on a phase-based execution strategy for a FastAPI project."
     },
     "doc_type": "task",
     "sections": [
@@ -90,9 +90,58 @@
     "elements": [
         {
             "type": "phase",
-            "identifier": "PHASE-01",
+            "identifier": "PHASE-1",
             "content": "Project Setup & Database Schema",
             "source_section": "Phase 1: Project Setup & Database Schema",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-2",
+            "content": "Auth Router & JWT Flow",
+            "source_section": "Phase 2: Auth Router & JWT Flow",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-3",
+            "content": "Resend Email Integration & BackgroundTask",
+            "source_section": "Phase 3: Resend Email Integration & BackgroundTask",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-4",
+            "content": "Courses Router — Instructor Management (US1)",
+            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-5",
+            "content": "Enrollments Router — Student Discovery & Enrollment (US2)",
+            "source_section": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-6",
+            "content": "Progress Tracking & Data Isolation (US3)",
+            "source_section": "Phase 6: Progress Tracking & Data Isolation (US3)",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-7",
+            "content": "Testing & Coverage",
+            "source_section": "Phase 7: Testing & Coverage",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-8",
+            "content": "Response Envelope & Error Handling",
+            "source_section": "Phase 8: Response Envelope & Error Handling",
             "attributes": {}
         },
         {
@@ -110,190 +159,129 @@
             "attributes": {}
         },
         {
-            "type": "phase",
-            "identifier": "PHASE-02",
-            "content": "Auth Router & JWT Flow",
-            "source_section": "Phase 2: Auth Router & JWT Flow",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "T009",
-            "content": "Create security utilities (JWT, hashing)",
-            "source_section": "Phase 2: Auth Router & JWT Flow",
-            "attributes": {}
-        },
-        {
             "type": "task",
             "identifier": "T013",
-            "content": "Implement /auth/register, /auth/login, /auth/refresh endpoints",
+            "content": "Create auth router endpoints (register, login, refresh)",
             "source_section": "Phase 2: Auth Router & JWT Flow",
             "attributes": {}
         },
         {
-            "type": "phase",
-            "identifier": "PHASE-03",
-            "content": "Resend Email Integration & BackgroundTask",
-            "source_section": "Phase 3: Resend Email Integration & BackgroundTask",
-            "attributes": {}
-        },
-        {
             "type": "task",
-            "identifier": "T015",
-            "content": "Create async email service using Resend SDK",
+            "identifier": "T016",
+            "content": "Integrate email into auth register endpoint via BackgroundTask",
             "source_section": "Phase 3: Resend Email Integration & BackgroundTask",
-            "attributes": {}
-        },
-        {
-            "type": "phase",
-            "identifier": "PHASE-04",
-            "content": "Courses Router — Instructor Management (US1)",
-            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
             "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T020",
-            "content": "Implement Course CRUD endpoints with ownership checks",
+            "content": "Create courses router endpoints for Instructor management",
             "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
-            "attributes": {}
-        },
-        {
-            "type": "constraint",
-            "identifier": "C-ACTIVE-ENROLL",
-            "content": "ActiveEnrollmentConstraint: Course cannot be deleted if it has active enrollments",
-            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
-            "attributes": {
-                "error_code": "ACTIVE_ENROLLMENT_CONSTRAINT",
-                "http_status": 409
-            }
-        },
-        {
-            "type": "phase",
-            "identifier": "PHASE-05",
-            "content": "Enrollments Router — Student Discovery & Enrollment (US2)",
-            "source_section": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
             "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T023",
-            "content": "Implement Enrollment endpoints (enroll, list, update progress)",
+            "content": "Create enrollments router endpoints for Student discovery & enrollment",
             "source_section": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
             "attributes": {}
         },
         {
-            "type": "phase",
-            "identifier": "PHASE-06",
-            "content": "Progress Tracking & Data Isolation (US3)",
-            "source_section": "Phase 6: Progress Tracking & Data Isolation (US3)",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "T025",
-            "content": "Implement student data isolation for enrollment access",
-            "source_section": "Phase 6: Progress Tracking & Data Isolation (US3)",
-            "attributes": {}
-        },
-        {
-            "type": "phase",
-            "identifier": "PHASE-07",
-            "content": "Testing & Coverage",
-            "source_section": "Phase 7: Testing & Coverage",
+            "type": "constraint",
+            "identifier": "ACTIVE-ENROLLMENT-CONSTRAINT",
+            "content": "Course cannot be deleted if it has active enrollments (BusinessRuleViolation 409)",
+            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
             "attributes": {}
         },
         {
             "type": "test_case",
-            "identifier": "TEST-INTEG-01",
-            "content": "End-to-end workflow: register -> create course -> enroll -> track progress",
+            "identifier": "TEST-S01",
+            "content": "Verify DELETE course with active enrollments returns 409 Conflict",
             "source_section": "Phase 7: Testing & Coverage",
             "attributes": {}
         },
         {
-            "type": "phase",
-            "identifier": "PHASE-08",
-            "content": "Response Envelope & Error Handling",
-            "source_section": "Phase 8: Response Envelope & Error Handling",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "T033",
-            "content": "Create global exception handler for standardized error envelopes",
-            "source_section": "Phase 8: Response Envelope & Error Handling",
+            "type": "acceptance_criterion",
+            "identifier": "AC-01",
+            "content": "All responses wrapped in APIResponse envelope",
+            "source_section": "Success Criteria",
             "attributes": {}
         }
     ],
     "relationships": [
         {
-            "source": "PHASE-02",
-            "to": "PHASE-01",
+            "source": "PHASE-2",
+            "to": "PHASE-1",
             "relation_type": "depends_on"
         },
         {
-            "source": "PHASE-03",
-            "to": "PHASE-02",
+            "source": "PHASE-3",
+            "to": "PHASE-2",
             "relation_type": "depends_on"
         },
         {
-            "source": "PHASE-04",
-            "to": "PHASE-03",
+            "source": "PHASE-4",
+            "to": "PHASE-3",
             "relation_type": "depends_on"
         },
         {
-            "source": "PHASE-05",
-            "to": "PHASE-03",
+            "source": "PHASE-5",
+            "to": "PHASE-3",
             "relation_type": "depends_on"
         },
         {
-            "source": "PHASE-05",
-            "to": "PHASE-04",
+            "source": "PHASE-6",
+            "to": "PHASE-5",
             "relation_type": "depends_on"
         },
         {
-            "source": "PHASE-06",
-            "to": "PHASE-05",
+            "source": "PHASE-7",
+            "to": "PHASE-6",
             "relation_type": "depends_on"
         },
         {
-            "source": "PHASE-07",
-            "to": "PHASE-06",
+            "source": "PHASE-8",
+            "to": "PHASE-7",
             "relation_type": "depends_on"
         },
         {
-            "source": "PHASE-08",
-            "to": "PHASE-07",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PHASE-01",
+            "source": "PHASE-1",
             "to": "T001",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-01",
+            "source": "PHASE-1",
             "to": "T005",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-02",
-            "to": "T009",
-            "relation_type": "contains"
-        },
-        {
-            "source": "PHASE-02",
+            "source": "PHASE-2",
             "to": "T013",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-04",
-            "to": "C-ACTIVE-ENROLL",
+            "source": "PHASE-3",
+            "to": "T016",
             "relation_type": "contains"
         },
         {
-            "source": "T020",
-            "to": "C-ACTIVE-ENROLL",
+            "source": "PHASE-4",
+            "to": "T020",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "ACTIVE-ENROLLMENT-CONSTRAINT",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-5",
+            "to": "T023",
+            "relation_type": "contains"
+        },
+        {
+            "source": "TEST-S01",
+            "to": "ACTIVE-ENROLLMENT-CONSTRAINT",
             "relation_type": "implements"
         }
     ],
@@ -301,7 +289,7 @@
         {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "The document is highly detailed; no explicit uncertainties were noted, but a dedicated section for edge-case discussion could be added."
+            "remediation_advice": "The document is highly detailed and doesn't list uncertainties, but a section for known risks could be added."
         }
     ],
     "open_questions": []

@@ -6,14 +6,14 @@
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "QUAL-NO-IMPL",
-            "project_definition": "The programmatic interface whose implementation details must remain hidden from the high-level functional definitions to prevent leakage."
+            "project_definition": "The technical interface whose implementation details must remain isolated from the core functional descriptions to maintain a technology-agnostic specification."
         },
         {
             "term": "Feature",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "READY-AC",
-            "project_definition": "A distinct unit of functionality that must align with measurable outcomes and possess clear acceptance criteria."
+            "contextual_anchor": "Feature Readiness",
+            "project_definition": "A bounded set of functional requirements aligned with measurable outcomes and validated through specific acceptance criteria."
         }
     ]
 }

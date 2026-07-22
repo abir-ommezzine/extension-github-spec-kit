@@ -10,8 +10,8 @@
     },
     "project_management_kpis": {
         "extracted_technologies_count": 3,
-        "architectural_constraints_count": 10,
-        "external_dependencies_count": 4,
+        "architectural_constraints_count": 9,
+        "external_dependencies_count": 5,
         "external_risk_exposure": "ÉLEVÉ"
     }
 }
