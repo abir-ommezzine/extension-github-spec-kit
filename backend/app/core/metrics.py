@@ -7,8 +7,7 @@ metrics.py — Calculateur de métriques d'évaluation pour les agents (Version 
 import re
 import difflib
 from typing import List, Dict, Any
-
-
+import math
 # ===========================================================================
 # 1. MÉTRIQUES POUR LE PARSING AGENT
 # ===========================================================================
@@ -424,3 +423,129 @@ def calculate_gff(markdown_text: str, glossary_items: List[Dict[str, Any]]) -> f
         score += 50.0
 
     return score
+
+
+# ===========================================================================
+# 6. MÉTRIQUES POUR LE LAYOUT AGENT (CONVERTISSEUR MD -> PDF)
+# ===========================================================================
+
+def calculate_rsr(pdf_generated: bool, file_size_bytes: int = 0) -> float:
+    """
+    Render Success Rate (RSR) :
+    Vérifie que la compilation du document s'est déroulée sans erreur
+    et que le fichier PDF résultant n'est pas vide (taille > 0 octets).
+    """
+    if pdf_generated and file_size_bytes > 0:
+        return 100.0
+    return 0.0
+
+
+def calculate_dvr(markdown_text: str, rendered_pdf_metadata: Dict[str, Any]) -> float:
+    """
+    Diagram Visual Render Rate (DVR) :
+    Vérifie que 100% des diagrammes ```mermaid présents dans le doc.md 
+    sont effectivement convertis et intégrés sous forme d'images dans le PDF final.
+    """
+    if not markdown_text:
+        return 100.0
+
+    # 1. Compter le nombre de blocs ```mermaid dans le doc.md d'origine
+    mermaid_blocks_in_md = len(re.findall(r"```mermaid", markdown_text, re.IGNORECASE))
+    if mermaid_blocks_in_md == 0:
+        return 100.0
+
+    # 2. Compter le nombre d'images de diagrammes insérées dans le PDF
+    rendered_diagrams_in_pdf = rendered_pdf_metadata.get("rendered_diagrams_count", 0)
+
+    # Ratio de conversion visuelle des diagrammes
+    return min(100.0, (rendered_diagrams_in_pdf / mermaid_blocks_in_md) * 100.0)
+
+
+def calculate_pba(markdown_text: str, actual_pdf_page_count: int) -> float:
+    """
+    Page Budget Adherence (PBA) Relié au Contexte :
+    Calcule dynamiquement le nombre de pages théoriques nécessaires en fonction :
+    - Du nombre de mots du doc.md (~350 mots / page PDF)
+    - Du nombre de diagrammes et tableaux (chaque schéma consomme environ 0.5 page).
+    """
+    if not markdown_text or actual_pdf_page_count <= 0:
+        return 0.0
+
+    # Extraction du volume du doc.md source
+    words = len(markdown_text.split())
+    diagrams = len(re.findall(r"```mermaid", markdown_text, re.IGNORECASE))
+    tables = len(re.findall(r"\|---", markdown_text))
+
+    # Estimation dynamique de la surface requise pour CE doc.md
+    estimated_pages = math.ceil((words / 350.0) + (diagrams * 0.5) + (tables * 0.2))
+    estimated_pages = max(1, estimated_pages)
+
+    # Marge de tolérance de ±1 page
+    min_allowed = max(1, estimated_pages - 1)
+    max_allowed = estimated_pages + 2
+
+    if min_allowed <= actual_pdf_page_count <= max_allowed:
+        return 100.0
+
+    # Calcul de la déviation par rapport à la taille réelle du doc.md
+    if actual_pdf_page_count < min_allowed:
+        dev = (min_allowed - actual_pdf_page_count) / min_allowed
+    else:
+        dev = (actual_pdf_page_count - max_allowed) / max_allowed
+
+    return max(0.0, (1.0 - dev) * 100.0)
+
+
+def calculate_vor(markdown_text: str, layout_overflow_report: Dict[str, Any]) -> float:
+    """
+    Visual Overflow Rate (VOR) Relié à la Mise en Page :
+    Compare les éléments à risque du doc.md (tableaux à nombreuses colonnes,
+    lignes de code très larges) avec le rapport de débordement du moteur PDF.
+    """
+    if not markdown_text:
+        return 100.0
+
+    # S'il n'y a aucun débordement signalé lors de la compilation du doc.md
+    overflow_events = layout_overflow_report.get("overflow_events_count", 0)
+    total_rendered_blocks = layout_overflow_report.get("total_rendered_blocks", 1)
+
+    if total_rendered_blocks == 0:
+        return 100.0
+
+    # Score d'intégrité visuelle sans tronquage (inverse de la pénalité)
+    overflow_ratio = overflow_events / total_rendered_blocks
+    return max(0.0, (1.0 - overflow_ratio) * 100.0)
+
+
+def calculate_scs(markdown_text: str, rendered_pdf_metadata: Dict[str, Any], layout_spec: Dict[str, Any]) -> float:
+    """
+    Styling & Structural Consistency Score (SCS) :
+    Vérifie la fidélité de conversion de la structure du doc.md vers le PDF :
+    1. Les titres H1/H2 du doc.md sont-ils tous présents dans la Table des Matières du PDF ?
+    2. La charte graphique (couleurs, polices de layout_spec.json) est-elle appliquée ?
+    """
+    if not markdown_text or not layout_spec:
+        return 100.0
+
+    checks = []
+
+    # 1. Traçabilité des sections du doc.md vers la Table des Matières du PDF
+    md_headings = re.findall(r"^##\s+(.+)$", markdown_text, re.MULTILINE)
+    pdf_toc_entries = rendered_pdf_metadata.get("toc_entries", [])
+
+    if md_headings:
+        matched_headings = sum(1 for h in md_headings if any(h.strip().lower() in toc.lower() for toc in pdf_toc_entries))
+        checks.append(matched_headings / len(md_headings))
+
+    # 2. Conformité aux contraintes de style du layout_spec.json
+    branding = layout_spec.get("branding_theme", {})
+    if branding.get("primary_color"):
+        checks.append(1.0 if rendered_pdf_metadata.get("applied_primary_color") == branding["primary_color"] else 0.0)
+
+    if layout_spec.get("header_footer_config", {}).get("enable_page_numbering", True):
+        checks.append(1.0 if rendered_pdf_metadata.get("has_page_numbers", False) else 0.0)
+
+    if not checks:
+        return 100.0
+
+    return (sum(checks) / len(checks)) * 100.0

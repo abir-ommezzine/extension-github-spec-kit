@@ -654,3 +654,108 @@ class DocWriterEvaluatorService:
             "embedded_diagrams_count": total_diagrams,
             "glossary_terms_count": total_glossary_terms
         }
+# ===========================================================================
+# SERVICE D'ÉVALUATION DU LAYOUT AGENT (RENDU & DESIGN PDF)
+# ===========================================================================
+
+class LayoutEvaluatorService:
+    """
+    Service autonome d'évaluation pour le Layout Agent.
+    Valide la compilation du PDF (RSR), la conversion des diagrammes (DVR),
+    le respect du budget de pages (PBA), l'absence de débordements (VOR)
+    et la conformité à la charte graphique (SCS).
+    """
+
+    @classmethod
+    def evaluate(
+        cls,
+        markdown_text: str,
+        rendered_pdf_metadata: Dict[str, Any],
+        layout_overflow_report: Dict[str, Any],
+        layout_spec: Dict[str, Any],
+        project_name: str = "Inconnu"
+    ) -> Dict[str, Any]:
+        technical_metrics = cls._calculate_technical_metrics(
+            markdown_text=markdown_text,
+            rendered_pdf_metadata=rendered_pdf_metadata,
+            layout_overflow_report=layout_overflow_report,
+            layout_spec=layout_spec
+        )
+        management_kpis = cls._calculate_management_kpis(
+            rendered_pdf_metadata=rendered_pdf_metadata,
+            layout_overflow_report=layout_overflow_report
+        )
+
+        rsr = technical_metrics["render_success_rate"]
+        dvr = technical_metrics["diagram_visual_render_rate"]
+        pba = technical_metrics["page_budget_adherence"]
+        vor = technical_metrics["visual_overflow_rate"]
+        scs = technical_metrics["styling_consistency_score"]
+
+        # Arbitrage du statut de validation de la qualité d'impression / publication
+        if rsr == 100.0 and dvr >= 90.0 and vor >= 90.0 and scs >= 85.0 and pba >= 70.0:
+            publication_status = "READY_FOR_PUBLICATION"
+        elif rsr == 100.0 and vor >= 70.0:
+            publication_status = "NEEDS_REFINEMENT"
+        else:
+            publication_status = "BLOCKED"
+
+        return {
+            "agent_evaluated": "Layout Agent",
+            "project_name": project_name,
+            "layout_publication_status": publication_status,
+            "technical_evaluation": technical_metrics,
+            "project_management_kpis": management_kpis
+        }
+
+    @staticmethod
+    def _calculate_technical_metrics(
+        markdown_text: str,
+        rendered_pdf_metadata: Dict[str, Any],
+        layout_overflow_report: Dict[str, Any],
+        layout_spec: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        from app.core.metrics import (
+            calculate_rsr,
+            calculate_dvr,
+            calculate_pba,
+            calculate_vor,
+            calculate_scs
+        )
+
+        pdf_generated = rendered_pdf_metadata.get("pdf_generated", False)
+        file_size_bytes = rendered_pdf_metadata.get("file_size_bytes", 0)
+        actual_page_count = rendered_pdf_metadata.get("page_count", 0)
+
+        rsr_score = calculate_rsr(pdf_generated, file_size_bytes)
+        dvr_score = calculate_dvr(markdown_text, rendered_pdf_metadata)
+        pba_score = calculate_pba(markdown_text, actual_page_count)
+        vor_score = calculate_vor(markdown_text, layout_overflow_report)
+        scs_score = calculate_scs(markdown_text, rendered_pdf_metadata, layout_spec)
+
+        return {
+            "render_success_rate": round(rsr_score, 1),
+            "diagram_visual_render_rate": round(dvr_score, 1),
+            "page_budget_adherence": round(pba_score, 1),
+            "visual_overflow_rate": round(vor_score, 1),
+            "styling_consistency_score": round(scs_score, 1)
+        }
+
+    @staticmethod
+    def _calculate_management_kpis(
+        rendered_pdf_metadata: Dict[str, Any],
+        layout_overflow_report: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        file_size_bytes = rendered_pdf_metadata.get("file_size_bytes", 0)
+        file_size_kb = round(file_size_bytes / 1024.0, 1) if file_size_bytes else 0.0
+        page_count = rendered_pdf_metadata.get("page_count", 0)
+        rendered_diagrams = rendered_pdf_metadata.get("rendered_diagrams_count", 0)
+        overflow_events = layout_overflow_report.get("overflow_events_count", 0)
+
+        return {
+            "pdf_generated_success": rendered_pdf_metadata.get("pdf_generated", False),
+            "total_pdf_pages_count": page_count,
+            "file_size_kb": file_size_kb,
+            "rendered_diagram_images_count": rendered_diagrams,
+            "overflow_events_detected_count": overflow_events
+        }
