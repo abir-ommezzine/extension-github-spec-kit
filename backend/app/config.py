@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "gemma4:31b-cloud"
     
+     # Groq Configuration
+    LLM_API_KEY: str
+    LLM_MODEL: str = "llama-3.3-70b-versatile"
+    
     PDF_STORAGE_DIR: str = "./storage/pdfs"
     LOG_LEVEL: str = "INFO"
 

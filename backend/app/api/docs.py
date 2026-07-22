@@ -7,7 +7,7 @@ from uuid import UUID
 
 from app.database import get_db
 from app.models import Artifact, ArtifactType, DocVersion, PipelineRun, Project
-from app.schemas import (
+from app.schema import (
     DocVersionResponse,
     ParseRequest,
     ParseResponse,

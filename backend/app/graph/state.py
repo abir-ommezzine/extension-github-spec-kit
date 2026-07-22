@@ -3,6 +3,7 @@ from typing import TypedDict, Dict, Any, Optional
 from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.schemas.summary_agent_schema import SummaryOutputModel
 from app.schemas.glossary_agent_schema import GlossaryOutputModel
+from app.schemas.document_writer_schema import DocumentWriterOutput
 
 class GraphState(TypedDict):
     # Entrées initiales du système
@@ -26,6 +27,11 @@ class GraphState(TypedDict):
     diagram_doc: Optional[Any]
     diagram_metrics: Optional[Dict[str, Any]]
     diagram_pdf_path: Optional[str]
+    
+    # 5. Document Writer : Document unifié (Post-convergence)  # NEW
+    document_writer_doc: Optional[DocumentWriterOutput]
+    document_writer_metrics: Optional[Dict[str, Any]]
+    
 # # app/graph/state.py
 # from typing import TypedDict, Dict, Any, Optional
 # from app.schemas.parsing_agent_schema import ParsingAgentOutput

@@ -7,7 +7,7 @@ from app.schemas.parsing_agent_schema import ParsingAgentOutput
 # Importations des composants et outils d'infrastructure
 from app.utils.glossary_tools import GlossaryHarvesterService
 from app.core.prompts import get_glossary_agent_prompt
-from app.core.llm_client import ollama_openai_client, get_ollama_model
+from app.core.llm_client import ollama_chat_with_retry, get_llm_model 
 from app.core.llm_utils import parse_and_validate_json
 
 class GlossaryAgentService:
@@ -57,14 +57,15 @@ class GlossaryAgentService:
 
         # 5. Inférence LLM via le client centralisé
         # Mode déterministe pur (temperature=0.0) et typage JSON strict imposé au modèle
-        response = ollama_openai_client.chat.completions.create(
-            model=get_ollama_model(),
+        response = ollama_chat_with_retry(
+            model=get_llm_model(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
             response_format={"type": "json_object"},
-            temperature=0.0
+            temperature=0.0,
+            max_tokens=8192  # Groq supports up to 8192 for this model
         )
         
         raw_output = response.choices[0].message.content

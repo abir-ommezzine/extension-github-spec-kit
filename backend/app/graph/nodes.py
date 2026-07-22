@@ -13,7 +13,9 @@ from app.services.glossary_service import GlossaryAgentService
 from app.services.diagram_service import DiagramAgentService
 from app.utils.glossary_tools import GlossaryHarvesterService
 from app.utils.diagram_tools import DiagramExporterTool
-
+from app.services.document_writer_service import DocumentWriterService
+from app.services.evaluation_service import DocumentWriterEvaluatorService
+from app.schemas.document_writer_schema import DocumentWriterOutput
 # Evaluators
 from app.services.evaluation_service import (
     ParsingEvaluatorService,
@@ -216,6 +218,72 @@ def diagram_node(state: GraphState) -> Dict[str, Any]:
         "diagram_metrics": report,
         "diagram_pdf_path": pdf_path_str
     }
+    
+# ------------------------------------------------------------------------------
+# 5. DOCUMENT WRITER NODE (Convergence Post-Parallèle)
+# ------------------------------------------------------------------------------
+def document_writer_node(state: GraphState) -> Dict[str, Any]:
+    """
+    Nœud 5 : Consolide les sorties des agents parallèles (Summary, Glossary, Diagram)
+    en un document Markdown unifié et cohérent via LLM.
+    S'exécute APRÈS la convergence des trois branches parallèles.
+    """
+    print("\n[🚀 NODE] Exécution du Document Writer (Convergence)...")
+    file_name = state["file_name"]
+    base_stem = _get_base_stem(file_name)
+    
+    # Récupération des données des agents parallèles (toutes optionnelles sauf parsing)
+    parsed_json_dict = state.get("parsed_json_dict", {})
+    parsed_doc = state.get("parsed_doc")
+    summary_doc = state.get("summary_doc")
+    glossary_doc = state.get("glossary_doc")
+    diagram_doc = state.get("diagram_doc")
+    diagram_pdf_path = state.get("diagram_pdf_path")
+    
+    # Chargement de la spec document writer
+    spec_path = BASE_DIR / "app" / "resources" / "document_writer_spec.json"
+    document_spec_dict = {}
+    if spec_path.exists():
+        with open(spec_path, "r", encoding="utf-8") as f:
+            document_spec_dict = json.load(f)
+    
+    # Exécution du service
+    agent_service = DocumentWriterService()
+    document_output = agent_service.generate_document(
+        parsed_json_dict=parsed_json_dict,
+        parsed_doc=parsed_doc,
+        summary_doc=summary_doc,
+        glossary_doc=glossary_doc,
+        diagram_doc=diagram_doc,
+        diagram_pdf_path=diagram_pdf_path,
+        document_spec_dict=document_spec_dict
+    )
+    
+    # Évaluation
+    report = DocumentWriterEvaluatorService.evaluate(
+        document_output=document_output,
+        summary_doc=summary_doc,
+        glossary_doc=glossary_doc,
+        diagram_doc=diagram_doc
+    )
+    
+    # Sauvegarde
+    _save_json(OUTPUTS_DIR / f"{base_stem}_document.json", document_output)
+    _save_json(OUTPUTS_DIR / f"{base_stem}_document_eval.json", report)
+    
+    # Sauvegarde du Markdown brut également
+    md_path = OUTPUTS_DIR / f"{base_stem}_document.md"
+    md_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write(document_output.markdown_content)
+    
+    print(f"[💾] Enregistré : {base_stem}_document.md, {base_stem}_document.json & {base_stem}_document_eval.json")
+    
+    return {
+        "document_writer_doc": document_output,
+        "document_writer_metrics": report
+    } 
+    
 # def diagram_node(state: GraphState) -> Dict[str, Any]:
 #     """
 #     Nœud 4 : Exécute le Diagram Agent, génère les diagrammes Mermaid,

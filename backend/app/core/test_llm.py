@@ -31,7 +31,7 @@ def run_diagnostics():
                 {"role": "system", "content": "Tu es un assistant de test. Réponds de manière très concise."},
                 {"role": "user", "content": "Dis-moi bonjour et confirme que tu fonctionnes correctement."}
             ],
-            max_tokens=50,
+            max_tokens=8192,
             temperature=0.3
         )
         answer = response.choices[0].message.content.strip()

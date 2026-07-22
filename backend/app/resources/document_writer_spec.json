@@ -1,0 +1,28 @@
+{
+  "document_type": "technical_specification",
+  "target_format": "markdown",
+  "language": "en",
+  "required_sections": [
+    "executive_summary",
+    "technical_stack",
+    "domain_model",
+    "glossary",
+    "system_diagrams",
+    "critical_dependencies",
+    "structural_gaps",
+    "metadata"
+  ],
+  "style_guide": {
+    "tone": "technical_assertive",
+    "max_executive_brief_words": 150,
+    "use_tables_for_glossary": true,
+    "embed_mermaid_inline": true,
+    "include_traceability_anchors": true
+  },
+  "fallback_behavior": {
+    "missing_summary": "omit_section",
+    "missing_glossary": "omit_section",
+    "missing_diagram": "note_unavailable",
+    "missing_parsing": "abort_pipeline"
+  }
+}

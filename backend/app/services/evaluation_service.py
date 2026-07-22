@@ -1,5 +1,5 @@
 # app/services/evaluation_service.py
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 # Importation unifiée des schémas de production
 from app.schemas.parsing_agent_schema import ParsingAgentOutput
@@ -1015,3 +1015,65 @@ class DiagramEvaluatorService:
 #             "explicit_terms_count": explicit_count,
 #             "implicit_terms_inferred_count": implicit_count
 #         }
+class DocumentWriterEvaluatorService:
+    """
+    Évalue la qualité du document Markdown généré par le Document Writer.
+    """
+
+    @staticmethod
+    def evaluate(
+        document_output: 'DocumentWriterOutput',
+        summary_doc: Optional['SummaryOutputModel'],
+        glossary_doc: Optional['GlossaryOutputModel'],
+        diagram_doc: Optional[Any]
+    ) -> Dict[str, Any]:
+        """
+        Calcule les métriques de qualité du document unifié.
+        """
+        report = {
+            "completeness_score": 0.0,
+            "source_coverage": {},
+            "structural_integrity": {},
+            "quality_flags": []
+        }
+
+        md = document_output.markdown_content
+
+        # 1. Couverture des sources
+        expected_sources = {
+            "summary": summary_doc is not None,
+            "glossary": glossary_doc is not None,
+            "diagram": diagram_doc is not None,
+            "parsing": True
+        }
+        report["source_coverage"] = {
+            src: document_output.sources_used.get(src, False) == expected
+            for src, expected in expected_sources.items()
+        }
+
+        # 2. Score de complétude (sections présentes)
+        required_sections = [
+            "executive summary", "technical stack", "domain model",
+            "glossary", "diagram", "dependency", "structural gap", "metadata"
+        ]
+        md_lower = md.lower()
+        sections_found = sum(1 for sec in required_sections if sec in md_lower)
+        report["completeness_score"] = round(sections_found / len(required_sections), 2)
+
+        # 3. Intégrité structurelle
+        report["structural_integrity"] = {
+            "has_mermaid_blocks": "```mermaid" in md,
+            "has_tables": "|" in md and "---" in md,
+            "has_hierarchy": md.count("## ") >= 3,
+            "no_raw_json": "{" not in md or md.count("{") < 5  # Heuristic
+        }
+
+        # 4. Qualité flags
+        if report["completeness_score"] < 0.7:
+            report["quality_flags"].append("LOW_COMPLETENESS")
+        if not report["structural_integrity"]["has_hierarchy"]:
+            report["quality_flags"].append("POOR_STRUCTURE")
+        if document_output.word_count < 200:
+            report["quality_flags"].append("DOCUMENT_TOO_SHORT")
+
+        return report
