@@ -5,99 +5,337 @@
             "term": "API",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T033",
-            "project_definition": "The programmatic interface providing structured response envelopes for course management operations."
+            "contextual_anchor": "Tasks: CourseHub API Implementation",
+            "project_definition": "The primary interface facilitating communication between the client and the server for course management operations."
+        },
+        {
+            "term": "ActiveEnrollmentConstraint",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "C-ACTIVE-ENROLL",
+            "project_definition": "A validation rule preventing the deletion of a learning resource if users are currently registered to it."
         },
         {
             "term": "All",
-            "category": "BUSINESS_DOMAIN",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "PHASE-07",
+            "project_definition": "The total set of defined test cases that must pass to satisfy deployment criteria."
+        },
+        {
+            "term": "AsyncClient",
+            "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Success Criteria",
-            "project_definition": "The complete set of 36 mandated implementation tasks required for system validation."
+            "contextual_anchor": "PHASE-07",
+            "project_definition": "A non-blocking HTTP utility used within the test suite to simulate requests to the application."
         },
         {
             "term": "AsyncSession",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-1",
-            "project_definition": "The non-blocking database connection handler managed within the project initialization lifecycle."
+            "contextual_anchor": "T005",
+            "project_definition": "A non-blocking database connection context used for transactional data operations."
         },
         {
             "term": "BackgroundTask",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-3",
-            "project_definition": "The asynchronous execution mechanism used for dispatching transactional email notifications."
+            "contextual_anchor": "Phase 3: Resend Email Integration & BackgroundTask",
+            "project_definition": "An asynchronous execution mechanism that triggers email dispatch after the HTTP response is sent."
+        },
+        {
+            "term": "BusinessRuleViolation",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T033",
+            "project_definition": "A specific exception type mapped to a 409 Conflict response when a domain constraint is breached."
         },
         {
             "term": "CORS Standard",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
-            "contextual_anchor": "PHASE-8",
-            "project_definition": "The cross-origin resource sharing security policy governing browser-based request accessibility."
+            "contextual_anchor": "PHASE-08",
+            "project_definition": "The security protocol managing cross-origin resource sharing for the web interface."
         },
         {
             "term": "CRUD",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T020",
-            "project_definition": "The four foundational persistent storage mutation primitives applied to course entities."
+            "project_definition": "The four foundational persistent storage mutation primitives."
         },
         {
             "term": "ConfigError",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T015",
-            "project_definition": "The exception triggered during startup when mandatory external service keys are absent."
+            "project_definition": "An exception raised when mandatory environment variables, such as the transactional mail key, are absent."
+        },
+        {
+            "term": "CourseCreate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-04",
+            "project_definition": "A Pydantic data transfer object defining the required fields for initiating a new educational resource."
+        },
+        {
+            "term": "CourseResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-04",
+            "project_definition": "A Pydantic data transfer object outlining the public and internal data exposed when retrieving educational resources."
+        },
+        {
+            "term": "CourseUpdate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-04",
+            "project_definition": "A Pydantic data transfer object specifying the modifiable fields for an existing educational resource."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "T009",
+            "project_definition": "The process of transforming passwords into non-reversible strings using the bcrypt algorithm."
+        },
+        {
+            "term": "DB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-01",
+            "project_definition": "The PostgreSQL persistent storage instance managing the relational schema."
+        },
+        {
+            "term": "Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T010",
+            "project_definition": "The FastAPI injection system providing database sessions and authenticated user contexts to route handlers."
+        },
+        {
+            "term": "EnrollmentCreate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-05",
+            "project_definition": "A Pydantic data transfer object used to link a student to a specific educational resource."
+        },
+        {
+            "term": "EnrollmentResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-05",
+            "project_definition": "A Pydantic data transfer object returning the state and progress of a student's registration in a resource."
+        },
+        {
+            "term": "EnrollmentUpdate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-05",
+            "project_definition": "A Pydantic data transfer object used to modify the progress percentage and completion date."
+        },
+        {
+            "term": "FK",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T005",
+            "project_definition": "A relational constraint ensuring referential integrity between tables, such as linking modules to a parent resource."
         },
         {
             "term": "Feature",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Tasks: CourseHub API Implementation",
-            "project_definition": "The high-level functional capability identified as 001-coursehub-api."
+            "project_definition": "A high-level functional block of the system, specifically the course management suite."
+        },
+        {
+            "term": "HTTPException",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T010",
+            "project_definition": "The standard mechanism for returning specific error codes like 401 or 403 to the client."
+        },
+        {
+            "term": "ID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T005",
+            "project_definition": "A unique identifier for every record, implemented as a universally unique alphanumeric string."
         },
         {
             "term": "ISOlation",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T025",
-            "project_definition": "The security boundary ensuring a learner cannot modify or access another user's progress data."
+            "contextual_anchor": "PHASE-06",
+            "project_definition": "The security boundary ensuring students can only access their own registration and progress data."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T009",
-            "project_definition": "The signed token standard used for stateless authentication and session expiry claims."
+            "contextual_anchor": "PHASE-02",
+            "project_definition": "The signed token format used for stateless authentication and role verification."
         },
         {
             "term": "MVP",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "MVP Scope (Phase 1 Delivery)",
-            "project_definition": "The initial deliverable subset comprising phases 1-5 and phase 7."
+            "project_definition": "The minimum set of functional requirements including database, auth, and basic course management for initial delivery."
+        },
+        {
+            "term": "Middleware",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T034",
+            "project_definition": "A software layer that intercepts all outbound responses to wrap them in a standardized envelope."
+        },
+        {
+            "term": "ModuleCreate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-04",
+            "project_definition": "A Pydantic data transfer object for defining a segment of an educational resource."
+        },
+        {
+            "term": "ModuleResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-04",
+            "project_definition": "A Pydantic data transfer object containing the metadata and ordering of an educational resource segment."
+        },
+        {
+            "term": "NOT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "T013",
+            "project_definition": "A logical negation used to defer email dispatch during the registration flow."
         },
         {
             "term": "ORM",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T005",
-            "project_definition": "The object-relational mapping layer defining the structure for User, Course, Module, and Enrollment."
+            "project_definition": "The abstraction layer mapping Python classes to PostgreSQL tables."
+        },
+        {
+            "term": "Parallelization Opportunities",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Dependency Graph",
+            "project_definition": "The capability to develop domain routers for instructors and students concurrently after the foundation is laid."
+        },
+        {
+            "term": "PermissionError",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T033",
+            "project_definition": "An exception triggered when an authenticated user lacks the required role or ownership to perform an action."
+        },
+        {
+            "term": "Raise",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "T015",
+            "project_definition": "The operational act of triggering a software exception to halt execution and signal an error."
         },
         {
             "term": "Reference",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Tasks: CourseHub API Implementation",
-            "project_definition": "The external documentation links including spec.md and plan.md."
+            "project_definition": "The external documentation links providing the full specification and planning details."
+        },
+        {
+            "term": "Return",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "T013",
+            "project_definition": "The process of sending a finalized payload and HTTP status code back to the calling client."
         },
         {
             "term": "SDK",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T015",
-            "project_definition": "The external software development kit used to integrate the Resend email platform."
+            "project_definition": "The provided Python library for interacting with the external transactional mail service."
+        },
+        {
+            "term": "SQLAlchemy 2.0",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-01",
+            "project_definition": "The specific version of the database toolkit used for asynchronous interaction with PostgreSQL."
+        },
+        {
+            "term": "Target",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-07",
+            "project_definition": "The minimum acceptable threshold of 80% for business logic test coverage."
+        },
+        {
+            "term": "Test Criteria",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-01",
+            "project_definition": "The set of verifiable outcomes required to mark a phase as complete."
+        },
+        {
+            "term": "TokenResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T012",
+            "project_definition": "A Pydantic data transfer object containing short-term access and long-term refresh strings."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T005",
+            "project_definition": "The data type used for primary keys to ensure unique identification across distributed environments."
+        },
+        {
+            "term": "UserLogin",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T012",
+            "project_definition": "A Pydantic data transfer object capturing credentials for identity verification."
+        },
+        {
+            "term": "UserRegister",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T012",
+            "project_definition": "A Pydantic data transfer object containing the necessary information to create a new account."
+        },
+        {
+            "term": "UserResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T012",
+            "project_definition": "A Pydantic data transfer object returning sanitized profile information."
+        },
+        {
+            "term": "ValidationError",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T033",
+            "project_definition": "An exception raised by the data validation library when a payload does not match the expected schema."
+        },
+        {
+            "term": "ValueError",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T033",
+            "project_definition": "An exception raised when a numeric value, such as progress, falls outside the 0-100 range."
+        },
+        {
+            "term": "alembic init",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-01",
+            "project_definition": "The command used to bootstrap the database migration environment with async support."
         }
     ]
 }

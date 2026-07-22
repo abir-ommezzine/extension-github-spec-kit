@@ -1,5 +1,5 @@
 {
-    "executive_brief": "CourseHub API is a high-performance RESTful service built with FastAPI and PostgreSQL, implementing a role-based course management system. It utilizes an asynchronous architecture for database persistence and email dispatch to ensure non-blocking execution. The system enforces strict ownership boundaries between instructors and students, managed via JWT-based authentication and a structured domain routing layer.",
+    "executive_brief": "CourseHub API is a FastAPI-based RESTful service leveraging PostgreSQL for course management and student enrollments. The architecture implements a strict role-based access control (RBAC) system via JWT and refresh tokens, ensuring a clear trust boundary between students and instructors. The system utilizes an asynchronous data pattern with SQLAlchemy 2.0 and asyncpg to maintain non-blocking I/O, integrating Resend for asynchronous email notifications via FastAPI BackgroundTasks.",
     "technical_stack": {
         "languages_and_frameworks": [
             "FastAPI",
@@ -15,24 +15,23 @@
             "resend"
         ],
         "architectural_constraints": [
-            "Coverage: business logic coverage >= 80%",
-            "Progress Validation: Enrollment progress values must be strictly between 0 and 100 inclusive",
-            "Financial Data: Course pricing must be stored as price_cents",
-            "Data Integrity: Unique constraint on (student_id, course_id) for enrollments",
-            "Auth Lifecycle: Access tokens expire in 15 min; Refresh tokens expire in 7 days",
-            "Isolation: Instructors can only list/update/delete courses they own (instructor_id == current_user.id)",
-            "Isolation: Students can only access and update their own enrollments (student_id == current_user.id)",
-            "Business Rule: ActiveEnrollmentConstraint - Course deletion rejected (409 Conflict) if active enrollments exist",
-            "Sequence: Module ordering must be strictly enforced via 'order' field"
+            "Code coverage: target >= 80% on business logic via pytest-cov",
+            "Enrollment progress values: strictly between 0 and 100 inclusive",
+            "Course deletion: rejected (HTTP 409) if active enrollments exist (ActiveEnrollmentConstraint)",
+            "Module ordering: enforced sequence via order column",
+            "Course ownership: Only the instructor who created a course can update or delete it",
+            "Student isolation: Students can only access/update their own enrollments",
+            "Registration: Email sending must be deferred to BackgroundTask to prevent API blocking",
+            "Course access: Students can only enroll in courses where published is true"
         ]
     },
-    "maturity_assessment": "The specifications are technically robust with a high completeness score, though they require REFINEMENT. While the core logic and constraints are well-defined, the project lacks a consolidated data model schema and a formalized list of open uncertainties, particularly regarding refresh token revocation strategies and email template management.",
+    "maturity_assessment": "The specifications are highly comprehensive with a complete structural mapping of the development phases, leading to a REFINEMENT status. While the architectural blueprint and data models are fully defined, the presence of unresolved uncertainties regarding refresh token persistence and email template externalization requires final design decisions before full execution.",
     "critical_dependencies": [
-        "RESEND_API_KEY environment variable",
-        "PostgreSQL instance with asyncpg driver support",
-        "JWT for session management and role-based access control",
-        "Cascading deletion of modules upon course deletion (via FK)",
-        "Strict foreign key dependence: Enrollment relies on both User and Course entities",
-        "FastAPI BackgroundTask for non-blocking Resend SDK integration"
+        "RESEND_API_KEY: Mandatory environment variable for email service",
+        "PostgreSQL: External database engine with asyncpg driver",
+        "JWT: Core dependency for authentication and role extraction",
+        "Cascading deletion: Course deletion must trigger removal of associated Modules via Foreign Key",
+        "Referential Integrity: Enrollment depends on existing User (student) and Course entities",
+        "Role-Based Gating: Course and Enrollment routers depend on the successful implementation of the Auth router"
     ]
 }

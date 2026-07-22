@@ -14,10 +14,10 @@
         "language_drift_detected": false
     },
     "project_management_kpis": {
-        "total_extracted_terms": 3,
-        "business_domain_terms_count": 2,
+        "total_extracted_terms": 2,
+        "business_domain_terms_count": 1,
         "technical_stack_terms_count": 1,
-        "explicit_terms_count": 3,
+        "explicit_terms_count": 2,
         "implicit_terms_inferred_count": 0
     }
 }

@@ -5,7 +5,7 @@
         "maturity_alignment_score": 100.0,
         "conciseness_precision_score": 100.0,
         "extraction_completeness_rate": 100.0,
-        "brief_word_count": 63,
+        "brief_word_count": 54,
         "hallucinations_detected_count": 0
     },
     "project_management_kpis": {

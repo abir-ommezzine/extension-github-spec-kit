@@ -5,15 +5,15 @@
             "term": "API",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "QUAL-NO-IMP",
-            "project_definition": "The programmatic interface layer that must remain abstracted from the high-level functional descriptions to prevent implementation leakage."
+            "contextual_anchor": "QUAL-NO-IMPL",
+            "project_definition": "The programmatic interface whose implementation details must remain hidden from the high-level functional definitions to prevent leakage."
         },
         {
             "term": "Feature",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Feature Readiness",
-            "project_definition": "A discrete unit of deliverable functionality that must align with measurable success criteria and validated user scenarios."
+            "contextual_anchor": "READY-AC",
+            "project_definition": "A distinct unit of functionality that must align with measurable outcomes and possess clear acceptance criteria."
         }
     ]
 }

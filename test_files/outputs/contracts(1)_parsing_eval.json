@@ -9,22 +9,22 @@
         "model_template_conformity": 100.0,
         "quality_alerts": [
             "Section requise absente des correspondances : scope & out-of-scope",
-            "Section requise absente des correspondances : open questions & uncertainties",
-            "Section requise absente des correspondances : goals & objectives"
+            "Section requise absente des correspondances : goals & objectives",
+            "Section requise absente des correspondances : open questions & uncertainties"
         ]
     },
     "project_management_kpis": {
-        "health_index": 95.0,
+        "health_index": 80.0,
         "completeness_score": 40.0,
-        "readiness_status": "READY_FOR_EXECUTION",
+        "readiness_status": "NEEDS_REFINEMENT",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 14,
-            "total_edges_extracted": 8
+            "total_nodes_extracted": 19,
+            "total_edges_extracted": 9
         },
         "gaps_summary": {
-            "high_severity": 0,
+            "high_severity": 1,
             "medium_severity": 1,
-            "low_severity": 2,
+            "low_severity": 1,
             "unresolved_uncertainties": 0
         }
     }

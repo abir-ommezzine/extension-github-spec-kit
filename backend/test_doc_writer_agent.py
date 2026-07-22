@@ -25,8 +25,6 @@ from app.schemas.diagram_agent_schema import DiagramOutputModel
 TARGET_PREFIX = "tasks(1)"  # Exige : tasks(1)_parsed.json, tasks(1)_summary.json, etc.
 SPEC_FILE_NAME = "doc_writer_spec.json"  # Spécification de structure
 # ==============================================================================
-
-
 def get_metric_color_tag(score: float) -> str:
     """Attribue un émoji de couleur selon les seuils critiques de performance."""
     if score == 100.0:

@@ -1,12 +1,11 @@
-# test_workflow_pipeline.py
 import sys
 from pathlib import Path
 from app.graph.workflow import create_pipeline_workflow
 
-TARGET_FILE_NAME = "requirements(1).md"
+TARGET_FILE_NAME = "tasks(1).md"
 
 def print_unified_dashboard(final_state: dict):
-    """Affiche le tableau de bord consolidé des 4 agents."""
+    """Affiche le tableau de bord consolidé des 5 agents."""
     print("\n" + "=" * 80)
     print("      DASHBOARD DE FIABILITÉ MULTI-AGENTS (PIPELINE LANGGRAPH)")
     print("=" * 80)
@@ -42,6 +41,20 @@ def print_unified_dashboard(final_state: dict):
     print(f"   • Structural Rule Adherence (SRA) : {d_metrics.get('structural_rule_adherence', 0):.1f}%")
     if final_state.get("diagram_pdf_path"):
         print(f"   • Export PDF                      : {final_state.get('diagram_pdf_path')}")
+
+    # 5. METRIQUES DOC WRITER
+    dw_metrics = final_state.get("doc_writer_metrics", {})
+    dw_tech = dw_metrics.get("technical_evaluation", {})
+    print("\n5. DOCUMENTATION WRITER AGENT METRICS (CONVERGENCE FINALE):")
+    print(f"   • Document Structure Completeness (DSC): {dw_tech.get('document_structure_completeness', 0):.1f}%")
+    print(f"   • Traceability Preservation Rate (TPR)  : {dw_tech.get('traceability_preservation_rate', 0):.1f}%")
+    print(f"   • Diagram Embedding Validity (DEV)     : {dw_tech.get('diagram_embedding_validity', 0):.1f}%")
+    print(f"   • Glossary Format & Placement (GFF)    : {dw_tech.get('glossary_format_and_placement', 0):.1f}%")
+    print(f"   • Readiness Status                     : 🟢 {dw_metrics.get('documentation_readiness_status', 'N/A')}")
+    if final_state.get("doc_writer_md_path"):
+        print(f"   • Fichier Markdown Généré             : {final_state.get('doc_writer_md_path')}")
+    if final_state.get("doc_writer_eval_path"):
+        print(f"   • Fichier Évaluation JSON             : {final_state.get('doc_writer_eval_path')}")
     print("=" * 80)
 
 def main():

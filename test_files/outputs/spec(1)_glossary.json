@@ -6,63 +6,63 @@
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "FR-009",
-            "project_definition": "The set of endpoints located under /api/v1/ providing programmatic access to learning platform resources."
+            "project_definition": "The set of programmatic endpoints hosted under /api/v1/ providing the interface for platform operations."
         },
         {
             "term": "Course",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-COURSE",
-            "project_definition": "A learning offering owned by an instructor, containing a title, description, price in cents, published status, and ordered modules."
+            "project_definition": "A learning offering owned by an instructor, containing a title, description, pricing in cents, visibility status, and sequential content."
         },
         {
             "term": "Cryptographic Hashing",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
-            "contextual_anchor": "ENT-USER",
-            "project_definition": "The required security mechanism for storing password credentials within the shared identity table."
+            "contextual_anchor": "FR-004",
+            "project_definition": "The required security mechanism for transforming sensitive password credentials into non-reversible strings for storage."
         },
         {
             "term": "Enrollment",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-ENROLLMENT",
-            "project_definition": "A student-course relationship that records progress and completion date."
+            "project_definition": "A relational link between a student and a specific learning offering that tracks a percentage from 0 to 100 and a finalization date."
         },
         {
             "term": "Fixed-Point Numeric Constraint",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
             "contextual_anchor": "FR-001",
-            "project_definition": "The requirement to store pricing exclusively in cents to avoid floating-point precision errors."
+            "project_definition": "The requirement to store monetary values using integers representing the smallest currency unit to avoid floating-point precision errors."
         },
         {
             "term": "JSON",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "FR-009",
-            "project_definition": "The mandatory data interchange format for all responses, following a specific envelope containing data, meta, and errors."
+            "project_definition": "The standardized lightweight data-interchange format used for all response envelopes containing data, meta, and error arrays."
         },
         {
             "term": "Module",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-MODULE",
-            "project_definition": "A child record of a learning offering representing a lesson or section in a fixed sequence."
+            "project_definition": "A child component of a learning offering representing a lesson or section within a strictly defined sequence."
         },
         {
             "term": "REST",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "FR-009",
-            "project_definition": "The architectural style governing the design of the network endpoints for the platform."
+            "project_definition": "The architectural style governing the network interface and the design of the system endpoints."
         },
         {
             "term": "User",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-USER",
-            "project_definition": "A shared account identity containing a role, email, password credential, and display name."
+            "project_definition": "A shared account identity containing a role, email, credentials, and display name to distinguish between students and instructors."
         }
     ]
 }
