@@ -16,6 +16,8 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -136,6 +138,20 @@ const Sidebar = () => {
               title="Manage Team"
               to="/team"
               icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Documents"
+              to="/documents"
+              icon={<DescriptionOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Add Document"
+              to="/add-document"
+              icon={<AddCircleOutlineIcon />}
               selected={selected}
               setSelected={setSelected}
             />
