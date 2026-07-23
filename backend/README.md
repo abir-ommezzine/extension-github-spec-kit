@@ -7,7 +7,7 @@ This directory contains the backend implementation of the GitHub Spec Kit, an ag
 The system implements a directed acyclic graph (DAG) using LangGraph, ensuring a deterministic flow of information from raw ingestion to final synthesis.
 
 **Process Flow:**
-`[START]` $\rightarrow$ `[Parsing Agent]` $\rightarrow$ `{ [Summary Agent], [Glossary Agent], [Diagram Agent] }` (Parallel) $\rightarrow$ `[Doc Writer Agent]` $\rightarrow$ `[END]`
+`[START]` $\rightarrow$ `[Parsing Agent]` $\rightarrow$ `{ [Summary Agent], [Glossary Agent], [Diagram Agent] }` (Parallel) $\rightarrow$ `[Doc Writer Agent]` $\rightarrow$ `[Layout Agent]` $\rightarrow$ `[END]`
 
 1. **Ingestion Phase**: The **Parsing Agent** acts as the gateway, transforming raw markdown into a strict, unified JSON compliance graph.
 2. **Analysis Phase (Parallel)**: Once the semantic graph is established, three specialized agents operate concurrently to extract different dimensions of the project:
@@ -15,6 +15,7 @@ The system implements a directed acyclic graph (DAG) using LangGraph, ensuring a
     - **Glossary Agent**: Semantic normalization and terminology anchoring.
     - **Diagram Agent**: Topological visualization.
 3. **Convergence Phase**: The **Doc Writer Agent** synthesizes the outputs of all previous agents to generate the final, validated professional technical specification in Markdown.
+4. **Rendering Phase**: The **Layout Agent** transforms the unified Markdown into a high-fidelity, print-ready PDF document, applying professional typesetting and the defined graphic charter.
 
 ---
 
@@ -149,16 +150,20 @@ The system implements a directed acyclic graph (DAG) using LangGraph, ensuring a
 - `workflow.py`: **DAG Topology Definition**. Orchestrates the sequence of execution, implementing the trifurcation (parallel execution of Summary, Glossary, and Diagram agents) and the final convergence into the Doc Writer.
 
 ### 📄 Resources & Specs (`/backend/app/resources`)
-- `*.json`: Target specifications that govern agent behavior and output constraints.
+- `*.json`: Target specifications that govern agent behavior and output constraints (e.g., `summary_spec.json`, `layout_spec.json`).
+
 
 ### 📐 Validation Schemas (`/backend/app/schemas`)
-- `*.py`: Pydantic models used for strict type-validation of LLM-generated content.
+- `*.py`: Pydantic models used for strict type-validation of LLM-generated content (e.g., `parsing_agent_schema.py`, `layout_agent_schema.py`).
+
 
 ### ⚙️ Business Services (`/backend/app/services`)
 - `parser_service.py`: Logic for technical document ingestion and graph construction.
 - `summary_service.py`: Synthesis logic for high-level executive summaries.
 - `glossary_service.py`: Normalization logic for technical and business terminology.
 - `diagram_service.py`: Topological analysis and Mermaid.js code generation.
+- `doc_writer_service.py`: Consolidation logic for generating the final unified Markdown document.
+- `layout_service.py`: High-fidelity rendering pipeline for PDF generation and visual validation.
 - `evaluation_service.py`: Orchestrates the application of metrics to determine agent output readiness.
 
 ### 🧰 Utilities (`/backend/app/utils`)
@@ -166,3 +171,5 @@ The system implements a directed acyclic graph (DAG) using LangGraph, ensuring a
 - `summary_pruner.py`: Context optimization logic for reducing LLM token usage.
 - `glossary_tools.py`: Deterministic tools for extracting candidate terms.
 - `diagram_tools.py`: Specialized helpers for architectural visualization.
+- `doc_writer_tools.py`: Tools for TOC extraction and Markdown persistence.
+- `layout_tools.py`: PDF compilation engine (ReportLab) and HD Mermaid rendering.
