@@ -1,22 +1,8 @@
 [
-  "API-REST",
-  "AUTH-JWT",
-  "AUTH-ROLES",
-  "Additional Constraints",
-  "Core Principles",
-  "DB-ASYNC",
-  "DB-MIGRATION",
-  "Development Workflow",
-  "I. Technology Standardization",
-  "II. Authentication and Authorization",
-  "III. API Contract and Response Shape",
-  "IV. Data Access and Persistence",
-  "Learning Platform API Constitution",
-  "MAIL-RESEND",
-  "REQ-WELCOME-MAIL",
-  "STACK-01",
-  "TEST-DB-REAL",
-  "TEST-PYTEST",
-  "V. Quality and Testing",
-  "WF-REVIEW"
+  "ARCH-NEXTJS",
+  "DEC-NO-AUTH",
+  "PHASE-0",
+  "STORE-LOCAL",
+  "STRUCT-SERVER",
+  "TEST-UNIT"
 ]

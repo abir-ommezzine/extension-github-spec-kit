@@ -1,40 +1,48 @@
 """
-database.py — Configuration de la connexion SQLAlchemy / PostgreSQL
-
-Utilisé par le Documentation Agent (Feature 1) :
-    context.md -> Parsing Agent -> Structured JSON
-        -> Summary / Diagram / Glossary Agents
-        -> Documentation Writer -> Design/Layout Agent
-        -> Markdown/HTML -> PDF Generator
-
-DATABASE_URL est lu depuis config.py (Pydantic-settings), centralisé et validé.
+database.py — Auto-migration + SQLAlchemy engine/session setup.
+Every time the app starts, Base.metadata.create_all() runs automatically.
+No manual alembic commands needed.
 """
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, declarative_base
-from app.config import settings  # <--- On importe les réglages centralisés
+from app.config import settings
 
-# Plus besoin de load_dotenv() ou d'os.environ ici, 
-# la classe Settings de config.py gère déjà tout ça automatiquement !
 DATABASE_URL = settings.DATABASE_URL
-
 if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
 elif DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
 
-# pool_pre_ping évite les connexions mortes après une inactivité (utile en dev)
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
 
 
 def get_db():
-    """Dependency FastAPI : fournit une session DB et la ferme proprement."""
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+
+def auto_migrate():
+    """Automatically creates all tables on startup. Preserves existing data."""
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info("[AUTO-MIGRATE] Checking database schema...")
+
+    import app.models  # noqa: F401 — registers all models with Base.metadata
+    Base.metadata.create_all(bind=engine)
+
+    inspector = inspect(engine)
+    existing = inspector.get_table_names()
+    expected = ["projects", "artifacts", "doc_versions", "pipeline_runs"]
+
+    for table in expected:
+        status = "OK" if table in existing else "MISSING"
+        logger.info(f"  [{status}] Table '{table}'")
+
+    logger.info("[AUTO-MIGRATE] Done.")
+    return True

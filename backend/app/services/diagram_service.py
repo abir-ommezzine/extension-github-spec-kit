@@ -1,4 +1,3 @@
-# app/services/diagram_service.py
 import json
 import re
 from typing import Dict, Any, List, Optional, Tuple
@@ -22,64 +21,20 @@ class MermaidSyntaxValidator:
     Combine validation regex deterministe et validation par mermaid-cli (optionnel).
     """
 
-    # Patterns de detection d'erreurs critiques par type de diagramme
     CRITICAL_ERROR_PATTERNS = {
         "flowchart": [
-            # Noeud sans ID explicite (commence par [ ou { sans mot avant)
-            (r'^\s*[\[\{\(][^"\w]', "Missing node ID prefix"),
-            # Crochets mal fermes
-            (r'\[[^\]]*$', "Unclosed bracket in node definition"),
-            # Accolades mal fermees
-            (r'\{[^\}]*$', "Unclosed brace in node definition"),
-            # Fleche mal formee sans cible
-            (r'-->[\s]*$', "Dangling arrow without target"),
-            # Syntaxe de sous-graphe invalide
-            (r'subgraph\s+[^\s]', "Invalid subgraph syntax"),
-        ],
-        "sequenceDiagram": [
-            # Participant mal defini
-            (r'^\s*participant\s*$', "Empty participant declaration"),
-            # Fleche de sequence invalide
-            (r'->>[^\s]', "Invalid sequence arrow syntax"),
-            # Acteur sans nom
-            (r'actor\s*$', "Empty actor declaration"),
-        ],
-        "erDiagram": [
-            # Relation sans cardinalite
-            (r'\|\|--\|\|', "Missing cardinality in relationship"),
-            # Attribut sans type
-            (r'^\s+\w+\s*$', "Attribute missing type declaration"),
-            # Syntaxe UML interdite (+id: int)
-            (r'^\s*\+\s*\w+\s*:\s*\w+', "UML notation forbidden in erDiagram"),
-        ],
-        "classDiagram": [
-            # Classe sans nom
-            (r'^\s*class\s*$', "Empty class declaration"),
-            # Methode mal formee
-            (r'\(\)\s*\{', "Invalid method syntax"),
+            # Noeud sans ID explicite
+            (r'^\s*[\[\{\(][^"\w]', "Missing node ID prefix"),             # Crochets mal fermes             (r'\[[^\]]*$', "Unclosed bracket in node definition"),             # Accolades mal fermees             (r'\{[^\}]*$', "Unclosed brace in node definition"),             # Fleche mal formee sans cible             (r'-->[\s]*$', "Dangling arrow without target"),             # Sous-graphe vide sans identifiant             (r'^\s*subgraph\s*$', "Empty subgraph declaration"),         ],         "sequenceDiagram": [             (r'^\s*participant\s*$', "Empty participant declaration"),             (r'->>[^\s]', "Invalid sequence arrow syntax"),             (r'actor\s*$', "Empty actor declaration"),         ],         "erDiagram": [             (r'\Vert{}\Vert{}--\Vert{}\Vert{}', "Missing cardinality in relationship"),             (r'^\s+\w+\s*$', "Attribute missing type declaration"),             (r'^\s*\+\s*\w+\s*:\s*\w+', "UML notation forbidden in erDiagram"),         ],         "classDiagram": [             (r'^\s*class\s*$', "Empty class declaration"),             (r'\(\)\s*\{', "Invalid method syntax"),
         ],
         "stateDiagram": [
-            # Etat sans nom
             (r'^\s*state\s*$', "Empty state declaration"),
-            # Transition sans cible
             (r'-->\s*$', "Dangling state transition"),
         ]
     }
 
-    # Patterns globaux (appliques a tous les types)
     GLOBAL_ERROR_PATTERNS = [
-        # Ligne vide au debut (diagram type doit etre en premiere ligne)
-        (r'^\s*\n', "Leading whitespace before diagram declaration"),
-        # Caracteres de controle
         (r'[\x00-\x08\x0b-\x0c\x0e-\x1f]', "Control characters detected"),
-        # Guillemets non echappes dans les labels
-        (r'\["[^"]*"[^"]*"[^"]*"\]', "Unescaped quotes in node label"),
-        # Parentheses imbriquees incorrectes
-        (r'\(\([^\)]*\([^\)]*\)\)', "Nested parentheses in stadium shape (forbidden)"),
-        # Double crochets (forme interdite)
-        (r'\[\[', "Double bracket shape forbidden"),
-        # Double accolades (forme interdite)
-        (r'\{\{', "Double brace shape forbidden"),
+        (r'\(\(\s*\)\)', "Empty stadium shape"),
     ]
 
     @classmethod
@@ -89,49 +44,46 @@ class MermaidSyntaxValidator:
         Retourne (is_valid, list_of_errors).
         """
         errors = []
-        lines = mermaid_code.split('\n')
 
-        # Verification 1: Le code ne doit pas etre vide
         if not mermaid_code or not mermaid_code.strip():
             return False, ["Empty diagram code"]
 
-        # Verification 2: La premiere ligne doit declarer le type de diagramme
+        code_clean = mermaid_code.strip()
+        lines = [line for line in code_clean.split('\n') if line.strip()]
+
+        if not lines:
+            return False, ["Empty diagram code"]
+
+        # Verification 1: En-tete du diagramme (premiere ligne non vide)
         first_line = lines[0].strip().lower()
-        valid_headers = ["flowchart", "sequencediagram", "classdiagram", "erdiagram", 
-                        "statediagram", "gantt", "mindmap", "pie"]
+        valid_headers = [
+            "flowchart", "graph", "sequencediagram", "classdiagram", 
+            "erdiagram", "statediagram", "gantt", "mindmap", "pie"
+        ]
         if not any(first_line.startswith(h) for h in valid_headers):
             errors.append(f"Invalid or missing diagram type header: '{lines[0]}'")
 
-        # Verification 3: Patterns globaux
+        # Verification 2: Patterns globaux
         for pattern, error_msg in cls.GLOBAL_ERROR_PATTERNS:
-            if re.search(pattern, mermaid_code, re.MULTILINE):
+            if re.search(pattern, code_clean, re.MULTILINE):
                 errors.append(f"Global syntax error: {error_msg}")
 
-        # Verification 4: Patterns specifiques au type
+        # Verification 3: Patterns specifiques au type
         type_patterns = cls.CRITICAL_ERROR_PATTERNS.get(diagram_type, [])
         for pattern, error_msg in type_patterns:
             for i, line in enumerate(lines, 1):
                 if re.search(pattern, line, re.IGNORECASE):
                     errors.append(f"Line {i}: {error_msg} -> '{line.strip()}'")
 
-        # Verification 5: Noeuds flowchart sans ID (pattern special multi-ligne)
-        if diagram_type == "flowchart":
-            for i, line in enumerate(lines, 1):
-                stripped = line.strip()
-                if stripped and stripped[0] in '[{"(' and not re.match(r'^\w+', stripped):
-                    if not stripped.startswith('subgraph') and not stripped.startswith('end'):
-                        errors.append(f"Line {i}: Node definition missing ID prefix -> '{stripped}'")
-
-        # Verification 6: Verification des identifiants de noeuds (traceabilite)
+        # Verification 4: Extraction des noeuds declares et references (ancrage)
         declared_ids = set()
         referenced_ids = set()
 
-        id_pattern = r'^\s*(\w+[\w\-]*)\s*[\[\{\(\"\']'
-        ref_pattern = r'-->\s*(\w+[\w\-]*)'
+        id_pattern = r'(\b\w+[\w\-]*)\s*[\[\{\(\"\']'
+        ref_pattern = r'-->\s*(\b\w+[\w\-]*)'
 
         for line in lines:
-            match = re.match(id_pattern, line)
-            if match:
+            for match in re.finditer(id_pattern, line):
                 declared_ids.add(match.group(1))
 
             for ref_match in re.finditer(ref_pattern, line):
@@ -139,7 +91,8 @@ class MermaidSyntaxValidator:
 
         orphan_refs = referenced_ids - declared_ids
         if orphan_refs:
-            valid_orphans = {r for r in orphan_refs if r not in ['subgraph', 'end', 'style', 'classDef']}
+            reserved_keywords = {'subgraph', 'end', 'style', 'classDef', 'click', 'direction'}
+            valid_orphans = {r for r in orphan_refs if r not in reserved_keywords}
             if valid_orphans:
                 errors.append(f"Orphan node references (not declared): {valid_orphans}")
 
@@ -148,10 +101,6 @@ class MermaidSyntaxValidator:
 
     @classmethod
     def validate_with_mermaid_cli(cls, mermaid_code: str) -> Tuple[bool, Optional[str]]:
-        """
-        Validation via mermaid-cli (mmdc) si disponible.
-        Plus lente mais plus fiable pour les cas complexes.
-        """
         try:
             with tempfile.NamedTemporaryFile(mode='w', suffix='.mmd', delete=False) as f:
                 f.write(mermaid_code)
@@ -179,16 +128,9 @@ class MermaidSyntaxValidator:
 class DiagramAgentService:
     """
     Service d'orchestration pour le Diagram Agent.
-    Exploite le client Ollama/OpenAI-compatible centralise pour analyser la topologie
-    du document parse et generer des schemas d'architecture Mermaid.js valides.
     """
 
     def __init__(self, strict_validation: bool = True, use_mermaid_cli: bool = False):
-        """
-        Args:
-            strict_validation: Si True, rejette les diagrammes avec des erreurs regex detectees.
-            use_mermaid_cli: Si True, tente une validation secondaire avec mermaid-cli.
-        """
         self.strict_validation = strict_validation
         self.use_mermaid_cli = use_mermaid_cli
         self.validator = MermaidSyntaxValidator()
@@ -196,13 +138,12 @@ class DiagramAgentService:
     @staticmethod
     def clean_mermaid_code(code: str) -> str:
         """
-        Applique une serie de correctifs Regex deterministes sur le code Mermaid.js
-        pour eliminer les erreurs courantes de syntaxe generees par le LLM.
+        Nettoyage et normalisation automatique du code Mermaid.js.
         """
         if not code:
             return ""
 
-        # 1. Suppression des balises markdown eventuelles
+        # 1. Trim general & retrait des blocs Markdown
         code = code.strip()
         if code.startswith("```"):
             lines = code.split("\n")
@@ -210,18 +151,27 @@ class DiagramAgentService:
                 lines = lines[1:]
             if lines and lines[-1].strip() == "```":
                 lines = lines[:-1]
-            code = "\n".join(lines)
+            code = "\n".join(lines).strip()
 
-        # 2. Correction des formes de noeuds incompatibles avec les moteurs de rendu
+        # 2. Nettoyage des sous-graphes : convertit `subgraph "Nom Layer"` -> `subgraph Nom_Layer`
+        def fix_subgraph(match):
+            raw_title = match.group(1).strip()
+            cleaned_title = re.sub(r'[^\w]', '_', raw_title)
+            return f"subgraph {cleaned_title}"
+
+        code = re.sub(r'subgraph\s+"([^"]+)"', fix_subgraph, code)
+        code = re.sub(r'subgraph\s+\'([^\']+)\'', fix_subgraph, code)
+
+        # 3. Formes de noeuds incompatibles
         code = re.sub(r'\(\[([^\]]+)\]\)', r'[\1]', code)
         code = re.sub(r'\(\(([^)]+)\)\)', r'[\1]', code)
         code = re.sub(r'\[\[([^\]]+)\]\]', r'[\1]', code)
         code = re.sub(r'\{\{([^}]+)\}\}', r'{\1}', code)
 
-        # 3. Correction des fleches mal formees (ex: -->|label|> vers -->|label|)
+        # 4. Correction des fleches
         code = re.sub(r'-->\|([^|]+)\|>', r'-->|\1|', code)
 
-        # 4. Correction des attributs erDiagram en style UML (+id: int vers int id)
+        # 5. Conversion attributs ERDiagram style UML
         lines = code.split('\n')
         fixed_lines = []
         in_entity_block = False
@@ -252,13 +202,8 @@ class DiagramAgentService:
         return "\n".join(fixed_lines).strip()
 
     def _validate_diagram(self, diagram: DiagramItem) -> Tuple[bool, List[str]]:
-        """
-        Valide un diagramme individuel selon les regles configurees.
-        Retourne (is_valid, error_messages).
-        """
         all_errors = []
 
-        # Etape 1: Validation regex deterministe (toujours executee)
         is_regex_valid, regex_errors = self.validator.validate_with_regex(
             diagram.mermaid_code, 
             diagram.type
@@ -268,7 +213,6 @@ class DiagramAgentService:
         if not is_regex_valid and self.strict_validation:
             return False, all_errors
 
-        # Etape 2: Validation mermaid-cli (optionnelle)
         if self.use_mermaid_cli and is_regex_valid:
             is_cli_valid, cli_error = self.validator.validate_with_mermaid_cli(diagram.mermaid_code)
             if not is_cli_valid and cli_error:
@@ -282,23 +226,15 @@ class DiagramAgentService:
         parsed_json_dict: Dict[str, Any], 
         diagram_spec_dict: Dict[str, Any]
     ) -> DiagramOutputModel:
-        """
-        Execute le pipeline complet de generation de diagrammes d'architecture.
-        Les diagrammes avec erreurs de syntaxe sont automatiquement filtres.
-        """
-        # 1. Validation structurelle de l'objet d'entree (ParsingAgentOutput)
         ParsingAgentOutput(**parsed_json_dict)
 
-        # 2. Construction du Prompt Systeme enrichi
         system_prompt = get_diagram_agent_prompt(
             diagram_spec=diagram_spec_dict,
             parsed_project_data=parsed_json_dict
         )
 
-        # 3. Payload d'entree utilisateur (JSON parse epure)
         user_prompt = json.dumps(parsed_json_dict, ensure_ascii=False)
 
-        # 4. Inference LLM via le client centralise
         response = ollama_chat(
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -310,19 +246,14 @@ class DiagramAgentService:
         )
 
         raw_output = response
-
-        # 5. Extraction Regex et validation Pydantic
         diagram_doc = parse_and_validate_json(raw_output, DiagramOutputModel)
 
-        # 6. Post-traitement, nettoyage et FILTRAGE des diagrammes errones
         sanitized_items: List[DiagramItem] = []
         skipped_count = 0
 
         for diag in diagram_doc.diagrams:
-            # Nettoyage du code
             cleaned_code = self.clean_mermaid_code(diag.mermaid_code)
 
-            # Creation du diagramme nettoye
             candidate = DiagramItem(
                 title=diag.title,
                 type=diag.type,
@@ -330,24 +261,19 @@ class DiagramAgentService:
                 mermaid_code=cleaned_code
             )
 
-            # Validation de la syntaxe
             is_valid, errors = self._validate_diagram(candidate)
 
             if is_valid:
                 sanitized_items.append(candidate)
             else:
                 skipped_count += 1
-                # Log de l'erreur pour debug (dans un vrai systeme, utiliser logger)
                 print(f"[DiagramAgentService] SKIPPED diagram '{diag.title}' ({diag.type}) due to syntax errors:")
                 for err in errors:
                     print(f"  - {err}")
 
-        # Log du resultat du filtrage
         total_generated = len(diagram_doc.diagrams)
         valid_count = len(sanitized_items)
         print(f"[DiagramAgentService] Validation complete: {valid_count}/{total_generated} diagrams passed ({skipped_count} skipped)")
 
-        # Limiter le resultat a 4 diagrammes maximum
         final_items = sanitized_items[:4]
-
         return DiagramOutputModel(diagrams=final_items)

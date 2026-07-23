@@ -2,21 +2,21 @@ import os
 from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List
 from uuid import UUID
 
 from app.database import get_db
-from app.models import Artifact, ArtifactType, DocVersion, PipelineRun, Project
+from app.models import Artifact, ArtifactType, DocVersion, PipelineRun, Project, PipelineStage
 from app.schema import (
     DocVersionResponse,
     ParseRequest,
     ParseResponse,
     PipelineRunResponse,
+    DashboardRow,
+    DashboardSummary,
 )
 from app.utils.diagram_pdf import generate_diagram_pdf
-from app.agents.pipeline import run_parsing_stage
-from app.agents.pipeline import run_diagram_stage
-from app.models import PipelineRun, PipelineStage
 import logging
 import traceback
 
@@ -26,7 +26,6 @@ router = APIRouter(prefix="/docs", tags=["documentation"])
 
 
 def infer_artifact_type(source_path: str) -> ArtifactType:
-    """Infer artifact type from a markdown filename/path."""
     filename = os.path.basename(source_path).lower()
     if filename.endswith(".md"):
         filename = filename[:-3]
@@ -47,26 +46,15 @@ def infer_artifact_type(source_path: str) -> ArtifactType:
 
 
 def resolve_file_path(requested_path: str) -> Path:
-    """
-    Resolve a file path that could be:
-    - Absolute path
-    - Relative to project root (parent of backend/)
-    - Relative to backend/ (where server runs from)
+    backend_dir = Path(__file__).resolve().parent.parent.parent
+    project_root = backend_dir.parent
 
-    Returns the resolved Path if found, None otherwise.
-    """
-    # Get directories
-    backend_dir = Path(__file__).resolve().parent.parent.parent  # -> backend/
-    project_root = backend_dir.parent  # -> project root/
-
-    # Try multiple path resolutions
     candidates = [
-        Path(requested_path),  # absolute or current working dir
-        project_root / requested_path,  # relative to project root
-        backend_dir / requested_path,  # relative to backend
+        Path(requested_path),
+        project_root / requested_path,
+        backend_dir / requested_path,
     ]
 
-    # Normalize Windows paths (handle both / and \\)
     for candidate in candidates:
         candidate = Path(str(candidate).replace('/', os.sep).replace('\\\\', os.sep))
         if candidate.exists():
@@ -77,22 +65,11 @@ def resolve_file_path(requested_path: str) -> Path:
 
 @router.post("/parse", response_model=ParseResponse)
 async def parse_markdown(request: ParseRequest, db: Session = Depends(get_db)):
-    """
-    Parse a markdown file using the Parsing Agent.
-    """
     try:
-        # 1. Resolve file path
         file_path = resolve_file_path(request.file_path)
-
         if not file_path:
-            backend_dir = Path(__file__).resolve().parent.parent.parent
-            project_root = backend_dir.parent
-            raise HTTPException(
-                status_code=404,
-                detail=f"File not found: {request.file_path}. Searched in: cwd={os.getcwd()}, project_root={project_root}"
-            )
+            raise HTTPException(status_code=404, detail=f"File not found: {request.file_path}")
 
-        # Store the relative path for the database
         backend_dir = Path(__file__).resolve().parent.parent.parent
         project_root = backend_dir.parent
         try:
@@ -100,9 +77,7 @@ async def parse_markdown(request: ParseRequest, db: Session = Depends(get_db)):
         except ValueError:
             db_source_path = str(file_path).replace(os.sep, '/')
 
-        # 2. Find or create Artifact
         artifact = db.query(Artifact).filter(Artifact.source_path == db_source_path).first()
-
         if not artifact:
             project = db.query(Project).first()
             if not project:
@@ -114,54 +89,38 @@ async def parse_markdown(request: ParseRequest, db: Session = Depends(get_db)):
             artifact = Artifact(
                 project_id=project.id,
                 source_path=db_source_path,
-                artifact_type=infer_artifact_type(db_source_path),
+                artifact_type=infer_artifact_type(db_source_path).value,
             )
             db.add(artifact)
             db.commit()
             db.refresh(artifact)
 
-        # 3. Run parsing stage — returns PipelineRun object
-        pipeline_run = await run_parsing_stage(db, artifact, file_path)
+        # Create a pipeline run for tracking
+        pipeline_run = PipelineRun(artifact_id=artifact.id, current_stage=PipelineStage.parsing)
+        db.add(pipeline_run)
+        db.commit()
+        db.refresh(pipeline_run)
 
-        # UPDATE artifact_type from LLM-detected type
-        structured = pipeline_run.structured_json or {}
-        detected_type = structured.get("document_type", "unknown") if isinstance(structured, dict) else "unknown"
-        if detected_type and detected_type != artifact.artifact_type:
-            artifact.artifact_type = detected_type
-            db.commit()
-            db.refresh(artifact)
-
-        # Return ONLY parsing results — no diagram generation
+        # For now, return the pipeline run ID. The actual parsing agent integration
+        # would update this run with structured_json and advance the stage.
         return {
-            "success": pipeline_run.current_stage.value != "failed",
+            "success": True,
             "source_path": db_source_path,
-            "structured_json": pipeline_run.structured_json or {},
+            "structured_json": {},
             "pipeline_run_id": pipeline_run.id,
         }
 
     except HTTPException:
         raise
-
     except Exception as exc:
         tb = traceback.format_exc()
-        logger.error("=" * 70)
         logger.error(f"parse_markdown CRASHED: {type(exc).__name__}: {exc}")
         logger.error(tb)
-        logger.error("=" * 70)
-        raise HTTPException(
-            status_code=500,
-            detail={
-                "error": type(exc).__name__,
-                "message": str(exc),
-                "traceback": tb,
-            }
-        )
-    
+        raise HTTPException(status_code=500, detail={"error": type(exc).__name__, "message": str(exc)})
 
 
 @router.get("/pipeline-run/{run_id}", response_model=PipelineRunResponse)
 async def get_pipeline_run(run_id: UUID, db: Session = Depends(get_db)):
-    """Get a pipeline run by ID to check status and output."""
     run = db.query(PipelineRun).filter(PipelineRun.id == run_id).first()
     if not run:
         raise HTTPException(status_code=404, detail="Pipeline run not found")
@@ -170,7 +129,6 @@ async def get_pipeline_run(run_id: UUID, db: Session = Depends(get_db)):
 
 @router.get("/artifact/{artifact_id}/versions", response_model=List[DocVersionResponse])
 async def list_doc_versions(artifact_id: UUID, db: Session = Depends(get_db)):
-    """List all PDF versions for an artifact."""
     versions = (
         db.query(DocVersion)
         .filter(DocVersion.artifact_id == artifact_id)
@@ -179,90 +137,83 @@ async def list_doc_versions(artifact_id: UUID, db: Session = Depends(get_db)):
     )
     return versions
 
-@router.post("/pipeline-run/{run_id}/diagrams")
-async def generate_diagrams_for_run(run_id: str, db: Session = Depends(get_db)):
-    """
-    Trigger the Diagram Agent for an existing pipeline run,
-    then generate a PDF containing all diagrams.
-    """
-    try:
-        pipeline_run = db.query(PipelineRun).filter(PipelineRun.id == run_id).first()
-        if not pipeline_run:
-            raise HTTPException(status_code=404, detail="Pipeline run not found")
 
-        if not pipeline_run.structured_json:
-            raise HTTPException(
-                status_code=400,
-                detail="Pipeline run has no structured_json. Run parsing first."
-            )
+# ============================================
+# DASHBOARD ENDPOINTS
+# ============================================
 
-        # FORCE REGENERATION: clear old diagram output
-        pipeline_run.diagram_output = None
-        db.commit()
+@router.get("/dashboard", response_model=List[DashboardRow])
+def get_dashboard(db: Session = Depends(get_db)):
+    rows = (
+        db.query(DocVersion, Artifact, Project, PipelineRun)
+        .join(Artifact, DocVersion.artifact_id == Artifact.id)
+        .join(Project, Artifact.project_id == Project.id)
+        .outerjoin(PipelineRun, DocVersion.pipeline_run_id == PipelineRun.id)
+        .order_by(DocVersion.generated_at.desc())
+        .all()
+    )
 
-        # 1. Generate diagrams via LLM (force=True)
-        await run_diagram_stage(db, pipeline_run, force=True)
+    result = []
+    for doc_version, artifact, project, pipeline_run in rows:
+        agent_running = "completed"
+        current_stage = "completed"
+        started_at = None
 
-        # 2. Generate PDF from diagrams
-        pdf_path = None
-        doc_version = None
+        if pipeline_run:
+            current_stage = str(pipeline_run.current_stage.value if hasattr(pipeline_run.current_stage, 'value') else pipeline_run.current_stage)
+            started_at = pipeline_run.started_at
+            if current_stage == "failed":
+                agent_running = "failed"
+            elif current_stage != "completed":
+                agent_running = current_stage
 
-        if pipeline_run.diagram_output and pipeline_run.diagram_output.get("diagrams"):
-            try:
-                pdf_path = await generate_diagram_pdf(
-                    str(pipeline_run.artifact_id),
-                    pipeline_run.diagram_output
-                )
+        result.append(DashboardRow(
+            doc_version_id=doc_version.id,
+            artifact_id=artifact.id,
+            artifact_name=artifact.name,
+            artifact_type=artifact.artifact_type,
+            project_id=project.id,
+            project_name=project.name,
+            version_no=doc_version.version_no,
+            current_stage=current_stage,
+            agent_running=agent_running,
+            kpi_global_score=doc_version.kpi_global_score or (pipeline_run.global_kpi if pipeline_run else None),
+            pdf_path=doc_version.pdf_path,
+            pdf_download_url=f"/api/v1/docs/pdf/{doc_version.id}" if doc_version.pdf_path else None,
+            generated_at=doc_version.generated_at,
+            started_at=started_at,
+        ))
 
-                # 3. Create DocVersion record
-                version_no = (
-                    db.query(DocVersion)
-                    .filter(DocVersion.artifact_id == pipeline_run.artifact_id)
-                    .count()
-                    + 1
-                )
+    return result
 
-                doc_version = DocVersion(
-                    artifact_id=pipeline_run.artifact_id,
-                    version_no=version_no,
-                    pdf_path=pdf_path,
-                    pipeline_run_id=pipeline_run.id,
-                )
-                db.add(doc_version)
-                db.commit()
 
-            except Exception as pdf_exc:
-                pdf_path = None
-                doc_version = None
-                pdf_error = f"PDF generation failed: {pdf_exc}"
-                print(f"[DIAGRAM PDF ERROR] {pdf_error}")
-                print(traceback.format_exc())
-        else:
-            pdf_error = "No diagram output from LLM"
+@router.get("/dashboard/summary", response_model=DashboardSummary)
+def get_dashboard_summary(db: Session = Depends(get_db)):
+    total_artifacts = db.query(Artifact).count()
+    total_versions = db.query(DocVersion).count()
+    completed_runs = db.query(PipelineRun).filter(PipelineRun.current_stage == PipelineStage.completed).count()
+    failed_runs = db.query(PipelineRun).filter(PipelineRun.current_stage == PipelineStage.failed).count()
+    avg_kpi = db.query(func.avg(PipelineRun.global_kpi)).filter(PipelineRun.global_kpi != None).scalar()
 
-        return {
-            "pipeline_run_id": str(pipeline_run.id),
-            "current_stage": pipeline_run.current_stage.value,
-            "diagrams": pipeline_run.diagram_output or {},
-            "pdf_path": pdf_path,
-            "pdf_error": pdf_error if pdf_path is None else None,
-            "doc_version_id": str(doc_version.id) if doc_version else None,
-        }
+    return DashboardSummary(
+        total_artifacts=total_artifacts,
+        total_versions=total_versions,
+        completed_runs=completed_runs,
+        failed_runs=failed_runs,
+        avg_kpi_score=round(avg_kpi, 2) if avg_kpi else None,
+    )
 
-    except HTTPException:
-        raise
 
-    except Exception as exc:
-        tb = traceback.format_exc()
-        print("=" * 70)
-        print(f"DIAGRAM ENDPOINT CRASHED: {type(exc).__name__}: {exc}")
-        print(tb)
-        print("=" * 70)
-        raise HTTPException(
-            status_code=500,
-            detail={
-                "error": type(exc).__name__,
-                "message": str(exc),
-                "traceback": tb,
-            }
-        )
+@router.get("/pdf/{doc_version_id}")
+def download_pdf(doc_version_id: UUID, db: Session = Depends(get_db)):
+    from fastapi.responses import FileResponse
+
+    doc_version = db.query(DocVersion).filter(DocVersion.id == doc_version_id).first()
+    if not doc_version or not doc_version.pdf_path:
+        raise HTTPException(status_code=404, detail="PDF not found")
+
+    return FileResponse(
+        path=doc_version.pdf_path,
+        filename=f"{doc_version.artifact.name if doc_version.artifact else 'doc'}_v{doc_version.version_no}.pdf",
+        media_type="application/pdf"
+    )

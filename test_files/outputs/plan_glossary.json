@@ -1,0 +1,12 @@
+{
+    "project_name": "Expense Tracker",
+    "items": [
+        {
+            "term": "LocalStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORE-LOCAL",
+            "project_definition": "The primary browser-based mechanism used for client-side data persistence to maintain application state without a backend database."
+        }
+    ]
+}

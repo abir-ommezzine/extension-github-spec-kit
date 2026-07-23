@@ -1,91 +1,56 @@
-
 import traceback
+import logging
 from datetime import datetime
 from pathlib import Path
 import os
 
-try:
-    from fastapi import FastAPI,Request
-    from fastapi.middleware.cors import CORSMiddleware
-    from app.config import settings
-    from app.database import engine, Base
-    from app.api import api_router
-    from contextlib import asynccontextmanager
-    from alembic.config import Config
-    from alembic import command
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from app.config import settings
+from app.database import engine, Base, auto_migrate
+from app.api import api_router
+from contextlib import asynccontextmanager
 
-    # Create logs dir for startup errors
-    _LOG_DIR = Path(__file__).resolve().parents[1] / "logs"
-    _LOG_DIR.mkdir(parents=True, exist_ok=True)
-    _STARTUP_LOG = _LOG_DIR / "startup_errors.log"
+# Setup logging
+logging.basicConfig(
+    level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+logger = logging.getLogger(__name__)
 
-    # rest of module follows in try block
-except Exception:
-    # If imports fail at module import time, log the traceback to a file for debugging
-    try:
-        log_dir = Path(__file__).resolve().parents[1] / "logs"
-        log_dir.mkdir(parents=True, exist_ok=True)
-        startup_log = log_dir / "startup_errors.log"
-        with startup_log.open("a", encoding="utf-8") as fh:
-            fh.write("\n--- STARTUP IMPORT ERROR ---\n")
-            fh.write(f"timestamp: {datetime.utcnow().isoformat()}Z\n")
-            fh.write(traceback.format_exc())
-            fh.write("\n")
-    except Exception:
-        pass
-    raise
+# Create logs dir
+_LOG_DIR = Path(__file__).resolve().parents[1] / "logs"
+_LOG_DIR.mkdir(parents=True, exist_ok=True)
+
 
 def _write_startup_log(message: str) -> None:
     try:
-        log_dir = Path(__file__).resolve().parents[1] / "logs"
-        log_dir.mkdir(parents=True, exist_ok=True)
-        startup_log = log_dir / "startup_errors.log"
+        startup_log = _LOG_DIR / "startup_errors.log"
         with startup_log.open("a", encoding="utf-8") as fh:
-            fh.write("\n--- STARTUP ERROR ---\n")
-            fh.write(f"timestamp: {datetime.utcnow().isoformat()}Z\n")
-            fh.write(message)
-            fh.write("\n")
+            fh.write(f"\n--- {datetime.utcnow().isoformat()}Z ---\n{message}\n")
     except Exception:
         pass
 
 
+# Run auto-migration on module load
 try:
-    # Create tables on startup (sync version)
-    Base.metadata.create_all(bind=engine)
-
-    # Create PDF storage directory
+    auto_migrate()
     os.makedirs(settings.PDF_STORAGE_DIR, exist_ok=True)
 except Exception:
     _write_startup_log(traceback.format_exc())
     raise
 
-def run_migrations():
-    """Run Alembic migrations automatically on startup."""
-    try:
-        ini_path = os.path.join(os.path.dirname(__file__), "..", "alembic.ini")
-        alembic_cfg = Config(ini_path)
-        # Ensure the script_location is correct relative to the ini file
-        alembic_cfg.set_main_option(
-            "script_location", os.path.join(os.path.dirname(__file__), "..", "alembic")
-        )
-        command.upgrade(alembic_cfg, "head")
-    except Exception:
-        _write_startup_log(traceback.format_exc())
-        raise
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    run_migrations()
+    logger.info("Application starting up...")
     yield
-    # Shutdown (nothing needed)
+    logger.info("Application shutting down...")
 
 
-# Create application with lifespan handler
 app = FastAPI(title="Spec Kit Extension - AgentDocx API", lifespan=lifespan)
 
-# CORS for React frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:3000"],
@@ -94,7 +59,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include all API routes
 app.include_router(api_router, prefix="/api/v1")
 
 
@@ -106,6 +70,7 @@ def read_root():
 @app.get("/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
+
 
 @app.exception_handler(Exception)
 async def catch_all_exceptions(request: Request, exc: Exception):
@@ -120,6 +85,6 @@ async def catch_all_exceptions(request: Request, exc: Exception):
         content={
             "error": type(exc).__name__,
             "message": str(exc),
-            "traceback": tb.split("\n")[-10:],  # last 10 lines
+            "traceback": tb.split("\n")[-10:],
         },
     )

@@ -5,7 +5,7 @@ test_llm.py — Script de diagnostic robuste avec extraction Regex de JSON pour 
 
 import sys
 from pydantic import BaseModel, Field
-from app.core.llm_client import ollama_openai_client, get_ollama_model
+from app.core.llm_client import ollama_chat, get_ollama_model
 from app.core.llm_utils import parse_and_validate_json
 
 # Schéma de test
@@ -25,7 +25,7 @@ def run_diagnostics():
     # --- TEST 1 : Complétion standard ---
     print("--- TEST 1 : Complétion de texte standard ---")
     try:
-        response = ollama_openai_client.chat.completions.create(
+        response = ollama_chat.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": "Tu es un assistant de test. Réponds de manière très concise."},
@@ -61,7 +61,7 @@ def run_diagnostics():
     )
 
     try:
-        response = ollama_openai_client.chat.completions.create(
+        response = ollama_chat.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": schema_instruction},

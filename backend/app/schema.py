@@ -23,7 +23,7 @@ class ProjectResponse(ProjectBase):
 # --- Artifact ---
 class ArtifactBase(BaseModel):
     source_path: str
-    artifact_type: ArtifactType
+    artifact_type: str  # Use str to avoid enum serialization issues
 
 class ArtifactCreate(ArtifactBase):
     project_id: UUID
@@ -40,7 +40,7 @@ class DocVersionBase(BaseModel):
     version_no: int
     pdf_path: str
     commit_hash: Optional[str] = None
-    generated_by: GeneratedBy = GeneratedBy.agent
+    generated_by: str = "agent"
 
 class DocVersionCreate(DocVersionBase):
     artifact_id: UUID
@@ -50,19 +50,20 @@ class DocVersionResponse(DocVersionBase):
     artifact_id: UUID
     generated_at: datetime
     pipeline_run_id: Optional[UUID] = None
+    kpi_global_score: Optional[float] = None
     model_config = ConfigDict(from_attributes=True)
 
 
 # --- PipelineRun ---
 class PipelineRunBase(BaseModel):
-    current_stage: PipelineStage = PipelineStage.parsing
+    current_stage: str = "parsing"
     structured_json: Optional[dict] = None
     summary_output: Optional[str] = None
     diagram_output: Optional[dict] = None
     glossary_output: Optional[dict] = None
     written_doc: Optional[str] = None
     layout_output: Optional[str] = None
-    error_message: Optional[str] = None
+   
 
 class PipelineRunCreate(PipelineRunBase):
     artifact_id: UUID
@@ -84,4 +85,34 @@ class ParseResponse(BaseModel):
     source_path: str
     structured_json: Any
     pipeline_run_id: UUID
-    
+
+
+# ============================================
+# DASHBOARD SCHEMAS
+# ============================================
+
+class DashboardRow(BaseModel):
+    doc_version_id: UUID
+    artifact_id: UUID
+    artifact_name: str
+    artifact_type: str
+    project_id: UUID
+    project_name: str
+    version_no: int
+    current_stage: str
+    agent_running: str
+    kpi_global_score: Optional[float] = None
+    pdf_path: Optional[str] = None
+    pdf_download_url: Optional[str] = None
+    generated_at: datetime
+    started_at: Optional[datetime] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+class DashboardSummary(BaseModel):
+    total_artifacts: int
+    total_versions: int
+    completed_runs: int
+    failed_runs: int
+    avg_kpi_score: Optional[float] = None
+    model_config = ConfigDict(from_attributes=True)

@@ -1,0 +1,16 @@
+{
+    "diagrams": [
+        {
+            "title": "Technical Implementation Traceability",
+            "type": "flowchart",
+            "description": "Maps the relationship between project phases, architectural choices, and structural organization for the Expense Tracker.",
+            "mermaid_code": "flowchart TD\n    subgraph Project_Lifecycle\n        PHASE-0[\"PHASE-0: Research Phase\"]\n    end\n\n    subgraph Architectural_Decisions\n        ARCH-NEXTJS[\"ARCH-NEXTJS: Next.js App Router\"]\n        STORE-LOCAL[\"STORE-LOCAL: Browser localStorage Persistence\"]\n        DEC-NO-AUTH[\"DEC-NO-AUTH: No Authentication Required\"]\n    end\n\n    subgraph Project_Structure___Quality\n        STRUCT-SERVER[\"STRUCT-SERVER: src/server (Types & Validation)\"]\n        TEST-UNIT[\"TEST-UNIT: Jest & RTL Unit Testing\"]\n    end\n\n    PHASE-0 -->|depends_on| ARCH-NEXTJS\n    ARCH-NEXTJS -->|contains| STRUCT-SERVER\n    TEST-UNIT -->|relates_to| STRUCT-SERVER\n    STORE-LOCAL --- DEC-NO-AUTH"
+        },
+        {
+            "title": "Data Persistence Workflow",
+            "type": "flowchart",
+            "description": "Models the logic flow for handling data persistence using the client-side localStorage strategy.",
+            "mermaid_code": "flowchart TD\n    START[Start: User Action]\n    START --> ACT_REQ[\"Request Data Operation\"]\n    \n    ACT_REQ --> DEC_STORAGE{\"Is localStorage available?\"}\n    \n    DEC_STORAGE -- \"No\" --> ERR_NOTIFY[\"Show Persistence Error Notification\"]\n    ERR_NOTIFY --> END[End]\n    \n    DEC_STORAGE -- \"Yes\" --> ACT_VAL[\"Validate Data via STRUCT-SERVER utilities\"]\n    \n    ACT_VAL --> DEC_VALID{\"Is Data Valid?\"}\n    \n    DEC_VALID -- \"No\" --> ERR_VAL[\"Return Validation Error to UI\"]\n    ERR_VAL --> ACT_REQ\n    \n    DEC_VALID -- \"Yes\" --> ACT_SAVE[\"Commit to localStorage\"]\n    ACT_SAVE --> ACT_SYNC[\"Update Application State\"]\n    ACT_SYNC --> END"
+        }
+    ]
+}

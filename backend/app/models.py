@@ -1,4 +1,3 @@
-
 import uuid
 import enum
 
@@ -11,6 +10,7 @@ from sqlalchemy import (
     ForeignKey,
     UniqueConstraint,
     Enum as SAEnum,
+    Float,
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
@@ -32,6 +32,8 @@ class ArtifactType(str, enum.Enum):
     plan = "plan"
     task = "task"
     constitution = "constitution"
+    contract = "contract"
+    requirements = "requirements"
 
 
 class GeneratedBy(str, enum.Enum):
@@ -40,18 +42,17 @@ class GeneratedBy(str, enum.Enum):
 
 
 class PipelineStage(str, enum.Enum):
-    """Étape courante du pipeline — utile pour un dashboard de suivi en temps réel."""
     parsing = "parsing"
-    parallel_enrichment = "parallel_enrichment"   # Summary / Diagram / Glossary
-    writing = "writing"                            # Documentation Writer
-    layout = "layout"                               # Design/Layout Agent
-    rendering = "rendering"                         # Markdown/HTML -> PDF Generator
+    parallel_enrichment = "parallel_enrichment"
+    writing = "writing"
+    layout = "layout"
+    rendering = "rendering"
     completed = "completed"
     failed = "failed"
 
 
 # ============================================
-# Project / Artifact / DocVersion
+# Project
 # ============================================
 
 class Project(Base):
@@ -70,6 +71,10 @@ class Project(Base):
         return f"<Project id={self.id} name={self.name!r}>"
 
 
+# ============================================
+# Artifact
+# ============================================
+
 class Artifact(Base):
     __tablename__ = "artifacts"
     __table_args__ = (
@@ -81,7 +86,7 @@ class Artifact(Base):
         UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
     )
     current_file_hash = Column(String(64), nullable=True)
-    source_path = Column(String(500), nullable=False)  # ex: specs/003-x/context.md
+    source_path = Column(String(500), nullable=False)
     artifact_type = Column(String(100), nullable=False, default="unknown")
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
@@ -99,9 +104,18 @@ class Artifact(Base):
         order_by="PipelineRun.started_at",
     )
 
+    @property
+    def name(self) -> str:
+        from pathlib import Path
+        return Path(self.source_path).stem
+
     def __repr__(self) -> str:
         return f"<Artifact id={self.id} source_path={self.source_path!r}>"
 
+
+# ============================================
+# DocVersion — stores the final PDF
+# ============================================
 
 class DocVersion(Base):
     __tablename__ = "doc_versions"
@@ -115,16 +129,17 @@ class DocVersion(Base):
     )
     version_no = Column(Integer, nullable=False)
     pdf_path = Column(String(500), nullable=False)
-    source_file_hash = Column(String(64), nullable=False)
+    source_file_hash = Column(String(64), nullable=True)
     generated_at = Column(DateTime, server_default=func.now(), nullable=False)
-    sections_summary = Column(JSONB, nullable=True)
     commit_hash = Column(String(40), nullable=True)
     generated_by = Column(
         SAEnum(GeneratedBy, name="generated_by_enum", native_enum=False),
         nullable=False,
         default=GeneratedBy.agent,
     )
-    # Rattache cette version à l'exécution de pipeline qui l'a produite
+    # KPI global score (0-100) for dashboard
+    kpi_global_score = Column(Float, nullable=True)
+    # Link to the pipeline run that produced this version
     pipeline_run_id = Column(
         UUID(as_uuid=True), ForeignKey("pipeline_runs.id", ondelete="SET NULL"), nullable=True
     )
@@ -132,25 +147,27 @@ class DocVersion(Base):
     artifact = relationship("Artifact", back_populates="doc_versions")
     pipeline_run = relationship("PipelineRun", back_populates="doc_version")
 
+    @property
+    def project_name(self) -> str:
+        return self.artifact.project.name if self.artifact and self.artifact.project else "Unknown"
+
+    @property
+    def artifact_name(self) -> str:
+        return self.artifact.name if self.artifact else "Unknown"
+
     def __repr__(self) -> str:
         return f"<DocVersion id={self.id} v{self.version_no} artifact_id={self.artifact_id}>"
 
 
 # ============================================
-# PipelineRun — suivi/monitoring du pipeline d'agents
+# PipelineRun — KPI scores ONLY, no agent outputs
 # ============================================
 
 class PipelineRun(Base):
     """
-    Une ligne = une exécution complète du pipeline pour un artifact donné.
-    Chaque colonne de sortie correspond à une étape du schéma :
-    Parsing -> (Summary | Diagram | Glossary) -> Writer -> Layout -> PDF.
-
-    Permet de :
-      - visualiser la progression en cours (current_stage) sur le dashboard,
-      - déboguer une étape précise sans relancer tout le pipeline,
-      - respecter l'AC "output must not silently drop requirements" en
-        conservant le JSON structuré source de vérité entre les étapes.
+    Stores ONLY KPI scores from each agent stage.
+    NO agent outputs (structured_json, summary_output, etc.) are stored here.
+    Those stay in memory/filesystem during pipeline execution.
     """
     __tablename__ = "pipeline_runs"
 
@@ -165,21 +182,19 @@ class PipelineRun(Base):
         default=PipelineStage.parsing,
     )
 
-    # --- Sorties de chaque étape (nullable : remplies au fur et à mesure) ---
-    structured_json = Column(JSONB, nullable=True)      # sortie du Parsing Agent
-    summary_output = Column(Text, nullable=True)          # sortie du Summary Agent
-    diagram_output = Column(JSONB, nullable=True)         # sortie du Diagram Agent
-    glossary_output = Column(JSONB, nullable=True)        # sortie du Glossary Agent
-    written_doc = Column(Text, nullable=True)              # sortie du Documentation Writer
-    layout_output = Column(Text, nullable=True)            # sortie du Design/Layout Agent (MD/HTML final)
-
-    error_message = Column(Text, nullable=True)            # renseigné si current_stage = failed
+    # --- KPI scores only (0-100) ---
+    parsing_kpi = Column(Float, nullable=True)
+    summary_kpi = Column(Float, nullable=True)
+    diagram_kpi = Column(Float, nullable=True)
+    glossary_kpi = Column(Float, nullable=True)
+    doc_writer_kpi = Column(Float, nullable=True)
+    layout_kpi = Column(Float, nullable=True)
+    global_kpi = Column(Float, nullable=True)  # weighted average of all stages
 
     started_at = Column(DateTime, server_default=func.now(), nullable=False)
-    completed_at = Column(DateTime(timezone=True), nullable=True)
 
     artifact = relationship("Artifact", back_populates="pipeline_runs")
     doc_version = relationship("DocVersion", back_populates="pipeline_run", uselist=False)
 
     def __repr__(self) -> str:
-        return f"<PipelineRun id={self.id} stage={self.current_stage} artifact_id={self.artifact_id}>"
+        return f"<PipelineRun id={self.id} stage={self.current_stage} kpi={self.global_kpi}>"

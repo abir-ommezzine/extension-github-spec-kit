@@ -1,7 +1,7 @@
 # app/services/parser_service.py
 import json
 from pathlib import Path
-from app.schemas.parsing_agent_schema import ParsingAgentLLMOutput, ParsingAgentOutput, SectionOutput
+from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.utils.markdown_parser import pre_parse_markdown_to_sections, calculate_file_hash
 from app.core.llm_client import ollama_chat, get_llm_model
 from app.core.llm_utils import parse_and_validate_json
@@ -75,48 +75,20 @@ def run_parsing_agent(file_name: str, file_content: str) -> ParsingAgentOutput:
 
     # 5. Appel au LLM Ollama
     response = ollama_chat(
-        
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(user_message, ensure_ascii=False)}
         ],
         response_format={"type": "json_object"},
-        temperature=0.0,
-        max_tokens=16384   # Groq supports up to 8192 for this model
+        temperature=0.0
     )
+    
     raw_output = response
-    llm_output = parse_and_validate_json(raw_output, ParsingAgentLLMOutput)
-
-# Overlay: index -> mapped_to_template_field, for whichever sections the LLM mapped
-    mapping_by_index = {
-    m.section_index: m.mapped_to_template_field
-    for m in llm_output.section_mappings
-}
-
-# Build sections from the COMPLETE deterministic list — never depends on LLM completeness
-    full_sections = [
-    SectionOutput(
-        title=sec["title"],
-        level=sec["level"],
-        raw_content=sec["raw_content"],
-        mapped_to_template_field=mapping_by_index.get(i),  # None if the LLM skipped this index
-    )
-    for i, sec in enumerate(pre_parsed_sections)
-]
-
-    mapped_fields = {v for v in mapping_by_index.values() if v is not None}
-    filtered_gaps = [
-    gap for gap in llm_output.structural_gaps
-    if gap.missing_section not in mapped_fields
-]
-
-    return ParsingAgentOutput(
-    parsing_rationale=llm_output.parsing_rationale,
-    project_info=llm_output.project_info,
-    doc_type=llm_output.doc_type,
-    sections=full_sections,
-    elements=llm_output.elements,
-    relationships=llm_output.relationships,
-    structural_gaps=filtered_gaps,
-    open_questions=llm_output.open_questions,
-)
+    try:
+        data = json.loads(raw_output)
+        if "section_mappings" in data and "sections" not in data:
+            data["sections"] = data.pop("section_mappings")
+        raw_output = json.dumps(data)
+    except Exception:
+        pass
+    return parse_and_validate_json(raw_output, ParsingAgentOutput)
