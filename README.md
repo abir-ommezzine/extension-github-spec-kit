@@ -29,4 +29,6 @@ This directory is used for validating the agentic workflow with real-world scena
 ## 🚀 Quick Start
 1. Configure your environment variables in `.env`.
 2. Install dependencies: `pip install -r requirements.txt`.
-3. Explore the `backend/` directory to understand the agentic flow.
+3. To run the pipeline:
+   - Navigate to the backend folder: `cd backend`
+   - Start the FastAPI server: `uvicorn app.main:app --reload --port 8000`
