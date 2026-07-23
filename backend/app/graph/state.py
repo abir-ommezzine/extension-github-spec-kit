@@ -26,7 +26,18 @@ class GraphState(TypedDict):
     diagram_doc: Optional[Any]
     diagram_metrics: Optional[Dict[str, Any]]
     diagram_pdf_path: Optional[str]
-# # app/graph/state.py
+
+    # 5. Doc Writer Agent : Résultats, Métriques & Chemins (Convergence)
+    doc_writer_doc: Optional[Any]
+    doc_writer_metrics: Optional[Dict[str, Any]]
+    doc_writer_md_path: Optional[str]
+    doc_writer_eval_path: Optional[str]
+
+    # 6. Layout Agent : Résultats, Métriques & Chemins (Certification & Rendu PDF Final)
+    layout_doc: Optional[Any]
+    layout_metrics: Optional[Dict[str, Any]]
+    layout_pdf_path: Optional[str]
+    layout_eval_path: Optional[str]
 # from typing import TypedDict, Dict, Any, Optional
 # from app.schemas.parsing_agent_schema import ParsingAgentOutput
 # from app.schemas.summary_agent_schema import SummaryOutputModel
@@ -49,3 +60,14 @@ class GraphState(TypedDict):
 #     # 3. Glossary Agent : Résultats & Métriques (Parallèle B)
 #     glossary_doc: Optional[GlossaryOutputModel]
 #     glossary_metrics: Optional[Dict[str, Any]]
+
+#     # 4. Diagram Agent : Résultats & Métriques (Parallèle C)
+#     diagram_doc: Optional[Any]
+#     diagram_metrics: Optional[Dict[str, Any]]
+#     diagram_pdf_path: Optional[str]
+
+#     # 5. Doc Writer Agent : Résultats, Métriques & Chemins (Convergence Finale)
+#     doc_writer_doc: Optional[Any]
+#     doc_writer_metrics: Optional[Dict[str, Any]]
+#     doc_writer_md_path: Optional[str]
+#     doc_writer_eval_path: Optional[str]

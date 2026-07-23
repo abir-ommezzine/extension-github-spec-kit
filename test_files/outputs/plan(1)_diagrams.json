@@ -1,28 +1,28 @@
 {
     "diagrams": [
         {
-            "title": "CourseHub API Data Model",
+            "title": "CourseHub Data Model",
             "type": "erDiagram",
-            "description": "Entity Relationship Diagram showing the core data models for users, courses, modules, and enrollments with strict attribute syntax.",
-            "mermaid_code": "erDiagram\n    USER-MODEL ||--o{ COURSE-MODEL : \"instructs\"\n    USER-MODEL ||--o{ ENROLLMENT-MODEL : \"enrolls\"\n    COURSE-MODEL ||--o{ MODULE-MODEL : \"contains\"\n    COURSE-MODEL ||--o{ ENROLLMENT-MODEL : \"has\"\n\n    USER-MODEL {\n        int id PK\n        string email\n        string hashed_password\n        string display_name\n        string role\n    }\n    COURSE-MODEL {\n        int id PK\n        int instructor_id FK\n        string title\n        string description\n        int price_cents\n        boolean published\n    }\n    MODULE-MODEL {\n        int id PK\n        int course_id FK\n        string title\n        int order\n    }\n    ENROLLMENT-MODEL {\n        int id PK\n        int student_id FK\n        int course_id FK\n        int progress\n        datetime completed_at\n    }"
+            "description": "Entity Relationship Diagram showing the core database schema for users, courses, modules, and enrollments.",
+            "mermaid_code": "erDiagram\n    ENT-USER ||--o{ ENT-COURSE : \"instructs\"\n    ENT-USER ||--o{ ENT-ENROLLMENT : \"enrolls\"\n    ENT-COURSE ||--o{ ENT-MODULE : \"contains\"\n    ENT-COURSE ||--o{ ENT-ENROLLMENT : \"has\"\n\n    ENT-USER {\n        int id PK\n        string email\n        string hashed_password\n        string display_name\n        string role\n    }\n    ENT-COURSE {\n        int id PK\n        int instructor_id FK\n        string title\n        string description\n        int price_cents\n        boolean published\n    }\n    ENT-MODULE {\n        int id PK\n        int course_id FK\n        string title\n        int order\n    }\n    ENT-ENROLLMENT {\n        int id PK\n        int student_id FK\n        int course_id FK\n        int progress\n        datetime completed_at\n    }"
         },
         {
             "title": "User Registration & Welcome Flow",
             "type": "sequenceDiagram",
-            "description": "Sequence diagram illustrating the asynchronous registration process and the non-blocking email integration via BackgroundTask.",
-            "mermaid_code": "sequenceDiagram\n    actor Student\n    participant API as \"EP-AUTH-REGISTER\"\n    participant DB as \"USER-MODEL\"\n    participant BG as \"EMAIL-BG\"\n    participant Resend as \"Resend SDK\"\n\n    Student ->> API: POST /api/v1/auth/register\n    API ->> DB: Create User (role=student)\n    DB -->> API: User Created\n    API ->> API: Generate JWT Access & Refresh Tokens\n    API ->> BG: add_task(send_welcome_email_async)\n    API -->> Student: 201 Created (Tokens)\n    \n    Note over BG, Resend: Background Process\n    BG ->> Resend: Send Welcome Email\n    Resend -->> BG: Email Sent"
+            "description": "Sequence diagram illustrating the asynchronous registration process and background email integration.",
+            "mermaid_code": "sequenceDiagram\n    actor Student\n    participant API as \"EP-AUTH-REG: /auth/register\"\n    participant DB as \"PostgreSQL\"\n    participant BG as \"FastAPI BackgroundTask\"\n    participant Email as \"Resend Service\"\n\n    Student ->> API: POST /api/v1/auth/register\n    API ->> DB: Create User (role=student)\n    DB -->> API: User Created\n    API ->> BG: add_task(send_welcome_email_async)\n    API -->> Student: 201 Created (Access + Refresh Tokens)\n    \n    Note over BG, Email: Process runs asynchronously after response\n    BG ->> Email: send_welcome_email_async(email, name)\n    Email -->> BG: Email Sent"
         },
         {
             "title": "Course Deletion Workflow",
             "type": "flowchart",
-            "description": "Workflow for deleting a course, implementing the ActiveEnrollmentConstraint business rule to prevent data loss.",
-            "mermaid_code": "flowchart TD\n    START[Start Delete Request] --> AUTH{\"Is Instructor?\"}\n    AUTH -- \"No\" --> ERR403[\"Return 403 Forbidden\"]\n    AUTH -- \"Yes\" --> OWN{\"Is Owner?\"}\n    \n    OWN -- \"No\" --> ERR403\n    OWN -- \"Yes\" --> CHECK_ENROLL{\"RULE-ACTIVE-ENROLL: Has Enrollments?\"}\n    \n    CHECK_ENROLL -- \"Yes\" --> ERR409[\"Return 409 Conflict: Active Enrollments Exist\"]\n    CHECK_ENROLL -- \"No\" --> DEL_PROC[\"Delete Course & Modules\"]\n    \n    ERR403 --> END[End]\n    ERR409 --> END\n    DEL_PROC --> END"
+            "description": "Workflow for deleting a course, implementing the ActiveEnrollmentConstraint business rule.",
+            "mermaid_code": "flowchart TD\n    START[Start Delete Request] --> AUTH{\"Is User Instructor?\"}\n    \n    AUTH -- \"No\" --> ERR403[\"Return 403 Forbidden\"]\n    AUTH -- \"Yes\" --> OWN{\"Does User own Course?\"}\n    \n    OWN -- \"No\" --> ERR403\n    OWN -- \"Yes\" --> CHECK_ENROLL{\"Active Enrollments Exist?\"}\n    \n    CHECK_ENROLL -- \"Yes\" --> RULE_409[\"RULE-ACTIVE-ENROLL: Return 409 Conflict\"]\n    CHECK_ENROLL -- \"No\" --> DEL_PROC[\"Delete Course & Modules\"]\n    \n    RULE_409 --> END[End]\n    DEL_PROC --> SUCCESS[\"Return 204 No Content\"]\n    SUCCESS --> END\n    ERR403 --> END"
         },
         {
-            "title": "Requirements Traceability Map",
+            "title": "Implementation Phase Traceability",
             "type": "flowchart",
-            "description": "Traceability map linking architectural choices and endpoints to the underlying data models and business rules.",
-            "mermaid_code": "flowchart LR\n    subgraph \"Infrastructure\"\n        ASYNC-STACK[\"ASYNC-STACK: FastAPI + PostgreSQL\"]\n    end\n\n    subgraph \"Security Layer\"\n        AUTH-JWT[\"AUTH-JWT: JWT Access/Refresh Tokens\"]\n    end\n\n    subgraph \"API Endpoints\"\n        EP-AUTH-REGISTER[\"EP-AUTH-REGISTER: /auth/register\"]\n        EP-COURSE-CREATE[\"EP-COURSE-CREATE: /courses\"]\n        EP-ENROLL-CREATE[\"EP-ENROLL-CREATE: /enrollments\"]\n    end\n\n    subgraph \"Domain Logic & Data\"\n        USER-MODEL[\"USER-MODEL: User Entity\"]\n        COURSE-MODEL[\"COURSE-MODEL: Course Entity\"]\n        ENROLLMENT-MODEL[\"ENROLLMENT-MODEL: Enrollment Entity\"]\n        RULE-ACTIVE-ENROLL[\"RULE-ACTIVE-ENROLL: ActiveEnrollmentConstraint\"]\n    end\n\n    ASYNC-STACK --> USER-MODEL\n    AUTH-JWT --> EP-AUTH-REGISTER\n    AUTH-JWT --> EP-COURSE-CREATE\n    EP-AUTH-REGISTER --> USER-MODEL\n    EP-COURSE-CREATE --> COURSE-MODEL\n    EP-ENROLL-CREATE --> COURSE-MODEL\n    EP-ENROLL-CREATE --> ENROLLMENT-MODEL\n    RULE-ACTIVE-ENROLL --> ENROLLMENT-MODEL"
+            "description": "Traceability map of the project rollout phases and their dependencies.",
+            "mermaid_code": "flowchart LR\n    subgraph Foundation\n        PHASE-1[\"PHASE-1: Project Foundation & DB Schema\"]\n    end\n\n    subgraph Security\n        PHASE-2[\"PHASE-2: Auth Router & JWT Flow\"]\n    end\n\n    subgraph Services\n        PHASE-3[\"PHASE-3: Resend Email Integration\"]\n    end\n\n    subgraph Domain\n        PHASE-4[\"PHASE-4: Courses Router CRUD\"]\n        PHASE-5[\"PHASE-5: Enrolments Router\"]\n    end\n\n    PHASE-1 --> PHASE-2\n    PHASE-2 --> PHASE-3\n    PHASE-2 --> PHASE-4\n    PHASE-4 --> PHASE-5"
         }
     ]
 }

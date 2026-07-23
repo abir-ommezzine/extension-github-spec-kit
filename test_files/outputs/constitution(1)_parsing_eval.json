@@ -16,7 +16,7 @@
         "completeness_score": 75.0,
         "readiness_status": "READY_FOR_EXECUTION",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 11,
+            "total_nodes_extracted": 12,
             "total_edges_extracted": 6
         },
         "gaps_summary": {

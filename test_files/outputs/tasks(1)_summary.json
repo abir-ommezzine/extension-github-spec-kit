@@ -1,29 +1,39 @@
 {
-    "executive_brief": "CourseHub API is a course management system providing secure academic workflows, featuring instructor-led content creation and student progress tracking. Hosted as a FastAPI-based service, it implements a role-based access control pattern to isolate student data and enforce strict course ownership and enrollment dependencies.",
+    "executive_brief": "CourseHub API is a course management system built with FastAPI and PostgreSQL. It implements a role-based access control system for instructors (course CRUD and ownership) and students (enrollment and progress tracking). The architecture follows a phase-based execution strategy focusing on strict data isolation, async database operations, and a standardized API response envelope.",
     "technical_stack": {
         "languages_and_frameworks": [
             "FastAPI",
-            "JWT",
-            "PostgreSQL",
-            "Resend",
-            "Pytest"
+            "SQLAlchemy 2.0 async",
+            "asyncpg",
+            "Pydantic v2",
+            "Alembic",
+            "pytest",
+            "httpx",
+            "python-jose",
+            "passlib",
+            "resend"
         ],
         "architectural_constraints": [
-            "Refresh token expiration: 7 days",
-            "Business logic test coverage: >= 80%",
-            "Course deletion: Forbidden if active enrollments exist",
-            "Data Isolation: Students strictly forbidden from updating other students' progress (403)",
-            "Progress logic: Progress == 100 must trigger auto-set of completed_at",
-            "Testing constraint: Zero mocking of PostgreSQL; requires real test instance",
-            "Response structure: Consistent global APIResponse envelope across all endpoints"
+            "Business logic coverage target >= 80%",
+            "Enrollment progress values must be between 0 and 100 inclusive",
+            "Course deletion rejected if active enrollments exist (ACTIVE_ENROLLMENT_CONSTRAINT, 409 Conflict)",
+            "Course modules must maintain a unique constraint on (course_id, order)",
+            "Enrollments must maintain a unique constraint on (student_id, course_id)",
+            "Instructors can only manage/update courses they own (403 Forbidden if not owner)",
+            "Students can only access and update their own enrollments (403 Forbidden if not owner)",
+            "Public access to courses restricted to 'published' status only",
+            "All API responses must be wrapped in a standardized APIResponse envelope",
+            "Access tokens expiration: 15 minutes; Refresh tokens expiration: 7 days"
         ]
     },
-    "maturity_assessment": "The specifications demonstrate high structural integrity with all core phases from setup to polish clearly mapped. While a minor gap exists regarding explicit edge-case documentation for the email service, the comprehensive task list and defined success criteria render the project READY for execution.",
+    "maturity_assessment": "The specifications are exceptionally detailed, providing a granular task-based roadmap with clear test criteria for every phase. Despite a minor gap regarding the absence of a dedicated risk/uncertainty section, the structural completeness is near perfect. The project is READY for execution.",
     "critical_dependencies": [
-        "RESEND_API_KEY: Mandatory environment variable required at startup (raises ConfigError if missing)",
-        "JWT: Core dependency for auth flow and role-based access control",
-        "PostgreSQL: Required for persistence and real-instance integration testing",
-        "Referential Integrity: Strict dependency between Course and Enrollment entities for deletion constraints",
-        "Phase Sequence: Linear dependency chain from Setup -> Auth -> Email before domain implementation"
+        "PostgreSQL (Async connection pool)",
+        "RESEND_API_KEY environment variable",
+        "JWT (Access and Refresh flow)",
+        "Resend SDK for asynchronous welcome emails via BackgroundTask",
+        "Cascading deletion of modules upon course deletion",
+        "Strict foreign key dependencies: Enrollment -> User and Course",
+        "Alembic migration sequence for schema versioning"
     ]
 }

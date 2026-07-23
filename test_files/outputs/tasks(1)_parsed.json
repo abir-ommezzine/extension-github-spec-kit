@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "The document is a comprehensive task list for the CourseHub API implementation. I have extracted the structural phases as 'phase' elements and the specific checklist items as 'task' or 'sub_task' elements. The dependency graph provided in the markdown was used to build the relationship arcs. The test criteria from each section were mapped to 'test_case' and 'acceptance_criterion' elements to ensure full traceability from implementation to validation.",
+    "parsing_rationale": "The document is a detailed task list for the CourseHub API implementation. I have mapped the phases to tasks and sub-tasks, extracted specific test criteria as test_cases, and identified technical constraints (like the Active Enrollment Constraint). The dependency graph provided in the markdown was used to build the relationship arcs between phases and tasks.",
     "project_info": {
         "project_name": "CourseHub API",
         "source_type": "refining",
-        "brief_explanation": "Technical implementation plan for a course management API including auth, enrollment, and progress tracking.",
-        "source_context": "Task list derived from spec.md and plan.md"
+        "brief_explanation": "Implementation of a course management API including authentication, instructor course CRUD, student enrollment, and progress tracking.",
+        "source_context": "Technical task list focusing on a phase-based execution strategy for a FastAPI project."
     },
     "doc_type": "task",
     "sections": [
@@ -23,67 +23,67 @@
         {
             "title": "Phase 1: Project Setup & Database Schema",
             "level": 2,
-            "raw_content": "- [ ] T001 Create project structure... [Full Content] ...AsyncSession can be created and cleaned up without errors",
+            "raw_content": "- [ ] T001 Create project structure: `app/`, `app/core/`, `app/models/`, `app/schemas/`, `app/routers/`, `app/services/`, `tests/`\n- [ ] T002 Initialize Python project: `pyproject.toml` or `requirements.txt` with FastAPI, SQLAlchemy 2.0 async, asyncpg, Pydantic v2, Alembic, pytest, httpx, python-jose, passlib, resend\n- [ ] T003 Configure database connection: `app/core/config.py` with async PostgreSQL URL, connection pool settings, environment variable support\n- [ ] T004 Initialize Alembic: `alembic init` with async template, configure `alembic.ini` for async execution\n- [ ] T005 Define ORM models in `app/models.py`:\n  - User (id: UUID, email: string unique, hashed_password: string, display_name: string, role: Enum[\"student\", \"instructor\"], created_at: datetime)\n  - Course (id: UUID, instructor_id: FK→User, title: string, description: string, price_cents: integer, published: boolean, created_at: datetime, updated_at: datetime)\n  - Module (id: UUID, course_id: FK→Course, title: string, order: integer, created_at: datetime) — enforce unique(course_id, order)\n  - Enrollment (id: UUID, student_id: FK→User, course_id: FK→Course, progress: integer 0-100, completed_at: datetime nullable, created_at: datetime, updated_at: datetime) — enforce unique(student_id, course_id)\n- [ ] T006 Create initial Alembic migration with all four tables and relationships\n- [ ] T007 Set up async database session factory in `app/core/database.py`: AsyncSession context, dependency injection for FastAPI\n- [ ] T008 Verify schema: Run migration on test PostgreSQL instance and confirm all tables exist\n\n**Dependencies**: None (Phase 1 blocks all others)\n\n**Test Criteria**: \n- `alembic upgrade head` succeeds\n- All four tables present in test DB with correct columns and FK constraints\n- AsyncSession can be created and cleaned up without errors\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 2: Auth Router & JWT Flow",
             "level": 2,
-            "raw_content": "- [ ] T009 Create `app/core/security.py`... [Full Content] ...Refresh token expires after 7 days (verify JWT exp claim)",
+            "raw_content": "- [ ] T009 Create `app/core/security.py`:\n  - `create_access_token(data: dict, expires_delta: timedelta=15min)` → JWT string\n  - `create_refresh_token(data: dict, expires_delta: timedelta=7days)` → JWT string\n  - `verify_token(token: str, token_type: str)` → dict (async-safe)\n  - `get_password_hash(password: str)` → bcrypt hash\n  - `verify_password(plain: str, hashed: str)` → bool\n\n- [ ] T010 Create `app/core/dependencies.py`:\n  - `get_db()` → AsyncSession (FastAPI Depends)\n  - `get_current_user(token: str = Depends(HTTPBearer()))` → User (async, validates access token, raises HTTPException 401 if invalid)\n  - `get_current_instructor(current_user: User = Depends(get_current_user))` → User (assert role == \"instructor\", raise 403 if not)\n  - `get_current_student(current_user: User = Depends(get_current_user))` → User (assert role == \"student\", raise 403 if not)\n\n- [ ] T011 Create `app/schemas/envelope.py`:\n  - `APIResponse[T]` (Pydantic v2) with fields: data: T, meta: dict (timestamp, path, status), errors: list[dict]\n  - Ensure all endpoints wrap responses in this envelope\n\n- [ ] T012 Create `app/schemas/auth.py` (Pydantic v2):\n  - `UserRegister` (email: EmailStr, password: str with validation, display_name: str)\n  - `UserLogin` (email: EmailStr, password: str)\n  - `TokenResponse` (access_token: str, refresh_token: str, token_type: str = \"bearer\", expires_in: int)\n  - `UserResponse` (id: UUID, email: str, display_name: str, role: Enum)\n\n- [ ] T013 Create `app/routers/auth.py` with endpoints:\n  - `POST /api/v1/auth/register`:\n    - Validate email uniqueness (query User by email)\n    - Hash password with bcrypt\n    - Create User with role=\"student\"\n    - Generate access + refresh tokens\n    - Return TokenResponse + UserResponse\n    - Return 201 Created wrapped in APIResponse\n    - Do NOT send email (deferred to Phase 3)\n  - `POST /api/v1/auth/login`:\n    - Query User by email\n    - Verify password with bcrypt\n    - Generate access + refresh tokens (no role distinction in login)\n    - Return TokenResponse + UserResponse\n    - Return 200 OK wrapped in APIResponse\n  - `POST /api/v1/auth/refresh`:\n    - Accept refresh_token from request body\n    - Validate refresh_token (verify_token with token_type=\"refresh\")\n    - Extract user_id and role from token\n    - Generate new access_token\n    - Return TokenResponse\n    - Return 200 OK wrapped in APIResponse\n\n- [ ] T014 Create `app/main.py`:\n  - Initialize FastAPI app\n  - Register auth router at `/api/v1`\n  - Add global exception handler (stub for Phase 8)\n\n**Dependencies**: Phase 1 (DB schema must exist)\n\n**Test Criteria**:\n- `POST /auth/register` creates user and returns tokens (201)\n- `POST /auth/login` accepts valid credentials and returns tokens (200)\n- `POST /auth/login` rejects invalid credentials (401)\n- `POST /auth/refresh` returns new access token (200)\n- `POST /auth/refresh` rejects invalid refresh token (401)\n- Access token expires after 15 minutes (verify JWT exp claim)\n- Refresh token expires after 7 days (verify JWT exp claim)\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 3: Resend Email Integration & BackgroundTask",
             "level": 2,
-            "raw_content": "- [ ] T015 Create `app/services/email.py`... [Full Content] ...Missing RESEND_API_KEY raises ConfigError at startup (not at request time)",
+            "raw_content": "- [ ] T015 Create `app/services/email.py`:\n  - `send_welcome_email_async(email: str, name: str, course_browse_link: str)` → async function\n  - Load `RESEND_API_KEY` from environment; raise ConfigError if missing\n  - Use Resend Python SDK to send email\n  - Template body: \"Welcome, {name}! Browse published courses at {course_browse_link}\"\n  - Handle Resend exceptions gracefully (log error, do not raise)\n\n- [ ] T016 Integrate email into auth register endpoint:\n  - In `app/routers/auth.py`, POST `/auth/register`:\n    - After user creation and token generation\n    - Create `background_tasks.add_task(send_welcome_email_async, email=user.email, name=user.display_name, course_browse_link=\"http://localhost:8000/api/v1/courses\")`\n    - Return response immediately (email sent after response)\n\n- [ ] T017 Create test mock fixture for Resend in `tests/conftest.py`:\n  - Mock `resend.Emails.send()` to avoid real API calls\n  - Track calls for assertion in tests\n\n**Dependencies**: Phase 2 (auth register endpoint must exist)\n\n**Test Criteria**:\n- Registration endpoint returns 201 before email is sent\n- BackgroundTask is queued with correct email parameters\n- Resend SDK is called with correct template and recipient\n- Missing RESEND_API_KEY raises ConfigError at startup (not at request time)\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 4: Courses Router — Instructor Management (US1)",
             "level": 2,
-            "raw_content": "**User Story**: Instructor manages courses... [Full Content] ...DELETE without enrollments succeeds (204)",
+            "raw_content": "**User Story**: Instructor manages courses\n\n- [ ] T018 [P] Create `app/schemas/courses.py` (Pydantic v2):\n  - `ModuleCreate` (title: str, order: int)\n  - `ModuleResponse` (id: UUID, course_id: UUID, title: str, order: int, created_at: datetime)\n  - `CourseCreate` (title: str, description: str, price_cents: int, published: bool, modules: list[ModuleCreate])\n  - `CourseUpdate` (title: str, description: str, price_cents: int, published: bool)\n  - `CourseResponse` (id: UUID, instructor_id: UUID, title: str, description: str, price_cents: int, published: bool, created_at: datetime, updated_at: datetime, modules: list[ModuleResponse])\n\n- [ ] T019 [US1] Create `app/services/courses.py`:\n  - `get_course_by_id(session: AsyncSession, course_id: UUID)` → Course | None (async)\n  - `verify_course_ownership(session: AsyncSession, course_id: UUID, instructor_id: UUID)` → None or raise PermissionError (async)\n  - `check_course_has_enrollments(session: AsyncSession, course_id: UUID)` → bool (async)\n  - `delete_course_with_ownership_check(session: AsyncSession, course_id: UUID, instructor_id: UUID)` → None or raise BusinessRuleViolation (async, enforces ActiveEnrollmentConstraint)\n\n- [ ] T020 [US1] Create `app/routers/courses.py` with endpoints:\n  - `POST /api/v1/courses` (instructor-only):\n    - Require `get_current_instructor` dependency\n    - Accept CourseCreate payload\n    - Create Course row with instructor_id = current_user.id\n    - Create Module rows for each module in payload (in a single async transaction)\n    - Return CourseResponse (201 Created)\n  - `GET /api/v1/courses` (instructor-only):\n    - Require `get_current_instructor` dependency\n    - Query all courses where instructor_id == current_user.id\n    - Support pagination: skip, limit query params\n    - Return list[CourseResponse] (200 OK)\n  - `GET /api/v1/courses/{course_id}` (public for published, instructor for own):\n    - If authenticated instructor: return course if owner or if published\n    - If student/unauthenticated: return only if published\n    - Return CourseResponse (200 OK) or 404 Not Found\n  - `PUT /api/v1/courses/{course_id}` (instructor-only, owner):\n    - Require `get_current_instructor` dependency\n    - Verify ownership using service\n    - Accept CourseUpdate payload\n    - Update course fields\n    - Return CourseResponse (200 OK)\n  - `DELETE /api/v1/courses/{course_id}` (instructor-only, owner):\n    - Require `get_current_instructor` dependency\n    - Call `delete_course_with_ownership_check` service\n    - If no enrollments: delete course (FK cascade deletes modules)\n    - If active enrollments: raise BusinessRuleViolation → 409 Conflict with \"ACTIVE_ENROLLMENT_CONSTRAINT\" error code\n    - Return 204 No Content if successful, 409 Conflict if active enrollments\n\n**Dependencies**: Phase 2 (auth dependencies), Phase 1 (DB models)\n\n**Test Criteria**:\n- Instructor can create course with modules (201)\n- Instructor can list only their own courses\n- Student cannot see unpublished courses (404)\n- Instructor can update own course (200)\n- Instructor cannot update another instructor's course (403)\n- DELETE with active enrollments returns 409 Conflict with \"ACTIVE_ENROLLMENT_CONSTRAINT\" error\n- DELETE without enrollments succeeds (204)\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
             "level": 2,
-            "raw_content": "**User Story**: Student registers and enrols... [Full Content] ...Progress == 100 auto-sets completed_at (200)",
+            "raw_content": "**User Story**: Student registers and enrols\n\n- [ ] T021 [P] [US2] Create `app/schemas/enrolments.py` (Pydantic v2):\n  - `EnrollmentCreate` (course_id: UUID)\n  - `EnrollmentUpdate` (progress: int, completed_at: datetime | None)\n  - `EnrollmentResponse` (id: UUID, student_id: UUID, course_id: UUID, progress: int, completed_at: datetime | None, created_at: datetime, updated_at: datetime)\n\n- [ ] T022 [US2] Create `app/services/enrolments.py`:\n  - `get_user_enrollment(session: AsyncSession, enrollment_id: UUID, student_id: UUID)` → Enrollment | None (async, enforces student ownership)\n  - `create_enrollment_if_published(session: AsyncSession, student_id: UUID, course_id: UUID)` → Enrollment (async, verifies course is published, checks unique constraint)\n  - `validate_progress(progress: int)` → None or raise ValueError if not 0-100 (sync)\n\n- [ ] T023 [US2] Create `app/routers/enrolments.py` with endpoints:\n  - `POST /api/v1/enrollments` (student-only):\n    - Require `get_current_student` dependency\n    - Accept EnrollmentCreate payload\n    - Verify course exists and is published (raise 409 Conflict if not published)\n    - Check unique(student_id, course_id) constraint (raise 409 Conflict if already enrolled)\n    - Create Enrollment with progress=0, completed_at=None\n    - Return EnrollmentResponse (201 Created)\n  - `GET /api/v1/enrollments` (student-only):\n    - Require `get_current_student` dependency\n    - Query all enrollments where student_id == current_user.id\n    - Support pagination: skip, limit query params\n    - Return list[EnrollmentResponse] (200 OK)\n  - `GET /api/v1/enrollments/{enrollment_id}` (student-only, owner):\n    - Require `get_current_student` dependency\n    - Use service to get enrollment with ownership check\n    - Return EnrollmentResponse (200 OK) or 403 Forbidden or 404 Not Found\n  - `PUT /api/v1/enrollments/{enrollment_id}` (student-only, owner):\n    - Require `get_current_student` dependency\n    - Use service to get enrollment with ownership check\n    - Accept EnrollmentUpdate payload\n    - Validate progress is 0–100\n    - If progress == 100 and completed_at is None: set completed_at = now()\n    - Update and return EnrollmentResponse (200 OK)\n\n**Dependencies**: Phase 2 (auth dependencies), Phase 1 (DB models), Phase 4 (courses must exist)\n\n**Test Criteria**:\n- Student can enroll in published course (201)\n- Student cannot enroll in unpublished course (409)\n- Student cannot enroll twice in same course (409)\n- Student can list only their own enrollments\n- Student can update own enrollment progress (200)\n- Student cannot update another student's enrollment (403)\n- Progress == 100 auto-sets completed_at (200)\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 6: Progress Tracking & Data Isolation (US3)",
             "level": 2,
-            "raw_content": "**User Story**: Progress is tracked and exposed safely... [Full Content] ...Student cannot update another student's progress (403)",
+            "raw_content": "**User Story**: Progress is tracked and exposed safely\n\n- [ ] T024 [US3] Implement progress validation in enrolments service:\n  - `validate_progress(progress: int)` rejects values outside 0-100\n\n- [ ] T025 [US3] Implement student data isolation in enrollments router:\n  - Verify all GET/PUT operations check student_id == current_user.id\n  - Raise 403 Forbidden if student attempts to access another student's enrollment\n\n- [ ] T026 [US3] Test end-to-end: Student enrolls → updates progress 0% → 50% → 100% → completed_at is set\n\n**Dependencies**: Phase 5 (enrollment endpoints must exist)\n\n**Test Criteria**:\n- Progress values outside 0-100 are rejected (400)\n- Student cannot access another student's enrollment (403)\n- Progress update to 100 sets completed_at automatically\n- Student cannot update another student's progress (403)\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 7: Testing & Coverage",
             "level": 2,
-            "raw_content": "- [ ] T027 Create `tests/conftest.py`... [Full Content] ...No mocking of PostgreSQL; uses real test instance",
+            "raw_content": "- [ ] T027 Create `tests/conftest.py`:\n  - Pytest fixtures for async test support (`pytest-asyncio`)\n  - Test PostgreSQL fixture (separate test DB)\n  - `async_session` fixture (AsyncSession scoped to test)\n  - `client` fixture (AsyncClient with FastAPI app and dependency overrides)\n  - Resend mock fixture\n\n- [ ] T028 Create `tests/test_auth.py`:\n  - Test register: Valid input → 201, user created, tokens returned, email queued\n  - Test register: Duplicate email → 400 Conflict\n  - Test register: Weak password → 400 Validation error\n  - Test login: Valid email/password → 200, tokens returned\n  - Test login: Invalid credentials → 401 Unauthorized\n  - Test refresh: Valid refresh token → 200, new access token\n  - Test refresh: Invalid refresh token → 401 Unauthorized\n\n- [ ] T029 Create `tests/test_courses.py`:\n  - Test POST: Instructor creates course with modules → 201\n  - Test GET: Instructor lists only own courses\n  - Test GET: Student sees only published courses\n  - Test GET by ID: Published course visible to student, unpublished only to owner\n  - Test PUT: Instructor updates own course → 200\n  - Test PUT: Instructor cannot update other instructor's course → 403\n  - Test DELETE: Instructor deletes course without enrollments → 204\n  - **Test DELETE: Instructor attempts to delete course with active enrollments → 409 Conflict with ACTIVE_ENROLLMENT_CONSTRAINT**\n\n- [ ] T030 Create `tests/test_enrolments.py`:\n  - Test POST: Student enrolls in published course → 201\n  - Test POST: Student cannot enroll in unpublished course → 409\n  - Test POST: Student cannot enroll twice → 409\n  - Test GET: Student lists only own enrollments\n  - Test GET by ID: Student accesses own enrollment → 200\n  - Test GET by ID: Student cannot access other student's enrollment → 403\n  - Test PUT: Student updates own enrollment progress → 200\n  - Test PUT: Progress == 100 sets completed_at\n  - Test PUT: Student cannot update other student's enrollment → 403\n\n- [ ] T031 Create `tests/test_integration.py`:\n  - End-to-end workflow:\n    1. Register student (POST /auth/register)\n    2. Create instructor + login\n    3. Instructor creates published course\n    4. Student browses courses (GET /courses)\n    5. Student enrolls (POST /enrollments)\n    6. Student updates progress (PUT /enrollments/{id})\n    7. Verify completion flow\n\n- [ ] T032 Run pytest with coverage:\n  - `pytest tests/ --cov=app --cov-report=term-missing --cov-report=html`\n  - Target 80%+ coverage on business logic\n  - Verify all routers, services, and security functions are tested\n\n**Dependencies**: All phases 2–6\n\n**Test Criteria**:\n- All tests pass\n- 80%+ coverage on business logic (routes, services, security)\n- DELETE course with active enrollments explicitly tested and passes\n- No mocking of PostgreSQL; uses real test instance\n\n---",
             "mapped_to_template_field": "Testing & Validation"
         },
         {
             "title": "Phase 8: Response Envelope & Error Handling",
             "level": 2,
-            "raw_content": "- [ ] T033 [P] Create global exception handler... [Full Content] ...Envelope format consistent across all endpoints",
+            "raw_content": "- [ ] T033 [P] Create global exception handler in `app/main.py`:\n  - Catch `PermissionError` → 403 Forbidden with \"FORBIDDEN\" error code\n  - Catch `BusinessRuleViolation` → 409 Conflict with specific error code (e.g., \"ACTIVE_ENROLLMENT_CONSTRAINT\")\n  - Catch `ValueError` (validation errors) → 400 Bad Request with \"VALIDATION_ERROR\" code\n  - Catch Pydantic `ValidationError` → 400 Bad Request with field-level errors\n  - Catch `HTTPException` (from dependencies) → pass through\n  - Catch unexpected exceptions → 500 Internal Server Error with \"INTERNAL_ERROR\" code\n  - Wrap all error responses in APIResponse envelope\n\n- [ ] T034 [P] Create response middleware in `app/main.py`:\n  - Intercept all responses\n  - Wrap successful responses in APIResponse envelope (if not already wrapped)\n  - Add timestamp and path to meta\n  - Ensure consistent error envelope format\n\n- [ ] T035 [P] Verify HTTP status codes are consistent:\n  - 200 OK: GET, PUT successful\n  - 201 Created: POST successful (resource created)\n  - 204 No Content: DELETE successful\n  - 400 Bad Request: Validation errors\n  - 401 Unauthorized: Missing/invalid/expired token\n  - 403 Forbidden: Authenticated but lacks role/permission\n  - 404 Not Found: Resource doesn't exist\n  - 409 Conflict: Business rule violation, duplicate, unpublished course\n  - 500 Internal Server Error: Unexpected errors\n\n- [ ] T036 Verify all responses follow envelope format:\n  - Success: `{\"data\": <T>, \"meta\": {...}, \"errors\": []}`\n  - Error: `{\"data\": null, \"meta\": {...}, \"errors\": [{\"code\": \"...\", \"message\": \"...\", ...}]}`\n\n**Dependencies**: All routers (Phases 2–6)\n\n**Test Criteria**:\n- All error paths return wrapped APIResponse\n- HTTP status codes match contract (see contracts.md)\n- Envelope format consistent across all endpoints\n\n---",
             "mapped_to_template_field": "Security & Performance Constraints"
         },
         {
             "title": "Dependency Graph",
             "level": 2,
-            "raw_content": "Phase 1 (Setup) -> Phase 2 (Auth) -> Phase 3 (Email) -> [Phase 4, 5] -> Phase 6 -> Phase 7 -> Phase 8",
+            "raw_content": "```\nPhase 1 (Setup)\n  ↓\nPhase 2 (Auth)\n  ↓\nPhase 3 (Email)\n  ↓\n├→ Phase 4 (Courses - US1) →→┐\n├→ Phase 5 (Enrollments - US2)→ Phase 6 (Progress - US3)\n└────────────────────────────→┘\n  ↓\nPhase 7 (Testing)\n  ↓\nPhase 8 (Error Handling)\n```\n\n**Parallelization Opportunities**:\n- Phases 4, 5, 6 can run in parallel after Phase 3\n- Phase 8 can be integrated incrementally throughout other phases\n\n---",
             "mapped_to_template_field": "Dependencies & Integration Points"
         },
         {
             "title": "Success Criteria",
             "level": 2,
-            "raw_content": "- All 36 tasks completed... [Full Content] ...HTTP status codes match contract",
+            "raw_content": "- All 36 tasks completed\n- All tests pass (`pytest tests/`)\n- 80%+ coverage on business logic\n- DELETE course with active enrollments returns 409 with ACTIVE_ENROLLMENT_CONSTRAINT\n- Full end-to-end workflow testable: register → create course → enroll → track progress\n- All responses wrapped in APIResponse envelope\n- HTTP status codes match contract\n\n---",
             "mapped_to_template_field": "Acceptance Criteria"
         },
         {
             "title": "MVP Scope (Phase 1 Delivery)",
             "level": 2,
-            "raw_content": "For a minimal viable product, focus on: Phases 1–3, Phase 4, Phase 5, Phase 7",
+            "raw_content": "For a minimal viable product, focus on:\n\n1. **Phases 1–3**: Database, auth, email integration (foundation)\n2. **Phase 4**: Course CRUD with ownership (instructor workflow)\n3. **Phase 5**: Student enrollment (student workflow)\n4. **Phase 7**: Core tests (coverage on auth, courses, enrollments)\n\nPhases 6 and 8 can be incrementally added post-MVP.",
             "mapped_to_template_field": "Implementation Notes & References"
         }
     ],
@@ -96,37 +96,9 @@
             "attributes": {}
         },
         {
-            "type": "task",
-            "identifier": "T001",
-            "content": "Create project structure: app/, app/core/, etc.",
-            "source_section": "Phase 1: Project Setup & Database Schema",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "T005",
-            "content": "Define ORM models: User, Course, Module, Enrollment",
-            "source_section": "Phase 1: Project Setup & Database Schema",
-            "attributes": {}
-        },
-        {
             "type": "phase",
             "identifier": "PHASE-2",
             "content": "Auth Router & JWT Flow",
-            "source_section": "Phase 2: Auth Router & JWT Flow",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "T009",
-            "content": "Create security utilities (JWT, hashing)",
-            "source_section": "Phase 2: Auth Router & JWT Flow",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "T013",
-            "content": "Implement /auth/register, /auth/login, /auth/refresh",
             "source_section": "Phase 2: Auth Router & JWT Flow",
             "attributes": {}
         },
@@ -138,30 +110,9 @@
             "attributes": {}
         },
         {
-            "type": "task",
-            "identifier": "T015",
-            "content": "Implement async welcome email service using Resend SDK",
-            "source_section": "Phase 3: Resend Email Integration & BackgroundTask",
-            "attributes": {}
-        },
-        {
             "type": "phase",
             "identifier": "PHASE-4",
             "content": "Courses Router — Instructor Management (US1)",
-            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "T020",
-            "content": "Implement Course CRUD endpoints for instructors",
-            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
-            "attributes": {}
-        },
-        {
-            "type": "constraint",
-            "identifier": "ACTIVE_ENROLLMENT_CONSTRAINT",
-            "content": "Prevent course deletion if active enrollments exist",
             "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
             "attributes": {}
         },
@@ -173,13 +124,6 @@
             "attributes": {}
         },
         {
-            "type": "task",
-            "identifier": "T023",
-            "content": "Implement enrollment endpoints for students",
-            "source_section": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
-            "attributes": {}
-        },
-        {
             "type": "phase",
             "identifier": "PHASE-6",
             "content": "Progress Tracking & Data Isolation (US3)",
@@ -187,23 +131,9 @@
             "attributes": {}
         },
         {
-            "type": "task",
-            "identifier": "T025",
-            "content": "Implement student data isolation checks",
-            "source_section": "Phase 6: Progress Tracking & Data Isolation (US3)",
-            "attributes": {}
-        },
-        {
             "type": "phase",
             "identifier": "PHASE-7",
             "content": "Testing & Coverage",
-            "source_section": "Phase 7: Testing & Coverage",
-            "attributes": {}
-        },
-        {
-            "type": "test_case",
-            "identifier": "TC-E2E",
-            "content": "End-to-end workflow: Register -> Create Course -> Enroll -> Progress",
             "source_section": "Phase 7: Testing & Coverage",
             "attributes": {}
         },
@@ -216,15 +146,64 @@
         },
         {
             "type": "task",
-            "identifier": "T033",
-            "content": "Implement global exception handler and APIResponse envelope",
-            "source_section": "Phase 8: Response Envelope & Error Handling",
+            "identifier": "T001",
+            "content": "Create project structure",
+            "source_section": "Phase 1: Project Setup & Database Schema",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T005",
+            "content": "Define ORM models (User, Course, Module, Enrollment)",
+            "source_section": "Phase 1: Project Setup & Database Schema",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T013",
+            "content": "Create auth router endpoints (register, login, refresh)",
+            "source_section": "Phase 2: Auth Router & JWT Flow",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T016",
+            "content": "Integrate email into auth register endpoint via BackgroundTask",
+            "source_section": "Phase 3: Resend Email Integration & BackgroundTask",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T020",
+            "content": "Create courses router endpoints for Instructor management",
+            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T023",
+            "content": "Create enrollments router endpoints for Student discovery & enrollment",
+            "source_section": "Phase 5: Enrollments Router — Student Discovery & Enrollment (US2)",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "ACTIVE-ENROLLMENT-CONSTRAINT",
+            "content": "Course cannot be deleted if it has active enrollments (BusinessRuleViolation 409)",
+            "source_section": "Phase 4: Courses Router — Instructor Management (US1)",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TEST-S01",
+            "content": "Verify DELETE course with active enrollments returns 409 Conflict",
+            "source_section": "Phase 7: Testing & Coverage",
             "attributes": {}
         },
         {
             "type": "acceptance_criterion",
-            "identifier": "AC-COVERAGE",
-            "content": "80%+ coverage on business logic",
+            "identifier": "AC-01",
+            "content": "All responses wrapped in APIResponse envelope",
             "source_section": "Success Criteria",
             "attributes": {}
         }
@@ -266,11 +245,6 @@
             "relation_type": "depends_on"
         },
         {
-            "source": "T020",
-            "to": "ACTIVE_ENROLLMENT_CONSTRAINT",
-            "relation_type": "implements"
-        },
-        {
             "source": "PHASE-1",
             "to": "T001",
             "relation_type": "contains"
@@ -279,13 +253,43 @@
             "source": "PHASE-1",
             "to": "T005",
             "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-2",
+            "to": "T013",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-3",
+            "to": "T016",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "T020",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "ACTIVE-ENROLLMENT-CONSTRAINT",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-5",
+            "to": "T023",
+            "relation_type": "contains"
+        },
+        {
+            "source": "TEST-S01",
+            "to": "ACTIVE-ENROLLMENT-CONSTRAINT",
+            "relation_type": "implements"
         }
     ],
     "structural_gaps": [
         {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "The document is very detailed; however, no specific open questions were listed. Check if any edge cases for the Resend API are unknown."
+            "remediation_advice": "The document is highly detailed and doesn't list uncertainties, but a section for known risks could be added."
         }
     ],
     "open_questions": []

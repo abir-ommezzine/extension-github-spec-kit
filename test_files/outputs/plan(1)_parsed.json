@@ -1,30 +1,24 @@
 {
-    "parsing_rationale": "The document is a comprehensive technical implementation plan for the CourseHub API. I have mapped the phases to the requested template fields: Phase 1 to Tech Stack & Topology, Phase 2 to Security & Identity, Phases 4-5 to API Contracts & Flow, and the 'Decisions' section to Architecture Choices. I extracted the data models from Phase 1 and the named business rule from Phase 4. I've maintained strict traceability between elements and their source sections.",
+    "parsing_rationale": "The document is a comprehensive technical implementation plan for the CourseHub API. I have decomposed the sequential phases into 'phase' and 'task' elements, mapped the database models to 'entity', the REST endpoints to 'endpoint', and the specific architectural choices (like the async nature and the business rule for deletion) to 'architecture_choice' and 'decision'. The relationships track the dependency flow between phases and the implementation of logic via services.",
     "project_info": {
         "project_name": "CourseHub API",
         "source_type": "refining",
-        "brief_explanation": "Implementation of a FastAPI + PostgreSQL REST API for course management with role-based access control and asynchronous email integration.",
-        "source_context": "Technical implementation plan covering database schema, auth flow, domain routers, and testing strategies."
+        "brief_explanation": "Implementation of a FastAPI + PostgreSQL REST API focusing on role-based access control, course management, and student enrollments.",
+        "source_context": "Technical implementation plan detailing a 7-phase rollout from foundation to error handling."
     },
     "doc_type": "plan",
     "sections": [
         {
-            "title": "Plan: CourseHub API Implementation",
-            "level": 1,
-            "raw_content": "",
-            "mapped_to_template_field": null
-        },
-        {
             "title": "TL;DR",
             "level": 2,
             "raw_content": "Implement a FastAPI + PostgreSQL REST API with three routers (auth, courses, enrolments). Start with the auth layer (JWT + refresh tokens) to establish role-based access control before touching domain logic. Use async SQLAlchemy throughout, structure enrolments to enforce course ownership and student data isolation, and integrate Resend email via BackgroundTask to prevent registration blocking. Flag the course deletion constraint (active enrolments → 409) as a named business rule.",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "System Architecture & Topology"
         },
         {
             "title": "Phase 1: Project Foundation & Database Schema",
             "level": 3,
             "raw_content": "1. Create project structure: `app/`, `app/core/`, `app/models/`, `app/schemas/`, `app/routers/`, `app/services/`, `tests/`\n2. Initialize dependencies: FastAPI, SQLAlchemy 2.0 async, asyncpg, Pydantic v2, Alembic, pytest, httpx, python-jose, passlib, python-multipart, resend\n3. Configure database connection pool with async PostgreSQL (asyncpg)\n4. Set up Alembic migrations directory and initial migration scaffolding\n5. Define core models:\n   - `User` (id, email, hashed_password, display_name, role: \"student\" | \"instructor\", created_at)\n   - `Course` (id, instructor_id: FK→User, title, description, price_cents, published, created_at, updated_at)\n   - `Module` (id, course_id: FK→Course, title, order, created_at) — enforce ordering\n   - `Enrollment` (id, student_id: FK→User, course_id: FK→Course, progress: int (0-100), completed_at, created_at, updated_at) — unique(student_id, course_id)\n6. Create initial Alembic migration to create all tables\n7. Set up database session factory (`AsyncSession` context) with dependency injection pattern",
-            "mapped_to_template_field": "Tech Stack & Tooling"
+            "mapped_to_template_field": "Data Models & Schemas"
         },
         {
             "title": "Phase 2: Auth Router — JWT & Refresh Token Flow",
@@ -36,7 +30,7 @@
             "title": "Phase 3: Resend Email Integration as Service",
             "level": 3,
             "raw_content": "1. Create `app/services/email.py`:\n   - `send_welcome_email_async(email: str, name: str, course_browse_link: str)` — calls Resend SDK\n   - Load `RESEND_API_KEY` from environment; raise ConfigError if missing\n   - Template: \"Welcome, {name}! Browse courses: {link}\"\n\n2. Wrap the email call in a FastAPI `BackgroundTask` that runs **after** registration response is sent:\n   - In auth router's register endpoint, create `background_tasks.add_task(send_welcome_email_async, ...)`\n   - This ensures registration completes and returns tokens before email is attempted\n\n3. Create test fixture for Resend mock (for testing without API calls)",
-            "mapped_to_template_field": "API Contracts & Flow"
+            "mapped_to_template_field": "Tech Stack & Tooling"
         },
         {
             "title": "Phase 4: Courses Router — CRUD with Ownership",
@@ -54,7 +48,7 @@
             "title": "Phase 6: Testing & Verification",
             "level": 3,
             "raw_content": "1. Set up pytest configuration:\n   - Use `pytest-asyncio` for async test support\n   - Configure test PostgreSQL fixture (separate DB from dev)\n   - Create `conftest.py` with session scope fixtures: `async_session`, `client` (AsyncClient with override dependencies)\n\n2. Create test suite (`tests/`):\n   - `test_auth.py`: Registration (with email background task mock), login, refresh, role isolation\n   - `test_courses.py`: Create course, list (instructor vs student views), update, **test DELETE with active enrollments (expect 409)**\n   - `test_enrolments.py`: Create enrollment (published courses only), list (own only), update progress, access control\n   - End-to-end integration test: Register student → browse published courses → enroll → update progress\n\n3. Target 80%+ coverage on business logic (use pytest-cov)\n\n4. Mock Resend email calls in tests (use monkeypatch or dependency override)",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Tech Stack & Tooling"
         },
         {
             "title": "Phase 7: Response Envelope & Error Handling",
@@ -66,176 +60,187 @@
             "title": "Decisions",
             "level": 2,
             "raw_content": "- **Auth first**: JWT + refresh tokens before any domain logic to establish trust boundary and role-based access control.\n- **Async throughout**: All DB calls use `AsyncSession` and async/await; no synchronous SQLAlchemy.\n- **Background email**: Resend integration deferred via BackgroundTask so registration API call completes before email attempt; prevents blocking on external service latency.\n- **Named business rule**: \"ActiveEnrollmentConstraint\" explicitly flagged in courses router delete logic; 409 Conflict returned when violated.\n- **Shared user table**: Single `User` table with `role` field (not separate instructor/student tables) to simplify foreign keys and keep schema lean.\n- **Async ORM only**: No raw SQL; SQLAlchemy ORM used exclusively for all persistence.",
-            "mapped_to_template_field": "System Architecture & Topology"
+            "mapped_to_template_field": "architecture_choice"
         }
     ],
     "elements": [
         {
-            "type": "architecture_choice",
-            "identifier": "ASYNC-STACK",
-            "content": "FastAPI + PostgreSQL with async SQLAlchemy 2.0 and asyncpg",
+            "type": "phase",
+            "identifier": "PHASE-1",
+            "content": "Project Foundation & Database Schema",
+            "source_section": "Phase 1: Project Foundation & Database Schema",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-USER",
+            "content": "User: email, hashed_password, display_name, role (student/instructor)",
             "source_section": "Phase 1: Project Foundation & Database Schema",
             "attributes": {
-                "latency_strategy": "non-blocking"
+                "role": "student | instructor"
             }
         },
         {
             "type": "entity",
-            "identifier": "USER-MODEL",
-            "content": "User: email, hashed_password, display_name, role (student|instructor)",
+            "identifier": "ENT-COURSE",
+            "content": "Course: instructor_id, title, description, price_cents, published",
+            "source_section": "Phase 1: Project Foundation & Database Schema",
+            "attributes": {
+                "owner": "User"
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-MODULE",
+            "content": "Module: course_id, title, order",
             "source_section": "Phase 1: Project Foundation & Database Schema",
             "attributes": {}
         },
         {
             "type": "entity",
-            "identifier": "COURSE-MODEL",
-            "content": "Course: instructor_id (FK), title, description, price_cents, published",
+            "identifier": "ENT-ENROLLMENT",
+            "content": "Enrollment: student_id, course_id, progress, completed_at",
             "source_section": "Phase 1: Project Foundation & Database Schema",
-            "attributes": {}
+            "attributes": {
+                "constraint": "unique(student_id, course_id)"
+            }
         },
         {
-            "type": "entity",
-            "identifier": "MODULE-MODEL",
-            "content": "Module: course_id (FK), title, order",
-            "source_section": "Phase 1: Project Foundation & Database Schema",
-            "attributes": {}
-        },
-        {
-            "type": "entity",
-            "identifier": "ENROLLMENT-MODEL",
-            "content": "Enrollment: student_id (FK), course_id (FK), progress, completed_at; Unique(student_id, course_id)",
-            "source_section": "Phase 1: Project Foundation & Database Schema",
-            "attributes": {}
-        },
-        {
-            "type": "architecture_choice",
-            "identifier": "AUTH-JWT",
-            "content": "JWT Access Tokens (15 min) and Refresh Tokens (7 days)",
+            "type": "phase",
+            "identifier": "PHASE-2",
+            "content": "Auth Router — JWT & Refresh Token Flow",
             "source_section": "Phase 2: Auth Router — JWT & Refresh Token Flow",
             "attributes": {}
         },
         {
             "type": "endpoint",
-            "identifier": "EP-AUTH-REGISTER",
-            "content": "POST /api/v1/auth/register: Student registration and token issuance",
+            "identifier": "EP-AUTH-REG",
+            "content": "POST /api/v1/auth/register",
             "source_section": "Phase 2: Auth Router — JWT & Refresh Token Flow",
             "attributes": {
-                "access": "public"
+                "access": "student-only"
             }
         },
         {
             "type": "endpoint",
-            "identifier": "EP-AUTH-LOGIN",
-            "content": "POST /api/v1/auth/login: Token issuance via email/password",
+            "identifier": "EP-AUTH-LOG",
+            "content": "POST /api/v1/auth/login",
             "source_section": "Phase 2: Auth Router — JWT & Refresh Token Flow",
-            "attributes": {
-                "access": "public"
-            }
+            "attributes": {}
         },
         {
-            "type": "task",
-            "identifier": "EMAIL-BG",
-            "content": "Asynchronous welcome email via Resend SDK using FastAPI BackgroundTask",
+            "type": "endpoint",
+            "identifier": "EP-AUTH-REF",
+            "content": "POST /api/v1/auth/refresh",
+            "source_section": "Phase 2: Auth Router — JWT & Refresh Token Flow",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-3",
+            "content": "Resend Email Integration",
             "source_section": "Phase 3: Resend Email Integration as Service",
             "attributes": {}
         },
         {
-            "type": "endpoint",
-            "identifier": "EP-COURSE-CREATE",
-            "content": "POST /api/v1/courses: Course and Module creation in one transaction",
-            "source_section": "Phase 4: Courses Router — CRUD with Ownership",
-            "attributes": {
-                "access": "instructor"
-            }
+            "type": "architecture_choice",
+            "identifier": "ARCH-ASYNC-DB",
+            "content": "All DB calls use AsyncSession and async/await (SQLAlchemy 2.0 async)",
+            "source_section": "Decisions",
+            "attributes": {}
+        },
+        {
+            "type": "architecture_choice",
+            "identifier": "ARCH-BG-EMAIL",
+            "content": "Resend integration via FastAPI BackgroundTask to prevent blocking registration",
+            "source_section": "Decisions",
+            "attributes": {}
         },
         {
             "type": "decision",
             "identifier": "RULE-ACTIVE-ENROLL",
-            "content": "ActiveEnrollmentConstraint: Block course deletion if active enrollments exist (409 Conflict)",
-            "source_section": "Phase 4: Courses Router — CRUD with Ownership",
+            "content": "ActiveEnrollmentConstraint: Course deletion returns 409 if active enrollments exist",
+            "source_section": "Decisions",
             "attributes": {
-                "status_code": 409
+                "http_code": 409
             }
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-4",
+            "content": "Courses Router — CRUD with Ownership",
+            "source_section": "Phase 4: Courses Router — CRUD with Ownership",
+            "attributes": {}
         },
         {
             "type": "endpoint",
-            "identifier": "EP-ENROLL-CREATE",
-            "content": "POST /api/v1/enrollments: Student enrollment in published courses",
-            "source_section": "Phase 5: Enrolments Router — Student Access & Progress",
+            "identifier": "EP-CORS-DEL",
+            "content": "DELETE /api/v1/courses/{course_id}",
+            "source_section": "Phase 4: Courses Router — CRUD with Ownership",
             "attributes": {
-                "access": "student"
+                "access": "instructor-only"
             }
         },
         {
-            "type": "task",
-            "identifier": "TEST-SUITE",
-            "content": "Pytest suite with async support, test DB, and 80%+ coverage target",
-            "source_section": "Phase 6: Testing & Verification",
+            "type": "phase",
+            "identifier": "PHASE-5",
+            "content": "Enrolments Router — Student Access & Progress",
+            "source_section": "Phase 5: Enrolments Router — Student Access & Progress",
             "attributes": {}
         }
     ],
     "relationships": [
         {
-            "source": "ASYNC-STACK",
-            "to": "USER-MODEL",
-            "relation_type": "contains"
+            "source": "PHASE-2",
+            "to": "PHASE-1",
+            "relation_type": "depends_on"
         },
         {
-            "source": "USER-MODEL",
-            "to": "COURSE-MODEL",
-            "relation_type": "relates_to"
+            "source": "PHASE-3",
+            "to": "PHASE-2",
+            "relation_type": "depends_on"
         },
         {
-            "source": "COURSE-MODEL",
-            "to": "MODULE-MODEL",
-            "relation_type": "contains"
+            "source": "PHASE-4",
+            "to": "PHASE-2",
+            "relation_type": "depends_on"
         },
         {
-            "source": "AUTH-JWT",
-            "to": "EP-AUTH-REGISTER",
+            "source": "PHASE-5",
+            "to": "PHASE-4",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "EP-CORS-DEL",
+            "to": "RULE-ACTIVE-ENROLL",
             "relation_type": "implements"
         },
         {
-            "source": "EP-AUTH-REGISTER",
-            "to": "EMAIL-BG",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "EP-COURSE-CREATE",
-            "to": "AUTH-JWT",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "RULE-ACTIVE-ENROLL",
-            "to": "ENROLLMENT-MODEL",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "EP-ENROLL-CREATE",
-            "to": "COURSE-MODEL",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "TEST-SUITE",
-            "to": "RULE-ACTIVE-ENROLL",
+            "source": "EP-AUTH-REG",
+            "to": "ARCH-BG-EMAIL",
             "relation_type": "relates_to"
+        },
+        {
+            "source": "ENT-COURSE",
+            "to": "ENT-USER",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ENT-ENROLLMENT",
+            "to": "ENT-COURSE",
+            "relation_type": "depends_on"
         }
     ],
     "structural_gaps": [
         {
-            "missing_section": "Data Models & Schemas",
-            "priority": "LOW",
-            "remediation_advice": "While models are defined in Phase 1 and schemas in others, a dedicated consolidated Data Models & Schemas section would improve clarity."
-        },
-        {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "The 'Further Considerations' section contains some uncertainties, but a formalized gap list is missing."
+            "remediation_advice": "The document contains 'Further Considerations' which act as open questions, but no formal 'Uncertainties' section. These should be converted to risks/questions."
         }
     ],
     "open_questions": [
-        "Should refresh tokens be persisted in a database table for revocation support?",
-        "Should email templates be moved to external files or the Resend dashboard?",
+        "Should refresh tokens be persisted in a database for revocation support?",
+        "Should email templates be moved to external files or Resend templates?",
         "Is a bulk update endpoint needed for module reordering?"
     ]
 }

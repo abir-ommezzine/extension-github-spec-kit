@@ -1,13 +1,19 @@
 {
-    "parsing_rationale": "The document is a technical API contract specification. I have extracted the architectural constraints (JWT, Response Envelope) as non-functional requirements, the API endpoints as functional requirements, and the data types as entities. Business rules like 'ActiveEnrollmentConstraint' and 'Auto-completion' were captured as constraints. Relationships map the endpoints to the entities they manipulate.",
+    "parsing_rationale": "The document is a technical API specification. I have mapped the general API overview and response structures to Non-Functional Requirements. The specific endpoint definitions are parsed as functional requirements, identifying key business rules (like the ActiveEnrollmentConstraint) as constraints. Data types are mapped as entities. I've established relationships based on the logical flow: Auth endpoints enable access to Courses and Enrollments, and Courses are the target for Enrollments.",
     "project_info": {
         "project_name": "CourseHub",
         "source_type": "refining",
-        "brief_explanation": "API contracts defining the interaction between Students and Instructors for course management and enrollment.",
-        "source_context": "Technical specification of REST API endpoints, data models, and business rules."
+        "brief_explanation": "API Contracts for a course management platform including authentication, course creation, and enrollment tracking.",
+        "source_context": "Technical API specification detailing endpoints, request/response shapes, and business constraints."
     },
     "doc_type": "spec",
     "sections": [
+        {
+            "title": "API Contracts: CourseHub",
+            "level": 1,
+            "raw_content": "**Created**: 2026-06-27\n\n**Reference**: [spec.md](spec.md) | [plan.md](plan.md)\n\n---",
+            "mapped_to_template_field": null
+        },
         {
             "title": "API Overview",
             "level": 2,
@@ -21,275 +27,341 @@
             "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
+            "title": "Authentication Endpoints",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
             "title": "POST `/api/v1/auth/register`",
             "level": 3,
-            "raw_content": "**Role**: Student (self-registration)...",
+            "raw_content": "**Role**: Student (self-registration)\n\n**Request**:\n\n```json\n{\n  \"email\": \"student@example.com\",\n  \"password\": \"securepassword123\",\n  \"display_name\": \"Alice Student\"\n}\n```\n\n**Response** (201 Created):\n\n```json\n{\n  \"data\": {\n    \"user\": {\n      \"id\": \"uuid\",\n      \"email\": \"student@example.com\",\n      \"display_name\": \"Alice Student\",\n      \"role\": \"student\",\n      \"created_at\": \"2026-06-27T12:00:00Z\"\n    },\n    \"tokens\": {\n      \"access_token\": \"eyJhbGc...\",\n      \"refresh_token\": \"eyJhbGc...\",\n      \"token_type\": \"bearer\",\n      \"expires_in\": 900\n    }\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Side Effects**:\n- Welcome email sent via Resend (async BackgroundTask) with student's name and link to browse courses\n- Email does NOT block response\n\n**Errors**:\n- `400 Bad Request`: Email invalid or already registered\n- `400 Bad Request`: Password too weak\n- `400 Bad Request`: Display name missing\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "POST `/api/v1/auth/login`",
             "level": 3,
-            "raw_content": "**Role**: Public (student or instructor)...",
+            "raw_content": "**Role**: Public (student or instructor)\n\n**Request**:\n\n```json\n{\n  \"email\": \"student@example.com\",\n  \"password\": \"securepassword123\"\n}\n```\n\n**Response** (200 OK):\n\n```json\n{\n  \"data\": {\n    \"user\": {\n      \"id\": \"uuid\",\n      \"email\": \"student@example.com\",\n      \"display_name\": \"Alice Student\",\n      \"role\": \"student\"\n    },\n    \"tokens\": {\n      \"access_token\": \"eyJhbGc...\",\n      \"refresh_token\": \"eyJhbGc...\",\n      \"token_type\": \"bearer\",\n      \"expires_in\": 900\n    }\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Errors**:\n- `401 Unauthorized`: Invalid email or password\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "POST `/api/v1/auth/refresh`",
             "level": 3,
-            "raw_content": "**Role**: Public (with valid refresh token)...",
+            "raw_content": "**Role**: Public (with valid refresh token)\n\n**Request**:\n\n```json\n{\n  \"refresh_token\": \"eyJhbGc...\"\n}\n```\n\n**Response** (200 OK):\n\n```json\n{\n  \"data\": {\n    \"access_token\": \"eyJhbGc...\",\n    \"token_type\": \"bearer\",\n    \"expires_in\": 900\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Token Expiry**:\n- Access token: 15 minutes\n- Refresh token: 7 days\n\n**Errors**:\n- `401 Unauthorized`: Refresh token invalid or expired\n\n---",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Courses Endpoints",
+            "level": 2,
+            "raw_content": "",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "POST `/api/v1/courses`",
             "level": 3,
-            "raw_content": "**Role**: Instructor-only...",
+            "raw_content": "**Role**: Instructor-only\n\n**Authorization Header**: `Authorization: Bearer <access_token>`\n\n**Request**:\n\n```json\n{\n  \"title\": \"Introduction to Python\",\n  \"description\": \"Learn Python basics\",\n  \"price_cents\": 9999,\n  \"published\": false,\n  \"modules\": [\n    { \"title\": \"Module 1: Basics\", \"order\": 1 },\n    { \"title\": \"Module 2: Advanced\", \"order\": 2 }\n  ]\n}\n```\n\n**Response** (201 Created):\n\n```json\n{\n  \"data\": {\n    \"id\": \"course-uuid\",\n    \"instructor_id\": \"user-uuid\",\n    \"title\": \"Introduction to Python\",\n    \"description\": \"Learn Python basics\",\n    \"price_cents\": 9999,\n    \"published\": false,\n    \"created_at\": \"2026-06-27T12:00:00Z\",\n    \"updated_at\": \"2026-06-27T12:00:00Z\",\n    \"modules\": [\n      { \"id\": \"module-uuid-1\", \"title\": \"Module 1: Basics\", \"order\": 1 },\n      { \"id\": \"module-uuid-2\", \"title\": \"Module 2: Advanced\", \"order\": 2 }\n    ]\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Errors**:\n- `401 Unauthorized`: Missing or invalid token\n- `403 Forbidden`: Not an instructor\n- `400 Bad Request`: Invalid course data or modules\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "GET `/api/v1/courses`",
             "level": 3,
-            "raw_content": "**Role**: Instructor-only (returns own courses)...",
+            "raw_content": "**Role**: Instructor-only (returns own courses)\n\n**Authorization Header**: `Authorization: Bearer <access_token>`\n\n**Query Parameters**: (optional)\n- `skip`: int (default 0)\n- `limit`: int (default 10)\n\n**Response** (200 OK):\n\n```json\n{\n  \"data\": [\n    {\n      \"id\": \"course-uuid\",\n      \"instructor_id\": \"user-uuid\",\n      \"title\": \"Introduction to Python\",\n      \"description\": \"Learn Python basics\",\n      \"price_cents\": 9999,\n      \"published\": false,\n      \"created_at\": \"2026-06-27T12:00:00Z\",\n      \"updated_at\": \"2026-06-27T12:00:00Z\",\n      \"modules\": [...]\n    }\n  ],\n  \"meta\": {\n    \"total\": 5,\n    \"skip\": 0,\n    \"limit\": 10,\n    ...\n  },\n  \"errors\": []\n}\n```\n\n**Behavior**: Only returns courses owned by the current instructor.\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "GET `/api/v1/courses/{course_id}`",
             "level": 3,
-            "raw_content": "**Role**: Public (published courses) or Instructor (own courses)...",
+            "raw_content": "**Role**: Public (published courses) or Instructor (own courses)\n\n**Authorization Header**: (optional; used to distinguish instructor)\n\n**Response** (200 OK):\n\n```json\n{\n  \"data\": {\n    \"id\": \"course-uuid\",\n    \"instructor_id\": \"user-uuid\",\n    \"title\": \"Introduction to Python\",\n    \"description\": \"Learn Python basics\",\n    \"price_cents\": 9999,\n    \"published\": true,\n    \"created_at\": \"2026-06-27T12:00:00Z\",\n    \"updated_at\": \"2026-06-27T12:00:00Z\",\n    \"modules\": [...]\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Behavior**:\n- If unauthenticated or student: return only if `published == true`\n- If authenticated instructor: return if owner or if `published == true`\n\n**Errors**:\n- `404 Not Found`: Course not found or not published (for non-instructors/non-owners)\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "PUT `/api/v1/courses/{course_id}`",
             "level": 3,
-            "raw_content": "**Role**: Instructor-only (owner only)...",
+            "raw_content": "**Role**: Instructor-only (owner only)\n\n**Authorization Header**: `Authorization: Bearer <access_token>`\n\n**Request**:\n\n```json\n{\n  \"title\": \"Advanced Python\",\n  \"description\": \"Deep dive into Python\",\n  \"price_cents\": 14999,\n  \"published\": true\n}\n```\n\n**Response** (200 OK):\n\n```json\n{\n  \"data\": {\n    \"id\": \"course-uuid\",\n    \"instructor_id\": \"user-uuid\",\n    \"title\": \"Advanced Python\",\n    \"description\": \"Deep dive into Python\",\n    \"price_cents\": 14999,\n    \"published\": true,\n    \"created_at\": \"2026-06-27T12:00:00Z\",\n    \"updated_at\": \"2026-06-27T12:01:00Z\",\n    \"modules\": [...]\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Errors**:\n- `401 Unauthorized`: Missing or invalid token\n- `403 Forbidden`: Not the course owner\n- `404 Not Found`: Course not found\n- `400 Bad Request`: Invalid data\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "DELETE `/api/v1/courses/{course_id}`",
             "level": 3,
-            "raw_content": "**Role**: Instructor-only (owner only)...",
+            "raw_content": "**Role**: Instructor-only (owner only)\n\n**Authorization Header**: `Authorization: Bearer <access_token>`\n\n**Business Rule**: \"ActiveEnrollmentConstraint\"\n- If the course has active enrollments, deletion is rejected with 409 Conflict\n- If no enrollments exist, course and its modules are deleted\n\n**Response** (204 No Content) — if successful\n\n**Error Response** (409 Conflict) — if active enrollments exist:\n\n```json\n{\n  \"data\": null,\n  \"meta\": {...},\n  \"errors\": [\n    {\n      \"code\": \"ACTIVE_ENROLLMENT_CONSTRAINT\",\n      \"message\": \"Cannot delete course with active enrollments\",\n      \"business_rule\": \"ActiveEnrollmentConstraint\"\n    }\n  ]\n}\n```\n\n**Errors**:\n- `401 Unauthorized`: Missing or invalid token\n- `403 Forbidden`: Not the course owner\n- `404 Not Found`: Course not found\n- `409 Conflict`: Course has active enrollments\n\n---",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Enrollments Endpoints",
+            "level": 2,
+            "raw_content": "",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "POST `/api/v1/enrollments`",
             "level": 3,
-            "raw_content": "**Role**: Student-only...",
+            "raw_content": "**Role**: Student-only\n\n**Authorization Header**: `Authorization: Bearer <access_token>`\n\n**Request**:\n\n```json\n{\n  \"course_id\": \"course-uuid\"\n}\n```\n\n**Response** (201 Created):\n\n```json\n{\n  \"data\": {\n    \"id\": \"enrollment-uuid\",\n    \"student_id\": \"user-uuid\",\n    \"course_id\": \"course-uuid\",\n    \"progress\": 0,\n    \"completed_at\": null,\n    \"created_at\": \"2026-06-27T12:00:00Z\",\n    \"updated_at\": \"2026-06-27T12:00:00Z\"\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Validation**:\n- Course must be published\n- Student cannot enroll twice in the same course (unique constraint)\n\n**Errors**:\n- `401 Unauthorized`: Missing or invalid token\n- `403 Forbidden`: Not a student\n- `404 Not Found`: Course not found\n- `409 Conflict`: Course is not published\n- `409 Conflict`: Student already enrolled in course\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "GET `/api/v1/enrollments`",
             "level": 3,
-            "raw_content": "**Role**: Student-only...",
+            "raw_content": "**Role**: Student-only\n\n**Authorization Header**: `Authorization: Bearer <access_token>`\n\n**Query Parameters**: (optional)\n- `skip`: int (default 0)\n- `limit`: int (default 10)\n\n**Response** (200 OK):\n\n```json\n{\n  \"data\": [\n    {\n      \"id\": \"enrollment-uuid\",\n      \"student_id\": \"user-uuid\",\n      \"course_id\": \"course-uuid\",\n      \"progress\": 45,\n      \"completed_at\": null,\n      \"created_at\": \"2026-06-27T12:00:00Z\",\n      \"updated_at\": \"2026-06-27T12:30:00Z\"\n    }\n  ],\n  \"meta\": {\n    \"total\": 3,\n    \"skip\": 0,\n    \"limit\": 10,\n    ...\n  },\n  \"errors\": []\n}\n```\n\n**Behavior**: Only returns enrollments for the current student.\n\n**Errors**:\n- `401 Unauthorized`: Missing or invalid token\n- `403 Forbidden`: Not a student\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "GET `/api/v1/enrollments/{enrollment_id}`",
             "level": 3,
-            "raw_content": "**Role**: Student-only (owner only)...",
+            "raw_content": "**Role**: Student-only (owner only)\n\n**Authorization Header**: `Authorization: Bearer <access_token>`\n\n**Response** (200 OK):\n\n```json\n{\n  \"data\": {\n    \"id\": \"enrollment-uuid\",\n    \"student_id\": \"user-uuid\",\n    \"course_id\": \"course-uuid\",\n    \"progress\": 45,\n    \"completed_at\": null,\n    \"created_at\": \"2026-06-27T12:00:00Z\",\n    \"updated_at\": \"2026-06-27T12:30:00Z\"\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Behavior**: Verifies enrollment belongs to current student before returning.\n\n**Errors**:\n- `401 Unauthorized`: Missing or invalid token\n- `403 Forbidden`: Enrollment belongs to another student\n- `404 Not Found`: Enrollment not found\n\n---",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "PUT `/api/v1/enrollments/{enrollment_id}`",
             "level": 3,
-            "raw_content": "**Role**: Student-only (owner only)...",
+            "raw_content": "**Role**: Student-only (owner only)\n\n**Authorization Header**: `Authorization: Bearer <access_token>`\n\n**Request**:\n\n```json\n{\n  \"progress\": 75,\n  \"completed_at\": null\n}\n```\n\n**Response** (200 OK):\n\n```json\n{\n  \"data\": {\n    \"id\": \"enrollment-uuid\",\n    \"student_id\": \"user-uuid\",\n    \"course_id\": \"course-uuid\",\n    \"progress\": 75,\n    \"completed_at\": null,\n    \"created_at\": \"2026-06-27T12:00:00Z\",\n    \"updated_at\": \"2026-06-27T12:45:00Z\"\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Auto-completion**:\n- If `progress == 100` and `completed_at == null`, the system automatically sets `completed_at` to the current timestamp\n\n**Example of auto-completion**:\n\n```json\n{\n  \"progress\": 100,\n  \"completed_at\": null\n}\n```\n\n**Response**:\n\n```json\n{\n  \"data\": {\n    \"id\": \"enrollment-uuid\",\n    \"student_id\": \"user-uuid\",\n    \"course_id\": \"course-uuid\",\n    \"progress\": 100,\n    \"completed_at\": \"2026-06-27T12:46:00Z\",\n    \"created_at\": \"2026-06-27T12:00:00Z\",\n    \"updated_at\": \"2026-06-27T12:46:00Z\"\n  },\n  \"meta\": {...},\n  \"errors\": []\n}\n```\n\n**Validation**:\n- Progress must be 0–100 (inclusive)\n\n**Errors**:\n- `401 Unauthorized`: Missing or invalid token\n- `403 Forbidden`: Enrollment belongs to another student\n- `404 Not Found`: Enrollment not found\n- `400 Bad Request`: Progress outside 0–100 range\n\n---",
             "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "HTTP Status Codes",
+            "level": 2,
+            "raw_content": "| Code | Meaning | Common Scenarios |\n|------|---------|-----------------|\n| 200 | OK | Successful GET, PUT |\n| 201 | Created | Successful POST (resource created) |\n| 204 | No Content | Successful DELETE |\n| 400 | Bad Request | Invalid input, validation error, malformed JSON |\n| 401 | Unauthorized | Missing/invalid token, token expired |\n| 403 | Forbidden | Authenticated but lacks role/permission |\n| 404 | Not Found | Resource doesn't exist |\n| 409 | Conflict | Duplicate enrollment, course with active enrollments, unpublished course enrollment attempt |\n| 500 | Internal Server Error | Unexpected error |\n\n---",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "Authentication & Authorization Summary",
+            "level": 2,
+            "raw_content": "| Endpoint | Auth Required | Role | Ownership Check |\n|----------|---------------|------|-----------------|\n| POST `/auth/register` | No | N/A | N/A |\n| POST `/auth/login` | No | N/A | N/A |\n| POST `/auth/refresh` | No | N/A | N/A |\n| POST `/courses` | Yes | Instructor | N/A |\n| GET `/courses` | Yes | Instructor | Own courses only |\n| GET `/courses/{id}` | Optional | N/A | Published OR own (if instructor) |\n| PUT `/courses/{id}` | Yes | Instructor | Must be owner |\n| DELETE `/courses/{id}` | Yes | Instructor | Must be owner; reject if active enrollments |\n| POST `/enrollments` | Yes | Student | N/A |\n| GET `/enrollments` | Yes | Student | Own enrollments only |\n| GET `/enrollments/{id}` | Yes | Student | Must be owner |\n| PUT `/enrollments/{id}` | Yes | Student | Must be owner |\n\n---",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Data Type Reference",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
         },
         {
             "title": "User",
             "level": 3,
             "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"email\": \"string (unique, valid email)\",\n  \"display_name\": \"string\",\n  \"role\": \"student\" | \"instructor\",\n  \"created_at\": \"ISO 8601 timestamp\",\n  \"hashed_password\": \"bcrypt hash (not returned in responses)\"\n}\n```",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "Course",
             "level": 3,
             "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"instructor_id\": \"uuid (FK → User)\",\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"price_cents\": \"integer (>= 0)\",\n  \"published\": \"boolean\",\n  \"created_at\": \"ISO 8601 timestamp\",\n  \"updated_at\": \"ISO 8601 timestamp\",\n  \"modules\": \"array of Module\"\n}\n```",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "Module",
             "level": 3,
             "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"course_id\": \"uuid (FK → Course)\",\n  \"title\": \"string\",\n  \"order\": \"integer (>= 1)\",\n  \"created_at\": \"ISO 8601 timestamp\"\n}\n```",
-            "mapped_to_template_field": "Functional Requirements"
+            "mapped_to_template_field": null
         },
         {
             "title": "Enrollment",
             "level": 3,
-            "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"student_id\": \"uuid (FK → User)\",\n  \"course_id\": \"uuid (FK → Course)\",\n  \"progress\": \"integer (0-100)\",\n  \"completed_at\": \"ISO 8601 timestamp | null\",\n  \"created_at\": \"ISO 8601 timestamp\",\n  \"updated_at\": \"ISO 8601 timestamp\"\n}\n```",
-            "mapped_to_template_field": "Functional Requirements"
+            "raw_content": "```typescript\n{\n  \"id\": \"uuid\",\n  \"student_id\": \"uuid (FK → User)\",\n  \"course_id\": \"uuid (FK → Course)\",\n  \"progress\": \"integer (0-100)\",\n  \"completed_at\": \"ISO 8601 timestamp | null\",\n  \"created_at\": \"ISO 8601 timestamp\",\n  \"updated_at\": \"ISO 8601 timestamp\"\n}\n```\n\n---",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Error Code Reference",
+            "level": 2,
+            "raw_content": "| Code | Meaning | HTTP Status |\n|------|---------|-------------|\n| VALIDATION_ERROR | Input validation failed | 400 |\n| UNAUTHORIZED | Missing or invalid token | 401 |\n| FORBIDDEN | Authenticated but lacks permission | 403 |\n| NOT_FOUND | Resource not found | 404 |\n| CONFLICT | Conflict (duplicate, constraint violation) | 409 |\n| ACTIVE_ENROLLMENT_CONSTRAINT | Course has active enrollments; cannot delete | 409 |\n| INTERNAL_ERROR | Unexpected server error | 500 |\n\n---",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "Examples",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Full Workflow: Register → Create Course → Enroll → Progress",
+            "level": 3,
+            "raw_content": "**1. Student registers**\n\n```bash\nPOST /api/v1/auth/register\n{\n  \"email\": \"alice@example.com\",\n  \"password\": \"pass123\",\n  \"display_name\": \"Alice\"\n}\n\nResponse: 201\n{\n  \"data\": {\n    \"user\": {..., \"role\": \"student\"},\n    \"tokens\": {\"access_token\": \"ACCESS_TOKEN_1\", \"refresh_token\": \"REFRESH_1\", ...}\n  }\n}\n```\n\n**2. Instructor creates course**\n\n```bash\nPOST /api/v1/courses\nAuthorization: Bearer INSTRUCTOR_ACCESS_TOKEN\n{\n  \"title\": \"Python 101\",\n  \"description\": \"Learn Python\",\n  \"price_cents\": 9999,\n  \"published\": true,\n  \"modules\": [\n    {\"title\": \"Module 1\", \"order\": 1}\n  ]\n}\n\nResponse: 201\n{\n  \"data\": {\"id\": \"COURSE_ID\", ...}\n}\n```\n\n**3. Student enrolls in published course**\n\n```bash\nPOST /api/v1/enrollments\nAuthorization: Bearer ACCESS_TOKEN_1\n{\n  \"course_id\": \"COURSE_ID\"\n}\n\nResponse: 201\n{\n  \"data\": {\"id\": \"ENROLLMENT_ID\", \"progress\": 0, ...}\n}\n```\n\n**4. Student updates progress**\n\n```bash\nPUT /api/v1/enrollments/ENROLLMENT_ID\nAuthorization: Bearer ACCESS_TOKEN_1\n{\n  \"progress\": 100\n}\n\nResponse: 200\n{\n  \"data\": {\n    \"id\": \"ENROLLMENT_ID\",\n    \"progress\": 100,\n    \"completed_at\": \"2026-06-27T12:46:00Z\"\n  }\n}\n```\n\n**5. Instructor attempts to delete course with active enrollment**\n\n```bash\nDELETE /api/v1/courses/COURSE_ID\nAuthorization: Bearer INSTRUCTOR_ACCESS_TOKEN\n\nResponse: 409 Conflict\n{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"ACTIVE_ENROLLMENT_CONSTRAINT\",\n      \"message\": \"Cannot delete course with active enrollments\",\n      \"business_rule\": \"ActiveEnrollmentConstraint\"\n    }\n  ]\n}\n```",
+            "mapped_to_template_field": null
         }
     ],
     "elements": [
         {
-            "type": "non_functional_requirement",
-            "identifier": "NFR-AUTH-JWT",
-            "content": "Authentication must use JWT Bearer tokens in the Authorization header.",
-            "source_section": "API Overview",
+            "type": "entity",
+            "identifier": "USER",
+            "content": "User entity containing id, email, display_name, role, and created_at.",
+            "source_section": "User",
             "attributes": {
-                "auth_method": "JWT"
+                "role_types": [
+                    "student",
+                    "instructor"
+                ]
             }
         },
         {
-            "type": "non_functional_requirement",
-            "identifier": "NFR-RESPONSE-ENVELOPE",
-            "content": "All responses must follow a consistent envelope including 'data', 'meta', and 'errors' fields.",
-            "source_section": "Response Envelope",
+            "type": "entity",
+            "identifier": "COURSE",
+            "content": "Course entity with title, description, price, publication status and associated modules.",
+            "source_section": "Course",
+            "attributes": {
+                "price_cents": "integer >= 0"
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "MODULE",
+            "content": "Course module with title and ordering.",
+            "source_section": "Module",
+            "attributes": {
+                "order": "integer >= 1"
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENROLLMENT",
+            "content": "Enrollment record linking student to course with progress tracking.",
+            "source_section": "Enrollment",
+            "attributes": {
+                "progress_range": "0-100"
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "AUTH-REG",
+            "content": "Allow student self-registration via POST /api/v1/auth/register with async welcome email.",
+            "source_section": "POST `/api/v1/auth/register`",
             "attributes": {}
         },
         {
             "type": "functional_requirement",
-            "identifier": "REQ-AUTH-REG",
-            "content": "Allow students to self-register with email, password, and display name.",
-            "source_section": "POST `/api/v1/auth/register`",
-            "attributes": {
-                "role": "Student"
-            }
-        },
-        {
-            "type": "functional_requirement",
-            "identifier": "REQ-AUTH-LOGIN",
-            "content": "Allow authenticated users (student/instructor) to login via email and password.",
+            "identifier": "AUTH-LOG",
+            "content": "Allow user authentication via POST /api/v1/auth/login returning JWT tokens.",
             "source_section": "POST `/api/v1/auth/login`",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "AUTH-REF",
+            "content": "Allow JWT access token refresh via POST /api/v1/auth/refresh.",
+            "source_section": "POST `/api/v1/auth/refresh`",
             "attributes": {
-                "role": "Public"
+                "access_token_expiry": "15 minutes",
+                "refresh_token_expiry": "7 days"
             }
         },
         {
             "type": "functional_requirement",
-            "identifier": "REQ-COURSE-CREATE",
-            "content": "Instructors can create courses with modules, title, description, and pricing.",
+            "identifier": "CRS-CREATE",
+            "content": "Allow instructors to create courses and modules via POST /api/v1/courses.",
             "source_section": "POST `/api/v1/courses`",
             "attributes": {
-                "role": "Instructor"
+                "required_role": "Instructor"
             }
         },
         {
             "type": "functional_requirement",
-            "identifier": "REQ-COURSE-DELETE",
-            "content": "Instructors can delete their own courses provided there are no active enrollments.",
-            "source_section": "DELETE `/api/v1/courses/{course_id}`",
-            "attributes": {
-                "role": "Instructor"
-            }
-        },
-        {
-            "type": "functional_requirement",
-            "identifier": "REQ-ENROLL-POST",
-            "content": "Students can enroll in published courses.",
-            "source_section": "POST `/api/v1/enrollments`",
-            "attributes": {
-                "role": "Student"
-            }
-        },
-        {
-            "type": "functional_requirement",
-            "identifier": "REQ-ENROLL-PROGRESS",
-            "content": "Students can update their course progress (0-100%).",
-            "source_section": "PUT `/api/v1/enrollments/{enrollment_id}`",
-            "attributes": {
-                "role": "Student"
-            }
-        },
-        {
-            "type": "entity",
-            "identifier": "ENT-USER",
-            "content": "User entity containing id, email, display_name, and role (student|instructor).",
-            "source_section": "User",
-            "attributes": {}
-        },
-        {
-            "type": "entity",
-            "identifier": "ENT-COURSE",
-            "content": "Course entity containing title, description, price, publishing status, and instructor reference.",
-            "source_section": "Course",
-            "attributes": {}
-        },
-        {
-            "type": "entity",
-            "identifier": "ENT-MODULE",
-            "content": "Module entity belonging to a course with a specific display order.",
-            "source_section": "Module",
-            "attributes": {}
-        },
-        {
-            "type": "entity",
-            "identifier": "ENT-ENROLLMENT",
-            "content": "Enrollment entity linking a student to a course with progress tracking.",
-            "source_section": "Enrollment",
+            "identifier": "CRS-READ",
+            "content": "Provide access to courses based on publication status and ownership via GET /api/v1/courses/{id}.",
+            "source_section": "GET `/api/v1/courses/{course_id}`",
             "attributes": {}
         },
         {
             "type": "constraint",
             "identifier": "RULE-ACTIVE-ENROLL",
-            "content": "ActiveEnrollmentConstraint: A course cannot be deleted if it has active enrollments.",
+            "content": "ActiveEnrollmentConstraint: Courses with active enrollments cannot be deleted (409 Conflict).",
             "source_section": "DELETE `/api/v1/courses/{course_id}`",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "ENR-CREATE",
+            "content": "Allow students to enroll in published courses via POST /api/v1/enrollments.",
+            "source_section": "POST `/api/v1/enrollments`",
             "attributes": {
-                "error_code": "ACTIVE_ENROLLMENT_CONSTRAINT"
+                "constraint": "unique student-course pair"
             }
         },
         {
-            "type": "constraint",
-            "identifier": "RULE-AUTO-COMPLETE",
-            "content": "If progress is set to 100 and completed_at is null, completed_at must be automatically set to current timestamp.",
+            "type": "functional_requirement",
+            "identifier": "ENR-PROGRESS",
+            "content": "Allow students to update progress. Auto-set completed_at if progress reaches 100%.",
             "source_section": "PUT `/api/v1/enrollments/{enrollment_id}`",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "NFR-ENVELOPE",
+            "content": "All API responses must use a consistent envelope containing data, meta, and errors.",
+            "source_section": "Response Envelope",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "NFR-AUTH-JWT",
+            "content": "Authentication must be handled via JWT Bearer tokens in the Authorization header.",
+            "source_section": "API Overview",
             "attributes": {}
         }
     ],
     "relationships": [
         {
-            "source": "REQ-AUTH-REG",
-            "to": "ENT-USER",
+            "source": "AUTH-REG",
+            "to": "USER",
             "relation_type": "implements"
         },
         {
-            "source": "REQ-COURSE-CREATE",
-            "to": "ENT-COURSE",
+            "source": "AUTH-LOG",
+            "to": "USER",
             "relation_type": "implements"
         },
         {
-            "source": "REQ-COURSE-CREATE",
-            "to": "ENT-MODULE",
-            "relation_type": "contains"
+            "source": "CRS-CREATE",
+            "to": "COURSE",
+            "relation_type": "implements"
         },
         {
-            "source": "REQ-COURSE-DELETE",
-            "to": "RULE-ACTIVE-ENROLL",
+            "source": "CRS-CREATE",
+            "to": "USER",
             "relation_type": "depends_on"
         },
         {
-            "source": "REQ-ENROLL-POST",
-            "to": "ENT-ENROLLMENT",
+            "source": "ENR-CREATE",
+            "to": "ENROLLMENT",
             "relation_type": "implements"
         },
         {
-            "source": "REQ-ENROLL-PROGRESS",
-            "to": "RULE-AUTO-COMPLETE",
+            "source": "ENR-CREATE",
+            "to": "COURSE",
             "relation_type": "depends_on"
         },
         {
-            "source": "ENT-ENROLLMENT",
-            "to": "ENT-USER",
-            "relation_type": "relates_to"
+            "source": "ENR-CREATE",
+            "to": "USER",
+            "relation_type": "depends_on"
         },
         {
-            "source": "ENT-ENROLLMENT",
-            "to": "ENT-COURSE",
+            "source": "ENR-PROGRESS",
+            "to": "ENROLLMENT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "RULE-ACTIVE-ENROLL",
+            "to": "ENROLLMENT",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "RULE-ACTIVE-ENROLL",
+            "to": "COURSE",
             "relation_type": "relates_to"
         }
     ],
     "structural_gaps": [
         {
             "missing_section": "Goals & Objectives",
-            "priority": "MEDIUM",
-            "remediation_advice": "Add a section defining the high-level goals of the CourseHub API."
+            "priority": "HIGH",
+            "remediation_advice": "The document is a technical contract. The high-level business goals and success metrics are missing and should be defined in a companion spec.md."
         },
         {
             "missing_section": "Scope & Out-of-Scope",
-            "priority": "LOW",
-            "remediation_advice": "Define what the API does NOT handle (e.g., payment processing details)."
+            "priority": "MEDIUM",
+            "remediation_advice": "Explicitly define what the API does not handle (e.g., payment processing details, content delivery mechanisms)."
         },
         {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "List any undecided technical details regarding token expiration or scaling."
+            "remediation_advice": "Add a section to track API versioning strategies or future endpoint additions."
         }
     ],
     "open_questions": []

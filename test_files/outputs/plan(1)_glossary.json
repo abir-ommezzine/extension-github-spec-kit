@@ -5,337 +5,323 @@
             "term": "API",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Plan: CourseHub API Implementation",
-            "project_definition": "The RESTful interface providing endpoints for authentication, education content, and student registrations."
+            "contextual_anchor": "TL;DR",
+            "project_definition": "The FastAPI-based interface providing RESTful endpoints for authentication, education content, and student registration."
         },
         {
             "term": "ActiveEnrollmentConstraint",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "RULE-ACTIVE-ENROLL",
-            "project_definition": "A blocking rule that triggers a 409 status when attempting to remove a teaching unit that has associated student records."
+            "project_definition": "A logic gate preventing the removal of an educational offering if any student association records exist, triggering a 409 conflict."
         },
         {
             "term": "Async throughout",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "ASYNC-STACK",
-            "project_definition": "The systemic requirement for non-blocking I/O operations across all database and external service interactions."
+            "contextual_anchor": "ARCH-ASYNC-DB",
+            "project_definition": "A requirement that all persistence layer interactions use non-blocking awaitable patterns."
         },
         {
             "term": "AsyncClient",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Phase 6: Testing & Verification",
-            "project_definition": "An asynchronous HTTP requester used within the test suite to simulate requests against the server."
+            "project_definition": "The httpx-based asynchronous utility used within pytest fixtures to simulate requests."
         },
         {
             "term": "AsyncSession",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "ASYNC-STACK",
-            "project_definition": "The non-blocking database connection context used for executing transactional queries."
+            "contextual_anchor": "ARCH-ASYNC-DB",
+            "project_definition": "The SQLAlchemy 2.0 non-blocking database connection context managed via dependency injection."
         },
         {
             "term": "Auth first",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "AUTH-JWT",
-            "project_definition": "An architectural priority establishing the trust boundary and access controls before implementing domain logic."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "An architectural sequence prioritizing identity verification and role-based access control over domain logic."
         },
         {
             "term": "Background email",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EMAIL-BG",
-            "project_definition": "A deferred execution strategy using a task queue to prevent latency in the user registration response."
+            "contextual_anchor": "ARCH-BG-EMAIL",
+            "project_definition": "The deferral of transactional messages to a non-blocking task to avoid delaying the primary response."
         },
         {
             "term": "BackgroundTask",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EMAIL-BG",
-            "project_definition": "The FastAPI mechanism for executing code after the response has been delivered to the client."
+            "contextual_anchor": "ARCH-BG-EMAIL",
+            "project_definition": "A FastAPI native mechanism used to execute the Resend SDK call after the HTTP response is dispatched."
         },
         {
             "term": "BusinessRuleViolation",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Phase 7: Response Envelope & Error Handling",
-            "project_definition": "A specific exception type raised when a domain-specific constraint is breached."
+            "project_definition": "A custom exception raised when an operation conflicts with a named domain constraint."
         },
         {
             "term": "CORS Standard",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
-            "contextual_anchor": "Phase 7: Response Envelope & Error Handling",
-            "project_definition": "The protocol for managing cross-origin resource sharing to allow browser-based requests from different domains."
+            "contextual_anchor": "TL;DR",
+            "project_definition": "The cross-origin resource sharing protocol managed by FastAPI middleware for browser-based access."
         },
         {
             "term": "CRUD",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Phase 4: Courses Router — CRUD with Ownership",
-            "project_definition": "The four foundational persistent storage mutation primitives applied to domain entities."
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "The four foundational persistent storage mutation primitives applied to education entities."
         },
         {
             "term": "ConfigError",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Phase 3: Resend Email Integration as Service",
-            "project_definition": "An exception thrown when a required environmental variable, such as the external mailing key, is missing."
+            "project_definition": "An exception triggered when essential environment variables, specifically the external mail platform key, are missing."
         },
         {
             "term": "Course",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "COURSE-MODEL",
-            "project_definition": "An educational entity owned by an instructor, containing a title and a set of ordered modules."
+            "contextual_anchor": "ENT-COURSE",
+            "project_definition": "An educational offering owned by an instructor containing pricing, publication status, and associated modules."
         },
         {
             "term": "CourseCreate",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EP-COURSE-CREATE",
-            "project_definition": "The Pydantic input model for initializing a new teaching unit and its associated modules."
-        },
-        {
-            "term": "CourseHub",
-            "category": "BUSINESS_DOMAIN",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Plan: CourseHub API Implementation",
-            "project_definition": "The overall platform for managing education content and student enrollments."
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "A Pydantic v2 data transfer object for validating incoming requests to establish a new educational offering."
         },
         {
             "term": "CourseResponse",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EP-COURSE-CREATE",
-            "project_definition": "The Pydantic output model detailing the state of a teaching unit and its nested components."
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "The serialized output format for educational offerings, including nested module data."
         },
         {
             "term": "CourseUpdate",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Phase 4: Courses Router — CRUD with Ownership",
-            "project_definition": "The Pydantic input model for modifying the attributes of an existing teaching unit."
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "A Pydantic v2 schema used to modify existing educational offering attributes."
         },
         {
             "term": "Cryptographic Hashing",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
             "contextual_anchor": "Phase 2: Auth Router — JWT & Refresh Token Flow",
-            "project_definition": "The process of transforming passwords into secure strings using passlib for storage."
+            "project_definition": "The process of transforming passwords into irreversible strings via passlib for secure storage."
         },
         {
             "term": "DB",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "ASYNC-STACK",
-            "project_definition": "The PostgreSQL persistent storage system used for all application data."
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The PostgreSQL relational storage instance managed by Alembic migrations."
         },
         {
             "term": "DR",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
-            "contextual_anchor": "Phase 1: Project Foundation & Database Schema",
-            "project_definition": "The data recovery and migration strategy handled by Alembic for schema evolution."
+            "contextual_anchor": "Phase 7: Response Envelope & Error Handling",
+            "project_definition": "The standardized response wrapping strategy using a generic envelope for all endpoints."
         },
         {
             "term": "Enrollment",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "ENROLLMENT-MODEL",
-            "project_definition": "A relationship mapping a student to a course, tracking progress and completion status."
+            "contextual_anchor": "ENT-ENROLLMENT",
+            "project_definition": "A unique association between a student and an educational offering tracking progress and completion."
         },
         {
             "term": "EnrollmentCreate",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EP-ENROLL-CREATE",
-            "project_definition": "The Pydantic input model used by students to register for a published teaching unit."
+            "contextual_anchor": "PHASE-5",
+            "project_definition": "A Pydantic v2 schema used to initiate a student's registration for a specific course."
         },
         {
             "term": "EnrollmentResponse",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Phase 5: Enrolments Router — Student Access & Progress",
-            "project_definition": "The Pydantic output model representing the current state of a student's participation in a course."
+            "contextual_anchor": "PHASE-5",
+            "project_definition": "The serialized representation of a student's progress and timestamps for a specific offering."
         },
         {
             "term": "EnrollmentUpdate",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Phase 5: Enrolments Router — Student Access & Progress",
-            "project_definition": "The Pydantic input model for modifying progress percentages and completion dates."
+            "contextual_anchor": "PHASE-5",
+            "project_definition": "A Pydantic v2 schema for modifying the progress percentage or completion date."
         },
         {
             "term": "FK",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "COURSE-MODEL",
-            "project_definition": "A database constraint ensuring referential integrity between related tables."
-        },
-        {
-            "term": "ISO",
-            "category": "TECHNICAL_STACK",
-            "discovery": "IMPLICIT",
-            "contextual_anchor": "ENROLLMENT-MODEL",
-            "project_definition": "The standard format used for representing datetime objects in progress and completion timestamps."
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The relational constraint linking modules to offerings and offerings to instructors."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "AUTH-JWT",
-            "project_definition": "The token-based mechanism for secure identity verification and session management."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The token standard used for stateless identity verification and session management."
         },
         {
             "term": "Middleware",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Phase 7: Response Envelope & Error Handling",
-            "project_definition": "A processing layer that intercepts all responses to wrap them in a consistent envelope."
+            "project_definition": "A software layer that intercepts every outgoing response to wrap it in a consistent envelope shape."
         },
         {
             "term": "Module",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "MODULE-MODEL",
-            "project_definition": "A specific section of a course with a defined sequence order."
+            "contextual_anchor": "ENT-MODULE",
+            "project_definition": "A structured component of a course with a mandatory sequence order."
         },
         {
             "term": "ModuleCreate",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EP-COURSE-CREATE",
-            "project_definition": "The Pydantic input model for defining a new course section."
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "A Pydantic v2 schema for defining the title and sequence of a course component during creation."
         },
         {
             "term": "ModuleResponse",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EP-COURSE-CREATE",
-            "project_definition": "The Pydantic output model returning the details of a course section."
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "The serialized output for course components, used in nested course responses."
         },
         {
             "term": "NAMED",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "RULE-ACTIVE-ENROLL",
-            "project_definition": "A design pattern where specific business constraints are explicitly identified by a unique string identifier."
+            "project_definition": "The practice of explicitly labeling a business constraint for traceability in error handling."
         },
         {
             "term": "NOT",
             "category": "TECHNICAL_STACK",
-            "discovery": "IMPLICIT",
-            "contextual_anchor": "Phase 2: Auth Router — JWT & Refresh Token Flow",
-            "project_definition": "The logic used to defer the email sending process during the initial registration request."
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "EP-AUTH-REG",
+            "project_definition": "A logical exclusion preventing the synchronous dispatch of emails during the registration flow."
         },
         {
             "term": "ORM",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "ASYNC-STACK",
-            "project_definition": "The object-relational mapping layer provided by SQLAlchemy for interacting with the database."
+            "contextual_anchor": "ARCH-ASYNC-DB",
+            "project_definition": "The SQLAlchemy object-relational mapping layer used to avoid raw query strings."
         },
         {
             "term": "PermissionError",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Phase 7: Response Envelope & Error Handling",
-            "project_definition": "An exception raised when a user attempts to access or modify a resource they do not own."
+            "project_definition": "An exception raised when a user lacks the required role or ownership to perform an action."
         },
         {
             "term": "REST",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Plan: CourseHub API Implementation",
-            "project_definition": "The architectural style utilizing standard HTTP methods for managing resources."
+            "contextual_anchor": "TL;DR",
+            "project_definition": "The architectural style using standard HTTP methods and resource-based URLs."
         },
         {
             "term": "RULE",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "RULE-ACTIVE-ENROLL",
-            "project_definition": "A deterministic logic check that must be satisfied before a state transition is permitted."
+            "project_definition": "A formalized domain constraint that enforces specific system behaviors, such as deletion restrictions."
         },
         {
             "term": "SDK",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EMAIL-BG",
-            "project_definition": "The provided software development kit for integrating the external transactional email service."
+            "contextual_anchor": "Phase 3: Resend Email Integration as Service",
+            "project_definition": "The Resend provided library used to interface with the external email platform."
         },
         {
             "term": "SQL",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "ASYNC-STACK",
-            "project_definition": "The structured query language implicitly handled by the ORM layer."
+            "contextual_anchor": "ARCH-ASYNC-DB",
+            "project_definition": "The structured query language, explicitly avoided in favor of an abstraction layer for persistence."
         },
         {
             "term": "SQLAlchemy 2.0",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "ASYNC-STACK",
-            "project_definition": "The specific version of the database toolkit used for async operations."
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The specific version of the asynchronous toolkit used for database mapping and session management."
         },
         {
             "term": "TL",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "TL;DR",
-            "project_definition": "The high-level architectural summary of the implementation plan."
+            "project_definition": "The high-level summary section providing a rapid overview of the implementation architecture."
         },
         {
             "term": "Target",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "TEST-SUITE",
-            "project_definition": "The quantitative goal for code coverage, set at 80% for business logic."
+            "contextual_anchor": "Phase 6: Testing & Verification",
+            "project_definition": "The 80% minimum code coverage threshold required for business logic validation via pytest-cov."
         },
         {
             "term": "TokenResponse",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Phase 2: Auth Router — JWT & Refresh Token Flow",
-            "project_definition": "The Pydantic output model returning the short-lived and long-lived authentication credentials."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "A Pydantic v2 schema returning the access and refresh credentials upon successful authentication."
         },
         {
             "term": "User",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "USER-MODEL",
-            "project_definition": "The identity entity with a specific role of either student or instructor."
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "The primary identity entity characterized by an email and a role of either student or instructor."
         },
         {
             "term": "UserLogin",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EP-AUTH-LOGIN",
-            "project_definition": "The Pydantic input model for authenticating an identity via email and password."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The input schema for authenticating an identity via email and password."
         },
         {
             "term": "UserRegister",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "EP-AUTH-REGISTER",
-            "project_definition": "The Pydantic input model for creating a new identity in the system."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The input schema for creating a new identity with student privileges."
         },
         {
             "term": "UserResponse",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Phase 2: Auth Router — JWT & Refresh Token Flow",
-            "project_definition": "The Pydantic output model returning the public profile and role of an identity."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The serialized identity output excluding sensitive security data like hashed passwords."
         },
         {
             "term": "ValueError",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Phase 7: Response Envelope & Error Handling",
-            "project_definition": "An exception raised when a numerical attribute, such as progress, falls outside the 0-100 range."
+            "project_definition": "An exception raised when numeric input, such as progress percentage, falls outside the 0-100 range."
         }
     ]
 }
