@@ -1,0 +1,140 @@
+{
+    "parsing_rationale": "The document is a technical implementation plan for an Expense Tracker. I have mapped the existing sections to the required template fields, extracted the technical choices (Next.js, localStorage, etc.) as architecture_choices and tasks, and identified structural gaps since detailed API contracts, data schemas, and security identities are mentioned as 'future-ready' or 'minimal' but not explicitly detailed in this document.",
+    "project_info": {
+        "project_name": "Expense Tracker",
+        "source_type": "scratch",
+        "brief_explanation": "Single-user Expense Tracker using Next.js App Router with client-side persistence via localStorage.",
+        "source_context": "Implementation plan based on specs/001-expense-tracker/spec.md"
+    },
+    "doc_type": "plan",
+    "sections": [
+        {
+            "title": "Implementation Plan: Expense Tracker",
+            "level": 1,
+            "raw_content": "**Branch**: `feat/expense-tracker` | **Date**: 2026-06-22 | **Spec**: specs/001-expense-tracker/spec.md",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Summary",
+            "level": 2,
+            "raw_content": "Small single-user Expense Tracker built with Next.js App Router. UI and persistence run in the browser using localStorage. Use server folder under `src/server` for shared types and validation utilities; route handlers and server actions are included as future-ready contracts but persistence remains client-side per requirements.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Technical Context",
+            "level": 2,
+            "raw_content": "**Language/Version**: TypeScript (Node 18+/Next.js latest from package.json)\n\n**Primary Dependencies**: Next.js (App Router), React, Tailwind CSS, Jest + React Testing Library for tests.\n\n**Storage**: localStorage (client). Server folder `src/server` will host types and validation only.\n\n**Testing**: Jest + React Testing Library (unit tests for validators and component behaviour).\n\n**Target Platform**: Web (modern browsers).\n\n**Project Type**: Web application (frontend-focused) with optional minimal backend route handlers for future server persistence.\n\n**Performance Goals**: Small bundle, responsive UI, preserve Next.js server components where possible.\n\n**Constraints**: No authentication. Follow project constitution (clean code, Next.js App Router, testing discipline).",
+            "mapped_to_template_field": "Tech Stack & Tooling"
+        },
+        {
+            "title": "Constitution Check",
+            "level": 2,
+            "raw_content": "Gates from constitution:\n- Next.js App Router & Server Components: using App Router — OK.\n- Testing Discipline: plan includes unit tests; implementers must add tests before merge.\n- Performance & Accessibility: keep UI light and accessible; use Tailwind for responsive styles.\n\nNo gate violations are expected. Tests are required in Phase 2 and must meet repository guidelines.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Project Structure",
+            "level": 2,
+            "raw_content": "```text\nsrc/\n├── server/\n│   ├── types.ts\n│   └── validators.ts\napp/\n├── components/\n│   ├── ExpenseForm.tsx\n│   ├── ExpenseList.tsx\n│   └── Summary.tsx\n└── page.tsx\nspecs/001-expense-tracker/\n├── plan.md        # this file\n├── research.md    # Phase 0 output\n├── data-model.md  # Phase 1 output\n├── quickstart.md  # Phase 1 output\n└── contracts/\n    └── expenses-api.md\n```\n\n**Structure Decision**: Single-project structure with `src/server` for shared types/validators and `app/` for Next.js App Router code.",
+            "mapped_to_template_field": "System Architecture & Topology"
+        },
+        {
+            "title": "Complexity Tracking",
+            "level": 2,
+            "raw_content": "No constitution violations requiring exception justification.\n\n---\n\nPhase 0 is next: research.md will resolve any minor technical unknowns and record decisions.",
+            "mapped_to_template_field": "Open Questions & Uncertainties"
+        }
+    ],
+    "elements": [
+        {
+            "type": "architecture_choice",
+            "identifier": "STACK-NEXTJS",
+            "content": "Next.js App Router with TypeScript and Tailwind CSS",
+            "source_section": "Technical Context",
+            "attributes": {
+                "version": "Node 18+"
+            }
+        },
+        {
+            "type": "architecture_choice",
+            "identifier": "STORAGE-LOCAL",
+            "content": "Client-side persistence using localStorage",
+            "source_section": "Technical Context",
+            "attributes": {
+                "scope": "browser"
+            }
+        },
+        {
+            "type": "architecture_choice",
+            "identifier": "TEST-FRAMEWORK",
+            "content": "Jest + React Testing Library for unit tests and component behavior",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "decision",
+            "identifier": "STRUCT-SERVER-DIR",
+            "content": "Use `src/server` for shared types and validation utilities to ensure future-readiness",
+            "source_section": "Project Structure",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-0",
+            "content": "Research phase to resolve technical unknowns and record decisions (research.md)",
+            "source_section": "Complexity Tracking",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "TASK-UNIT-TESTS",
+            "content": "Implement unit tests before merge, following repository guidelines",
+            "source_section": "Constitution Check",
+            "attributes": {
+                "phase": "Phase 2"
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENTITY-VALIDATORS",
+            "content": "Validation utilities located in `src/server/validators.ts`",
+            "source_section": "Project Structure",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "STRUCT-SERVER-DIR",
+            "to": "ENTITY-VALIDATORS",
+            "relation_type": "contains"
+        },
+        {
+            "source": "TASK-UNIT-TESTS",
+            "to": "TEST-FRAMEWORK",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-0",
+            "to": "STACK-NEXTJS",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Data Models & Schemas",
+            "priority": "HIGH",
+            "remediation_advice": "Define the Expense entity structure (id, amount, category, date) in a dedicated data-model.md file."
+        },
+        {
+            "missing_section": "API Contracts & Flow",
+            "priority": "MEDIUM",
+            "remediation_advice": "Even if persistence is client-side, define the interface for the 'future-ready' route handlers in expenses-api.md."
+        },
+        {
+            "missing_section": "Security & Identity",
+            "priority": "LOW",
+            "remediation_advice": "Document the explicit absence of authentication as per requirements to avoid future confusion."
+        }
+    ],
+    "open_questions": []
+}

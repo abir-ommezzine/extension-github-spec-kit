@@ -1,0 +1,16 @@
+{
+    "diagrams": [
+        {
+            "title": "Expense Tracker Technical Architecture",
+            "type": "flowchart",
+            "description": "High-level mapping of architecture choices, project structure, and the relationship between server-side utilities and client-side persistence.",
+            "mermaid_code": "flowchart TD\n    subgraph ClientSide[\"Client Browser\"]\n        STORAGE-LOCAL[\"STORAGE-LOCAL: localStorage Persistence\"]\n        UI[\"Next.js App Router UI\"]\n    end\n\n    subgraph ServerDir[\"src/server (Shared Logic)\"]\n        STRUCT-SERVER-DIR[\"STRUCT-SERVER-DIR: Shared Types & Validation\"]\n        ENTITY-VALIDATORS[\"ENTITY-VALIDATORS: validators.ts\"]\n    end\n\n    STACK-NEXTJS[\"STACK-NEXTJS: Next.js App Router / TS / Tailwind\"]\n    TEST-FRAMEWORK[\"TEST-FRAMEWORK: Jest + React Testing Library\"]\n    TASK-UNIT-TESTS[\"TASK-UNIT-TESTS: Unit Test Implementation\"]\n\n    STACK-NEXTJS --> UI\n    UI --> STORAGE-LOCAL\n    UI --> STRUCT-SERVER-DIR\n    STRUCT-SERVER-DIR --> ENTITY-VALIDATORS\n    TASK-UNIT-TESTS --> TEST-FRAMEWORK\n    TASK-UNIT-TESTS -.->|validates| ENTITY-VALIDATORS"
+        },
+        {
+            "title": "Implementation Lifecycle Workflow",
+            "type": "flowchart",
+            "description": "The process flow from research to final merge, including the mandatory testing gate.",
+            "mermaid_code": "flowchart TD\n    START[Start Implementation] --> PHASE-0[\"PHASE-0: Research & Decision Recording\"]\n    PHASE-0 --> DEV[Development of Components & Logic]\n    DEV --> TEST_CHECK{?\"Tests Implemented?\"}\n    \n    TEST_CHECK -- \"No\" --> TASK-UNIT-TESTS[\"TASK-UNIT-TESTS: Implement Unit Tests\"]\n    TASK-UNIT-TESTS --> TEST_CHECK\n    \n    TEST_CHECK -- \"Yes\" --> MERGE_GATE{?\"Meets Repo Guidelines?\"}\n    MERGE_GATE -- \"No\" --> DEV\n    MERGE_GATE -- \"Yes\" --> END[Merge to Main]"
+        }
+    ]
+}

@@ -1,9 +1,9 @@
 # app/services/parser_service.py
 import json
 from pathlib import Path
-from app.schemas.parsing_agent_schema import ParsingAgentOutput
+from app.schemas.parsing_agent_schema import ParsingAgentLLMOutput, ParsingAgentOutput, SectionOutput
 from app.utils.markdown_parser import pre_parse_markdown_to_sections, calculate_file_hash
-from app.core.llm_client import ollama_chat_with_retry, get_llm_model
+from app.core.llm_client import ollama_chat, get_llm_model
 from app.core.llm_utils import parse_and_validate_json
 from app.core.prompts import get_parsing_agent_prompt
 
@@ -74,16 +74,49 @@ def run_parsing_agent(file_name: str, file_content: str) -> ParsingAgentOutput:
     }
 
     # 5. Appel au LLM Ollama
-    response = ollama_chat_with_retry(
-        model=get_llm_model(),
+    response = ollama_chat(
+        
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(user_message, ensure_ascii=False)}
         ],
         response_format={"type": "json_object"},
         temperature=0.0,
-        max_tokens=8192  # Groq supports up to 8192 for this model
+        max_tokens=16384   # Groq supports up to 8192 for this model
     )
-    
-    raw_output = response.choices[0].message.content
-    return parse_and_validate_json(raw_output, ParsingAgentOutput)
+    raw_output = response
+    llm_output = parse_and_validate_json(raw_output, ParsingAgentLLMOutput)
+
+# Overlay: index -> mapped_to_template_field, for whichever sections the LLM mapped
+    mapping_by_index = {
+    m.section_index: m.mapped_to_template_field
+    for m in llm_output.section_mappings
+}
+
+# Build sections from the COMPLETE deterministic list — never depends on LLM completeness
+    full_sections = [
+    SectionOutput(
+        title=sec["title"],
+        level=sec["level"],
+        raw_content=sec["raw_content"],
+        mapped_to_template_field=mapping_by_index.get(i),  # None if the LLM skipped this index
+    )
+    for i, sec in enumerate(pre_parsed_sections)
+]
+
+    mapped_fields = {v for v in mapping_by_index.values() if v is not None}
+    filtered_gaps = [
+    gap for gap in llm_output.structural_gaps
+    if gap.missing_section not in mapped_fields
+]
+
+    return ParsingAgentOutput(
+    parsing_rationale=llm_output.parsing_rationale,
+    project_info=llm_output.project_info,
+    doc_type=llm_output.doc_type,
+    sections=full_sections,
+    elements=llm_output.elements,
+    relationships=llm_output.relationships,
+    structural_gaps=filtered_gaps,
+    open_questions=llm_output.open_questions,
+)

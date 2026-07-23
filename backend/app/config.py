@@ -4,31 +4,34 @@ from pathlib import Path
 from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Look for .env in backend/ folder (where config.py lives, go up one level)
+# Look for .env in backend/ folder
 BASE_DIR = Path(__file__).resolve().parent.parent  # -> backend/
 ENV_PATH = BASE_DIR / ".env"
 
 class Settings(BaseSettings):
+    # Database
     DATABASE_URL: str = "postgresql://speckit:speckit@localhost:5432/speckit"
+    
+    # OpenAI (legacy)
     OPENAI_API_KEY: Optional[str] = None
     OPENAI_MODEL: str = "gpt-4o"
     
-    LLM_API_KEY: str | None = None
+    # Generic LLM settings
+    LLM_BASE_URL: Optional[str] = None
+    LLM_API_KEY: Optional[str] = None
     LLM_MODEL: str = "gpt-4o"
-    LLM_BASE_URL: str = "https://api.openai.com/v1"
     
-    
-    # --- AJOUT CONFIGURATION OLLAMA ---
+    # Ollama settings
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    OLLAMA_MODEL: str = "gemma4:31b-cloud"
+    OLLAMA_HOST: str = "https://api.ollama.com"
+    OLLAMA_API_KEY: Optional[str] = None
+    OLLAMA_MODEL: str = "llama3.1:8b"
     
-     # Groq Configuration
-    LLM_API_KEY: str
-    LLM_MODEL: str = "llama-3.3-70b-versatile"
-    
+    # Storage & Logging
     PDF_STORAGE_DIR: str = "./storage/pdfs"
     LOG_LEVEL: str = "INFO"
-
+    
+    # Pydantic v2 config (ONLY this, no class Config)
     model_config = SettingsConfigDict(
         env_file=ENV_PATH,
         env_file_encoding="utf-8",

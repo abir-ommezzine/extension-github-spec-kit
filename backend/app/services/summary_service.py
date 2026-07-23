@@ -6,7 +6,7 @@ from app.utils.summary_pruner import SummaryPrunerService
 from app.services.evaluation_service import ParsingEvaluatorService
 from app.core.prompts import get_summary_agent_prompt
 
-from app.core.llm_client import ollama_chat_with_retry, get_llm_model
+from app.core.llm_client import ollama_chat, get_llm_model
 from app.core.llm_utils import parse_and_validate_json
 
 class SummaryAgentService:
@@ -41,8 +41,8 @@ class SummaryAgentService:
         user_prompt = json.dumps(pruned_payload, ensure_ascii=False)
 
         # 6. Appel déterministe au LLM Ollama/Gemma
-        response = ollama_chat_with_retry(
-            model=get_llm_model(),
+        response = ollama_chat(
+        
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
@@ -52,7 +52,6 @@ class SummaryAgentService:
             max_tokens=8192  # Groq supports up to 8192 for this model
         )
         
-        raw_output = response.choices[0].message.content
-
+        raw_output = response
         # 7. Extraction Regex et validation avec le schéma Pydantic strict
         return parse_and_validate_json(raw_output, SummaryOutputModel)

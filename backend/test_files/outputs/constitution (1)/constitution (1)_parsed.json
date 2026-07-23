@@ -1,0 +1,215 @@
+{
+    "parsing_rationale": "The document is a technical constitution for a Learning Platform API. I have mapped the sections to the requested template fields based on their content: technology/data/API standards to 'Coding Standards & Style', testing to 'Testing Discipline & Gates', and development workflow/governance to 'Branching & PR Workflow'. I extracted specific technical constraints as atomic elements and established dependencies (e.g., SQLAlchemy depends on Python 3.12, tests depend on the tech stack).",
+    "project_info": {
+        "project_name": "Learning Platform API",
+        "source_type": "scratch",
+        "brief_explanation": "Technical governance document defining the stack, security, API standards, and quality gates for a Learning Platform API.",
+        "source_context": "Constitution file providing a baseline for architectural and development consistency."
+    },
+    "doc_type": "constitution",
+    "sections": [
+        {
+            "title": "Learning Platform API Constitution",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Core Principles",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "I. Technology Standardization",
+            "level": 3,
+            "raw_content": "All implementation work must use the approved stack: Python 3.12, FastAPI, PostgreSQL 16, SQLAlchemy 2.0 with async execution, Alembic for migrations, and Pydantic v2 for validation. New features must align with this stack and avoid introducing alternative frameworks or synchronous database access patterns.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "II. Authentication and Authorization",
+            "level": 3,
+            "raw_content": "Authentication must use JWT access tokens with a 15-minute expiry and refresh tokens with a 7-day expiry. The system supports exactly two roles: student and instructor. Instructors are authorized to create, edit, and delete courses. Students are authorized to enroll in courses and submit progress.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "III. API Contract and Response Shape",
+            "level": 3,
+            "raw_content": "The API must be RESTful, return JSON, and be versioned under /api/v1/. All responses must use a consistent envelope of the form {\"data\": ..., \"meta\": ..., \"errors\": []}. API changes must preserve backward compatibility unless a new version is introduced.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "IV. Data Access and Persistence",
+            "level": 3,
+            "raw_content": "All database access must be asynchronous. SQLAlchemy sessions must never be used synchronously, and all data access must be performed through the ORM. Raw SQL is prohibited. Schema changes must be handled through Alembic migrations.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "V. Quality and Testing",
+            "level": 3,
+            "raw_content": "Testing must use pytest with httpx AsyncClient. Business logic coverage should target 80% or higher. Database tests must use a real PostgreSQL test instance and must not mock the database layer.",
+            "mapped_to_template_field": "Testing Discipline & Gates"
+        },
+        {
+            "title": "Additional Constraints",
+            "level": 2,
+            "raw_content": "- Transactional email delivery must use the Resend Python SDK.\n- The Resend API key must be provided through the RESEND_API_KEY environment variable.\n- A welcome email must be sent to students upon registration.\n- Security-sensitive behavior must be validated through integration-style tests wherever practical.",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Development Workflow",
+            "level": 2,
+            "raw_content": "- Features must be implemented and validated through tests before being considered complete.\n- Any schema or contract change must include the corresponding migration and API documentation updates.\n- Changes that affect authentication, authorization, or response envelopes require explicit review.",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Governance",
+            "level": 2,
+            "raw_content": "This constitution supersedes ad hoc implementation choices. Any deviation from these standards requires documented justification and review before merge.\n\n**Version**: 1.0.0 | **Ratified**: 2026-06-27 | **Last Amended**: 2026-06-27",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        }
+    ],
+    "elements": [
+        {
+            "type": "tool_configuration",
+            "identifier": "STACK-01",
+            "content": "Approved stack: Python 3.12, FastAPI, PostgreSQL 16, SQLAlchemy 2.0 (async), Alembic, Pydantic v2.",
+            "source_section": "I. Technology Standardization",
+            "attributes": {
+                "python_version": "3.12",
+                "db_version": "PostgreSQL 16"
+            }
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "AUTH-JWT",
+            "content": "JWT access tokens (15-min expiry) and refresh tokens (7-day expiry).",
+            "source_section": "II. Authentication and Authorization",
+            "attributes": {
+                "access_expiry": "15m",
+                "refresh_expiry": "7d"
+            }
+        },
+        {
+            "type": "rule",
+            "identifier": "AUTH-ROLES",
+            "content": "Strict role system: 'student' and 'instructor'.",
+            "source_section": "II. Authentication and Authorization",
+            "attributes": {
+                "roles": [
+                    "student",
+                    "instructor"
+                ]
+            }
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "API-REST",
+            "content": "RESTful JSON API versioned under /api/v1/ with a consistent envelope: {\"data\": ..., \"meta\": ..., \"errors\": []}.",
+            "source_section": "III. API Contract and Response Shape",
+            "attributes": {
+                "version": "v1"
+            }
+        },
+        {
+            "type": "rule",
+            "identifier": "DB-ASYNC",
+            "content": "All database access must be asynchronous via ORM; Raw SQL is prohibited.",
+            "source_section": "IV. Data Access and Persistence",
+            "attributes": {
+                "access_pattern": "async"
+            }
+        },
+        {
+            "type": "rule",
+            "identifier": "DB-MIGRATION",
+            "content": "Schema changes must be handled exclusively through Alembic migrations.",
+            "source_section": "IV. Data Access and Persistence",
+            "attributes": {}
+        },
+        {
+            "type": "testing_gate",
+            "identifier": "TEST-PYTEST",
+            "content": "Use pytest with httpx AsyncClient; target 80% business logic coverage.",
+            "source_section": "V. Quality and Testing",
+            "attributes": {
+                "min_coverage": "80%"
+            }
+        },
+        {
+            "type": "testing_gate",
+            "identifier": "TEST-DB-REAL",
+            "content": "Database tests must use a real PostgreSQL instance; mocking the database layer is forbidden.",
+            "source_section": "V. Quality and Testing",
+            "attributes": {}
+        },
+        {
+            "type": "tool_configuration",
+            "identifier": "MAIL-RESEND",
+            "content": "Transactional emails via Resend Python SDK using RESEND_API_KEY environment variable.",
+            "source_section": "Additional Constraints",
+            "attributes": {
+                "provider": "Resend"
+            }
+        },
+        {
+            "type": "workflow_constraint",
+            "identifier": "WF-REVIEW",
+            "content": "Changes affecting auth, authorization, or response envelopes require explicit review.",
+            "source_section": "Development Workflow",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "REQ-WELCOME-MAIL",
+            "content": "A welcome email must be sent to students upon registration.",
+            "source_section": "Additional Constraints",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "DB-ASYNC",
+            "to": "STACK-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "DB-MIGRATION",
+            "to": "STACK-01",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TEST-PYTEST",
+            "to": "STACK-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "TEST-DB-REAL",
+            "to": "DB-ASYNC",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "REQ-WELCOME-MAIL",
+            "to": "MAIL-RESEND",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "WF-REVIEW",
+            "to": "AUTH-JWT",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "WF-REVIEW",
+            "to": "API-REST",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "The document is quite prescriptive; create a dedicated section for known unknowns or future architectural debates."
+        }
+    ],
+    "open_questions": []
+}

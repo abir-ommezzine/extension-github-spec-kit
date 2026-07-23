@@ -43,6 +43,21 @@ class StructuralGap(BaseModel):
     priority: str
     remediation_advice: str
 
+# NEW — the slim shape the LLM actually has to produce
+class LLMSectionMapping(BaseModel):
+    section_index: int  # index into pre_parsed_sections, not the text itself
+    mapped_to_template_field: Optional[str] = None
+
+class ParsingAgentLLMOutput(BaseModel):
+    parsing_rationale: str
+    project_info: dict
+    doc_type: DocumentType
+    section_mappings: List[LLMSectionMapping]
+    elements: List[GraphElement]          # unchanged shape — already slim
+    relationships: List[GraphRelationship] # unchanged shape — already slim
+    structural_gaps: List[StructuralGap]   # unchanged shape — already slim
+    open_questions: List[str] 
+    
 class ParsingAgentOutput(BaseModel):
     parsing_rationale: str
     project_info: dict

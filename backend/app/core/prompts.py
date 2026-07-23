@@ -10,7 +10,7 @@ def get_parsing_agent_prompt(inferred_type: str, sdd_template: Dict[str, Any], p
     """
     expected_types = sdd_template.get("expected_element_types", [])
     required_sections = [sec["name"] for sec in sdd_template.get("required_sections", [])]
-    
+
     prompt = f"""Vous êtes un Agent d'Ingestion Technique de niveau Expert (Parsing Agent). Your absolute goal is to transform a raw markdown document into a strict, unified JSON compliance graph.
 
 ### TYPE DE DOCUMENT PRÉVU
@@ -21,9 +21,10 @@ def get_parsing_agent_prompt(inferred_type: str, sdd_template: Dict[str, Any], p
 
 ### DIRECTIVES CRITIQUES DE STRUCTURE JSON (ZÉRO HALLUCINATION)
 
-1. **sections (Échelle Macro)** :
-   - Vous devez copier fidèlement les sections reçues.
-   - Associez CHAQUE section physique à un champ du gabarit de référence via `mapped_to_template_field`.
+1. **section_mappings (Échelle Macro)** :
+   - Une liste de sections déjà extraites vous est fournie ci-dessous, chacune avec un `index` (entier) et son `title`.
+   - Ne recopiez JAMAIS le texte des sections — vous n'avez pas besoin de le reproduire, il est déjà connu.
+   - Pour CHAQUE section reçue, renvoyez uniquement son `section_index` (l'entier fourni) et son `mapped_to_template_field`.
    - Les valeurs autorisées pour `mapped_to_template_field` sont UNIQUEMENT : {required_sections} (ou null si aucun alignement n'est pertinent).
 
 2. **elements (Échelle Micro - LE GRAPH)** :
@@ -55,11 +56,9 @@ Vous devez retourner exclusivement un objet JSON valide respectant cette structu
     "source_context": "Contexte d'extraction..."
   }},
   "doc_type": "{inferred_type}",
-  "sections": [
+  "section_mappings": [
     {{
-      "title": "Titre exact de la section",
-      "level": 3,
-      "raw_content": "Contenu brut complet sans altération",
+      "section_index": 0,
       "mapped_to_template_field": "Nom du champ du gabarit ou null"
     }}
   ],

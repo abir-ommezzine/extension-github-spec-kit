@@ -1,5 +1,5 @@
 {
-    "document_type": "task",
+    "document_type": "plan",
     "project_name": "Expense Tracker",
     "technical_evaluation": {
         "schema_adherence_rate": 100.0,
@@ -8,10 +8,9 @@
         "macro_micro_traceability_index": 100.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
-            "Section requise absente des correspondances : checkboxes checklist",
-            "Section requise absente des correspondances : security & performance constraints",
-            "Section requise absente des correspondances : testing & validation",
-            "Section requise absente des correspondances : open questions & uncertainties"
+            "Section requise absente des correspondances : data models & schemas",
+            "Section requise absente des correspondances : security & identity",
+            "Section requise absente des correspondances : api contracts & flow"
         ]
     },
     "project_management_kpis": {
@@ -19,8 +18,8 @@
         "completeness_score": 50.0,
         "readiness_status": "NEEDS_REFINEMENT",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 34,
-            "total_edges_extracted": 25
+            "total_nodes_extracted": 7,
+            "total_edges_extracted": 3
         },
         "gaps_summary": {
             "high_severity": 1,

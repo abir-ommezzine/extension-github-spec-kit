@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 test_full_workflow.py — Test end-to-end du pipeline complet avec Document Writer.
 
 USAGE:
@@ -32,7 +32,7 @@ STRUCTURE DE SORTIE:
         ├── {nom}_document_eval.json
         └── {nom}_final_document.md
 
-Pipeline: START -> Parsing -> [Summary || Glossary || Diagram] -> Document Writer -> END
+Pipeline: START -> Parsing -> Summary -> Glossary -> Diagram -> Document Writer -> END
 """
 
 import sys
@@ -48,9 +48,9 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from dotenv import load_dotenv
 load_dotenv(SCRIPT_DIR / ".env")
 
-if not os.getenv("LLM_API_KEY"):
-    print("❌ LLM_API_KEY manquant dans backend/.env")
-    sys.exit(1)
+# No API key needed for Ollama (local)
+print(f"🤖 Modele LLM: {os.getenv('LLM_MODEL', 'NON DEFINI')}")
+print(f"🔑 Provider: Ollama (local - aucune cle API requise)")
 
 # IMPORTS
 from app.graph.workflow import create_pipeline_workflow
@@ -198,8 +198,8 @@ Exemples:
     print("🧪 TEST COMPLET DU WORKFLOW — SPEC KIT EXTENSION")
     print("=" * 70)
     print(f"\n🤖 Modele LLM: {os.getenv('LLM_MODEL', 'NON DEFINI')}")
-    print(f"🔑 Groq API Key: ...{os.getenv('LLM_API_KEY')[-6:]}")
-    print("\nPipeline: START -> Parsing -> [Summary || Glossary || Diagram] -> Document Writer -> END")
+    print(f"🔑 Provider: Ollama (local - aucune cle API requise)")
+    print("\nPipeline: START -> Parsing -> Summary -> Glossary -> Diagram -> Document Writer -> END")
     print("-" * 70)
 
     # 1. Load input document
@@ -262,7 +262,7 @@ Exemples:
 
     # 5. Execute workflow
     print("\n[5/5] Execution du pipeline...")
-    print("   ⏳ Cela peut prendre 1-3 minutes selon la taille du document...")
+    print("   ⏳ Cela peut prendre plusieurs minutes sur CPU (Ollama)...")
     print("   ⏳ Parsing Agent en cours...\n")
 
     try:

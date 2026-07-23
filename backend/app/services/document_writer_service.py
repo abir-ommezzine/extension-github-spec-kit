@@ -9,7 +9,7 @@ from app.schemas.summary_agent_schema import SummaryOutputModel
 from app.schemas.glossary_agent_schema import GlossaryOutputModel
 from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.core.prompts import get_doc_writer_prompt
-from app.core.llm_client import ollama_chat_with_retry, get_llm_model
+from app.core.llm_client import ollama_chat, get_llm_model
 from app.core.llm_utils import parse_and_validate_json
 
 
@@ -53,8 +53,7 @@ class DocumentWriterService:
         print(f"[🤖] Document Writer — Appel Groq (modèle: {get_llm_model()})...")
         print("   ⏳ Cela peut prendre 5-15 secondes...")
         
-        response = ollama_chat_with_retry(
-            model=get_llm_model(),
+        response = ollama_chat(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
@@ -64,7 +63,7 @@ class DocumentWriterService:
             max_tokens=8192  # Groq supports up to 8192 for this model
         )
 
-        raw_output = response.choices[0].message.content
+        raw_output = response
 
         # 4. Validation Pydantic
         document_output = parse_and_validate_json(raw_output, DocumentWriterOutput)

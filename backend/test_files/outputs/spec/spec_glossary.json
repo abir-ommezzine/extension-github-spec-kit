@@ -1,0 +1,117 @@
+{
+    "project_name": "Expense Tracker",
+    "items": [
+        {
+            "term": "AA",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "The specific accessibility conformance level required for the user interface to ensure a minimal standard of inclusive design."
+        },
+        {
+            "term": "Acceptance Scenarios",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 1 - Add an Expense (Priority: P1)",
+            "project_definition": "The set of behavioral conditions that must be satisfied to verify the completion of a functional unit."
+        },
+        {
+            "term": "Category",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-CATEGORY",
+            "project_definition": "A restricted set of labels used to classify spending, such as Food or Transport."
+        },
+        {
+            "term": "Expense",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-EXPENSE",
+            "project_definition": "A financial record consisting of a value, timestamp, classification, and optional notes."
+        },
+        {
+            "term": "FR",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "The unique alphanumeric identifiers for mandatory system behaviors."
+        },
+        {
+            "term": "Feature Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification: Expense Tracker",
+            "project_definition": "The isolated development stream used for implementing the initial tracker version."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Edge Cases",
+            "project_definition": "The restriction limiting monetary values to a maximum of 999,999.99 with two decimal precision."
+        },
+        {
+            "term": "ISO",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-EXPENSE",
+            "project_definition": "The international standard format utilized for recording the date strings of entries."
+        },
+        {
+            "term": "Independent Test",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 1 - Add an Expense (Priority: P1)",
+            "project_definition": "A verification method that validates a specific feature without relying on other system components."
+        },
+        {
+            "term": "Input",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification: Expense Tracker",
+            "project_definition": "The raw user description providing the initial functional goals for the application."
+        },
+        {
+            "term": "LocalStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CON-01",
+            "project_definition": "The browser-based synchronous key-value storage mechanism used for data persistence."
+        },
+        {
+            "term": "NOT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Functional Requirements",
+            "project_definition": "The logical negation operator used to explicitly define out-of-scope capabilities, such as editing."
+        },
+        {
+            "term": "SC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "The unique alphanumeric identifiers for quantifiable performance and quality targets."
+        },
+        {
+            "term": "Story",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "User Story 1 - Add an Expense (Priority: P1)",
+            "project_definition": "A high-level description of a feature from the perspective of the end-user."
+        },
+        {
+            "term": "USD",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AS-01",
+            "project_definition": "The fixed currency unit utilized for all monetary calculations and displays."
+        },
+        {
+            "term": "WCAG",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Measurable Outcomes",
+            "project_definition": "The global accessibility guidelines used to evaluate the dashboard's inclusivity."
+        }
+    ]
+}
