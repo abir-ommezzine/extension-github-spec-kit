@@ -6,6 +6,7 @@ export const mockDataDocuments = [
     name: "constitution(1)",
     projectName: "Learning Platform API",
     version: "v1.0",
+    status: "Finished",
     kpi: 85.6,
     viewer: "view",
     agentEvaluations: {
@@ -118,6 +119,7 @@ export const mockDataDocuments = [
     name: "api_guidelines(1)",
     projectName: "E-Commerce Backend",
     version: "v1.2",
+    status: "Finished",
     kpi: 92.3,
     viewer: "view",
     agentEvaluations: {
@@ -230,6 +232,7 @@ export const mockDataDocuments = [
     name: "security_policy(1)",
     projectName: "Healthcare Portal",
     version: "v2.0",
+    status: "parsing",
     kpi: 78.9,
     viewer: "view",
     agentEvaluations: {
@@ -342,6 +345,7 @@ export const mockDataDocuments = [
     name: "architecture_decision_records(1)",
     projectName: "IoT Platform",
     version: "v1.5",
+    status: "parallel_enrichment",
     kpi: 88.2,
     viewer: "view",
     agentEvaluations: {
@@ -454,6 +458,7 @@ export const mockDataDocuments = [
     name: "deployment_guide(1)",
     projectName: "Mobile Banking App",
     version: "v1.0",
+    status: "writing",
     kpi: 81.5,
     viewer: "view",
     agentEvaluations: {
@@ -566,6 +571,7 @@ export const mockDataDocuments = [
     name: "api_reference(1)",
     projectName: "Learning Platform API",
     version: "v2.1",
+    status: "Finished",
     kpi: 94.7,
     viewer: "view",
     agentEvaluations: {
@@ -678,6 +684,7 @@ export const mockDataDocuments = [
     name: "test_strategy(1)",
     projectName: "E-Commerce Backend",
     version: "v1.3",
+    status: "layout",
     kpi: 76.4,
     viewer: "view",
     agentEvaluations: {
@@ -790,6 +797,7 @@ export const mockDataDocuments = [
     name: "user_manual(1)",
     projectName: "Healthcare Portal",
     version: "v1.8",
+    status: "Finished",
     kpi: 90.1,
     viewer: "view",
     agentEvaluations: {
@@ -902,6 +910,7 @@ export const mockDataDocuments = [
     name: "changelog_release_notes(1)",
     projectName: "IoT Platform",
     version: "v1.0",
+    status: "parallel_enrichment",
     kpi: 83.7,
     viewer: "view",
     agentEvaluations: {

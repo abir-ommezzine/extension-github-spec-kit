@@ -314,6 +314,48 @@ const Documents = () => {
       flex: 1,
     },
     {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
+      renderCell: ({ row: { status } }) => {
+        let bgColor;
+        switch (status) {
+          case "Finished":
+            bgColor = colors.greenAccent[600];
+            break;
+          case "parsing":
+            bgColor = colors.blueAccent[700];
+            break;
+          case "parallel_enrichment":
+            bgColor = "#ff9800";
+            break;
+          case "writing":
+            bgColor = "#9c27b0";
+            break;
+          case "layout":
+            bgColor = "#00bcd4";
+            break;
+          default:
+            bgColor = colors.grey[600];
+        }
+        return (
+          <Box
+            width="80%"
+            m="0 auto"
+            p="5px"
+            display="flex"
+            justifyContent="center"
+            backgroundColor={bgColor}
+            borderRadius="4px"
+          >
+            <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
+              {status}
+            </Typography>
+          </Box>
+        );
+      },
+    },
+    {
       field: "kpi",
       headerName: "KPI",
       flex: 1,
