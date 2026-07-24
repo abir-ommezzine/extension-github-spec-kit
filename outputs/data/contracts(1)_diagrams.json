@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "CourseHub Data Model",
+            "type": "erDiagram",
+            "description": "Entity Relationship Diagram representing the core data structures for Users, Courses, Modules, and Enrollments.",
+            "mermaid_code": "erDiagram\n    ENT-USER ||--o{ ENT-COURSE : \"instructs\"\n    ENT-USER ||--o{ ENT-ENROLLMENT : \"enrolls\"\n    ENT-COURSE ||--o{ ENT-MODULE : \"contains\"\n    ENT-COURSE ||--o{ ENT-ENROLLMENT : \"has\"\n\n    ENT-USER {\n        uuid id PK\n        string email\n        string display_name\n        string role\n        timestamp created_at\n    }\n    ENT-COURSE {\n        uuid id PK\n        uuid instructor_id FK\n        string title\n        string description\n        integer price_cents\n        boolean published\n        timestamp created_at\n        timestamp updated_at\n    }\n    ENT-MODULE {\n        uuid id PK\n        uuid course_id FK\n        string title\n        integer order\n        timestamp created_at\n    }\n    ENT-ENROLLMENT {\n        uuid id PK\n        uuid student_id FK\n        uuid course_id FK\n        integer progress\n        timestamp completed_at\n        timestamp created_at\n        timestamp updated_at\n    }"
+        },
+        {
+            "title": "Course Deletion Workflow",
+            "type": "flowchart",
+            "description": "Logic flow for deleting a course, incorporating the ActiveEnrollmentConstraint business rule.",
+            "mermaid_code": "flowchart TD\n    START[Start Delete Request] --> AUTH_CHECK{\"Is User Instructor & Owner?\"}\n    AUTH_CHECK -- \"No\" --> ERR_403[\"Return 403 Forbidden\"]\n    AUTH_CHECK -- \"Yes\" --> EXIST_CHECK{\"Course Exists?\"}\n    \n    EXIST_CHECK -- \"No\" --> ERR_404[\"Return 404 Not Found\"]\n    EXIST_CHECK -- \"Yes\" --> ENROLL_CHECK{\"Active Enrollments Exist?\"}\n    \n    ENROLL_CHECK -- \"Yes\" --> CONSTR_FAIL[\"Trigger CONSTR-ACTIVE-ENROLL: Return 409 Conflict\"]\n    ENROLL_CHECK -- \"No\" --> DELETE_EXEC[Delete Course and associated Modules]\n    \n    ERR_403 --> END[End]\n    ERR_404 --> END\n    CONSTR_FAIL --> END\n    DELETE_EXEC --> SUCCESS[\"Return 204 No Content\"]\n    SUCCESS --> END"
+        },
+        {
+            "title": "Enrollment Progress & Auto-completion",
+            "type": "flowchart",
+            "description": "Workflow for updating enrollment progress and the automatic trigger for completion timestamps.",
+            "mermaid_code": "flowchart TD\n    START[Start Update Progress] --> VAL_CHECK{\"Progress 0-100?\"}\n    \n    VAL_CHECK -- \"No\" --> ERR_400[\"Return 400 Bad Request\"]\n    VAL_CHECK -- \"Yes\" --> UPDATE_DB[Update progress in ENT-ENROLLMENT]\n    \n    UPDATE_DB --> AUTO_COMP{\"Progress == 100 AND completed_at == null?\"}\n    \n    AUTO_COMP -- \"Yes\" --> SET_TIME[Set completed_at to current timestamp]\n    AUTO_COMP -- \"No\" --> RESP_OK[Return 200 OK]\n    \n    SET_TIME --> RESP_OK\n    ERR_400 --> END[End]\n    RESP_OK --> END"
+        },
+        {
+            "title": "Requirements Traceability Map",
+            "type": "flowchart",
+            "description": "Mapping of functional requirements to the entities they implement or depend upon.",
+            "mermaid_code": "flowchart LR\n    subgraph Auth_Module [Authentication]\n        REQ-AUTH-REG[\"REQ-AUTH-REG: Registration\"]\n        REQ-AUTH-LOG[\"REQ-AUTH-LOG: Login\"]\n        REQ-AUTH-REF[\"REQ-AUTH-REF: Refresh\"]\n    end\n\n    subgraph Course_Module [Course Management]\n        REQ-COURSE-CREATE[\"REQ-COURSE-CREATE: Create Course\"]\n        REQ-COURSE-DELETE[\"REQ-COURSE-DELETE: Delete Course\"]\n    end\n\n    subgraph Enrollment_Module [Enrollment Management]\n        REQ-ENROLL-CREATE[\"REQ-ENROLL-CREATE: Enroll Student\"]\n        REQ-ENROLL-UPDATE[\"REQ-ENROLL-UPDATE: Update Progress\"]\n        REQ-ENROLL-AUTOCOMP[\"REQ-ENROLL-AUTOCOMP: Auto-complete\"]\n    end\n\n    subgraph Data_Layer [Entities]\n        ENT-USER[\"ENT-USER\"]\n        ENT-COURSE[\"ENT-COURSE\"]\n        ENT-MODULE[\"ENT-MODULE\"]\n        ENT-ENROLLMENT[\"ENT-ENROLLMENT\"]\n    end\n\n    REQ-AUTH-REG -->|implements| ENT-USER\n    REQ-COURSE-CREATE -->|implements| ENT-COURSE\n    REQ-COURSE-CREATE -->|contains| ENT-MODULE\n    REQ-ENROLL-CREATE -->|implements| ENT-ENROLLMENT\n    REQ-ENROLL-CREATE -->|depends_on| ENT-COURSE\n    REQ-ENROLL-UPDATE -->|implements| ENT-ENROLLMENT\n    REQ-ENROLL-AUTOCOMP -->|implements| REQ-ENROLL-UPDATE\n    REQ-COURSE-DELETE -->|relates_to| ENT-ENROLLMENT"
+        }
+    ]
+}

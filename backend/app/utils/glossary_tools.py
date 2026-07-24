@@ -2,7 +2,13 @@
 import os
 import re
 import json
+from pathlib import Path
 from typing import Dict, Any, List, Set
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
+PROJECT_ROOT = BASE_DIR.parent                             # StageTalan/
+DATA_DIR = PROJECT_ROOT / "outputs" / "data"
+
 
 class GlossaryHarvesterService:
     ARCHITECTURAL_SIGNALS = {
@@ -23,7 +29,7 @@ class GlossaryHarvesterService:
     def generate_and_cache_anchors(cls, parsed_data: Dict[str, Any]) -> List[str]:
         """
         Extrait les identifiants physiques du graphe et génère un fichier de cache 
-        sous backend/ressources/ pour guider géométriquement l'agent LLM.
+        sous outputs/data/ pour guider l'agent LLM.
         """
         elements = parsed_data.get("elements", [])
         sections = parsed_data.get("sections", [])
@@ -39,7 +45,6 @@ class GlossaryHarvesterService:
             if title:
                 valid_anchors.add(title)
 
-        # Règle d'exclusion des ancres invalides ou trop génériques
         filtered_anchors = [
             a for a in valid_anchors 
             if (a.startswith("T") and a[1:].isdigit()) 
@@ -48,12 +53,9 @@ class GlossaryHarvesterService:
             or len(a.split()) > 1
         ]
 
-        # Détermination du chemin du dossier ressources
-        base_dir = "backend" if os.path.exists("backend") else "."
-        cache_dir = os.path.join(base_dir, "ressources")
-        os.makedirs(cache_dir, exist_ok=True)
-        
-        cache_path = os.path.join(cache_dir, "topological_anchors_cache.json")
+        # Sauvegarde centralisée dans outputs/data/
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        cache_path = DATA_DIR / "topological_anchors_cache.json"
         
         with open(cache_path, "w", encoding="utf-8") as f:
             json.dump(sorted(filtered_anchors), f, indent=2, ensure_ascii=False)
@@ -62,17 +64,12 @@ class GlossaryHarvesterService:
 
     @classmethod
     def harvest_candidates(cls, parsed_data: Dict[str, Any]) -> List[str]:
-        """
-        Moissonneur universel déterministe invariant. Élimine le bruit logique, 
-        termes Agile/process, fuites de nom de projet et fragments de standards.
-        """
         candidates: Set[str] = set()
         sections = parsed_data.get("sections", [])
         elements = parsed_data.get("elements", [])
 
         project_name = parsed_data.get("project_info", {}).get("project_name", "").strip()
         
-        # Collecte des identifiants explicites déclarés dans les nœuds
         explicit_identifiers = set()
         for el in elements:
             identifier = el.get("identifier", "")
@@ -90,7 +87,6 @@ class GlossaryHarvesterService:
             cls._extract_from_text(section.get("raw_content", ""), candidates)
             cls._deduce_implicit_standards(section.get("raw_content", ""), candidates)
 
-        # Normalisation initiale des espaces
         pre_clean = set()
         for term in candidates:
             clean_term = term.replace("\n", " ").strip()
@@ -98,27 +94,17 @@ class GlossaryHarvesterService:
             if len(clean_term) >= 2 and not clean_term.isdigit():
                 pre_clean.add(clean_term)
 
-        # 1. MATRICE ENRICHIE D'EXCLUSION : Verbes HTTP, Bruit Agile, Mots génériques
         EXCLUSION_MATRIX = {
-            # Network plumbing, Verbes & Headers HTTP
             "get", "post", "put", "delete", "patch", "options", "head", "http", "https", 
             "url", "uri", "base url", "content-type", "authorization header", "response envelope",
             "application/json", "mime", "host", "port", "endpoint", "endpoints", "route", "routes",
-            
-            # Vocabulaire d'anglais générique et conteneurs
             "input", "output", "data", "file", "system", "value", "field", "type", "description",
-            
-            # Processus Agile, Git & Méthodologie de Build (Nouveaux filtres)
             "acceptance scenarios", "independent test", "feature branch", "user story", "story",
             "given", "when", "then", "and", "but", "between", "reaches", "at least", 
             "greater", "less", "equals", "must", "should", "contains",
-            
-            # Métadonnées documentaires & Gouvernance
             "purpose", "needs", "status", "created", "ratified", "amended", "governance", "iso",
             "last amended", "stack", "core", "auth", "test", "app", "main", "total", "ok", "true", "false", 
             "project", "version", "step", "checklist", "priority",
-            
-            # Types d'exécution locale et variables
             "limit", "skip", "page", "offset", "client", "async_session", "session", "fixture",
             "emailstr", "str", "int", "float", "bool", "dict", "list", "set", "tuple", "jsonresponse"
         }
@@ -131,16 +117,13 @@ class GlossaryHarvesterService:
             term_lower = term.lower()
             words = term.split()
 
-            # 2. FILTRE CONTRE LES CHIFFRES ROMAINS (II, III) ET ABRÉVIATIONS DE SECTIONS
             if ROMAN_NUMERALS_REGEX.match(term) or term_lower in DOCUMENT_ABBREVIATIONS:
                 continue
 
-            # 3. RÈGLE D'INVARIANT SYNTAXIQUE CONTRE LES FUITES GRAMMATICALES
             if len(words) == 1 and term.islower():
                 if term not in explicit_identifiers and term_lower not in cls.ARCHITECTURAL_SIGNALS:
                     continue
 
-            # 4. FILTRE AMÉLIORÉ DU NOM DE PROJET (Exclut "CourseHub" si le projet est "CourseHub API")
             if project_name:
                 p_clean = project_name.lower().replace(" api", "").strip()
                 if term_lower == p_clean or term_lower == project_name.lower() or term_lower == f"{p_clean} api":
@@ -161,7 +144,6 @@ class GlossaryHarvesterService:
             if term_lower in EXCLUSION_MATRIX:
                 continue
 
-            # Élimination des exemples alphanumériques (ex: pass123)
             if any(c.isdigit() for c in term) and not any(tech in term_lower for tech in ["python", "postgresql", "sqlalchemy", "16", "3.12", "2.0", "8601"]):
                 continue
 
@@ -185,7 +167,6 @@ class GlossaryHarvesterService:
         for camel in camel_cases:
             candidate_set.add(camel)
 
-        # 5. REGEX AMÉLIORÉE POUR CAPTURER LES STANDARDS COMPLETS (ex: ISO 8601 sans troncature)
         tech_versions = re.findall(r"\b(?:ISO|RFC|[A-Za-z]{3,})(?:[\s\-]?\d+)+(?:\.\d+)*\+?\b", text, re.IGNORECASE)
         for tech in tech_versions:
             clean_tech = tech.strip()
@@ -220,6 +201,3 @@ class GlossaryHarvesterService:
         for regex, implicit_term in cls.IMPLICIT_MAPPING.items():
             if re.search(regex, text_lower):
                 candidate_set.add(implicit_term)
-
-
-
