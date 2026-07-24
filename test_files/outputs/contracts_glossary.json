@@ -1,0 +1,33 @@
+{
+    "project_name": "CourseHub",
+    "items": [
+        {
+            "term": "ActiveEnrollmentConstraint",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-ACTIVE-ENROLL",
+            "project_definition": "A validation rule preventing the removal of a learning offering if linked student registrations exist, triggering a 409 status code."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "API-AUTH-JWT",
+            "project_definition": "The browser-level security mechanism governing cross-origin resource sharing for the provided API endpoints."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "REQ-AUTH-REG",
+            "project_definition": "The one-way mathematical transformation applied to user passwords during the registration process to ensure secure storage."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-AUTH-JWT",
+            "project_definition": "A compact, URL-safe means of representing claims to be transferred between two parties, passed via the Bearer scheme in the Authorization header."
+        }
+    ]
+}

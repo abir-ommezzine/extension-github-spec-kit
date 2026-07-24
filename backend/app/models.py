@@ -43,10 +43,11 @@ class GeneratedBy(str, enum.Enum):
 
 class PipelineStage(str, enum.Enum):
     parsing = "parsing"
-    parallel_enrichment = "parallel_enrichment"
+    summary = "summary"
+    glossary = "glossary"
+    diagram = "diagram"
     writing = "writing"
     layout = "layout"
-    rendering = "rendering"
     completed = "completed"
     failed = "failed"
 

@@ -1,0 +1,73 @@
+{
+    "document_type": "task",
+    "project_name": "Expense Tracker",
+    "technical_evaluation": {
+        "schema_adherence_rate": 100.0,
+        "structural_integrity_recall": 37.5,
+        "graph_relational_integrity": 100.0,
+        "macro_micro_traceability_index": 0.0,
+        "model_template_conformity": 100.0,
+        "quality_alerts": [
+            "Section requise absente des correspondances : checkboxes checklist",
+            "Section requise absente des correspondances : open questions & uncertainties",
+            "Section requise absente des correspondances : acceptance criteria",
+            "Section requise absente des correspondances : testing & validation",
+            "Section requise absente des correspondances : security & performance constraints",
+            "Défaut d'ancrage : L'élément 'PHASE-1' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T001' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T002' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T003' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T004' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T005' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'PHASE-2' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T006' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T007' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T008' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T009' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'PHASE-3' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'TC-US1' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T010' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T011' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T012' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T013' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'PHASE-4' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'TC-US2' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T014' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T015' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T016' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T017' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'PHASE-5' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'TC-US3' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T018' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T019' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T020' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'PHASE-6' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'TC-US4' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T021' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T022' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T023' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'PHASE-7' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T024' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T025' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T026' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'T027' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'DEP-1' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'DEP-2' pointe vers une section introuvable"
+        ]
+    },
+    "project_management_kpis": {
+        "health_index": 90.0,
+        "completeness_score": 37.5,
+        "readiness_status": "READY_FOR_EXECUTION",
+        "extracted_metrics_summary": {
+            "total_nodes_extracted": 40,
+            "total_edges_extracted": 36
+        },
+        "gaps_summary": {
+            "high_severity": 0,
+            "medium_severity": 2,
+            "low_severity": 2,
+            "unresolved_uncertainties": 0
+        }
+    }
+}

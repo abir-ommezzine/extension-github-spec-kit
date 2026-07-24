@@ -3,25 +3,26 @@
     "project_name": "Expense Tracker",
     "technical_evaluation": {
         "schema_adherence_rate": 100.0,
-        "structural_integrity_recall": 50.0,
+        "structural_integrity_recall": 33.3,
         "graph_relational_integrity": 100.0,
         "macro_micro_traceability_index": 0.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
+            "Section requise absente des correspondances : security & identity",
             "Section requise absente des correspondances : data models & schemas",
             "Section requise absente des correspondances : api contracts & flow",
-            "Section requise absente des correspondances : security & identity",
-            "Défaut d'ancrage : L'élément 'ARCH-NEXTJS' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'STORE-LOCAL' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'STRUCT-SERVER' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'TEST-UNIT' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'DEC-NO-AUTH' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'PHASE-0' pointe vers une section introuvable"
+            "Section requise absente des correspondances : open questions & uncertainties",
+            "Défaut d'ancrage : L'élément 'STACK-NEXTJS' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'STORAGE-LOCAL' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'TEST-STRAT' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'STRUC-SERVER-FOLDER' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'PHASE-0-RESEARCH' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'PHASE-2-TESTING' pointe vers une section introuvable"
         ]
     },
     "project_management_kpis": {
-        "health_index": 80.0,
-        "completeness_score": 50.0,
+        "health_index": 75.0,
+        "completeness_score": 33.3,
         "readiness_status": "NEEDS_REFINEMENT",
         "extracted_metrics_summary": {
             "total_nodes_extracted": 6,
@@ -29,7 +30,7 @@
         },
         "gaps_summary": {
             "high_severity": 1,
-            "medium_severity": 1,
+            "medium_severity": 2,
             "low_severity": 1,
             "unresolved_uncertainties": 0
         }

@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "The document is a technical implementation plan for an Expense Tracker. I have mapped the sections to the technical template, extracted architectural choices (client-side persistence, project structure), and identified the core tech stack. Since the document focuses on the 'how' of the structure and stack but lacks detailed API contracts and security (as it's explicitly stated as 'no authentication'), those are marked as gaps or low priority.",
+    "parsing_rationale": "The document is a technical implementation plan for an Expense Tracker. I have mapped the 'Technical Context' to 'Tech Stack & Tooling' and 'Project Structure' to 'System Architecture & Topology'. The elements were extracted as architecture choices and tasks based on the provided structure and constraints. Since data models, API contracts, security, and open questions are not detailed in this specific file, they are marked as structural gaps.",
     "project_info": {
         "project_name": "Expense Tracker",
         "source_type": "scratch",
-        "brief_explanation": "Small single-user Expense Tracker utilizing Next.js App Router with browser-based persistence via localStorage.",
-        "source_context": "Implementation plan mapping the transition from spec to technical execution."
+        "brief_explanation": "A single-user Expense Tracker using Next.js App Router with client-side persistence via localStorage.",
+        "source_context": "Implementation plan based on spec 001-expense-tracker."
     },
     "doc_type": "plan",
     "sections": [
@@ -47,33 +47,43 @@
             "title": "",
             "level": 1,
             "raw_content": "",
-            "mapped_to_template_field": "Open Questions & Uncertainties",
+            "mapped_to_template_field": null,
             "section_index": 5
         }
     ],
     "elements": [
         {
             "type": "architecture_choice",
-            "identifier": "ARCH-NEXTJS",
-            "content": "Use Next.js App Router with Server Components where possible",
+            "identifier": "STACK-NEXTJS",
+            "content": "Next.js App Router with TypeScript and Tailwind CSS",
             "source_section": "Technical Context",
             "attributes": {
+                "version": "Node 18+",
                 "framework": "Next.js"
             }
         },
         {
             "type": "architecture_choice",
-            "identifier": "STORE-LOCAL",
-            "content": "Persistence handled entirely in the browser using localStorage",
-            "source_section": "Summary",
+            "identifier": "STORAGE-LOCAL",
+            "content": "Client-side persistence using localStorage",
+            "source_section": "Technical Context",
             "attributes": {
-                "storage_type": "client-side"
+                "scope": "browser"
             }
         },
         {
             "type": "architecture_choice",
-            "identifier": "STRUCT-SERVER",
-            "content": "Use `src/server` folder for shared types and validation utilities",
+            "identifier": "TEST-STRAT",
+            "content": "Unit tests using Jest and React Testing Library for validators and components",
+            "source_section": "Technical Context",
+            "attributes": {
+                "tooling": "Jest, RTL"
+            }
+        },
+        {
+            "type": "architecture_choice",
+            "identifier": "STRUC-SERVER-FOLDER",
+            "content": "Use src/server for shared types and validation utilities to ensure future-readiness",
             "source_section": "Project Structure",
             "attributes": {
                 "path": "src/server"
@@ -81,60 +91,60 @@
         },
         {
             "type": "task",
-            "identifier": "TEST-UNIT",
-            "content": "Implement unit tests for validators and component behaviour using Jest and React Testing Library",
-            "source_section": "Technical Context",
+            "identifier": "PHASE-0-RESEARCH",
+            "content": "Conduct research to resolve technical unknowns and record decisions in research.md",
+            "source_section": "Complexity Tracking",
             "attributes": {
-                "tooling": "Jest, RTL"
+                "phase": 0
             }
         },
         {
-            "type": "decision",
-            "identifier": "DEC-NO-AUTH",
-            "content": "No authentication required for this version",
-            "source_section": "Technical Context",
-            "attributes": {}
-        },
-        {
-            "type": "phase",
-            "identifier": "PHASE-0",
-            "content": "Research phase to resolve technical unknowns and record decisions via research.md",
-            "source_section": "Complexity Tracking",
-            "attributes": {}
+            "type": "task",
+            "identifier": "PHASE-2-TESTING",
+            "content": "Implement unit tests before merge as per repository guidelines",
+            "source_section": "Constitution Check",
+            "attributes": {
+                "phase": 2
+            }
         }
     ],
     "relationships": [
         {
-            "source": "TEST-UNIT",
-            "to": "STRUCT-SERVER",
+            "source": "STRUC-SERVER-FOLDER",
+            "to": "STACK-NEXTJS",
+            "relation_type": "implements"
+        },
+        {
+            "source": "PHASE-2-TESTING",
+            "to": "TEST-STRAT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "PHASE-0-RESEARCH",
+            "to": "STRUC-SERVER-FOLDER",
             "relation_type": "relates_to"
-        },
-        {
-            "source": "ARCH-NEXTJS",
-            "to": "STRUCT-SERVER",
-            "relation_type": "contains"
-        },
-        {
-            "source": "PHASE-0",
-            "to": "ARCH-NEXTJS",
-            "relation_type": "depends_on"
         }
     ],
     "structural_gaps": [
         {
             "missing_section": "Data Models & Schemas",
             "priority": "HIGH",
-            "remediation_advice": "The plan mentions 'data-model.md' as a Phase 1 output; these schemas must be integrated into the graph once defined."
+            "remediation_advice": "Define the Expense entity and its properties in a dedicated data-model.md file."
         },
         {
             "missing_section": "API Contracts & Flow",
             "priority": "MEDIUM",
-            "remediation_advice": "While persistence is client-side, route handlers are mentioned as 'future-ready'. Define the contracts in expenses-api.md."
+            "remediation_advice": "Define the contracts for the future-ready route handlers in expenses-api.md."
         },
         {
             "missing_section": "Security & Identity",
             "priority": "LOW",
-            "remediation_advice": "Document explicitly states 'No authentication', but basic data validation rules in src/server/validators.ts should be documented here."
+            "remediation_advice": "Document the explicit decision to omit authentication for this single-user local app."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "MEDIUM",
+            "remediation_advice": "List specific unknowns to be resolved during Phase 0 research."
         }
     ],
     "open_questions": []

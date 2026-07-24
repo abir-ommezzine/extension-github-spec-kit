@@ -32,6 +32,7 @@ from app.graph.state import GraphState
 # NEW: Database imports
 from app.database import SessionLocal
 from app.models import Artifact, PipelineRun, DocVersion, Project, PipelineStage
+from sqlalchemy.sql import func
 
 # Global paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
@@ -111,11 +112,16 @@ def _compute_global_kpi(kpis: Dict[str, Optional[float]]) -> Optional[float]:
 
 
 def _create_pipeline_run(file_name: str) -> UUID:
-    """Create Artifact + PipelineRun, return run_id."""
+    """Create or reuse Artifact + create PipelineRun, return run_id."""
     db = SessionLocal()
     try:
-        # Find or create artifact
-        artifact = db.query(Artifact).filter(Artifact.source_path == file_name).first()
+        # Try to find existing artifact by various source_path patterns
+        artifact = None
+        for path_variant in [file_name, f"test_files/{file_name}", f"test_files\\{file_name}"]:
+            artifact = db.query(Artifact).filter(Artifact.source_path == path_variant).first()
+            if artifact:
+                break
+
         if not artifact:
             project = db.query(Project).first()
             if not project:
@@ -132,6 +138,18 @@ def _create_pipeline_run(file_name: str) -> UUID:
             db.add(artifact)
             db.commit()
             db.refresh(artifact)
+        
+        # Check if a pipeline run already exists for this artifact (created by upload endpoint)
+        existing_run = (
+            db.query(PipelineRun)
+            .filter(PipelineRun.artifact_id == artifact.id)
+            .order_by(PipelineRun.started_at.desc())
+            .first()
+        )
+        if existing_run:
+            run_id = existing_run.id
+            print(f"[DB] Reusing existing PipelineRun {run_id} for artifact {artifact.id}")
+            return run_id
         
         run = PipelineRun(artifact_id=artifact.id, current_stage=PipelineStage.parsing)
         db.add(run)
@@ -262,7 +280,7 @@ def parsing_node(state: GraphState) -> Dict[str, Any]:
         kpi = _extract_kpi(report)
         
         # Store ONLY KPI, not the parsed output
-        _update_run_kpi(run_id, PipelineStage.parallel_enrichment, "parsing_kpi", kpi)
+        _update_run_kpi(run_id, PipelineStage.parsing, "parsing_kpi", kpi)
         
         # Filesystem keeps the JSON for debugging
         _save_json(OUTPUTS_DIR / f"{base_stem}_parsed.json", parsed_doc)
@@ -308,7 +326,7 @@ def summary_node(state: GraphState) -> Dict[str, Any]:
     
     # Store ONLY KPI
     if run_id:
-        _update_run_kpi(run_id, PipelineStage.parallel_enrichment, "summary_kpi", kpi)
+        _update_run_kpi(run_id, PipelineStage.summary, "summary_kpi", kpi)
     
     _save_json(OUTPUTS_DIR / f"{base_stem}_summary.json", summary_doc)
     _save_json(OUTPUTS_DIR / f"{base_stem}_summary_eval.json", report)
@@ -316,7 +334,6 @@ def summary_node(state: GraphState) -> Dict[str, Any]:
     return {
         "summary_doc": summary_doc,
         "summary_metrics": report,
-        "pipeline_run_id": run_id
     }
 
 
@@ -352,7 +369,7 @@ def glossary_node(state: GraphState) -> Dict[str, Any]:
     
     # Store ONLY KPI
     if run_id:
-        _update_run_kpi(run_id, PipelineStage.parallel_enrichment, "glossary_kpi", kpi)
+        _update_run_kpi(run_id, PipelineStage.glossary, "glossary_kpi", kpi)
     
     _save_json(OUTPUTS_DIR / f"{base_stem}_glossary.json", glossary_doc)
     _save_json(OUTPUTS_DIR / f"{base_stem}_glossary_eval.json", report)
@@ -360,7 +377,6 @@ def glossary_node(state: GraphState) -> Dict[str, Any]:
     return {
         "glossary_doc": glossary_doc,
         "glossary_metrics": report,
-        "pipeline_run_id": run_id
     }
 
 
@@ -392,13 +408,23 @@ def diagram_node(state: GraphState) -> Dict[str, Any]:
     except Exception as exc:
         print(f"[⚠️ WARNING] Diagram Agent failed: {exc}")
         if run_id:
-            _update_run_kpi(run_id, PipelineStage.parallel_enrichment, "diagram_kpi", 0.0)
+            _update_run_kpi(run_id, PipelineStage.diagram, "diagram_kpi", 0.0)
         return {
             "diagram_doc": None,
             "diagram_metrics": {},
             "diagram_pdf_path": None,
-            "pipeline_run_id": run_id
         }
+    
+    # Filter out diagrams with invalid Mermaid syntax
+    if diagram_output and diagram_output.diagrams:
+        valid_diagrams = []
+        for i, diag in enumerate(diagram_output.diagrams, 1):
+            if DiagramExporterTool.validate_mermaid_syntax(diag.mermaid_code):
+                valid_diagrams.append(diag)
+                print(f"[✅] Diagramme #{i} '{diag.title}' — syntaxe valide")
+            else:
+                print(f"[⚠️] Diagramme #{i} '{diag.title}' — syntaxe invalide, ignoré")
+        diagram_output.diagrams = valid_diagrams
     
     pdf_path_str = None
     try:
@@ -420,7 +446,7 @@ def diagram_node(state: GraphState) -> Dict[str, Any]:
     
     # Store ONLY KPI
     if run_id:
-        _update_run_kpi(run_id, PipelineStage.parallel_enrichment, "diagram_kpi", kpi)
+        _update_run_kpi(run_id, PipelineStage.diagram, "diagram_kpi", kpi)
     
     _save_json(OUTPUTS_DIR / f"{base_stem}_diagrams.json", diagram_output)
     _save_json(OUTPUTS_DIR / f"{base_stem}_diagram_eval.json", report)
@@ -429,7 +455,6 @@ def diagram_node(state: GraphState) -> Dict[str, Any]:
         "diagram_doc": diagram_output,
         "diagram_metrics": report,
         "diagram_pdf_path": pdf_path_str,
-        "pipeline_run_id": run_id
     }
 
 
@@ -504,7 +529,7 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
         # Extract and store ONLY KPI
         kpi = _extract_kpi(eval_report)
         if run_id:
-            _update_run_kpi(run_id, PipelineStage.layout, "doc_writer_kpi", kpi)
+            _update_run_kpi(run_id, PipelineStage.writing, "doc_writer_kpi", kpi)
         
     except Exception as exc:
         print(f"[❌ ERROR] DocWriterAgent: {exc}")

@@ -2,11 +2,25 @@
     "project_name": "Expense Tracker",
     "items": [
         {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-NEXTJS",
+            "project_definition": "The styling layer implemented via a utility-first framework to manage visual presentation."
+        },
+        {
             "term": "LocalStorage",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "STORE-LOCAL",
-            "project_definition": "The primary browser-based mechanism used for client-side data persistence to maintain application state without a backend database."
+            "contextual_anchor": "STORAGE-LOCAL",
+            "project_definition": "The browser-based key-value mechanism used for persistent data retention without a backend."
+        },
+        {
+            "term": "TypeScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-NEXTJS",
+            "project_definition": "The strongly typed superset of JavaScript used to ensure type safety across the application and shared server utilities."
         }
     ]
 }

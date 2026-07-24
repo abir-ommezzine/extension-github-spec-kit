@@ -1,0 +1,41 @@
+{
+    "document_type": "spec",
+    "project_name": "CourseHub",
+    "technical_evaluation": {
+        "schema_adherence_rate": 100.0,
+        "structural_integrity_recall": 40.0,
+        "graph_relational_integrity": 100.0,
+        "macro_micro_traceability_index": 0.0,
+        "model_template_conformity": 100.0,
+        "quality_alerts": [
+            "Section requise absente des correspondances : scope & out-of-scope",
+            "Section requise absente des correspondances : open questions & uncertainties",
+            "Section requise absente des correspondances : goals & objectives",
+            "Défaut d'ancrage : L'élément 'API-AUTH-JWT' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'ENT-USER' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'ENT-COURSE' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'ENT-MODULE' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'ENT-ENROLLMENT' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'REQ-AUTH-REG' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'REQ-COURSE-CREATE' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'RULE-ACTIVE-ENROLL' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'REQ-ENROLL-STUDENT' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'REQ-ENROLL-AUTOCOMPLETE' pointe vers une section introuvable"
+        ]
+    },
+    "project_management_kpis": {
+        "health_index": 80.0,
+        "completeness_score": 40.0,
+        "readiness_status": "NEEDS_REFINEMENT",
+        "extracted_metrics_summary": {
+            "total_nodes_extracted": 10,
+            "total_edges_extracted": 7
+        },
+        "gaps_summary": {
+            "high_severity": 1,
+            "medium_severity": 1,
+            "low_severity": 1,
+            "unresolved_uncertainties": 0
+        }
+    }
+}

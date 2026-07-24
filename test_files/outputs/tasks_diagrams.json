@@ -1,0 +1,22 @@
+{
+    "diagrams": [
+        {
+            "title": "Expense Tracker Implementation Roadmap",
+            "type": "flowchart",
+            "description": "A high-level traceability and execution flow showing the dependencies between project phases and key tasks.",
+            "mermaid_code": "flowchart TD\n    START[Start]\n    \n    subgraph SETUP [Phase 1: Setup]\n        PHASE-1[\"PHASE-1: Setup (Shared Infrastructure)\"]\n        T001[\"T001: Create types.ts\"]\n        T002[\"T002: Create validators.ts\"]\n        T004[\"T004: Create storage.ts adapter\"]\n    end\n\n    subgraph FOUNDATION [Phase 2: Foundational]\n        PHASE-2[\"PHASE-2: Foundational (Blocking Prerequisites)\"]\n        T006[\"T006: Implement persistence functions\"]\n        T007[\"T007: Add categories.ts\"]\n    end\n\n    subgraph US_IMPLEMENTATION [User Story Implementation]\n        PHASE-3[\"PHASE-3: User Story 1 - Add Expense\"]\n        PHASE-4[\"PHASE-4: User Story 2 - View Expenses\"]\n        PHASE-5[\"PHASE-5: User Story 3 - Delete Expense\"]\n        PHASE-6[\"PHASE-6: User Story 4 - Dashboard Totals\"]\n    end\n\n    subgraph POLISH [Phase 7: Polish]\n        PHASE-7[\"PHASE-7: Polish & Cross-Cutting Concerns\"]\n    end\n\n    START --> PHASE-1\n    PHASE-1 --> T001\n    PHASE-1 --> T002\n    PHASE-1 --> T004\n    \n    T001 & T002 & T004 --> PHASE-2\n    PHASE-2 --> T006\n    PHASE-2 --> T007\n\n    T006 & T007 --> DEC1{\"Are Prerequisites Met?\"}\n    DEC1 -- \"Yes\" --> PHASE-3\n    DEC1 -- \"No\" --> PHASE-2\n\n    PHASE-3 --> PHASE-4\n    PHASE-4 --> PHASE-5\n    PHASE-5 --> PHASE-6\n    PHASE-6 --> PHASE-7\n    PHASE-7 --> END[End]"
+        },
+        {
+            "title": "Expense Addition Sequence",
+            "type": "sequenceDiagram",
+            "description": "Interaction flow for adding a new expense involving the UI, validator, and storage adapter.",
+            "mermaid_code": "sequenceDiagram\n    actor User\n    participant UI as \"ExpenseForm (T010)\"\n    participant VAL as \"validators.ts (T002/T011)\"\n    participant STORE as \"storage.ts (T004/T012)\"\n    participant LS as \"LocalStorage\"\n\n    User ->> UI: Enter expense details\n    UI ->> VAL: validateExpense(data)\n    VAL -->> UI: Validation Result (Success/Fail)\n    \n    alt is valid\n        UI ->> STORE: addExpense(expense)\n        STORE ->> LS: Save to LocalStorage\n        LS -->> STORE: Confirm Save\n        STORE -->> UI: Success Response\n        UI ->> User: Show success & update list\n    else is invalid\n        UI ->> User: Display validation errors"
+        },
+        {
+            "title": "Expense Tracker Data Model",
+            "type": "erDiagram",
+            "description": "Conceptual data model for the expense tracking system based on the identified types and storage requirements.",
+            "mermaid_code": "erDiagram\n    EXPENSE ||--o| CATEGORY : \"belongs to\"\n    \n    EXPENSE {\n        string id PK\n        float amount\n        string description\n        string category_id FK\n        datetime date\n    }\n    \n    CATEGORY {\n        string id PK\n        string name\n    }"
+        }
+    ]
+}

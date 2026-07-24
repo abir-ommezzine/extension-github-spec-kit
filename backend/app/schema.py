@@ -116,3 +116,25 @@ class DashboardSummary(BaseModel):
     failed_runs: int
     avg_kpi_score: Optional[float] = None
     model_config = ConfigDict(from_attributes=True)
+
+
+# ============================================
+# UPLOAD & DOCUMENTS LIST SCHEMAS
+# ============================================
+
+class UploadResponse(BaseModel):
+    artifact_id: UUID
+    pipeline_run_id: UUID
+    status: str
+    message: str
+
+
+class DocumentRow(BaseModel):
+    id: UUID
+    name: str
+    projectName: str
+    version: str
+    status: str
+    kpi: Optional[float] = None
+    doc_version_id: Optional[UUID] = None
+    pipeline_run_id: Optional[UUID] = None

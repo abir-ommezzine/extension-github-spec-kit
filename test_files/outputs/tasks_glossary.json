@@ -1,0 +1,47 @@
+{
+    "project_name": "Expense Tracker",
+    "items": [
+        {
+            "term": "ARIA",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T024",
+            "project_definition": "Attributes used to enhance accessibility for assistive technologies within the interface components."
+        },
+        {
+            "term": "EmptyState",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T015",
+            "project_definition": "A specific visual component rendered when no data records are available to display in the main list."
+        },
+        {
+            "term": "ExpenseForm",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T010",
+            "project_definition": "A client-side input interface used to capture and validate new financial transaction data."
+        },
+        {
+            "term": "ExpenseList",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T014",
+            "project_definition": "A display component that renders financial records sorted by most recent first with a maximum initial threshold of 50 entries."
+        },
+        {
+            "term": "LocalStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "T004",
+            "project_definition": "The browser-based key-value storage mechanism used as the persistence layer for the application data."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T003",
+            "project_definition": "The set of frontend components and styles that constitute the visual and interactive layer of the application."
+        }
+    ]
+}

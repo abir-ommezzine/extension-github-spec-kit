@@ -1,0 +1,651 @@
+{
+    "parsing_rationale": "The document is a detailed task list for an Expense Tracker project. I have mapped the phases to the 'Task Description & Objective' field since they contain the primary goal and task breakdowns. Elements were extracted as 'phase', 'task', 'sub_task', 'test_case', and 'dependency' based on the list markers and goal descriptions. Relationships were established based on the explicit 'Dependencies & Execution Order' section and the sequential nature of the phases.",
+    "project_info": {
+        "project_name": "Expense Tracker",
+        "source_type": "refining",
+        "brief_explanation": "Implementation of an expense tracking application with CRUD operations, a summary dashboard, and local storage persistence.",
+        "source_context": "Technical execution roadmap derived from design documents in specs/001-expense-tracker/"
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null,
+            "section_index": 0
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective",
+            "section_index": 1
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective",
+            "section_index": 2
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective",
+            "section_index": 3
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective",
+            "section_index": 4
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective",
+            "section_index": 5
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective",
+            "section_index": 6
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective",
+            "section_index": 7
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Dependencies & Integration Points",
+            "section_index": 8
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Implementation Notes & References",
+            "section_index": 9
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Implementation Notes & References",
+            "section_index": 10
+        }
+    ],
+    "elements": [
+        {
+            "type": "phase",
+            "identifier": "PHASE-1",
+            "content": "Setup (Shared Infrastructure)",
+            "source_section": "Phase 1: Setup (Shared Infrastructure)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T001",
+            "content": "Create src/server/types.ts with Expense type",
+            "source_section": "Phase 1: Setup (Shared Infrastructure)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T002",
+            "content": "Create src/server/validators.ts with validateExpense helper",
+            "source_section": "Phase 1: Setup (Shared Infrastructure)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T003",
+            "content": "Create UI components folder and stubs: ExpenseForm, ExpenseList, Summary",
+            "source_section": "Phase 1: Setup (Shared Infrastructure)",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T004",
+            "content": "Create src/server/storage.ts — localStorage adapter",
+            "source_section": "Phase 1: Setup (Shared Infrastructure)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T005",
+            "content": "Update app/page.tsx to import and render new components",
+            "source_section": "Phase 1: Setup (Shared Infrastructure)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-2",
+            "content": "Foundational (Blocking Prerequisites)",
+            "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T006",
+            "content": "Implement persistence functions in src/server/storage.ts",
+            "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T007",
+            "content": "Add src/server/categories.ts with predefined categories",
+            "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "T008",
+            "content": "Add basic tests scaffold and validator unit test",
+            "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "T009",
+            "content": "Ensure Tailwind/global styles are present and accessible",
+            "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-3",
+            "content": "User Story 1 - Add an Expense",
+            "source_section": "Phase 3: User Story 1 - Add an Expense (Priority: P1) 🎯 MVP",
+            "attributes": {
+                "priority": "P1",
+                "goal": "Allow users to add a new expense"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-US1",
+            "content": "Fill the form and verify the new expense appears in ExpenseList and persists after reload",
+            "source_section": "Phase 3: User Story 1 - Add an Expense (Priority: P1) 🎯 MVP",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T010",
+            "content": "Implement app/components/ExpenseForm.tsx (client component)",
+            "source_section": "Phase 3: User Story 1 - Add an Expense (Priority: P1) 🎯 MVP",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T011",
+            "content": "Use src/server/validators.ts in the form to validate input",
+            "source_section": "Phase 3: User Story 1 - Add an Expense (Priority: P1) 🎯 MVP",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T012",
+            "content": "Implement add logic calling src/server/storage.ts (addExpense)",
+            "source_section": "Phase 3: User Story 1 - Add an Expense (Priority: P1) 🎯 MVP",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "T013",
+            "content": "Add unit tests for form validation in src/server/__tests__/validators.test.ts",
+            "source_section": "Phase 3: User Story 1 - Add an Expense (Priority: P1) 🎯 MVP",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-4",
+            "content": "User Story 2 - View Expenses",
+            "source_section": "Phase 4: User Story 2 - View Expenses (Priority: P1)",
+            "attributes": {
+                "priority": "P1",
+                "goal": "Display recent expenses sorted newest-first"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-US2",
+            "content": "Add multiple expenses and verify ExpenseList shows newest first, empty state, and load more",
+            "source_section": "Phase 4: User Story 2 - View Expenses (Priority: P1)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T014",
+            "content": "Implement app/components/ExpenseList.tsx (newest-first, limit 50)",
+            "source_section": "Phase 4: User Story 2 - View Expenses (Priority: P1)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T015",
+            "content": "Implement app/components/EmptyState.tsx",
+            "source_section": "Phase 4: User Story 2 - View Expenses (Priority: P1)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T016",
+            "content": "Implement 'Load more' button behavior in ExpenseList.tsx",
+            "source_section": "Phase 4: User Story 2 - View Expenses (Priority: P1)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T017",
+            "content": "Implement client-side hydration from storage.ts on app start",
+            "source_section": "Phase 4: User Story 2 - View Expenses (Priority: P1)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-5",
+            "content": "User Story 3 - Delete an Expense",
+            "source_section": "Phase 5: User Story 3 - Delete an Expense (Priority: P1)",
+            "attributes": {
+                "priority": "P1",
+                "goal": "Delete an expense with confirmation"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-US3",
+            "content": "Add an expense, delete it via ExpenseList.tsx, and verify absence after reload",
+            "source_section": "Phase 5: User Story 3 - Delete an Expense (Priority: P1)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T018",
+            "content": "Add delete controls and confirmation UI in ExpenseList.tsx",
+            "source_section": "Phase 5: User Story 3 - Delete an Expense (Priority: P1)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T019",
+            "content": "Implement delete logic in src/server/storage.ts (deleteExpense)",
+            "source_section": "Phase 5: User Story 3 - Delete an Expense (Priority: P1)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "T020",
+            "content": "Add integration test for add/delete cycle in storage.integration.test.ts",
+            "source_section": "Phase 5: User Story 3 - Delete an Expense (Priority: P1)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-6",
+            "content": "User Story 4 - View Dashboard Totals",
+            "source_section": "Phase 6: User Story 4 - View Dashboard Totals (Priority: P2)",
+            "attributes": {
+                "priority": "P2",
+                "goal": "Show total amount spent and count in Summary.tsx"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-US4",
+            "content": "Verify totals in Summary.tsx equal sum and count, and update on add/delete",
+            "source_section": "Phase 6: User Story 4 - View Dashboard Totals (Priority: P2)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T021",
+            "content": "Implement app/components/Summary.tsx to compute and render totals",
+            "source_section": "Phase 6: User Story 4 - View Dashboard Totals (Priority: P2)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T022",
+            "content": "Wire real-time updates between Summary.tsx and the list",
+            "source_section": "Phase 6: User Story 4 - View Dashboard Totals (Priority: P2)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "T023",
+            "content": "Add unit tests validating totals calculation in totals.test.ts",
+            "source_section": "Phase 6: User Story 4 - View Dashboard Totals (Priority: P2)",
+            "attributes": {
+                "status": "completed"
+            }
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-7",
+            "content": "Polish & Cross-Cutting Concerns",
+            "source_section": "Phase 7: Polish & Cross-Cutting Concerns",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T024",
+            "content": "Add ARIA labels and accessibility improvements to components",
+            "source_section": "Phase 7: Polish & Cross-Cutting Concerns",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T025",
+            "content": "Update quickstart.md with run & verification steps",
+            "source_section": "Phase 7: Polish & Cross-Cutting Concerns",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "T026",
+            "content": "Add documentation comments and inline TSDoc for src/server/*",
+            "source_section": "Phase 7: Polish & Cross-Cutting Concerns",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "T027",
+            "content": "Ensure initial render limits to 50 items and lazy-load older items",
+            "source_section": "Phase 7: Polish & Cross-Cutting Concerns",
+            "attributes": {
+                "parallel": true,
+                "status": "completed"
+            }
+        },
+        {
+            "type": "dependency",
+            "identifier": "DEP-1",
+            "content": "Phase 1 must complete before Phase 2",
+            "source_section": "Dependencies & Execution Order",
+            "attributes": {}
+        },
+        {
+            "type": "dependency",
+            "identifier": "DEP-2",
+            "content": "Phase 2 must complete before User Story implementation (Phases 3-6)",
+            "source_section": "Dependencies & Execution Order",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "PHASE-1",
+            "to": "T001",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T002",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T003",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T004",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T005",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-2",
+            "to": "T006",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-2",
+            "to": "T007",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-2",
+            "to": "T008",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-2",
+            "to": "T009",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-2",
+            "to": "PHASE-1",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-3",
+            "to": "PHASE-2",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "PHASE-2",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-5",
+            "to": "PHASE-2",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-6",
+            "to": "PHASE-2",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "T011",
+            "to": "T002",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "T012",
+            "to": "T006",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "T019",
+            "to": "T006",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "T017",
+            "to": "T006",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-3",
+            "to": "T010",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-3",
+            "to": "T011",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-3",
+            "to": "T012",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-3",
+            "to": "T013",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "T014",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "T015",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "T016",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-4",
+            "to": "T017",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-5",
+            "to": "T018",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-5",
+            "to": "T019",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-5",
+            "to": "T020",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-6",
+            "to": "T021",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-6",
+            "to": "T022",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-6",
+            "to": "T023",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-7",
+            "to": "T024",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-7",
+            "to": "T025",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-7",
+            "to": "T026",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-7",
+            "to": "T027",
+            "relation_type": "contains"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Acceptance Criteria",
+            "priority": "MEDIUM",
+            "remediation_advice": "While 'Independent Tests' are provided for each User Story, they are not formatted as explicit acceptance criteria checklists."
+        },
+        {
+            "missing_section": "Checkboxes Checklist",
+            "priority": "LOW",
+            "remediation_advice": "The tasks are already checked, but a final overall project completion checklist is missing."
+        },
+        {
+            "missing_section": "Security & Performance Constraints",
+            "priority": "MEDIUM",
+            "remediation_advice": "T027 mentions performance (lazy loading), but no formal security constraints (e.g., input sanitization) are listed."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "No open questions were identified in the source document."
+        }
+    ],
+    "open_questions": []
+}

@@ -1,6 +1,7 @@
 import os
+import threading
 from pathlib import Path
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List
@@ -15,6 +16,8 @@ from app.schema import (
     PipelineRunResponse,
     DashboardRow,
     DashboardSummary,
+    UploadResponse,
+    DocumentRow,
 )
 from app.utils.diagram_pdf import generate_diagram_pdf
 import logging
@@ -215,5 +218,151 @@ def download_pdf(doc_version_id: UUID, db: Session = Depends(get_db)):
     return FileResponse(
         path=doc_version.pdf_path,
         filename=f"{doc_version.artifact.name if doc_version.artifact else 'doc'}_v{doc_version.version_no}.pdf",
-        media_type="application/pdf"
+        media_type="application/pdf",
+        content_disposition_type="inline",
     )
+
+
+# ============================================
+# FILE UPLOAD + PIPELINE TRIGGER
+# ============================================
+
+def _run_pipeline_in_background(file_path: Path, file_content: str):
+    """Run the LangGraph pipeline in a background thread."""
+    try:
+        from app.graph.workflow import create_pipeline_workflow
+        pipeline = create_pipeline_workflow()
+        initial_state = {
+            "file_name": file_path.name,
+            "file_content": file_content,
+        }
+        pipeline.invoke(initial_state)
+        logger.info(f"Pipeline completed for {file_path.name}")
+    except Exception as exc:
+        logger.error(f"Pipeline failed for {file_path.name}: {exc}")
+        logger.error(traceback.format_exc())
+
+
+@router.post("/upload", response_model=UploadResponse)
+async def upload_document(
+    file: UploadFile = File(...),
+    projectName: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    try:
+        if not file.filename.endswith(".md"):
+            raise HTTPException(status_code=400, detail="Only .md files are allowed")
+
+        backend_dir = Path(__file__).resolve().parent.parent.parent
+        project_root = backend_dir.parent
+        upload_dir = project_root / "test_files"
+        upload_dir.mkdir(parents=True, exist_ok=True)
+
+        file_path = upload_dir / file.filename
+        content = await file.read()
+        file_path.write_bytes(content)
+        file_content = content.decode("utf-8")
+
+        project = db.query(Project).filter(Project.name == projectName).first()
+        if not project:
+            project = Project(name=projectName)
+            db.add(project)
+            db.commit()
+            db.refresh(project)
+
+        source_path = f"test_files/{file.filename}"
+        artifact = db.query(Artifact).filter(Artifact.source_path == source_path).first()
+        if not artifact:
+            artifact = Artifact(
+                project_id=project.id,
+                source_path=source_path,
+                artifact_type=infer_artifact_type(source_path).value,
+            )
+            db.add(artifact)
+            db.commit()
+            db.refresh(artifact)
+
+        pipeline_run = PipelineRun(artifact_id=artifact.id, current_stage=PipelineStage.parsing)
+        db.add(pipeline_run)
+        db.commit()
+        db.refresh(pipeline_run)
+
+        thread = threading.Thread(
+            target=_run_pipeline_in_background,
+            args=(file_path, file_content),
+            daemon=True,
+        )
+        thread.start()
+
+        return UploadResponse(
+            artifact_id=artifact.id,
+            pipeline_run_id=pipeline_run.id,
+            status="parsing",
+            message=f"File '{file.filename}' uploaded. Pipeline started.",
+        )
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        tb = traceback.format_exc()
+        logger.error(f"upload_document CRASHED: {type(exc).__name__}: {exc}")
+        logger.error(tb)
+        raise HTTPException(status_code=500, detail={"error": type(exc).__name__, "message": str(exc)})
+
+
+# ============================================
+# DOCUMENTS LIST (for frontend DataGrid)
+# ============================================
+
+@router.get("/documents", response_model=List[DocumentRow])
+def list_documents(db: Session = Depends(get_db)):
+    artifacts = db.query(Artifact).order_by(Artifact.created_at.desc()).all()
+    result = []
+
+    for artifact in artifacts:
+        latest_run = (
+            db.query(PipelineRun)
+            .filter(PipelineRun.artifact_id == artifact.id)
+            .order_by(PipelineRun.started_at.desc())
+            .first()
+        )
+
+        latest_version = (
+            db.query(DocVersion)
+            .filter(DocVersion.artifact_id == artifact.id)
+            .order_by(DocVersion.version_no.desc())
+            .first()
+        )
+
+        status = "pending"
+        kpi = None
+        pipeline_run_id = None
+        doc_version_id = None
+        version = "v0"
+
+        if latest_run:
+            pipeline_run_id = latest_run.id
+            stage = latest_run.current_stage
+            if hasattr(stage, "value"):
+                stage = stage.value
+            status = stage
+            kpi = latest_run.global_kpi
+
+        if latest_version:
+            doc_version_id = latest_version.id
+            version = f"v{latest_version.version_no}"
+            if latest_version.kpi_global_score:
+                kpi = latest_version.kpi_global_score
+
+        result.append(DocumentRow(
+            id=artifact.id,
+            name=artifact.name,
+            projectName=artifact.project.name if artifact.project else "Unknown",
+            version=version,
+            status=status,
+            kpi=round(kpi, 1) if kpi else None,
+            doc_version_id=doc_version_id,
+            pipeline_run_id=pipeline_run_id,
+        ))
+
+    return result

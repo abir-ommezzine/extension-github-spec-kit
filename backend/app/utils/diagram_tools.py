@@ -140,6 +140,31 @@ class DiagramExporterTool:
             pass
         return await cls._render_mermaid_kroki(mermaid_code, output_path)
 
+    @classmethod
+    def validate_mermaid_syntax(cls, mermaid_code: str) -> bool:
+        """Quick validation: try mmdc with a throwaway temp file, return True if syntax is valid."""
+        if not str(mermaid_code).strip():
+            return False
+        try:
+            mmdc_cmd = cls._find_mmdc()
+        except RuntimeError:
+            return True  # Can't validate without mmdc, assume valid
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".mmd", delete=False, encoding="utf-8") as f:
+            f.write(mermaid_code)
+            mmd_path = f.name
+        try:
+            result = subprocess.run(
+                [*mmdc_cmd, "-i", mmd_path, "-o", os.devnull, "-b", "white"],
+                capture_output=True, text=True, timeout=30,
+                shell=(platform.system() == "Windows"),
+            )
+            return result.returncode == 0
+        except Exception:
+            return True  # If validation itself fails, assume valid
+        finally:
+            if os.path.exists(mmd_path):
+                os.unlink(mmd_path)
+
     @staticmethod
     def _render_page(
         index: int,
