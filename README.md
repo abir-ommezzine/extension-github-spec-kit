@@ -13,7 +13,7 @@ Contains the complete backend implementation of the agentic pipeline. It include
 
 ### 📦 Dependencies
 - **`requirements.txt`**: The primary file containing all Python dependencies required to run the backend.
-- *Note: `req.txt` is a secondary file and should be ignored in favor of `requirements.txt`.*
+
 
 	### 📊 Outputs Organization (`/outputs`)
 	The `outputs/` directory is the centralized hub for all pipeline results, structured to separate final deliverables from intermediate artifacts.

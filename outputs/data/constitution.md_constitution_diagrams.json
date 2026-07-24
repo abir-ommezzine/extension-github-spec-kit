@@ -1,0 +1,16 @@
+{
+    "diagrams": [
+        {
+            "title": "Development Workflow Process",
+            "type": "flowchart",
+            "description": "Detailed operational flow of the development lifecycle based on the 'Development Workflow' section, including validation gates.",
+            "mermaid_code": "flowchart TD\n    START[Start Feature Request] --> SPEC_STEP[\"SPEC-DOC-01: Define requirement in .specify/specs/\"]\n    SPEC_STEP --> TEST_STEP[\"TDD-CRUD-01: Write failing unit test in tests/\"]\n    TEST_STEP --> IMPL_STEP[\"Implement: Write minimum code to pass test\"]\n    IMPL_STEP --> VERIFY_DEC{\"Does full test suite pass?\"}\n    \n    VERIFY_DEC -- \"No\" --> IMPL_STEP\n    VERIFY_DEC -- \"Yes\" --> DOC_STEP[\"Document: Update README and docstrings\"]\n    \n    DOC_STEP --> END[End Feature Implementation]"
+        },
+        {
+            "title": "Technical Governance Traceability",
+            "type": "flowchart",
+            "description": "Mapping of architectural principles and coding standards to their respective technical constraints and tools.",
+            "mermaid_code": "flowchart TD\n    subgraph \"Architectural Principles\"\n        ARCH-SOC-01[\"ARCH-SOC-01: Separation of Concerns\"]\n        YAGNI-01[\"YAGNI-01: Simplicity & YAGNI\"]\n    end\n\n    subgraph \"Data Integrity Rules\"\n        DATA-TRANS-01[\"DATA-TRANS-01: Atomic Transactions\"]\n        DATA-VAL-01[\"DATA-VAL-01: Service Layer Validation\"]\n    end\n\n    subgraph \"Technical Stack\"\n        TOOL-SQLITE[\"TOOL-SQLITE: SQLite Storage\"]\n        TOOL-PYTEST[\"TOOL-PYTEST: pytest Framework\"]\n        TOOL-PY-310[\"TOOL-PY-310: Python 3.10+\"]\n    end\n\n    subgraph \"Workflow Gates\"\n        WF-FLOW-01[\"WF-FLOW-01: Development Sequence\"]\n        SPEC-DOC-01[\"SPEC-DOC-01: Exhaustive Specification\"]\n        TDD-CRUD-01[\"TDD-CRUD-01: TDD for CRUD\"]\n    end\n\n    ARCH-SOC-01 -->|contains| DATA-VAL-01\n    DATA-TRANS-01 -->|relates_to| TOOL-SQLITE\n    TDD-CRUD-01 -->|implements| TOOL-PYTEST\n    WF-FLOW-01 -->|depends_on| SPEC-DOC-01\n    WF-FLOW-01 -->|depends_on| TDD-CRUD-01"
+        }
+    ]
+}

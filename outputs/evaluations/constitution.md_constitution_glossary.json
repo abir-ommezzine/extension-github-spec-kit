@@ -1,0 +1,124 @@
+{
+    "project_name": "Expense Tracker",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-SOC-01",
+            "project_definition": "A presentation layer interface used to expose business logic externally, kept strictly isolated from data access and core services."
+        },
+        {
+            "term": "CRUD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TDD-CRUD-01",
+            "project_definition": "The four foundational persistent storage mutation primitives that require mandatory prior unit testing."
+        },
+        {
+            "term": "Document",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-FLOW-01",
+            "project_definition": "The final step of the development sequence ensuring the root markdown file and function metadata are current."
+        },
+        {
+            "term": "Implement",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-FLOW-01",
+            "project_definition": "The phase of writing the absolute minimum source code necessary to satisfy a failing test case."
+        },
+        {
+            "term": "Interface",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TOOL-PY-310",
+            "project_definition": "The interaction layer restricted to a command-line environment for this system."
+        },
+        {
+            "term": "Language",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TOOL-PY-310",
+            "project_definition": "The primary programming tool specified as version 3.10 or higher."
+        },
+        {
+            "term": "MediReserve",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Header du document",
+            "project_definition": "A deprecated legacy system whose principles were entirely replaced during the version 1.0.0 transition."
+        },
+        {
+            "term": "Python 3.10",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TOOL-PY-310",
+            "project_definition": "The required runtime environment for all source code execution."
+        },
+        {
+            "term": "README",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-FLOW-01",
+            "project_definition": "The primary technical project documentation file that must be updated before a task is considered complete."
+        },
+        {
+            "term": "Spec First",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-FLOW-01",
+            "project_definition": "The mandatory initial phase where functional requirements and design contracts are defined in the specified folder."
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TOOL-SQLITE",
+            "project_definition": "The local persistence mechanism utilizing a structured file-based database."
+        },
+        {
+            "term": "TDD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "TDD-CRUD-01",
+            "project_definition": "A software development methodology where tests are authored before the functional logic to drive the design."
+        },
+        {
+            "term": "Test First",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-FLOW-01",
+            "project_definition": "The development step of creating a failing test case specifically for a mutation operation before writing logic."
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TOOL-PYTEST",
+            "project_definition": "The quality assurance process utilizing the pytest framework for all suites."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-SOC-01",
+            "project_definition": "The presentation layer that must remain strictly isolated from the service and repository layers."
+        },
+        {
+            "term": "Verify",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-FLOW-01",
+            "project_definition": "The process of executing the entire suite of tests to ensure no regressions were introduced."
+        },
+        {
+            "term": "YAGNI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "YAGNI-01",
+            "project_definition": "A design principle prohibiting the addition of features or complexity until a direct requirement is proven."
+        }
+    ]
+}
