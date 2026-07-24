@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "Requirements Traceability Matrix",
+            "type": "flowchart",
+            "description": "Mapping of functional requirements to technical entities and assumptions for the versioning system.",
+            "mermaid_code": "flowchart TD\n    subgraph Requirements\n        REQ-V2-01[\"REQ-V2-01: Incrémentation Automatique\"]\n        REQ-V2-02[\"REQ-V2-02: Rendu Rapide\"]\n    end\n\n    subgraph Technical_Assets\n        FILE-SOURCE[\"FILE-SOURCE: Fichier Source v2.0\"]\n        FASTAPI-PIPE[\"FASTAPI-PIPE: FastAPI Pipeline\"]\n        DB-POSTGRES[\"DB-POSTGRES: BDD PostgreSQL (table doc_versions)\"]\n        ASSUMP-HASH[\"ASSUMP-HASH: Validation Hash SHA-256\"]\n    end\n\n    REQ-V2-01 -->|relates_to| DB-POSTGRES\n    REQ-V2-01 -->|depends_on| ASSUMP-HASH\n    FASTAPI-PIPE -->|depends_on| FILE-SOURCE\n    FASTAPI-PIPE -->|implements| DB-POSTGRES"
+        },
+        {
+            "title": "Document Versioning Workflow",
+            "type": "flowchart",
+            "description": "Logic flow for detecting file changes and updating the version in PostgreSQL.",
+            "mermaid_code": "flowchart TD\n    START[Start]\n    S1[\"Read FILE-SOURCE\"]\n    DEC1{\"Hash Changed? (SHA-256)\"}\n    S2[\"Increment Version to 2.0\"]\n    S3[\"Update DB-POSTGRES (doc_versions)\"]\n    S4[\"Generate PDF (REQ-V2-02)\"]\n    END[End]\n\n    START --> S1\n    S1 --> DEC1\n    DEC1 -- \"No\" --> END\n    DEC1 -- \"Yes\" --> S2\n    S2 --> S3\n    S3 --> S4\n    S4 --> END"
+        },
+        {
+            "title": "Data Model - Document Versioning",
+            "type": "erDiagram",
+            "description": "Entity relationship diagram for the PostgreSQL storage of document versions.",
+            "mermaid_code": "erDiagram\n    DB-POSTGRES ||--o{ DOC_VERSIONS : \"stores\"\n    DOC_VERSIONS {\n        int version_id PK\n        string version_label \"v2.0\"\n        string sha256_hash\n        datetime updated_at\n    }"
+        },
+        {
+            "title": "Pipeline Execution Sequence",
+            "type": "sequenceDiagram",
+            "description": "Interaction between the source file, the FastAPI pipeline, and the database.",
+            "mermaid_code": "sequenceDiagram\n    participant FS as FILE-SOURCE\n    participant API as FASTAPI-PIPE\n    participant DB as DB-POSTGRES\n\n    API ->> FS: Check for modifications\n    FS -->> API: Return SHA-256 Hash\n    Note over API: Validate Hash (ASSUMP-HASH)\n    API ->> DB: Update version to 2.0 (REQ-V2-01)\n    DB -->> API: Confirm Commit\n    API ->> API: Generate Optimized PDF (REQ-V2-02)\n    Note right of API: Pipeline Complete"
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "CourseHub Data Model",
+            "type": "erDiagram",
+            "description": "Entity Relationship Diagram showing the shared user table, course ownership, module sequencing, and student enrollments.",
+            "mermaid_code": "erDiagram\n    ENT-USER ||--o{ ENT-COURSE : \"owns\"\n    ENT-USER ||--o{ ENT-ENROLMENT : \"registers\"\n    ENT-COURSE ||--|{ ENT-MODULE : \"contains\"\n    ENT-COURSE ||--o{ ENT-ENROLMENT : \"has\"\n\n    ENT-USER {\n        string email PK\n        string password\n        string role\n        string display_name\n    }\n    ENT-COURSE {\n        int id PK\n        string title\n        string description\n        int price_cents\n        boolean published\n        string instructor_id FK\n    }\n    ENT-MODULE {\n        int id PK\n        int course_id FK\n        int sequence_order\n        string content\n    }\n    ENT-ENROLMENT {\n        int id PK\n        int user_id FK\n        int course_id FK\n        int progress_percent\n        datetime completion_date\n    }"
+        },
+        {
+            "title": "Student Registration & Enrollment Flow",
+            "type": "sequenceDiagram",
+            "description": "Sequence of interactions for a student registering and enrolling in a published course, including the Resend email integration.",
+            "mermaid_code": "sequenceDiagram\n    actor Student\n    participant API as CourseHub API\n    participant DB as Database\n    participant Resend as Resend Email Service\n\n    Student ->> API: POST /api/v1/register (email, password, name)\n    API ->> DB: Create User (role: student)\n    DB -->> API: User Created\n    API ->> Resend: Send Welcome Email (name, browse_link)\n    Resend -->> API: Email Sent\n    API -->> Student: 201 Created (JSON Envelope)\n\n    Student ->> API: POST /api/v1/enroll (course_id)\n    API ->> DB: Check if Course is Published\n    alt Course is Published\n        DB -->> API: Published\n        API ->> DB: Create Enrollment Record\n        DB -->> API: Success\n        API -->> Student: 201 Created\n    else Course is Unpublished\n        DB -->> API: Unpublished\n        API -->> Student: 403 Forbidden (Cannot enroll in unpublished course)\n    end"
+        },
+        {
+            "title": "Course Deletion Logic",
+            "type": "flowchart",
+            "description": "Workflow for instructors attempting to delete a course, incorporating the mandatory check for active enrollments.",
+            "mermaid_code": "flowchart TD\n    START[Start: Delete Request] --> AUTH{\"Is User Instructor?\"}\n    AUTH -- \"No\" --> ERR_AUTH[\"Return 403 Forbidden\"]\n    AUTH -- \"Yes\" --> OWN{\"Does User own Course?\"}\n    \n    OWN -- \"No\" --> ERR_OWN[\"Return 403 Forbidden: Not Owner\"]\n    OWN -- \"Yes\" --> CHECK_ENROL{\"Has Active Enrollments?\"}\n    \n    CHECK_ENROL -- \"Yes\" --> ERR_ENROL[\"Return 400 Bad Request: Active Enrollments Exist\"]\n    CHECK_ENROL -- \"No\" --> DEL_ACT[Delete Course and Modules]\n    \n    ERR_AUTH --> END[End]\n    ERR_OWN --> END\n    ERR_ENROL --> END\n    DEL_ACT --> END"
+        },
+        {
+            "title": "Requirements Traceability Matrix",
+            "type": "flowchart",
+            "description": "Mapping of User Stories to Functional Requirements and their associated Entities/Constraints.",
+            "mermaid_code": "flowchart LR\n    subgraph UserStories [User Stories]\n        US-INSTRUCTOR-MGMT[\"US-INSTRUCTOR-MGMT: Instructor Management\"]\n        US-STUDENT-REG[\"US-STUDENT-REG: Student Registration\"]\n        US-PROGRESS-TRACK[\"US-PROGRESS-TRACK: Progress Tracking\"]\n    end\n\n    subgraph FuncReqs [Functional Requirements]\n        FR-001[\"FR-001: Course Creation\"]\n        FR-002[\"FR-002: Ownership Control\"]\n        FR-003[\"FR-003: Deletion Guard\"]\n        FR-004[\"FR-004: Student Registration\"]\n        FR-005[\"FR-005: Welcome Email\"]\n        FR-006[\"FR-006: Published Enrollment\"]\n        FR-007[\"FR-007: Progress Tracking\"]\n        FR-008[\"FR-008: Enrollment Privacy\"]\n    end\n\n    subgraph DataConstraints [Entities & Constraints]\n        ENT-COURSE[\"ENT-COURSE\"]\n        ENT-USER[\"ENT-USER\"]\n        ENT-ENROLMENT[\"ENT-ENROLMENT\"]\n        CON-PROGRESS-RANGE[\"CON-PROGRESS-RANGE: 0-100%\"]\n    end\n\n    US-INSTRUCTOR-MGMT --> FR-001\n    US-INSTRUCTOR-MGMT --> FR-002\n    US-INSTRUCTOR-MGMT --> FR-003\n    \n    US-STUDENT-REG --> FR-004\n    US-STUDENT-REG --> FR-005\n    US-STUDENT-REG --> FR-006\n    \n    US-PROGRESS-TRACK --> FR-007\n    US-PROGRESS-TRACK --> FR-008\n\n    FR-001 --> ENT-COURSE\n    FR-004 --> ENT-USER\n    FR-007 --> ENT-ENROLMENT\n    FR-007 --> CON-PROGRESS-RANGE"
+        }
+    ]
+}

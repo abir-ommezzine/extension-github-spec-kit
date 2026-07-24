@@ -1,0 +1,61 @@
+{
+    "project_name": "Système de Versionnage de Documents",
+    "items": [
+        {
+            "term": "2.0",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REQ-V2-01",
+            "project_definition": "The specific numerical iteration identifier to be persisted within the doc_versions table upon detection of source changes."
+        },
+        {
+            "term": "BDD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DB-POSTGRES",
+            "project_definition": "The relational storage engine utilized for maintaining document state and iteration history."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "ASSUMP-HASH",
+            "project_definition": "The mathematical process used to generate a unique fixed-size signature to detect content alterations."
+        },
+        {
+            "term": "PDF",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "1. Présentation Générale",
+            "project_definition": "The final portable document format generated as the output of the enrichment pipeline."
+        },
+        {
+            "term": "REQ",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "2. Exigences Fonctionnelles",
+            "project_definition": "The prefix used to identify formal functional constraints within the system specification."
+        },
+        {
+            "term": "SHA",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASSUMP-HASH",
+            "project_definition": "The specific 256-bit secure algorithm employed to verify file integrity and trigger updates."
+        },
+        {
+            "term": "Validation Hash",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "4. Glossaire Léger",
+            "project_definition": "The mechanism of comparing digital signatures to determine if a source file requires a new iteration."
+        },
+        {
+            "term": "Version 2.0",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "📄 Spécification Technique du Système — Version 2.0 (Test Léger)",
+            "project_definition": "The current target state of the system being validated during the pipeline ingestion test."
+        }
+    ]
+}

@@ -1,0 +1,68 @@
+{
+    "project_name": "CourseHub API",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-009",
+            "project_definition": "The primary interface exposing v1 endpoints to handle requests and deliver structured responses."
+        },
+        {
+            "term": "Course",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-COURSE",
+            "project_definition": "A learning offering owned by an instructor, containing price in cents, visibility status, and sequential lessons."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "The required mechanism for securing password credentials within the identity table."
+        },
+        {
+            "term": "Enrollment",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-ENROLMENT",
+            "project_definition": "A relationship between a student and a learning offering that tracks completion dates and percentage of progress."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-001",
+            "project_definition": "The architectural decision to represent monetary values in cents to avoid floating-point precision errors."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-009",
+            "project_definition": "The standardized lightweight data-interchange format used for all system responses via a specific envelope structure."
+        },
+        {
+            "term": "Module",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MODULE",
+            "project_definition": "A child record representing a specific lesson or section maintained in a strict sequence."
+        },
+        {
+            "term": "REST",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-009",
+            "project_definition": "The architectural style utilized for the network endpoints to ensure stateless communication."
+        },
+        {
+            "term": "User",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "A shared account identity incorporating a role field to differentiate between learners and content creators."
+        }
+    ]
+}
