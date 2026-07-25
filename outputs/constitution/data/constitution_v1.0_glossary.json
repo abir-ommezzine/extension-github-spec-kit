@@ -1,0 +1,124 @@
+{
+    "project_name": "Expense Tracker",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-SOC",
+            "project_definition": "An external communication layer used for the user interface, strictly separated from business and data layers."
+        },
+        {
+            "term": "CRUD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TDD-CRUD",
+            "project_definition": "The four foundational persistent storage mutation primitives requiring preceding unit tests."
+        },
+        {
+            "term": "Document",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-ITER",
+            "project_definition": "The final workflow phase ensuring function docstrings and the main project overview are current."
+        },
+        {
+            "term": "Implement",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-ITER",
+            "project_definition": "The act of writing the minimum necessary source code to satisfy a failing test."
+        },
+        {
+            "term": "Interface",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Constraints",
+            "project_definition": "A simple command line interaction point for the end user."
+        },
+        {
+            "term": "Language",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-LANG",
+            "project_definition": "The primary coding syntax required, specifically version 3.10 or higher."
+        },
+        {
+            "term": "MediReserve",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Header du document",
+            "project_definition": "A legacy domain completely replaced by the current financial tracking system."
+        },
+        {
+            "term": "Python 3.10",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-LANG",
+            "project_definition": "The mandated runtime environment for all application logic."
+        },
+        {
+            "term": "README",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-ITER",
+            "project_definition": "The top-level project documentation file requiring updates at the end of the development cycle."
+        },
+        {
+            "term": "Spec First",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "SPEC-FIRST",
+            "project_definition": "The mandatory requirement to define design and functional criteria in .specify/specs/ before any coding."
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-DB",
+            "project_definition": "Local persistence managed via SQLite to ensure data durability."
+        },
+        {
+            "term": "TDD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "TDD-CRUD",
+            "project_definition": "A development cycle where unit tests are authored prior to the functional code."
+        },
+        {
+            "term": "Test First",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-ITER",
+            "project_definition": "The specific workflow step of writing a failing test for a particular data operation."
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-TEST",
+            "project_definition": "The quality assurance process executed using pytest for all suites."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-SOC",
+            "project_definition": "The presentation layer consisting of CLI or API, forbidden from interacting directly with data layers."
+        },
+        {
+            "term": "Verify",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "WF-ITER",
+            "project_definition": "The execution of the complete test suite to prevent regressions."
+        },
+        {
+            "term": "YAGNI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "YAGNI-01",
+            "project_definition": "A design principle forbidding premature abstraction and features without direct requirements."
+        }
+    ]
+}

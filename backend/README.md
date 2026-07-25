@@ -137,6 +137,9 @@ The system implements a directed acyclic graph (DAG) using LangGraph, ensuring a
 - `health_check.py`: System diagnostic endpoint for availability monitoring.
 - `verify_db.py`: Utility for database connectivity and schema validation.
 
+### 🌐 API Layer (`/backend/app/api`)
+- `v1/endpoints/pipeline.py`: **Pipeline Controller**. Manages the REST API for triggering executions (`/run`), checking file status (`/check-file`) via SHA-256 hashes, and monitoring server availability (`/status`).
+
 ### 🧠 Core Logic (`/backend/app/core`)
 - `llm_client.py`: Unified interface for LLM communication (Ollama/OpenAI).
 - `llm_utils.py`: Shared helpers for JSON validation and LLM response parsing.
@@ -145,19 +148,18 @@ The system implements a directed acyclic graph (DAG) using LangGraph, ensuring a
 - `test_llm.py`: Integration tests for LLM connectivity and prompt tuning.
 
 ### 🕸️ Graph Orchestration (`/backend/app/graph`)
-- `state.py`: **Global State Management**. Defines the `GraphState` TypedDict, which acts as the single source of truth for the pipeline, carrying payloads and metrics between nodes.
-- `nodes.py`: **Agent Integration Layer**. Wraps business services and evaluation logic into LangGraph-compatible nodes, handling data flow, JSON persistence, and error recovery.
+- `state.py`: **Global State Management**. Defines the `GraphState` TypedDict, which acts as the single source of truth for the pipeline, carrying payloads, run IDs, and metrics between nodes.
+- `nodes.py`: **Agent Integration Layer**. Wraps business services and evaluation logic into LangGraph-compatible nodes, handling data flow, JSON persistence to disk and PostgreSQL, and error recovery.
 - `workflow.py`: **DAG Topology Definition**. Orchestrates the sequence of execution, implementing the trifurcation (parallel execution of Summary, Glossary, and Diagram agents) and the final convergence into the Doc Writer.
 
 ### 📄 Resources & Specs (`/backend/app/resources`)
 - `*.json`: Target specifications that govern agent behavior and output constraints (e.g., `summary_spec.json`, `layout_spec.json`).
 
-
 ### 📐 Validation Schemas (`/backend/app/schemas`)
 - `*.py`: Pydantic models used for strict type-validation of LLM-generated content (e.g., `parsing_agent_schema.py`, `layout_agent_schema.py`).
 
-
 ### ⚙️ Business Services (`/backend/app/services`)
+- `db_service.py`: **Persistence Layer Service**. Handles all PostgreSQL interactions, including SHA-256 change detection, pipeline run tracking, document versioning (v1.0, v2.0), and global KPI score computation.
 - `parser_service.py`: Logic for technical document ingestion and graph construction.
 - `summary_service.py`: Synthesis logic for high-level executive summaries.
 - `glossary_service.py`: Normalization logic for technical and business terminology.
@@ -167,6 +169,7 @@ The system implements a directed acyclic graph (DAG) using LangGraph, ensuring a
 - `evaluation_service.py`: Orchestrates the application of metrics to determine agent output readiness.
 
 ### 🧰 Utilities (`/backend/app/utils`)
+- `path_builder.py`: **Output Path Manager**. Dynamically generates absolute directory structures under `outputs/<project_name>/` to ensure total isolation between different projects.
 - `markdown_parser.py`: Low-level tools for decomposing and analyzing raw markdown.
 - `summary_pruner.py`: Context optimization logic for reducing LLM token usage.
 - `glossary_tools.py`: Deterministic tools for extracting candidate terms.

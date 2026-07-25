@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "Payment Transaction Lifecycle Workflow",
+            "type": "flowchart",
+            "description": "Models the end-to-end flow of a payment transaction including idempotency checks and failure handling.",
+            "mermaid_code": "flowchart TD\n    START[Start] --> INIT_TX[\"Initiate Transaction\"]\n    INIT_TX --> CHECK_IDEM{\"Is Idempotency Key Valid?\"}\n    \n    CHECK_IDEM -- \"No (New Request)\" --> PROC_PAY[\"Process Payment via ENT-GATEWAY\"]\n    CHECK_IDEM -- \"Yes (Duplicate)\" --> RET_EXIST[\"Return Existing Transaction Result\"]\n    \n    PROC_PAY --> PAY_STATUS{\"Payment Status?\"}\n    \n    PAY_STATUS -- \"Success\" --> TX_SUCCESS[\"Set Status: Success\"]\n    PAY_STATUS -- \"Pending\" --> TX_PENDING[\"Set Status: Pending\"]\n    PAY_STATUS -- \"Fail\" --> TX_FAIL[\"Set Status: Fail\"]\n    \n    TX_PENDING --> WAIT_WH[\"Wait for Webhook PAY-WH-ASYNC\"]\n    WAIT_WH --> PAY_STATUS\n    \n    TX_FAIL --> RETRY_DEC{\"Retry Allowed?\"}\n    RETRY_DEC -- \"Yes\" --> INIT_TX\n    RETRY_DEC -- \"No\" --> END_FAIL[End: Payment Failed]\n    \n    TX_SUCCESS --> END_SUCCESS[End: Payment Confirmed]\n    RET_EXIST --> END_SUCCESS"
+        },
+        {
+            "title": "Payment Processing Sequence",
+            "type": "sequenceDiagram",
+            "description": "Interaction between the User, Payment Module, and the External Payment Gateway.",
+            "mermaid_code": "sequenceDiagram\n    participant User\n    participant Module as Payment Module\n    participant Gateway as ENT-GATEWAY\n    \n    User->>Module: Request Payment (with Idempotency Key)\n    Module->>Module: Validate PAY-IDEM-KEY\n    Module->>Gateway: Process Transaction (Tokenized Data)\n    Note over Module, Gateway: Implements PAY-SEC-PCI\n    Gateway-->>Module: Initial Response (Success/Pending/Fail)\n    Module-->>User: Transaction Status Update\n    \n    Note over Gateway, Module: Asynchronous Notification\n    Gateway->>Module: Webhook Notification (PAY-WH-ASYNC)\n    Module->>Module: Update Transaction Life Cycle (PAY-TX-LIFE)\n    Module-->>User: Final Payment Confirmation"
+        },
+        {
+            "title": "Payment Domain Data Model",
+            "type": "erDiagram",
+            "description": "Entity relationship diagram for the payment module focusing on transactions and security tokens.",
+            "mermaid_code": "erDiagram\n    TRANSACTION ||--o{ ENT-TOKEN : \"uses\"\n    TRANSACTION }|--|| ENT-GATEWAY : \"processed_by\"\n    \n    TRANSACTION {\n        string transaction_id PK\n        string idempotency_key \"PAY-IDEM-KEY\"\n        string status \"PAY-TX-LIFE\"\n        float amount\n        datetime created_at\n    }\n    \n    ENT-TOKEN {\n        string token_id PK\n        string encrypted_value\n        datetime expiry_date\n    }\n    \n    ENT-GATEWAY {\n        string gateway_id PK\n        string provider_name\n        string api_endpoint\n    }"
+        },
+        {
+            "title": "Requirements Traceability Matrix",
+            "type": "flowchart",
+            "description": "Maps functional and non-functional requirements to the domain entities they implement or depend on.",
+            "mermaid_code": "flowchart LR\n    subgraph Requirements\n        PAY-TX-LIFE[\"PAY-TX-LIFE: Transaction Lifecycle\"]\n        PAY-SEC-PCI[\"PAY-SEC-PCI: PCI-DSS & Tokenization\"]\n        PAY-IDEM-KEY[\"PAY-IDEM-KEY: Idempotency Keys\"]\n        PAY-WH-ASYNC[\"PAY-WH-ASYNC: Asynchronous Webhooks\"]\n    end\n    \n    subgraph Domain_Entities\n        ENT-GATEWAY[\"ENT-GATEWAY: Payment Gateway\"]\n        ENT-TOKEN[\"ENT-TOKEN: Tokenization\"]\n    end\n    \n    PAY-TX-LIFE -->|depends_on| ENT-GATEWAY\n    PAY-SEC-PCI -->|implements| ENT-TOKEN\n    PAY-WH-ASYNC -->|relates_to| ENT-GATEWAY\n    PAY-IDEM-KEY -->|secures| PAY-TX-LIFE"
+        }
+    ]
+}

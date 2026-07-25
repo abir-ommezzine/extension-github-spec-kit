@@ -2,7 +2,7 @@ import hashlib
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, Tuple, Dict, Any
+from typing import Optional, Tuple, Dict, Any, List
 from sqlalchemy.orm import Session
 
 from app.models import (
@@ -37,6 +37,42 @@ def detect_artifact_type(file_path: Path) -> ArtifactType:
         return ArtifactType.task
 
     return ArtifactType.spec
+
+
+def compute_global_kpi_score(eval_dicts: List[Optional[Dict[str, Any]]]) -> Optional[float]:
+    """
+    Calcule de manière sécurisée la moyenne globale des KPI techniques 
+    à partir des évaluations JSON disponibles.
+    Gère l'absence de clés (KeyError) et les étapes omises (ex: constitution ou spec minimale).
+    """
+    extracted_scores = []
+
+    for eval_dict in eval_dicts:
+        if not eval_dict or not isinstance(eval_dict, dict):
+            continue
+
+        # Extraction sécurisée du bloc technical_evaluation
+        tech_eval = eval_dict.get("technical_evaluation", {})
+        if not isinstance(tech_eval, dict):
+            tech_eval = {}
+
+        # Combinaison pour inspecter toutes les métriques sans crash
+        metrics_source = {**eval_dict, **tech_eval}
+
+        for key, val in metrics_source.items():
+            if isinstance(val, (int, float)) and not isinstance(val, bool):
+                key_lower = key.lower()
+                # Exclure les compteurs d'éléments, tailles de fichiers et statistiques d'octets
+                if any(ignored in key_lower for ignored in ["count", "kb", "size", "total", "lines", "word", "errors"]):
+                    continue
+                # Conserver uniquement les scores et taux exprimés en pourcentage ou index
+                if any(indicator in key_lower for indicator in ["score", "rate", "integrity", "conformity", "index", "adherence"]):
+                    extracted_scores.append(float(val))
+
+    if not extracted_scores:
+        return None
+
+    return round(sum(extracted_scores) / len(extracted_scores), 1)
 
 
 def get_or_create_project(
@@ -186,9 +222,22 @@ def save_successful_run(
     if writer_eval: pipeline_run.writer_eval = writer_eval
     if layout_eval: pipeline_run.layout_eval = layout_eval
 
+    # 🎯 Calcul/Secours automatique du KPI global s'il est None ou égal à 0.0
+    if not global_kpi_score or global_kpi_score == 0.0:
+        computed_score = compute_global_kpi_score([
+            parsing_eval,
+            summary_eval,
+            glossary_eval,
+            diagram_eval,
+            writer_eval,
+            layout_eval,
+        ])
+        if computed_score is not None:
+            global_kpi_score = computed_score
+
     pipeline_run.global_kpi_score = global_kpi_score
 
-    # Calcul automatique de la version
+    # Calcul automatique de la version (v1.0, v2.0...)
     next_version_no, next_version_label = get_next_version(db, artifact.id)
 
     doc_version = DocVersion(
@@ -202,7 +251,7 @@ def save_successful_run(
         global_kpi_score=global_kpi_score,
         commit_hash=commit_hash,
     )
-    
+
     db.add(doc_version)
     artifact.current_file_hash = new_hash
 
@@ -313,110 +362,6 @@ def save_failed_run(db: Session, pipeline_run: PipelineRun, error_message: str):
 #     return run
 
 
-# def update_pipeline_stage_data(
-#     db: Session,
-#     run_id: uuid.UUID,
-#     stage: PipelineStage,
-#     output_attr: Optional[str] = None,
-#     output_data: Optional[Any] = None,
-#     eval_attr: Optional[str] = None,
-#     eval_data: Optional[Dict[str, Any]] = None,
-# ):
-#     """Met à jour le statut courant, le rendu intermédiaire et l'évaluation JSON dans PostgreSQL."""
-#     run = db.query(PipelineRun).filter(PipelineRun.id == run_id).first()
-#     if not run:
-#         return
-
-#     run.current_stage = stage
-
-#     if output_attr and output_data is not None and hasattr(run, output_attr):
-#         setattr(run, output_attr, output_data)
-
-#     if eval_attr and eval_data is not None and hasattr(run, eval_attr):
-#         setattr(run, eval_attr, eval_data)
-
-#     db.commit()
-
-
-# def save_successful_run(
-#     db: Session,
-#     artifact: Artifact,
-#     pipeline_run: PipelineRun,
-#     new_hash: str,
-#     pdf_path: str,
-#     # --- Outputs ---
-#     structured_json: Optional[Dict[str, Any]] = None,
-#     summary_output: Optional[str] = None,
-#     diagram_output: Optional[Dict[str, Any]] = None,
-#     glossary_output: Optional[Dict[str, Any]] = None,
-#     written_doc: Optional[str] = None,
-#     layout_output: Optional[str] = None,
-#     # --- 🎯 Évaluations JSON pour Pop-up ---
-#     parsing_eval: Optional[Dict[str, Any]] = None,
-#     summary_eval: Optional[Dict[str, Any]] = None,
-#     glossary_eval: Optional[Dict[str, Any]] = None,
-#     diagram_eval: Optional[Dict[str, Any]] = None,
-#     writer_eval: Optional[Dict[str, Any]] = None,
-#     layout_eval: Optional[Dict[str, Any]] = None,
-#     # --- Score KPI Global ---
-#     global_kpi_score: Optional[float] = None,
-#     commit_hash: Optional[str] = None,
-# ) -> DocVersion:
-#     """Marque le PipelineRun comme terminé et génère la DocVersion."""
-#     pipeline_run.current_stage = PipelineStage.completed
-#     pipeline_run.completed_at = datetime.now(timezone.utc)
-
-#     if structured_json: pipeline_run.structured_json = structured_json
-#     if summary_output: pipeline_run.summary_output = summary_output
-#     if diagram_output: pipeline_run.diagram_output = diagram_output
-#     if glossary_output: pipeline_run.glossary_output = glossary_output
-#     if written_doc: pipeline_run.written_doc = written_doc
-#     if layout_output: pipeline_run.layout_output = layout_output
-
-#     if parsing_eval: pipeline_run.parsing_eval = parsing_eval
-#     if summary_eval: pipeline_run.summary_eval = summary_eval
-#     if glossary_eval: pipeline_run.glossary_eval = glossary_eval
-#     if diagram_eval: pipeline_run.diagram_eval = diagram_eval
-#     if writer_eval: pipeline_run.writer_eval = writer_eval
-#     if layout_eval: pipeline_run.layout_eval = layout_eval
-
-#     pipeline_run.global_kpi_score = global_kpi_score
-
-#     # Calcul version (v1, v2...)
-#     last_version = (
-#         db.query(DocVersion)
-#         .filter(DocVersion.artifact_id == artifact.id)
-#         .order_by(DocVersion.version_no.desc())
-#         .first()
-#     )
-#     next_version = (last_version.version_no + 1) if last_version else 1
-
-#     doc_version = DocVersion(
-#         artifact_id=artifact.id,
-#         version_no=next_version,
-#         pdf_path=pdf_path,
-#         source_file_hash=new_hash,
-#         generated_by=GeneratedBy.agent,
-#         pipeline_run_id=pipeline_run.id,
-#         global_kpi_score=global_kpi_score,
-#         commit_hash=commit_hash,
-#     )
-#     db.add(doc_version)
-#     artifact.current_file_hash = new_hash
-
-#     db.commit()
-#     db.refresh(doc_version)
-#     return doc_version
-
-
-# def save_failed_run(db: Session, pipeline_run: PipelineRun, error_message: str):
-#     """Marque une exécution comme échouée."""
-#     pipeline_run.current_stage = PipelineStage.failed
-#     pipeline_run.error_message = error_message
-#     pipeline_run.completed_at = datetime.now(timezone.utc)
-#     db.commit()
-# # Dans app/db_service.py
-
 # def get_next_version(db: Session, artifact_id: uuid.UUID) -> Tuple[int, str]:
 #     """
 #     Calcule le numéro et le label de la prochaine version.
@@ -436,6 +381,35 @@ def save_failed_run(db: Session, pipeline_run: PipelineRun, error_message: str):
 #     next_no = last_version.version_no + 1
 #     next_label = f"{next_no}.0"
 #     return next_no, next_label
+
+
+# def update_pipeline_stage_data(
+#     db: Session,
+#     run_id: uuid.UUID,
+#     stage: PipelineStage,
+#     output_attr: Optional[str] = None,
+#     output_data: Optional[Any] = None,
+#     eval_attr: Optional[str] = None,
+#     eval_data: Optional[Dict[str, Any]] = None,
+# ):
+#     """Met à jour le statut courant, le rendu intermédiaire et l'évaluation JSON dans PostgreSQL."""
+#     try:
+#         run = db.query(PipelineRun).filter(PipelineRun.id == run_id).first()
+#         if not run:
+#             return
+
+#         run.current_stage = stage
+
+#         if output_attr and output_data is not None and hasattr(run, output_attr):
+#             setattr(run, output_attr, output_data)
+
+#         if eval_attr and eval_data is not None and hasattr(run, eval_attr):
+#             setattr(run, eval_attr, eval_data)
+
+#         db.commit()
+#     except Exception as exc:
+#         db.rollback()
+#         print(f"[⚠️ DB Update Error] Échec de la mise à jour pour le stage {stage.value}: {exc}")
 
 
 # def save_successful_run(
@@ -482,7 +456,7 @@ def save_failed_run(db: Session, pipeline_run: PipelineRun, error_message: str):
 
 #     pipeline_run.global_kpi_score = global_kpi_score
 
-#     # --- CALCUL AUTOMATIQUE DE LA VERSION ---
+#     # Calcul automatique de la version
 #     next_version_no, next_version_label = get_next_version(db, artifact.id)
 
 #     doc_version = DocVersion(
@@ -504,3 +478,10 @@ def save_failed_run(db: Session, pipeline_run: PipelineRun, error_message: str):
 #     db.refresh(doc_version)
 #     return doc_version
 
+
+# def save_failed_run(db: Session, pipeline_run: PipelineRun, error_message: str):
+#     """Marque une exécution comme échouée."""
+#     pipeline_run.current_stage = PipelineStage.failed
+#     pipeline_run.error_message = error_message
+#     pipeline_run.completed_at = datetime.now(timezone.utc)
+#     db.commit()

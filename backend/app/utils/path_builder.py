@@ -1,42 +1,110 @@
-# Dans app/utils/path_builder.py
-
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
+# 🎯 Racine du projet StageTalan/ (3 niveaux au-dessus de backend/app/utils)
 BASE_DIR = Path(__file__).resolve().parents[3]
-# BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-def build_pipeline_paths(file_name: str, version_label: str = "1.0") -> Dict[str, Path]:
+def extract_project_name_from_path(file_path: Path) -> str:
     """
-    Génère des dossiers et fichiers uniques par version.
-    Exemple PDF : outputs/pdf/mon_projet_v1.0.pdf
+    Extrait le nom du projet principal situé sous le dossier 'specs/'.
+    Exemples :
+    - specs/001-expense-tracker-cli/spec.md -> 001-expense-tracker-cli
+    - specs/001-expense-tracker-cli/checklists/requirements.md -> 001-expense-tracker-cli
+    - specs/spec(1).md -> spec(1)
+    - specs/constitution.md -> constitution
+    """
+    parts = file_path.parts
+    if "specs" in parts:
+        idx = parts.index("specs")
+        # Cas 1 : Fichier directement sous 'specs/' (ex: specs/spec(1).md)
+        if idx + 1 == len(parts) - 1:
+            return file_path.stem
+        # Cas 2 : Fichier dans un sous-dossier sous 'specs/' (ex: specs/001-expense-tracker-cli/...)
+        elif idx + 1 < len(parts) - 1:
+            return parts[idx + 1]
+
+    # Fallback si 'specs' n'est pas dans le chemin
+    parent_name = file_path.parent.name
+    if parent_name in ["specs", "", "."]:
+        return file_path.stem
+    return parent_name
+# def extract_project_name_from_path(file_path: Path) -> str:
+#     """
+#     Extrait le nom du projet principal situé sous le dossier 'specs/'.
+#     Exemples :
+#     - specs/001-expense-tracker-cli/spec.md -> 001-expense-tracker-cli
+#     - specs/001-expense-tracker-cli/checklists/requirements.md -> 001-expense-tracker-cli
+#     """
+#     parts = file_path.parts
+#     if "specs" in parts:
+#         idx = parts.index("specs")
+#         # Le dossier projet est le dossier situé juste après 'specs'
+#         if idx + 1 < len(parts) - 1:
+#             return parts[idx + 1]
+
+#     # Fallback si 'specs' n'est pas dans le chemin
+#     parent_name = file_path.parent.name
+#     if parent_name in ["specs", "", "."]:
+#         return "default_project"
+#     return parent_name
+
+
+def build_pipeline_paths(
+    file_name: str, 
+    version_label: str = "1.0", 
+    project_name: Optional[str] = None
+) -> Dict[str, Path]:
+    """
+    Génère l'ensemble des répertoires et chemins absolus de sortie de la pipeline
+    organisés PAR PROJET sous la structure isolée StageTalan/outputs/<nom_projet>/.
     """
     file_path = Path(file_name)
-    stem = file_path.stem  # Ex: "sdd_spec"
-    
-    # Préfixe incluant la version
-    version_prefix = f"{stem}_v{version_label}"
+    stem = file_path.stem  # Ex: "spec" ou "requirements"
 
-    data_dir = BASE_DIR / "outputs" / "data"
-    eval_dir = BASE_DIR / "outputs" / "evaluations"
-    pdf_dir = BASE_DIR / "outputs" / "pdf"
-    diagrams_dir = BASE_DIR / "outputs" / "diagrams" / version_prefix
+    # 1. Déduction automatique du projet principal (même dans des sous-dossiers comme checklists, plans, etc.)
+    if not project_name:
+        project_name = extract_project_name_from_path(file_path)
 
-    for d in [data_dir, eval_dir, pdf_dir, diagrams_dir]:
-        d.mkdir(parents=True, exist_ok=True)
+    # Préfixe de version (ex: "v1.0" -> "requirements_v1.0")
+    clean_version = version_label if version_label.startswith("v") else f"v{version_label}"
+    version_prefix = f"{stem}_{clean_version}"
 
+    # 2. Arborescence isolée sous StageTalan/outputs/<project_name>/
+    outputs_base = BASE_DIR / "outputs"
+    project_output_dir = outputs_base / project_name
+
+    data_dir = project_output_dir / "data"
+    markdown_dir = project_output_dir / "markdowns"
+    eval_dir = project_output_dir / "evaluations"
+    pdf_dir = project_output_dir / "pdf"
+    diagrams_dir = project_output_dir / "diagrams"
+
+    # 3. Création automatique de tous les sous-répertoires requis
+    for folder in [outputs_base, project_output_dir, data_dir, markdown_dir, eval_dir, pdf_dir, diagrams_dir]:
+        folder.mkdir(parents=True, exist_ok=True)
+
+    # 4. Dictionnaire complet des chemins (Toutes les clés fonctionnelles conservées)
     return {
+        # Préfixes et dossiers principaux
         "prefix": stem,
         "version_prefix": version_prefix,
+        "base_output_dir": project_output_dir,
+        "data_dir": data_dir,
+        "markdown_dir": markdown_dir,
+        "evaluations_dir": eval_dir,
+        "pdf_dir": pdf_dir,
+        "diagrams_dir": diagrams_dir,
         
-        # Fichiers de données
+        # Fichiers de données (StageTalan/outputs/<project_name>/data/)
         "parsed_json": data_dir / f"{version_prefix}_parsed.json",
         "summary_json": data_dir / f"{version_prefix}_summary.json",
         "glossary_json": data_dir / f"{version_prefix}_glossary.json",
         "diagrams_json": data_dir / f"{version_prefix}_diagrams.json",
-        "doc_md": data_dir / f"{version_prefix}_doc.md",
         
-        # Fichiers d'évaluation
+        # Document Markdown (StageTalan/outputs/<project_name>/markdowns/)
+        "doc_md": markdown_dir / f"{version_prefix}_doc.md",
+        
+        # Fichiers d'évaluation (StageTalan/outputs/<project_name>/evaluations/)
         "parsing_eval": eval_dir / f"{version_prefix}_parsing_eval.json",
         "summary_eval": eval_dir / f"{version_prefix}_summary_eval.json",
         "glossary_eval": eval_dir / f"{version_prefix}_glossary_eval.json",
@@ -44,143 +112,81 @@ def build_pipeline_paths(file_name: str, version_label: str = "1.0") -> Dict[str
         "doc_eval": eval_dir / f"{version_prefix}_doc_eval.json",
         "layout_eval": eval_dir / f"{version_prefix}_layout_eval.json",
         
-        # PDF Final spécifique à cette version
+        # PDF Final (StageTalan/outputs/<project_name>/pdf/)
         "final_pdf": pdf_dir / f"{version_prefix}.pdf",
-        "diagrams_dir": diagrams_dir,
     }
 # from pathlib import Path
-# from typing import Dict
+# from typing import Dict, Optional
+
+# # 🎯 Racine du projet StageTalan/ (3 niveaux au-dessus de backend/app/utils)
+# BASE_DIR = Path(__file__).resolve().parents[3]
 
 
-# def get_project_prefix(file_path: str) -> str:
+# def build_pipeline_paths(
+#     file_name: str, 
+#     version_label: str = "1.0", 
+#     project_name: Optional[str] = None
+# ) -> Dict[str, Path]:
 #     """
-#     Génère dynamiquement le préfixe pour le nommage des fichiers de sortie.
-    
-#     Exemples :
-#     - specs/constitution.md                         -> "constitution"
-#     - specs/nom_projet/spec.md                      -> "nom_projet"
-#     - specs/nom_projet/requirements.md              -> "nom_projet_requirements"
-#     - specs/nom_projet/checklist/requirements.md  -> "nom_projet_requirements"
+#     Génère l'ensemble des répertoires et chemins absolus de sortie de la pipeline
+#     organisés PAR PROJET sous la structure isolée StageTalan/outputs/<nom_projet>/.
 #     """
-#     path = Path(file_path).resolve()
-#     parts = path.parts
+#     file_path = Path(file_name)
+#     stem = file_path.stem  # Ex: "spec" ou "requirements"
 
-#     if "specs" in parts:
-#         specs_index = parts.index("specs")
-#         sub_parts = parts[specs_index + 1:]  # Éléments situés APRÈS le dossier specs/
-        
-#         # 1. CAS : Fichier directement sous specs/ (ex: specs/constitution.md)
-#         if len(sub_parts) == 1:
-#             return path.stem
+#     # 1. Déduction automatique du projet si non transmis (ex: nom du sous-dossier parent)
+#     if not project_name:
+#         project_name = file_path.parent.name
+#         if project_name in ["specs", "", "."]:
+#             project_name = "default_project"
 
-#         # 2. CAS : Fichier dans un sous-dossier (ex: specs/nom_projet/...)
-#         project_folder = sub_parts[0]
-        
-#         # Si c'est la spec principale ou un template, le préfixe est juste le nom du projet
-#         if path.stem in ["spec", "template"]:
-#             return project_folder
-        
-#         # Pour les autres fichiers (ex: requirements.md), on combine : nomprojet_requirements
-#         return f"{project_folder}_{path.stem}"
+#     # Préfixe de version (ex: "v1.0" -> "requirements_v1.0")
+#     clean_version = version_label if version_label.startswith("v") else f"v{version_label}"
+#     version_prefix = f"{stem}_{clean_version}"
 
-#     return path.stem
+#     # 2. Arborescence isolée sous StageTalan/outputs/<project_name>/
+#     outputs_base = BASE_DIR / "outputs"
+#     project_output_dir = outputs_base / project_name
 
+#     data_dir = project_output_dir / "data"
+#     markdown_dir = project_output_dir / "markdowns"
+#     eval_dir = project_output_dir / "evaluations"
+#     pdf_dir = project_output_dir / "pdf"
+#     diagrams_dir = project_output_dir / "diagrams"
 
-# def build_pipeline_paths(file_path: str) -> Dict[str, Path]:
-#     """
-#     Génère l'ensemble des chemins absolus de sortie directement sous StageTalan/outputs/
-#     """
-#     prefix = get_project_prefix(file_path)
-    
-#     current_file = Path(__file__).resolve()
-#     # 🎯 Récupère la racine du projet (StageTalan/)
-#     project_root = current_file.parents[3] if "backend" in current_file.parts else current_file.parents[2]
-#     outputs_dir = project_root / "outputs"
-
-#     paths = {
-#         "prefix": prefix,
-#         "base_output_dir": outputs_dir,
-#         "data_dir": outputs_dir / "data",
-#         "documents_dir": outputs_dir / "documents",
-#         "evaluations_dir": outputs_dir / "evaluations",
-#         "diagrams_dir": outputs_dir / "data" / "diagrams",
-        
-#         # Fichiers cibles
-#         "parsed_json": outputs_dir / "data" / f"{prefix}_parsed.json",
-#         "parsing_eval": outputs_dir / "evaluations" / f"{prefix}_parsing_eval.json",
-#         "summary_json": outputs_dir / "data" / f"{prefix}_summary.json",
-#         "summary_eval": outputs_dir / "evaluations" / f"{prefix}_summary_eval.json",
-#         "glossary_json": outputs_dir / "data" / f"{prefix}_glossary.json",
-#         "glossary_eval": outputs_dir / "evaluations" / f"{prefix}_glossary_eval.json",
-#         "diagrams_json": outputs_dir / "data" / f"{prefix}_diagrams.json",
-#         "diagram_eval": outputs_dir / "evaluations" / f"{prefix}_diagram_eval.json",
-#         "doc_md": outputs_dir / "documents" / f"{prefix}_doc.md",
-#         "doc_eval": outputs_dir / "evaluations" / f"{prefix}_doc_eval.json",
-#         "final_pdf": outputs_dir / "documents" / f"{prefix}_spec.pdf",
-#         "layout_eval": outputs_dir / "evaluations" / f"{prefix}_layout_eval.json",
-#     }
-
-#     # Création automatique des dossiers de destination sous StageTalan/outputs/
-#     for folder in [paths["data_dir"], paths["documents_dir"], paths["evaluations_dir"], paths["diagrams_dir"]]:
+#     # 3. Création automatique de tous les sous-répertoires requis
+#     for folder in [outputs_base, project_output_dir, data_dir, markdown_dir, eval_dir, pdf_dir, diagrams_dir]:
 #         folder.mkdir(parents=True, exist_ok=True)
 
-#     return paths
-# from pathlib import Path
-# from typing import Dict
-
-# def get_project_prefix(file_path: str) -> str:
-#     path = Path(file_path).resolve()
-#     parts = path.parts
-
-#     if "specs" in parts:
-#         specs_index = parts.index("specs")
-#         if specs_index + 1 < len(parts):
-#             folder_name = parts[specs_index + 1]
-#             # Si le fichier n'est pas spec.md (ex: requirements.md), on ajoute son nom au préfixe
-#             if path.stem not in ["spec", "template"]:
-#                 return f"{folder_name}_{path.stem}"
-#             return folder_name
-
-#     return path.stem
-
-# def build_pipeline_paths(file_path: str) -> Dict[str, Path]:
-#     """
-#     Génère l'ensemble des chemins absolus de sortie directement sous StageTalan/outputs/
-#     """
-#     prefix = get_project_prefix(file_path)
-    
-#     current_file = Path(__file__).resolve()
-    
-#     # 🎯 FIX : parents[3] cible la racine du projet (StageTalan/)
-#     # (StageTalan/backend/app/utils/path_builder.py -> StageTalan/)
-#     project_root = current_file.parents[3]
-#     outputs_dir = project_root / "outputs"
-
-#     paths = {
-#         "prefix": prefix,
-#         "base_output_dir": outputs_dir,
-#         "data_dir": outputs_dir / "data",
-#         "documents_dir": outputs_dir / "documents",
-#         "evaluations_dir": outputs_dir / "evaluations",
-#         "diagrams_dir": outputs_dir / "data" / "diagrams",
+#     # 4. Dictionnaire complet des chemins (Toutes les clés fonctionnelles conservées)
+#     return {
+#         # Préfixes et dossiers principaux
+#         "prefix": stem,
+#         "version_prefix": version_prefix,
+#         "base_output_dir": project_output_dir,
+#         "data_dir": data_dir,
+#         "markdown_dir": markdown_dir,
+#         "evaluations_dir": eval_dir,
+#         "pdf_dir": pdf_dir,
+#         "diagrams_dir": diagrams_dir,
         
-#         # Fichiers cibles
-#         "parsed_json": outputs_dir / "data" / f"{prefix}_parsed.json",
-#         "parsing_eval": outputs_dir / "evaluations" / f"{prefix}_parsing_eval.json",
-#         "summary_json": outputs_dir / "data" / f"{prefix}_summary.json",
-#         "summary_eval": outputs_dir / "evaluations" / f"{prefix}_summary_eval.json",
-#         "glossary_json": outputs_dir / "evaluations" / f"{prefix}_glossary.json",
-#         "glossary_eval": outputs_dir / "evaluations" / f"{prefix}_glossary_eval.json",
-#         "diagrams_json": outputs_dir / "data" / f"{prefix}_diagrams.json",
-#         "diagram_eval": outputs_dir / "evaluations" / f"{prefix}_diagram_eval.json",
-#         "doc_md": outputs_dir / "documents" / f"{prefix}_doc.md",
-#         "doc_eval": outputs_dir / "evaluations" / f"{prefix}_doc_eval.json",
-#         "final_pdf": outputs_dir / "documents" / f"{prefix}_spec.pdf",
-#         "layout_eval": outputs_dir / "evaluations" / f"{prefix}_layout_eval.json",
+#         # Fichiers de données (StageTalan/outputs/<project_name>/data/)
+#         "parsed_json": data_dir / f"{version_prefix}_parsed.json",
+#         "summary_json": data_dir / f"{version_prefix}_summary.json",
+#         "glossary_json": data_dir / f"{version_prefix}_glossary.json",
+#         "diagrams_json": data_dir / f"{version_prefix}_diagrams.json",
+        
+#         # Document Markdown (StageTalan/outputs/<project_name>/markdowns/)
+#         "doc_md": markdown_dir / f"{version_prefix}_doc.md",
+        
+#         # Fichiers d'évaluation (StageTalan/outputs/<project_name>/evaluations/)
+#         "parsing_eval": eval_dir / f"{version_prefix}_parsing_eval.json",
+#         "summary_eval": eval_dir / f"{version_prefix}_summary_eval.json",
+#         "glossary_eval": eval_dir / f"{version_prefix}_glossary_eval.json",
+#         "diagram_eval": eval_dir / f"{version_prefix}_diagram_eval.json",
+#         "doc_eval": eval_dir / f"{version_prefix}_doc_eval.json",
+#         "layout_eval": eval_dir / f"{version_prefix}_layout_eval.json",
+        
+#         # PDF Final (StageTalan/outputs/<project_name>/pdf/)
+#         "final_pdf": pdf_dir / f"{version_prefix}.pdf",
 #     }
-
-#     # Création automatique des dossiers de destination sous StageTalan/outputs/
-#     for folder in [paths["data_dir"], paths["documents_dir"], paths["evaluations_dir"], paths["diagrams_dir"]]:
-#         folder.mkdir(parents=True, exist_ok=True)
-
-#     return paths

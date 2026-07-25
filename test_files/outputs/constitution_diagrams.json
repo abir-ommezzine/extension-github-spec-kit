@@ -1,0 +1,16 @@
+{
+    "diagrams": [
+        {
+            "title": "MediReserve Technical Governance & Traceability",
+            "type": "flowchart",
+            "description": "Mapping of technical requirements, coding standards, and workflow constraints to ensure project compliance.",
+            "mermaid_code": "flowchart TD\n    subgraph Compliance[\"Security & Compliance\"]\n        COMP-RGPD-HDS[\"COMP-RGPD-HDS: RGPD & HDS Compliance\"]\n        SEC-ENCRYPTION[\"SEC-ENCRYPTION: Data Encryption at Rest\"]\n        SEC-AUTH-JWT[\"SEC-AUTH-JWT: JWT/OAuth2 Auth\"]\n    end\n\n    subgraph Stack[\"Technical Stack & Standards\"]\n        STACK-BACKEND[\"STACK-BACKEND: FastAPI & PostgreSQL\"]\n        STACK-FRONTEND[\"STACK-FRONTEND: React & TypeScript\"]\n        ARCH-EVENT-DRIVEN[\"ARCH-EVENT-DRIVEN: Event-Driven Architecture\"]\n        RULE-PYDANTIC[\"RULE-PYDANTIC: Pydantic Validation\"]\n        RULE-YAGNI[\"RULE-YAGNI: YAGNI Principle\"]\n    end\n\n    subgraph Quality[\"Quality Gates & Workflow\"]\n        TEST-COV-80[\"TEST-COV-80: 80% Test Coverage\"]\n        TEST-UNIT-INT[\"TEST-UNIT-INT: Unit & Integration Tests\"]\n        WF-CODE-REVIEW[\"WF-CODE-REVIEW: Mandatory Code Review\"]\n        WF-TEST-MERGE[\"WF-TEST-MERGE: Test Validation before Merge\"]\n        WF-SPEC-DOC[\"WF-SPEC-DOC: Feature Specification Documentation\"]\n    end\n\n    SEC-ENCRYPTION -->|implements| COMP-RGPD-HDS\n    SEC-AUTH-JWT -->|implements| COMP-RGPD-HDS\n    RULE-PYDANTIC -->|depends_on| STACK-BACKEND\n    WF-TEST-MERGE -->|depends_on| TEST-COV-80\n    WF-TEST-MERGE -->|depends_on| TEST-UNIT-INT\n    WF-CODE-REVIEW -->|relates_to| RULE-YAGNI"
+        },
+        {
+            "title": "Development Lifecycle Workflow",
+            "type": "flowchart",
+            "description": "The mandatory process for code changes from implementation to merge in the MediReserve project.",
+            "mermaid_code": "flowchart TD\n    START[Start: Feature Development] --> DEV[\"Implement Feature & Documentation (WF-SPEC-DOC)\"]\n    DEV --> TEST_DEV[\"Write Unit & Integration Tests (TEST-UNIT-INT)\"]\n    TEST_DEV --> CHECK_COV{\"Is Coverage >= 80%? (TEST-COV-80)\"}\n    \n    CHECK_COV -->|No| TEST_DEV\n    CHECK_COV -->|Yes| PR[\"Create Pull Request\"]\n    \n    PR --> REVIEW{\"Code Review Passed? (WF-CODE-REVIEW)\"}\n    \n    REVIEW -->|No| DEV\n    REVIEW -->|Yes| MERGE_CHECK{\"All Automated Tests Pass? (WF-TEST-MERGE)\"}\n    \n    MERGE_CHECK -->|No| TEST_DEV\n    MERGE_CHECK -->|Yes| END[End: Merge to Main Branch]"
+        }
+    ]
+}
