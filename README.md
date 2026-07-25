@@ -24,17 +24,23 @@ Contains the orchestration engine, real-time file watchers, and CLI utilities th
 Automates the triggering of the enrichment pipeline when the developer executes `speckit` CLI commands to generate official business artifacts (`spec`, `plan`, `tasks`, `contracts`, `requirements`, `constitution`). It leverages the **FastAPI** server (`backend/`) and the monitoring script (`scripts/spec_watcher.py`), which listens for the creation/modification of these files and intelligently filters out Spec Kit's internal working documents (`research.md`, `data-model.md`, `quickstart.md`, etc.) to avoid unnecessary pipeline loads. For more details on installation, development, and architecture, please refer to [`extensions/README.md`](extensions/README.md).
 
 
-### 📊 Outputs Organization (`/outputs`)
-The `outputs/` directory is the centralized hub for all pipeline results, now using a multi-project structure. Each project sub-folder (e.g., `001-expense-tracker-cli`, `002-expense-tracker-enhanced`) follows a standardized tree:
+### 📊 Outputs Organization & Data Origin (`/outputs`)
+The `outputs/` directory is the centralized hub for all pipeline results, organized by project folders. These folders originate from two distinct execution flows:
 
-		outputs/
-		└── <project-folder>/
-		    ├── 💾 data/          # Fichiers de travail bruts et données structurées JSON
-		    ├── 🖼️ diagrams/      # Schémas et diagrammes générés (PlantUML, SVG, PDF)
-		    ├── 📊 evaluations/   # Métriques, rapports RAGAS et évaluations JSON des 6 agents
-		    ├── 📝 markdowns/     # Fichiers Markdown intermédiaires enrichis par le Doc Writer
-		    └── 📄 pdf/           # Livrables PDF finaux horodatés/versionnés (ex: spec_v1.0.pdf, plan_v2.0.pdf)
-		```
+1. **Génération Automatique SpecKit** : Project folders structured and generated via the framework commands (e.g., `001-expense-tracker-cli`, `002-expense-tracker-enhanced`).
+2. **Tests Manuel / Copier-Coller** : Result folders created when `.md` files are manually copied from `test_files/` to `specs/` to test the pipeline on the fly (e.g., folders like `plan(1)`, `tasks(1)`, `contracts(1)`, `constitution`, `spec(1)`).
+
+Each project sub-folder follows a standardized tree:
+
+```
+outputs/
+└── <project-folder>/
+    ├── 💾 data/          # Fichiers de travail bruts et données structurées JSON
+    ├── 🖼️ diagrams/      # Schémas et diagrammes générés (PlantUML, SVG, PDF)
+    ├── 📊 evaluations/   # Métriques, rapports RAGAS et évaluations JSON des 6 agents
+    ├── 📝 markdowns/     # Fichiers Markdown intermédiaires enrichis par le Doc Writer
+    └── 📄 pdf/           # Livrables PDF finaux horodatés/versionnés (ex: spec_v1.0.pdf, plan_v2.0.pdf)
+```
 
 ### 🛠️ Input & Validation Workflow
 We distinguish between official specifications and manual test cases to prevent accidental trigger of the automation pipeline.
@@ -43,6 +49,16 @@ We distinguish between official specifications and manual test cases to prevent 
 - **`test_files/`** 🧪 **Manual Testing**: Reserved exclusively for manual tests. Use this directory to store `.md` files for debugging and testing the workflow via command line **without** triggering the Hook Watcher.
 
 ---
+
+## 🗄️ Traceabilité & Versioning en BDD (`PostgreSQL`)
+
+Le pipeline s'appuie sur une base de données PostgreSQL pour garantir une traçabilité rigoureuse et un historique immuable de chaque artefact traité.
+
+- **Gestion dynamique des versions** : La BDD orchestre le versioning automatique. Lorsqu'un artefact est réécrit ou mis à jour par Claude Code ou l'utilisateur dans `specs/`, le système incrémente automatiquement la version (ex: passage de `v1.0` à `v2.0`).
+- **Suivi des métriques de performance** : Chaque exécution est enregistrée avec son statut (`completed`), son score KPI combiné, sa durée totale de traitement (en secondes) et les indicateurs de succès spécifiques aux agents (ex: validation du `DocWriter`, confirmation du `PDF Prêt`).
+- **Historique des livrables** : La BDD maintient l'association exacte entre une version spécifique d'un document et le chemin d'accès absolu vers son fichier PDF généré, permettant un audit rapide des évolutions.
+
+![Database Pipeline Runs Execution Results]![alt text](image.png)
 
 ## 🚀 Quick Start
 
