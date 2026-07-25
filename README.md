@@ -52,13 +52,34 @@ We distinguish between official specifications and manual test cases to prevent 
 
 ## 🗄️ Traceabilité & Versioning en BDD (`PostgreSQL`)
 
-Le pipeline s'appuie sur une base de données PostgreSQL pour garantir une traçabilité rigoureuse et un historique immuable de chaque artefact traité.
+Le pipeline s'appuie sur une base de données PostgreSQL pour garantir une traçabilité rigoureuse, le suivi en temps réel de l'exécution et l'historique immuable de chaque artefact traité.
 
-- **Gestion dynamique des versions** : La BDD orchestre le versioning automatique. Lorsqu'un artefact est réécrit ou mis à jour par Claude Code ou l'utilisateur dans `specs/`, le système incrémente automatiquement la version (ex: passage de `v1.0` à `v2.0`).
-- **Suivi des métriques de performance** : Chaque exécution est enregistrée avec son statut (`completed`), son score KPI combiné, sa durée totale de traitement (en secondes) et les indicateurs de succès spécifiques aux agents (ex: validation du `DocWriter`, confirmation du `PDF Prêt`).
-- **Historique des livrables** : La BDD maintient l'association exacte entre une version spécifique d'un document et le chemin d'accès absolu vers son fichier PDF généré, permettant un audit rapide des évolutions.
+#### 📊 Modèle de Données & Rôle des Tables (`models.py`)
 
-![Database Pipeline Runs Execution Results]![alt text](image.png)
+1. **`projects` (Conteneur de Projet)**
+   - **Rôle** : Représente l'entité parente d'un projet logiciel (ex: `001-expense-tracker-cli`, `002-expense-tracker-enhanced`).
+   - **Utilité** : Regroupe l'ensemble des artefacts associés à un projet et permet à `path_builder.py` d'isoler et d'organiser les résultats dans le dossier `outputs/<project-folder>/`.
+
+2. **`artifacts` (Fichiers Sources Surveillés)**
+   - **Rôle** : Enregistre chaque fichier Markdown source surveillé dans le dossier `specs/` (ex: `specs/001-expense-tracker-cli/spec.md`).
+   - **Utilité** : 
+     - Maintient l'empreinte numérique SHA-256 (`current_file_hash`) du fichier pour détecter les modifications exactes avant tout lancement.
+     - Identifie le type d'artefact métier via l'Enum `ArtifactType` (`spec`, `plan`, `task`, `constitution`, `requirements`, `contracts`).
+
+3. **`pipeline_runs` (Suivi Temps Réel & Évaluations des Agents)**
+   - **Rôle** : Journalise chaque session complète d'exécution du pipeline multi-agents.
+   - **Utilité** :
+     - **Suivi Temps Réel** : Indique l'état d'avancement du graphe via `current_stage` (`parsing`, `parallel_enrichment`, `writing`, `layout`, `rendering`, `completed`, `failed`).
+     - **Stockage des Livrables & Métriques** : Conserve les sorties brutes et les rapports JSON d'évaluation pour chacun des 6 agents (`parsing_eval`, `summary_eval`, `glossary_eval`, `diagram_eval`, `writer_eval`, `layout_eval`).
+     - **Score KPI Global** : Calcule et enregistre le score global de qualité combiné.
+
+4. **`doc_versions` (Registre Immuable des PDFs Certifiés)**
+   - **Rôle** : Historise toutes les versions finales de documents générées et validées par le pipeline.
+   - **Utilité** :
+     - **Versioning Dynamique** : Orchestre l'incrémentation automatique des numéros de version (ex: passage de `v1.0` à `v2.0` lors d'une modification du fichier source dans `specs/`).
+     - **Traçabilité des Livrables** : Associe chaque numéro de version (`version_label`) au chemin d'accès absolu vers son fichier PDF final généré dans `outputs/` et à son `PipelineRun` d'origine.
+
+![Database Pipeline Runs Execution Results](docs/images/pipeline_runs_db.png)
 
 ## 🚀 Quick Start
 
