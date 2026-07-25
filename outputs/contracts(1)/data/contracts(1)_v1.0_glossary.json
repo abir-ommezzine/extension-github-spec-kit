@@ -1,0 +1,124 @@
+{
+    "project_name": "CourseHub",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API Overview",
+            "project_definition": "The structured set of endpoints operating under the v1 namespace to facilitate communication between clients and the server."
+        },
+        {
+            "term": "ActiveEnrollmentConstraint",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-DELETE-COURSE",
+            "project_definition": "A validation rule that prohibits the removal of an educational offering if it currently contains registered participants."
+        },
+        {
+            "term": "Authentication",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-AUTH-JWT",
+            "project_definition": "The security process of verifying identity via bearer tokens passed in the request header."
+        },
+        {
+            "term": "BackgroundTask",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "POST `/api/v1/auth/register`",
+            "project_definition": "An asynchronous operation executed independently of the main request-response cycle, such as triggering transactional emails."
+        },
+        {
+            "term": "Business Rule",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-DELETE-COURSE",
+            "project_definition": "A formal constraint governing the allowable state transitions or operations within the system logic."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "API-BASE-URL",
+            "project_definition": "The protocol governing cross-origin resource sharing to allow secure access from diverse browser domains."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "The application of bcrypt to transform plaintext passwords into irreversible fixed-length strings for secure storage."
+        },
+        {
+            "term": "Error Response",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-ENVELOPE",
+            "project_definition": "A standardized payload containing an array of failure details, codes, and messages when an operation cannot be completed."
+        },
+        {
+            "term": "FK",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-COURSE",
+            "project_definition": "A relational pointer that enforces referential integrity between two data entities."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-BASE-URL",
+            "project_definition": "The lightweight data-interchange format used for all request and response bodies."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-AUTH-JWT",
+            "project_definition": "A compact, URL-safe means of representing claims to be transferred between two parties as a bearer token."
+        },
+        {
+            "term": "NOT",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "POST `/api/v1/auth/register`",
+            "project_definition": "A logical negation operator indicating that a specific side effect must not impede the delivery of the primary response."
+        },
+        {
+            "term": "Reference",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Data Type Reference",
+            "project_definition": "The technical documentation mapping defining the structural properties and types of the system entities."
+        },
+        {
+            "term": "Request",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "POST `/api/v1/auth/register`",
+            "project_definition": "The incoming data payload and headers sent by a client to initiate a specific server-side operation."
+        },
+        {
+            "term": "Response",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-ENVELOPE",
+            "project_definition": "The outgoing payload sent from the server, wrapped in a consistent envelope containing data and metadata."
+        },
+        {
+            "term": "Role",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "A classification assigned to a user, such as student or instructor, which determines access permissions and available actions."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "The 128-bit universally unique identifier used as the primary key for all system entities."
+        }
+    ]
+}

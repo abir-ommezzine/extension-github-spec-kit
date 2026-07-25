@@ -1,0 +1,118 @@
+{
+    "parsing_rationale": "L'analyse a consisté à mapper un document de test de versionnage technique vers le gabarit de spécification fonctionnelle. Les exigences explicitement nommées (REQ-V2-01, REQ-V2-02) ont été extraites comme requirements fonctionnels. Les éléments de l'architecture et du glossaire ont été transformés en entités techniques. Les sections manquantes du gabarit standard (Objectifs, Non-Fonctionnel, Scope, Questions) ont été listées dans les gaps structurels car le document est un 'Test Léger'.",
+    "project_info": {
+        "project_name": "Système de Versionnage de Spécifications",
+        "source_type": "refining",
+        "brief_explanation": "Validation du pipeline de mise à jour de la v1.0 vers la v2.0 avec enregistrement en base de données PostgreSQL.",
+        "source_context": "Document de test technique pour valider le cycle de mise à jour et la génération de PDF."
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "📄 Spécification Technique du Système — Version 2.0 (Test Léger)",
+            "level": 1,
+            "raw_content": "> **Version :** 2.0  \n> **Statut :** Validation du Pipeline  \n> **Auteur :** Équipe Technique  \n> **Changelog v2.0 :** Test de versionnage court après réinitialisation des verrous BDD.\n\n---",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "1. Présentation Générale",
+            "level": 2,
+            "raw_content": "Ce document constitue le test de mise à jour pour valider le passage de la version `v1.0` à la version `v2.0` dans la base de données PostgreSQL et la génération du PDF `spec(1)_v2.0.pdf`.\n\n---",
+            "mapped_to_template_field": "Goals & Objectives"
+        },
+        {
+            "title": "2. Exigences Fonctionnelles",
+            "level": 2,
+            "raw_content": "* **REQ-V2-01 (Incrémentation Automatique) :** Le système doit détecter la modification du fichier source et enregistrer la version `2.0` dans la table `doc_versions`.\n* **REQ-V2-02 (Rendu Rapide) :** Génération optimisée du document sans latence sur les agents d'enrichissement.\n\n---",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "3. Architecture Simplifiée",
+            "level": 2,
+            "raw_content": "[Fichier Source v2.0] --> [FastAPI Pipeline] --> [BDD PostgreSQL (doc_versions v2.0)]\n\n\n---",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "4. Glossaire Léger",
+            "level": 2,
+            "raw_content": "| Terme | Définition |\n| :--- | :--- |\n| **Pipeline v2** | Deuxième cycle d'exécution du graphe d'agents. |\n| **Validation Hash** | Vérification de la modification SHA-256 pour déclencher la mise à jour. |",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "functional_requirement",
+            "identifier": "REQ-V2-01",
+            "content": "Le système doit détecter la modification du fichier source et enregistrer la version 2.0 dans la table doc_versions.",
+            "source_section": "2. Exigences Fonctionnelles",
+            "attributes": {
+                "feature": "Incrémentation Automatique"
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "REQ-V2-02",
+            "content": "Génération optimisée du document sans latence sur les agents d'enrichissement.",
+            "source_section": "2. Exigences Fonctionnelles",
+            "attributes": {
+                "feature": "Rendu Rapide"
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "DB-POSTGRES",
+            "content": "Base de données PostgreSQL contenant la table doc_versions",
+            "source_section": "3. Architecture Simplifiée",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "PIPE-FASTAPI",
+            "content": "Pipeline FastAPI responsable du flux de données",
+            "source_section": "3. Architecture Simplifiée",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "VAL-HASH",
+            "content": "Vérification de la modification SHA-256 pour déclencher la mise à jour",
+            "source_section": "4. Glossaire Léger",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "REQ-V2-01",
+            "to": "DB-POSTGRES",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "REQ-V2-01",
+            "to": "VAL-HASH",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PIPE-FASTAPI",
+            "to": "DB-POSTGRES",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Non-Functional Requirements",
+            "priority": "MEDIUM",
+            "remediation_advice": "Préciser les SLAs de performance pour le 'Rendu Rapide' mentionné dans REQ-V2-02."
+        },
+        {
+            "missing_section": "Scope & Out-of-Scope",
+            "priority": "HIGH",
+            "remediation_advice": "Définir les limites du test de versionnage pour éviter tout débordement sur la production."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Lister les points de blocage potentiels lors de la réinitialisation des verrous BDD."
+        }
+    ],
+    "open_questions": []
+}

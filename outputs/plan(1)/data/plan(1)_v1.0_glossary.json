@@ -1,0 +1,411 @@
+{
+    "project_name": "CourseHub API",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TL;DR",
+            "project_definition": "The primary interface utilizing a representational state transfer architecture to expose course management functionality."
+        },
+        {
+            "term": "ActiveEnrollmentConstraint",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-ACTIVE-ENROLL",
+            "project_definition": "A validation rule that prevents the removal of an educational entity if students are currently linked to it, triggering a 409 conflict."
+        },
+        {
+            "term": "Async throughout",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASYNC-SQLA",
+            "project_definition": "The architectural requirement that all database interactions utilize non-blocking I/O operations."
+        },
+        {
+            "term": "AsyncClient",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 6: Testing & Verification",
+            "project_definition": "The non-blocking HTTP client used within the test suite to simulate requests."
+        },
+        {
+            "term": "AsyncSession",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The non-blocking database transaction context managed via dependency injection."
+        },
+        {
+            "term": "Auth first",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The development strategy of establishing identity and access boundaries prior to implementing domain logic."
+        },
+        {
+            "term": "Auth layer",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The security boundary implementing token issuance, validation, and role verification."
+        },
+        {
+            "term": "Background email",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "EMAIL-BG",
+            "project_definition": "Asynchronous dispatch of notifications via an external provider to prevent blocking the main request thread."
+        },
+        {
+            "term": "BackgroundTask",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "EMAIL-BG",
+            "project_definition": "The framework utility used to execute the welcome notification process after the response is returned."
+        },
+        {
+            "term": "BusinessRuleViolation",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 7: Response Envelope & Error Handling",
+            "project_definition": "A specific exception raised when a domain-level constraint, such as the active student check, is breached."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "TL;DR",
+            "project_definition": "The protocol for managing cross-origin resource sharing to allow browser-based client interactions."
+        },
+        {
+            "term": "CRUD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 4: Courses Router — CRUD with Ownership",
+            "project_definition": "The four foundational persistent storage mutation primitives implemented for the educational entities."
+        },
+        {
+            "term": "Config",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Relevant Files",
+            "project_definition": "The centralized management of environment variables including database URLs and provider keys."
+        },
+        {
+            "term": "ConfigError",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 3: Resend Email Integration as Service",
+            "project_definition": "An exception triggered when a required environment variable is missing during system initialization."
+        },
+        {
+            "term": "Course",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-COURSE",
+            "project_definition": "The primary educational entity containing a title, pricing in cents, and a publication status."
+        },
+        {
+            "term": "Course ordering",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Further Considerations",
+            "project_definition": "The sequential arrangement of instructional segments enforced by a numerical column."
+        },
+        {
+            "term": "CourseCreate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "The data transfer object used to validate input for the creation of a new educational entity and its segments."
+        },
+        {
+            "term": "CourseResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "The data transfer object returned after a successful retrieval or mutation of an educational entity."
+        },
+        {
+            "term": "CourseUpdate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "The data transfer object used for modifying the attributes of an existing educational entity."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The one-way transformation applied to passwords using passlib before storage."
+        },
+        {
+            "term": "DB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The relational PostgreSQL instance used for persistent data storage."
+        },
+        {
+            "term": "DR",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Relevant Files",
+            "project_definition": "The designated routing layer responsible for mapping endpoints to service logic."
+        },
+        {
+            "term": "Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The collection of third-party libraries such as FastAPI and Pydantic required for system operation."
+        },
+        {
+            "term": "Email template",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Further Considerations",
+            "project_definition": "The structured text format used for the welcome notification sent to new students."
+        },
+        {
+            "term": "Enrollment",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-ENROLL",
+            "project_definition": "The relationship entity linking a student to a course, tracking a percentage-based completion value."
+        },
+        {
+            "term": "EnrollmentCreate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-5",
+            "project_definition": "The data transfer object used to request the association between a student and an educational entity."
+        },
+        {
+            "term": "EnrollmentResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-5",
+            "project_definition": "The data transfer object returning the status and progress of a student's association with a course."
+        },
+        {
+            "term": "EnrollmentUpdate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-5",
+            "project_definition": "The data transfer object used to modify progress and completion timestamps."
+        },
+        {
+            "term": "FK",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The database constraint ensuring referential integrity between related tables."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The stateless token format used to maintain user identity and role across requests."
+        },
+        {
+            "term": "Middleware",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 7: Response Envelope & Error Handling",
+            "project_definition": "The processing layer that intercepts all outgoing responses to wrap them in a consistent envelope."
+        },
+        {
+            "term": "Migrations",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The versioned schema changes managed by Alembic to evolve the database structure."
+        },
+        {
+            "term": "Module",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "A constituent segment of a course with a defined sequence order."
+        },
+        {
+            "term": "ModuleCreate",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "The data transfer object used to define a new instructional segment during course creation."
+        },
+        {
+            "term": "ModuleResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-4",
+            "project_definition": "The data transfer object returning the details of a specific instructional segment."
+        },
+        {
+            "term": "NAMED",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "RULE-ACTIVE-ENROLL",
+            "project_definition": "The practice of explicitly labeling a business constraint for clear traceability in the logic layer."
+        },
+        {
+            "term": "NOT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "EP-AUTH-REG",
+            "project_definition": "A logical negation used to defer email dispatch during the registration process."
+        },
+        {
+            "term": "ORM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASYNC-SQLA",
+            "project_definition": "The mapping layer used to interact with the database using object-oriented patterns instead of raw queries."
+        },
+        {
+            "term": "PermissionError",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 4: Courses Router — CRUD with Ownership",
+            "project_definition": "An exception raised when a user attempts to modify a resource they do not own."
+        },
+        {
+            "term": "RBAC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The access control mechanism based on the assigned roles of student or instructor."
+        },
+        {
+            "term": "REST",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TL;DR",
+            "project_definition": "The architectural style governing the communication between the client and server via standard HTTP methods."
+        },
+        {
+            "term": "RULE",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "RULE-ACTIVE-ENROLL",
+            "project_definition": "A deterministic domain constraint that must be satisfied before a specific operation is permitted."
+        },
+        {
+            "term": "RefreshToken",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "A long-lived credential used to obtain a new access token without re-authenticating."
+        },
+        {
+            "term": "Routers",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Relevant Files",
+            "project_definition": "The modular components of the API that group related endpoints such as authentication and courses."
+        },
+        {
+            "term": "SDK",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 3: Resend Email Integration as Service",
+            "project_definition": "The provided software development kit for interacting with the Resend notification service."
+        },
+        {
+            "term": "SQL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASYNC-SQLA",
+            "project_definition": "The query language used by the underlying relational database, though accessed via an object mapper."
+        },
+        {
+            "term": "SQLAlchemy 2.0",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASYNC-SQLA",
+            "project_definition": "The specific version of the toolkit used for asynchronous database communication."
+        },
+        {
+            "term": "Schemas",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Relevant Files",
+            "project_definition": "The Pydantic-based models that define the structure and validation of request and response payloads."
+        },
+        {
+            "term": "Services",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Relevant Files",
+            "project_definition": "The logic layer containing the actual implementation of business rules and external integrations."
+        },
+        {
+            "term": "TL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "TL;DR",
+            "project_definition": "The high-level summary of the system's technical and functional goals."
+        },
+        {
+            "term": "Target",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 6: Testing & Verification",
+            "project_definition": "The goal of achieving 80% or more code coverage for the business logic."
+        },
+        {
+            "term": "Tests",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Phase 6: Testing & Verification",
+            "project_definition": "The suite of automated verification scripts using pytest to ensure correctness."
+        },
+        {
+            "term": "TokenResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The data transfer object returning the pair of access and refresh credentials."
+        },
+        {
+            "term": "User",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "The account entity that can be either a student or an instructor."
+        },
+        {
+            "term": "UserLogin",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The data transfer object containing credentials for session authentication."
+        },
+        {
+            "term": "UserRegister",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The data transfer object used to create a new account with a student role."
+        },
+        {
+            "term": "UserResponse",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The data transfer object returning a user's identity and role."
+        },
+        {
+            "term": "ValueError",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-5",
+            "project_definition": "An exception raised when the completion progress is outside the 0-100 range."
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "Version Update Workflow",
+            "type": "flowchart",
+            "description": "Models the technical process of detecting file changes and updating the version in the database, incorporating the SHA-256 validation logic.",
+            "mermaid_code": "flowchart TD\n    START[Start] --> FILE_CHECK[\"Check Source File v2.0\"]\n    FILE_CHECK --> VAL_HASH{\"VAL-HASH: SHA-256 Modified?\"}\n    VAL_HASH -- \"No\" --> END[End]\n    VAL_HASH -- \"Yes\" --> PIPE_FASTAPI[\"PIPE-FASTAPI: Process Update\"]\n    PIPE_FASTAPI --> REQ_V2_01_PROC[\"REQ-V2-01: Increment Version to 2.0\"]\n    REQ_V2_01_PROC --> DB_SAVE[\"DB-POSTGRES: Save to doc_versions\"]\n    DB_SAVE --> REQ_V2_02_PROC[\"REQ-V2-02: Optimized PDF Generation\"]\n    REQ_V2_02_PROC --> END"
+        },
+        {
+            "title": "System Interaction Sequence",
+            "type": "sequenceDiagram",
+            "description": "Sequence of interactions between the source file, the FastAPI pipeline, and the PostgreSQL database for the versioning process.",
+            "mermaid_code": "sequenceDiagram\n    participant Source as \"Source File v2.0\"\n    participant Pipe as \"PIPE-FASTAPI\"\n    participant Hash as \"VAL-HASH\"\n    participant DB as \"DB-POSTGRES\"\n\n    Source ->> Pipe: Trigger Update\n    Pipe ->> Hash: Request SHA-256 Validation\n    Hash -->> Pipe: Validation Confirmed\n    Pipe ->> DB: Update doc_versions to v2.0 (REQ-V2-01)\n    DB -->> Pipe: Success Acknowledgement\n    Pipe ->> Pipe: Generate Optimized PDF (REQ-V2-02)\n    Pipe -->> Source: Process Complete"
+        },
+        {
+            "title": "Requirements Traceability Map",
+            "type": "flowchart",
+            "description": "Maps functional requirements to the technical entities they depend on for implementation.",
+            "mermaid_code": "flowchart LR\n    subgraph Requirements\n        REQ-V2-01[\"REQ-V2-01: Incrémentation Automatique\"]\n        REQ-V2-02[\"REQ-V2-02: Rendu Rapide\"]\n    end\n\n    subgraph Technical_Entities\n        DB-POSTGRES[\"DB-POSTGRES: PostgreSQL BDD\"]\n        VAL-HASH[\"VAL-HASH: SHA-256 Validation\"]\n        PIPE-FASTAPI[\"PIPE-FASTAPI: FastAPI Pipeline\"]\n    end\n\n    REQ-V2-01 -->|depends_on| DB-POSTGRES\n    REQ-V2-01 -->|depends_on| VAL-HASH\n    REQ-V2-02 -->|implemented_by| PIPE-FASTAPI\n    PIPE-FASTAPI -->|relates_to| DB-POSTGRES"
+        },
+        {
+            "title": "Data Model Entity Relationship",
+            "type": "erDiagram",
+            "description": "Conceptual data model for the versioning system focusing on the doc_versions table.",
+            "mermaid_code": "erDiagram\n    DB-POSTGRES ||--o{ DOC_VERSIONS : \"contains\"\n    DOC_VERSIONS {\n        string version_id PK\n        string sha256_hash\n        datetime update_date\n        string status\n    }"
+        }
+    ]
+}

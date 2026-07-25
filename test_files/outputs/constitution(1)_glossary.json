@@ -1,0 +1,75 @@
+{
+    "project_name": "Learning Platform API",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-REST-V1",
+            "project_definition": "The RESTful interface versioned under /api/v1/ utilizing a standardized data, meta, and errors envelope."
+        },
+        {
+            "term": "AsyncClient",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TEST-PYTEST",
+            "project_definition": "The httpx non-blocking request handler used for executing business logic validation tests."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-REST-V1",
+            "project_definition": "The required lightweight data-interchange format for all service responses."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The token-based mechanism implementing 15-minute short-lived access and 7-day refresh windows."
+        },
+        {
+            "term": "ORM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DB-ASYNC",
+            "project_definition": "The exclusive abstraction layer for database interactions, prohibiting any direct string-based query execution."
+        },
+        {
+            "term": "PostgreSQL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-CORE",
+            "project_definition": "The relational database engine version 16 serving as the persistent storage layer."
+        },
+        {
+            "term": "Python 3.12",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-CORE",
+            "project_definition": "The mandatory runtime environment version for all implementation work."
+        },
+        {
+            "term": "SDK",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "MAIL-RESEND",
+            "project_definition": "The specialized library used to integrate the external transactional email delivery platform."
+        },
+        {
+            "term": "SQL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DB-ASYNC",
+            "project_definition": "The structured query language whose raw usage is strictly forbidden in favor of the mapped object layer."
+        },
+        {
+            "term": "SQLAlchemy 2.0",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-CORE",
+            "project_definition": "The asynchronous data mapping library used to manage persistence and sessions."
+        }
+    ]
+}

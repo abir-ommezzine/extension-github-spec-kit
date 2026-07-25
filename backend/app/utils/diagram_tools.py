@@ -28,25 +28,38 @@ class DiagramExporterTool:
     def sanitize_mermaid_code(cls, mermaid_code: str) -> str:
         """
         Nettoie et corrige automatiquement les erreurs de syntaxe courantes
-        générées dans le code Mermaid (ex: espaces après {, guillemets mal fermés).
+        générées dans le code Mermaid par les LLMs.
         """
         if not mermaid_code:
             return ""
 
-        code = mermaid_code.strip()
+        code = str(mermaid_code).strip()
 
         # 1. Supprime les blocs de code Markdown (```mermaid ... ```) s'ils existent
         code = re.sub(r"^```(?:mermaid)?\s*\n?", "", code, flags=re.MULTILINE)
         code = re.sub(r"\n?\s*```$", "", code, flags=re.MULTILINE)
 
-        # 2. Corrige les espaces entre formes et guillemets qui font planter mmdc
+        # 2. Normalisation Unicode (espaces insécables, espaces invisibles, saut de ligne Windows)
+        code = code.replace("\xa0", " ").replace("\u200b", "").replace("\r\n", "\n")
+        
+        # Normalisation des guillemets typographiques (intelligents) vers guillemets standards
+        code = code.replace("“", '"').replace("”", '"').replace("‘", "'").replace("’", "'")
+
+        # 3. Corrige les espaces entre toutes les formes Mermaid et les guillemets
         # Exemple: { "Text" } -> {"Text"} | [ "Text" ] -> ["Text"] | ( "Text" ) -> ("Text")
+        code = re.sub(r'(\{+|\[+|\(+\|\>)\s+"', r'\1"', code)
+        code = re.sub(r'"\s+(\}+|\]+|\)+\|?)', r'"\1', code)
+        code = re.sub(r"(\{+|\[+|\(+\|\>)\s+'", r"\1'", code)
+        code = re.sub(r"'\s+(\}+|\]+|\)+\|?)", r"'\1", code)
+
+        # Correctifs ciblés pour les losanges de décision
         code = re.sub(r'\{\s+"', '{"', code)
         code = re.sub(r'"\s+\}', '"}', code)
-        code = re.sub(r'\[\s+"', '["', code)
-        code = re.sub(r'"\s+\]', '"]', code)
-        code = re.sub(r'\(\s+"', '("', code)
-        code = re.sub(r'"\s+\)', '")', code)
+        code = re.sub(r"\{\s+'", "{'", code)
+        code = re.sub(r"'\s+\}", "'}", code)
+
+        # 4. Suppression des sauts de lignes multiples inutiles
+        code = re.sub(r'\n\s*\n', '\n', code)
 
         return code.strip()
 
@@ -157,7 +170,7 @@ class DiagramExporterTool:
 
     @classmethod
     async def render_mermaid_to_png(cls, mermaid_code: str, output_path: Path) -> bool:
-        # Nettoyage automatique avant rendu
+        # Nettoyage automatique du code avant toute tentative de rendu
         clean_code = cls.sanitize_mermaid_code(mermaid_code)
         
         try:
@@ -251,7 +264,7 @@ class DiagramExporterTool:
     ) -> Path:
         """
         Génère les planches d'images PNG pour l'ensemble des diagrammes
-        et compile le tout dans un fichier PDF sous outputs/data/diagrams/.
+        et compile le tout dans un fichier PDF.
         """
         diagrams = diagrams_data.get("diagrams", []) if isinstance(diagrams_data, dict) else []
         if not diagrams:
@@ -299,6 +312,7 @@ class DiagramExporterTool:
         return pdf_path
 # # app/utils/diagram_tools.py
 # import os
+# import re
 # import platform
 # import subprocess
 # import tempfile
@@ -309,18 +323,53 @@ class DiagramExporterTool:
 # import httpx
 # from PIL import Image, ImageDraw, ImageFont
 
-# # --- MODIFICATION DES CHEMINS ---
+# # --- CHEMINS CENTRALISÉS (outputs/data/diagrams/) ---
 # BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
 # PROJECT_ROOT = BASE_DIR.parent                             # StageTalan/
-# DEFAULT_DOCUMENTS_DIR = PROJECT_ROOT / "outputs" / "documents"
+# DEFAULT_DIAGRAMS_DIR = PROJECT_ROOT / "outputs" / "data" / "diagrams"
 
 
 # class DiagramExporterTool:
 #     """
 #     Boîte d'outils d'exportation graphique pour le Diagram Agent.
 #     Gère la conversion du code Mermaid.js en images PNG (via mmdc ou Kroki),
-#     la mise en page esthétique des planches et la compilation finale en PDF.
+#     l'assainissement automatique de la syntaxe, la mise en page et la compilation en PDF.
 #     """
+
+#     @classmethod
+#     def sanitize_mermaid_code(cls, mermaid_code: str) -> str:
+#         """
+#         Nettoie et corrige automatiquement les erreurs de syntaxe courantes
+#         générées dans le code Mermaid par les LLMs.
+#         """
+#         if not mermaid_code:
+#             return ""
+
+#         code = str(mermaid_code).strip()
+
+#         # 1. Supprime les blocs de code Markdown (```mermaid ... ```) s'ils existent
+#         code = re.sub(r"^```(?:mermaid)?\s*\n?", "", code, flags=re.MULTILINE)
+#         code = re.sub(r"\n?\s*```$", "", code, flags=re.MULTILINE)
+
+#         # 2. Normalisation Unicode (suppression des espaces insécables \xa0 et guillemets intelligents)
+#         code = code.replace("\xa0", " ").replace("\u200b", "")
+#         code = code.replace("“", '"').replace("”", '"').replace("‘", "'").replace("’", "'")
+
+#         # 3. Corrige les espaces entre toutes les formes Mermaid et les guillemets
+#         # Exemple: { "Text" } -> {"Text"} | [ "Text" ] -> ["Text"] | ( "Text" ) -> ("Text")
+#         code = re.sub(r'(\{+|\[+|\(+\|\>)\s+"', r'\1"', code)
+#         code = re.sub(r'"\s+(\}+|\]+|\)+\|?)', r'"\1', code)
+
+#         # Correctifs ciblés pour les losanges de décision { "..." } et { '...' }
+#         code = re.sub(r'\{\s+"', '{"', code)
+#         code = re.sub(r'"\s+\}', '"}', code)
+#         code = re.sub(r"\{\s+'", "{'", code)
+#         code = re.sub(r"'\s+\}", "'}", code)
+
+#         # 4. Suppression des saut de lignes multiples inutiles
+#         code = re.sub(r'\n\s*\n', '\n', code)
+
+#         return code.strip()
 
 #     @staticmethod
 #     def _get_npm_prefix() -> str | None:
@@ -429,12 +478,15 @@ class DiagramExporterTool:
 
 #     @classmethod
 #     async def render_mermaid_to_png(cls, mermaid_code: str, output_path: Path) -> bool:
+#         # Nettoyage automatique avant rendu
+#         clean_code = cls.sanitize_mermaid_code(mermaid_code)
+        
 #         try:
-#             if cls._render_mermaid_mmdc(mermaid_code, output_path):
+#             if cls._render_mermaid_mmdc(clean_code, output_path):
 #                 return True
 #         except RuntimeError:
 #             pass
-#         return await cls._render_mermaid_kroki(mermaid_code, output_path)
+#         return await cls._render_mermaid_kroki(clean_code, output_path)
 
 #     @staticmethod
 #     def _render_page(
@@ -520,13 +572,13 @@ class DiagramExporterTool:
 #     ) -> Path:
 #         """
 #         Génère les planches d'images PNG pour l'ensemble des diagrammes
-#         et compile le tout dans un fichier PDF unique sous outputs/documents/.
+#         et compile le tout dans un fichier PDF sous outputs/data/diagrams/.
 #         """
 #         diagrams = diagrams_data.get("diagrams", []) if isinstance(diagrams_data, dict) else []
 #         if not diagrams:
 #             raise ValueError("No diagrams to render")
 
-#         target_dir = output_dir if output_dir is not None else DEFAULT_DOCUMENTS_DIR
+#         target_dir = output_dir if output_dir is not None else DEFAULT_DIAGRAMS_DIR
 #         target_dir.mkdir(parents=True, exist_ok=True)
 
 #         with tempfile.TemporaryDirectory() as tmpdir_str:
@@ -566,4 +618,3 @@ class DiagramExporterTool:
 #                 f.write(img2pdf.convert([str(p) for p in page_paths]))
 
 #         return pdf_path
-

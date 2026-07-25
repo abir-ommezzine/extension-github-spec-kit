@@ -1,0 +1,185 @@
+{
+    "parsing_rationale": "The document describes the technical governance of an 'Expense Tracker' project. I have mapped the 'Core Principles' and 'Technical Constraints' to 'Coding Standards & Style', 'TDD for CRUD Operations' to 'Testing Discipline & Gates', and 'Development Workflow' to 'Branching & PR Workflow'. The elements were atomized to separate architectural patterns, language constraints, and process rules.",
+    "project_info": {
+        "project_name": "Expense Tracker",
+        "source_type": "refining",
+        "brief_explanation": "Technical constitution defining the development principles, technology stack, and TDD-driven workflow for an expense tracking application.",
+        "source_context": "Constitution document extracted from markdown specifications."
+    },
+    "doc_type": "constitution",
+    "sections": [
+        {
+            "title": "Header du document",
+            "level": 1,
+            "raw_content": "<!--\nSync Impact Report:\n- Version change: 1.5.0 -> 1.0.0\n- Modified principles: Total replacement of MediReserve principles with Expense Tracker principles.\n- Added sections: Technical Constraints, Development Workflow.\n- Removed sections: All MediReserve specific governance and principles.\n- Templates requiring updates:\n  - .specify/templates/plan-template.md ✅ (no change needed)\n  - .specify/templates/spec-template.md ✅ (no change needed)\n  - .specify/templates/tasks-template.md ✅ (no change needed)\n- Follow-up TODOs: None.\n-->",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Expense Tracker Constitution",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Core Principles",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Simplicity and YAGNI (You Ain't Gonna Need It)",
+            "level": 3,
+            "raw_content": "Features MUST be implemented only when there is a direct requirement. Avoid abstract base classes or complex patterns unless the logic requires it. Start simple and evolve based on proven needs.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "Data Integrity and Persistence",
+            "level": 3,
+            "raw_content": "All data modifications MUST be performed using transactions to ensure atomicity. Data must be persisted in a structured format (e.g., SQLite) to prevent data loss. Invalid data state MUST be prevented via validation at the service layer.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "Modular Architecture (Separation of Concerns)",
+            "level": 3,
+            "raw_content": "The project MUST separate data access logic (Repository pattern) from business logic (Services) and the user interface (CLI/API). No UI or presentation code is permitted in the data or service layers.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "TDD for CRUD Operations",
+            "level": 3,
+            "raw_content": "Every Create, Read, Update, and Delete operation MUST have an accompanying unit test that verifies the successful operation and handles edge cases (e.g., item not found, validation errors). Tests MUST be written before the implementation code.",
+            "mapped_to_template_field": "Testing Discipline & Gates"
+        },
+        {
+            "title": "Exhaustive Specification",
+            "level": 3,
+            "raw_content": "Every feature MUST be documented in `.specify/specs/` before implementation. This includes both functional requirements (user stories, acceptance criteria) and technical design (data models, API contracts).",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Technical Constraints",
+            "level": 2,
+            "raw_content": "The implementation must respect the following technological choices:\n- **Language**: Python 3.10+\n- **Storage**: SQLite for local persistence.\n- **Testing**: `pytest` for all test suites.\n- **Interface**: Simple Command Line Interface (CLI).",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "Development Workflow",
+            "level": 2,
+            "raw_content": "The workflow follows these rules:\n1. **Spec First**: Define the requirement and design in `.specify/specs/`.\n2. **Test First**: Write a failing test for the specific CRUD operation in `tests/`.\n3. **Implement**: Write the minimum code required to make the test pass.\n4. **Verify**: Run the full test suite to ensure no regressions.\n5. **Document**: Ensure the README and function docstrings are updated.",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Governance",
+            "level": 2,
+            "raw_content": "This constitution is the Single Source of Truth for the Expense Tracker project. It supersedes all other development practices. Any modification to these principles requires a version bump, documentation of the changes, and validation by the project lead.\n\n**Version**: 1.0.0 | **Ratified**: 2026-07-24 | **Last Amended**: 2026-07-24",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "coding_standard",
+            "identifier": "YAGNI-01",
+            "content": "Features MUST be implemented only when there is a direct requirement; avoid premature abstraction.",
+            "source_section": "Simplicity and YAGNI (You Ain't Gonna Need It)",
+            "attributes": {}
+        },
+        {
+            "type": "rule",
+            "identifier": "DATA-TRANS-01",
+            "content": "All data modifications MUST be performed using transactions to ensure atomicity.",
+            "source_section": "Data Integrity and Persistence",
+            "attributes": {}
+        },
+        {
+            "type": "rule",
+            "identifier": "DATA-VAL-01",
+            "content": "Invalid data state MUST be prevented via validation at the service layer.",
+            "source_section": "Data Integrity and Persistence",
+            "attributes": {}
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "ARCH-SOC",
+            "content": "Separation of concerns: Repository pattern for data access, Services for business logic, CLI/API for UI.",
+            "source_section": "Modular Architecture (Separation of Concerns)",
+            "attributes": {}
+        },
+        {
+            "type": "testing_gate",
+            "identifier": "TDD-CRUD",
+            "content": "Every CRUD operation MUST have a unit test written before the implementation code.",
+            "source_section": "TDD for CRUD Operations",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "SPEC-FIRST",
+            "content": "Every feature MUST be documented in .specify/specs/ before implementation.",
+            "source_section": "Exhaustive Specification",
+            "attributes": {}
+        },
+        {
+            "type": "tool_configuration",
+            "identifier": "STACK-LANG",
+            "content": "Language: Python 3.10+",
+            "source_section": "Technical Constraints",
+            "attributes": {}
+        },
+        {
+            "type": "tool_configuration",
+            "identifier": "STACK-DB",
+            "content": "Storage: SQLite for local persistence.",
+            "source_section": "Technical Constraints",
+            "attributes": {}
+        },
+        {
+            "type": "tool_configuration",
+            "identifier": "STACK-TEST",
+            "content": "Testing: pytest for all test suites.",
+            "source_section": "Technical Constraints",
+            "attributes": {}
+        },
+        {
+            "type": "workflow_constraint",
+            "identifier": "WF-ITER",
+            "content": "Workflow cycle: Spec -> Test -> Implement -> Verify -> Document.",
+            "source_section": "Development Workflow",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "WF-ITER",
+            "to": "SPEC-FIRST",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "WF-ITER",
+            "to": "TDD-CRUD",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "TDD-CRUD",
+            "to": "STACK-TEST",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "DATA-TRANS-01",
+            "to": "STACK-DB",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "DATA-VAL-01",
+            "to": "ARCH-SOC",
+            "relation_type": "implements"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Create a section to track technical unknowns or future architectural decisions."
+        }
+    ],
+    "open_questions": []
+}

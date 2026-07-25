@@ -1,0 +1,22 @@
+{
+    "diagrams": [
+        {
+            "title": "Technical Stack & Constraint Traceability",
+            "type": "flowchart",
+            "description": "Maps the relationship between core technology standards, database rules, and testing gates to ensure architectural compliance.",
+            "mermaid_code": "flowchart TD\n    subgraph \"Core Technology Stack\"\n        STACK-CORE[\"STACK-CORE: Python 3.12, FastAPI, PostgreSQL 16, SQLAlchemy 2.0, Alembic, Pydantic v2\"]\n    end\n\n    subgraph \"Data Access Layer\"\n        DB-ASYNC[\"DB-ASYNC: Asynchronous ORM Access (No Raw SQL)\"]\n        DB-MIGRATIONS[\"DB-MIGRATIONS: Alembic Schema Migrations\"]\n    end\n\n    subgraph \"Quality Assurance\"\n        TEST-PYTEST[\"TEST-PYTEST: pytest + httpx AsyncClient (80% Coverage)\"]\n        TEST-DB-REAL[\"TEST-DB-REAL: Real PostgreSQL Instance (No Mocking)\"]\n    end\n\n    subgraph \"Workflow Gates\"\n        WF-VALIDATION[\"WF-VALIDATION: Test Validation before Completion\"]\n    end\n\n    DB-ASYNC -->|implements| STACK-CORE\n    DB-MIGRATIONS -->|implements| STACK-CORE\n    TEST-DB-REAL -->|depends_on| DB-ASYNC\n    WF-VALIDATION -->|depends_on| TEST-PYTEST"
+        },
+        {
+            "title": "Development Workflow & Review Process",
+            "type": "flowchart",
+            "description": "Models the development lifecycle including the mandatory review paths for critical changes as defined in the constitution.",
+            "mermaid_code": "flowchart TD\n    START[Start Feature Development] --> DEV[Implement Feature & Tests]\n    DEV --> VAL_DEC{\"Is feature validated by tests?\"}\n    \n    VAL_DEC -- \"No\" --> DEV\n    VAL_DEC -- \"Yes\" --> CRIT_DEC{\"Affects Auth, Roles, or API Envelope?\"}\n\n    CRIT_DEC -- \"Yes\" --> REVIEW[\"WF-REVIEW-CRITICAL: Explicit Architecture Review\"]\n    CRIT_DEC -- \"No\" --> PR[Standard Pull Request]\n\n    REVIEW --> PR\n    PR --> MERGE[Merge to Main]\n    MERGE --> END[End]"
+        },
+        {
+            "title": "Authentication & Authorization Logic",
+            "type": "sequenceDiagram",
+            "description": "Illustrates the interaction between the user, the API, and the authentication system based on the JWT and Role rules.",
+            "mermaid_code": "sequenceDiagram\n    actor User\n    participant API as \"API /api/v1/\"\n    participant Auth as \"Auth System (AUTH-JWT)\"\n    participant DB as \"Database (DB-ASYNC)\"\n\n    User->>API: Request Resource (with JWT Access Token)\n    API->>Auth: Validate Token (15m Expiry)\n    Auth-->>API: Token Valid + Role (Student/Instructor)\n    \n    API->>API: Check Role Permissions (AUTH-ROLES)\n    \n    alt Role is Instructor\n        API->>DB: Execute Course CRUD\n        DB-->>API: Success\n    else Role is Student\n        API->>DB: Execute Enrollment/Progress\n        DB-->>API: Success\n    end\n\n    API-->>User: Return JSON Envelope {data, meta, errors}"
+        }
+    ]
+}
