@@ -13,7 +13,7 @@ WATCH_DIR = BASE_DIR / "specs"
 # Sécurité : crée automatiquement le dossier 'specs' s'il n'existe pas encore
 WATCH_DIR.mkdir(parents=True, exist_ok=True)
 
-API_RUN_URL = "http://127.0.0.1:8000/api/v1/pipeline/run"
+API_RUN_URL = "http://127.0.0.1:8000/api/v1/pipeline/upload"
 API_STATUS_URL = "http://127.0.0.1:8000/api/v1/pipeline/status"
 API_CHECK_URL = "http://127.0.0.1:8000/api/v1/pipeline/check-file"
 
@@ -106,16 +106,29 @@ def is_file_already_in_db(file_path: Path) -> bool:
 
 
 def trigger_pipeline(file_path: Path):
-    """Envoie le chemin absolu du fichier Markdown à l'API FastAPI."""
-    abs_path = str(file_path.resolve())
+    """Envoie le fichier Markdown et le projet à l'endpoint FastAPI /upload."""
+    abs_path = file_path.resolve()
     rel_path = file_path.relative_to(BASE_DIR) if file_path.is_relative_to(BASE_DIR) else file_path.name
 
-    print(f"\n🚀 [WATCHER] Lancement du pipeline pour : {rel_path}")
-    payload = {"file_path": abs_path}
-    
+    # Extraire le nom du dossier projet sous 'specs/'
+    project_name = "Default Project"
     try:
-        response = requests.post(API_RUN_URL, json=payload, timeout=None)
-        if response.status_code == 200:
+        relative_parts = abs_path.relative_to(WATCH_DIR.resolve()).parts
+        if len(relative_parts) > 1:
+            project_name = relative_parts[0]
+    except ValueError:
+        pass
+
+    print(f"\n🚀 [WATCHER] Lancement du pipeline pour : {rel_path} (Projet: {project_name})")
+
+    try:
+        # Envoi en multipart/form-data conforme à /api/v1/pipeline/upload
+        with open(abs_path, "rb") as f:
+            files = {"file": (abs_path.name, f, "text/markdown")}
+            data = {"projectName": project_name}
+            response = requests.post(API_RUN_URL, files=files, data=data, timeout=None)
+
+        if response.status_code in (200, 201):
             print(f"✅ [WATCHER] Pipeline exécuté avec succès pour : {rel_path}\n")
         elif response.status_code == 429:
             print(f"⚠️ [WATCHER] Serveur occupé (429), réinsertion dans la file d'attente : {rel_path}")
@@ -124,7 +137,6 @@ def trigger_pipeline(file_path: Path):
             print(f"❌ [WATCHER] Erreur API ({response.status_code}) : {response.text}\n")
     except Exception as e:
         print(f"❌ [WATCHER] Connexion impossible au serveur FastAPI : {e}\n")
-
 
 def queue_worker():
     """Worker en arrière-plan traitant séquentiellement les fichiers Markdown de la file."""
@@ -244,6 +256,7 @@ if __name__ == "__main__":
         print("\n🛑 [WATCHER] Arrêt de la surveillance.")
         observer.stop()
     observer.join()
+
 # import time
 # import requests
 # from pathlib import Path
