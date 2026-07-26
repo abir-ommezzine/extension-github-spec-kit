@@ -65,6 +65,20 @@ Avant de démarrer les services, assurez-vous impérativement que :
 
 ### 🛠️ Procédure de Lancement
 
+**Étape 0 : Environnement Virtuel Python & Dépendances**
+À la racine du projet, créez votre environnement virtuel Python, activez-le puis installez les dépendances du fichier `requirements.txt` :
+```bash
+# Créer l'environnement virtuel
+python -m venv env
+
+# Activer l'environnement
+# Sur Windows : env\Scripts\activate
+# Sur Linux/Mac : source env/bin/activate
+
+# Installer les dépendances
+pip install -r requirements.txt
+```
+
 **Étape 1 : Démarrer le Backend FastAPI**
 ```bash
 cd backend
