@@ -590,6 +590,17 @@ def layout_node(state: GraphState) -> Dict[str, Any]:
             pdf_path_str = str(output_pdf_path)
             print(f"[📄] PDF généré: {output_pdf_path.name}")
             
+            # Build and save layout evaluation
+            layout_eval = {
+                "technical_evaluation": layout_result.technical_evaluation or {},
+                "project_management_kpis": {
+                    "pdf_generated_success": True,
+                    "total_pdf_pages_count": getattr(layout_result, "total_pages", None),
+                    "file_size_kb": round(Path(output_pdf_path).stat().st_size / 1024, 1) if output_pdf_path.exists() else None,
+                },
+            }
+            _save_json(OUTPUTS_DIR / f"{base_stem}_layout_eval.json", layout_eval)
+
             # Extract layout KPI from technical_evaluation
             layout_kpi = None
             if layout_result.technical_evaluation:

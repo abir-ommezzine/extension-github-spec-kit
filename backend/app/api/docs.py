@@ -18,6 +18,7 @@ from app.schema import (
     DashboardSummary,
     UploadResponse,
     DocumentRow,
+    AgentEvaluationsResponse,
 )
 from app.utils.diagram_pdf import generate_diagram_pdf
 import logging
@@ -188,6 +189,55 @@ def get_dashboard(db: Session = Depends(get_db)):
         ))
 
     return result
+
+
+# ============================================
+# DETAILED AGENT EVALUATIONS (from disk)
+# ============================================
+
+EVAL_FILE_MAP = {
+    "parsing": "{stem}_parsing_eval.json",
+    "summary": "{stem}_summary_eval.json",
+    "glossary": "{stem}_glossary_eval.json",
+    "diagram": "{stem}_diagram_eval.json",
+    "docWriter": "markdowns/{stem}_doc_eval.json",
+    "layout": "{stem}_layout_eval.json",
+}
+
+
+@router.get("/pipeline-run/{run_id}/evaluations", response_model=AgentEvaluationsResponse)
+def get_agent_evaluations(run_id: UUID, db: Session = Depends(get_db)):
+    run = db.query(PipelineRun).filter(PipelineRun.id == run_id).first()
+    if not run:
+        raise HTTPException(status_code=404, detail="Pipeline run not found")
+
+    artifact = db.query(Artifact).filter(Artifact.id == run.artifact_id).first()
+    if not artifact:
+        raise HTTPException(status_code=404, detail="Artifact not found")
+
+    backend_dir = Path(__file__).resolve().parent.parent.parent
+    project_root = backend_dir.parent
+    outputs_dir = project_root / "test_files" / "outputs"
+
+    source_filename = Path(artifact.source_path).stem
+    agent_evals = {}
+
+    for agent_key, pattern in EVAL_FILE_MAP.items():
+        file_path = outputs_dir / pattern.format(stem=source_filename)
+        if file_path.exists():
+            try:
+                import json
+                with open(file_path, "r", encoding="utf-8") as f:
+                    agent_evals[agent_key] = json.load(f)
+            except Exception:
+                agent_evals[agent_key] = None
+        else:
+            agent_evals[agent_key] = None
+
+    return AgentEvaluationsResponse(
+        pipeline_run_id=run_id,
+        agentEvaluations=agent_evals,
+    )
 
 
 @router.get("/dashboard/summary", response_model=DashboardSummary)

@@ -1,0 +1,19 @@
+{
+    "project_name": "CourseHub API",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "QUAL-REQ-01",
+            "project_definition": "The primary interface for programmatic communication between the backend service and external consumers."
+        },
+        {
+            "term": "Acceptance Criteria",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "QUAL-READ-01",
+            "project_definition": "Measurable conditions that must be satisfied to mark a functional requirement as complete."
+        }
+    ]
+}

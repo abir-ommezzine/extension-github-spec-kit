@@ -139,3 +139,8 @@ class DocumentRow(BaseModel):
     doc_version_id: Optional[UUID] = None
     pipeline_run_id: Optional[UUID] = None
     agentScores: Optional[dict] = None
+
+
+class AgentEvaluationsResponse(BaseModel):
+    pipeline_run_id: UUID
+    agentEvaluations: dict

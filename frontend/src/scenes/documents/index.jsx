@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import AssessmentIcon from "@mui/icons-material/Assessment";
@@ -30,12 +31,12 @@ const POLL_INTERVAL = 3000;
 const ACTIVE_STATUSES = ["parsing", "summary", "glossary", "diagram", "writing", "layout", "rendering", "pending"];
 
 const agentDisplayNames = [
-  { key: "Parsing", color: "#4caf50" },
-  { key: "Summary", color: "#2196f3" },
-  { key: "Glossary", color: "#ff9800" },
-  { key: "Diagram", color: "#e91e63" },
-  { key: "Doc Writer", color: "#9c27b0" },
-  { key: "Layout", color: "#00bcd4" },
+  { key: "Parsing", evalKey: "parsing", color: "#4caf50" },
+  { key: "Summary", evalKey: "summary", color: "#2196f3" },
+  { key: "Glossary", evalKey: "glossary", color: "#ff9800" },
+  { key: "Diagram", evalKey: "diagram", color: "#e91e63" },
+  { key: "Doc Writer", evalKey: "docWriter", color: "#9c27b0" },
+  { key: "Layout", evalKey: "layout", color: "#00bcd4" },
 ];
 
 const getScoreColor = (score, colors) => {
@@ -45,10 +46,131 @@ const getScoreColor = (score, colors) => {
   return colors.redAccent ? colors.redAccent[500] : "#f44336";
 };
 
+const formatKey = (key) =>
+  key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+const AgentDetailView = ({ agentName, agentColor, evalData, colors }) => {
+  if (!evalData) {
+    return (
+      <Typography color={colors.grey[500]} sx={{ mt: 2, textAlign: "center" }}>
+        No evaluation data available yet.
+      </Typography>
+    );
+  }
+
+  const techEval = evalData.technical_evaluation || {};
+  const pmKpis = evalData.project_management_kpis || {};
+
+  const filterEntries = (obj) =>
+    Object.entries(obj).filter(
+      ([, v]) => v !== null && v !== undefined && typeof v !== "object"
+    );
+
+  const filteredTech = filterEntries(techEval);
+  const filteredPm = filterEntries(pmKpis);
+
+  const renderTable = (title, entries) => {
+    if (entries.length === 0) return null;
+    return (
+      <Box mb={3}>
+        <Typography variant="h6" fontWeight="bold" color={colors.grey[100]} mb={1}>
+          {title}
+        </Typography>
+        <TableContainer
+          component={Paper}
+          sx={{ backgroundColor: colors.primary[400], borderRadius: "8px" }}
+        >
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}` }}>
+                  Metric
+                </TableCell>
+                <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
+                  Value
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {entries.map(([key, value]) => (
+                <TableRow key={key}>
+                  <TableCell sx={{ color: colors.grey[100], borderBottom: `1px solid ${colors.grey[700]}` }}>
+                    {formatKey(key)}
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
+                    {typeof value === "boolean" ? (
+                      <Chip
+                        label={value ? "Yes" : "No"}
+                        size="small"
+                        sx={{
+                          backgroundColor: value ? colors.greenAccent[600] : colors.redAccent ? colors.redAccent[500] : "#f44336",
+                          color: colors.grey[100],
+                        }}
+                      />
+                    ) : typeof value === "number" ? (
+                      <Typography fontWeight="bold" sx={{ color: getScoreColor(value, colors) }}>
+                        {value}{key.includes("rate") || key.includes("score") || key.includes("adherence") || key.includes("index") ? "%" : ""}
+                      </Typography>
+                    ) : (
+                      <Chip
+                        label={String(value)}
+                        size="small"
+                        sx={{
+                          backgroundColor: colors.blueAccent[700],
+                          color: colors.grey[100],
+                        }}
+                      />
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    );
+  };
+
+  return (
+    <Box>
+      <Box display="flex" alignItems="center" gap={1} mb={2}>
+        <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: agentColor }} />
+        <Typography variant="h5" fontWeight="bold" color={colors.grey[100]}>
+          {agentName}
+        </Typography>
+      </Box>
+      {renderTable("Technical Evaluation", filteredTech)}
+      {renderTable("Project Management KPIs", filteredPm)}
+    </Box>
+  );
+};
+
 const KpiPopup = ({ open, onClose, document }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [selectedAgent, setSelectedAgent] = useState(null);
+  const [agentEvaluations, setAgentEvaluations] = useState(null);
+  const [loadingEvals, setLoadingEvals] = useState(false);
+
   const agentScores = document?.agentScores || {};
+  const pipelineRunId = document?.pipeline_run_id;
+
+  useEffect(() => {
+    if (open && pipelineRunId) {
+      setLoadingEvals(true);
+      fetch(`${API_BASE}/pipeline-run/${pipelineRunId}/evaluations`)
+        .then((res) => res.json())
+        .then((data) => setAgentEvaluations(data.agentEvaluations || {}))
+        .catch(() => setAgentEvaluations({}))
+        .finally(() => setLoadingEvals(false));
+    }
+    if (!open) {
+      setSelectedAgent(null);
+      setAgentEvaluations(null);
+    }
+  }, [open, pipelineRunId]);
+
+  const selectedAgentInfo = agentDisplayNames.find((a) => a.key === selectedAgent);
 
   return (
     <Dialog
@@ -71,13 +193,24 @@ const KpiPopup = ({ open, onClose, document }) => {
           borderBottom: `1px solid ${colors.grey[700]}`,
         }}
       >
-        <Box>
-          <Typography variant="h3" fontWeight="bold" color={colors.grey[100]}>
-            Agent Scores
-          </Typography>
-          <Typography variant="h6" color={colors.greenAccent[400]} sx={{ mt: "5px" }}>
-            {document?.name} — Global: {document?.kpi != null ? `${document.kpi}%` : "--"}
-          </Typography>
+        <Box display="flex" alignItems="center" gap={1}>
+          {selectedAgent && (
+            <IconButton
+              onClick={() => setSelectedAgent(null)}
+              size="small"
+              sx={{ color: colors.greenAccent[400] }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+          )}
+          <Box>
+            <Typography variant="h3" fontWeight="bold" color={colors.grey[100]}>
+              {selectedAgent || "Agent Scores"}
+            </Typography>
+            <Typography variant="h6" color={colors.greenAccent[400]} sx={{ mt: "5px" }}>
+              {document?.name} — Global: {document?.kpi != null ? `${document.kpi}%` : "--"}
+            </Typography>
+          </Box>
         </Box>
         <IconButton onClick={onClose}>
           <CloseIcon sx={{ color: colors.grey[100] }} />
@@ -85,65 +218,85 @@ const KpiPopup = ({ open, onClose, document }) => {
       </DialogTitle>
 
       <DialogContent sx={{ pt: "20px !important" }}>
-        <TableContainer
-          component={Paper}
-          sx={{ backgroundColor: colors.primary[400], borderRadius: "8px" }}
-        >
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}`, fontWeight: "bold" }}>
-                  Agent
-                </TableCell>
-                <TableCell
-                  sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}`, fontWeight: "bold" }}
-                  align="right"
-                >
-                  Score
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {agentDisplayNames.map(({ key, color }) => {
-                const score = agentScores[key];
-                return (
-                  <TableRow key={key}>
-                    <TableCell sx={{ color: colors.grey[100], borderBottom: `1px solid ${colors.grey[700]}` }}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Box
-                          sx={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: "50%",
-                            backgroundColor: color,
-                            flexShrink: 0,
-                          }}
-                        />
-                        {key}
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
-                      {score != null ? (
-                        <Chip
-                          label={`${score}%`}
-                          size="small"
-                          sx={{
-                            backgroundColor: getScoreColor(score, colors),
-                            color: colors.grey[100],
-                            fontWeight: "bold",
-                            minWidth: "60px",
-                          }}
-                        />
-                      ) : (
-                        <Typography color={colors.grey[500]}>--</Typography>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        {selectedAgent ? (
+          <AgentDetailView
+            agentName={selectedAgent}
+            agentColor={selectedAgentInfo?.color || colors.grey[600]}
+            evalData={agentEvaluations?.[selectedAgentInfo?.evalKey]}
+            colors={colors}
+          />
+        ) : (
+          <TableContainer
+            component={Paper}
+            sx={{ backgroundColor: colors.primary[400], borderRadius: "8px" }}
+          >
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}`, fontWeight: "bold" }}>
+                    Agent
+                  </TableCell>
+                  <TableCell
+                    sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}`, fontWeight: "bold" }}
+                    align="right"
+                  >
+                    Score
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {agentDisplayNames.map(({ key, color }) => {
+                  const score = agentScores[key];
+                  return (
+                    <TableRow
+                      key={key}
+                      hover
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => setSelectedAgent(key)}
+                    >
+                      <TableCell sx={{ color: colors.grey[100], borderBottom: `1px solid ${colors.grey[700]}` }}>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Box
+                            sx={{
+                              width: 10,
+                              height: 10,
+                              borderRadius: "50%",
+                              backgroundColor: color,
+                              flexShrink: 0,
+                            }}
+                          />
+                          {key}
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
+                        {score != null ? (
+                          <Chip
+                            label={`${score}%`}
+                            size="small"
+                            sx={{
+                              backgroundColor: getScoreColor(score, colors),
+                              color: colors.grey[100],
+                              fontWeight: "bold",
+                              minWidth: "60px",
+                            }}
+                          />
+                        ) : (
+                          <Typography color={colors.grey[500]}>--</Typography>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+
+        {loadingEvals && (
+          <Box display="flex" justifyContent="center" mt={2}>
+            <Typography color={colors.grey[500]}>Loading evaluations...</Typography>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ borderTop: `1px solid ${colors.grey[700]}`, p: "16px !important" }}>
