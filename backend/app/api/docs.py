@@ -339,6 +339,7 @@ def list_documents(db: Session = Depends(get_db)):
         pipeline_run_id = None
         doc_version_id = None
         version = "v0"
+        agent_scores = None
 
         if latest_run:
             pipeline_run_id = latest_run.id
@@ -347,6 +348,14 @@ def list_documents(db: Session = Depends(get_db)):
                 stage = stage.value
             status = stage
             kpi = latest_run.global_kpi
+            agent_scores = {
+                "Parsing": round(latest_run.parsing_kpi, 1) if latest_run.parsing_kpi is not None else None,
+                "Summary": round(latest_run.summary_kpi, 1) if latest_run.summary_kpi is not None else None,
+                "Glossary": round(latest_run.glossary_kpi, 1) if latest_run.glossary_kpi is not None else None,
+                "Diagram": round(latest_run.diagram_kpi, 1) if latest_run.diagram_kpi is not None else None,
+                "Doc Writer": round(latest_run.doc_writer_kpi, 1) if latest_run.doc_writer_kpi is not None else None,
+                "Layout": round(latest_run.layout_kpi, 1) if latest_run.layout_kpi is not None else None,
+            }
 
         if latest_version:
             doc_version_id = latest_version.id
@@ -363,6 +372,7 @@ def list_documents(db: Session = Depends(get_db)):
             kpi=round(kpi, 1) if kpi else None,
             doc_version_id=doc_version_id,
             pipeline_run_id=pipeline_run_id,
+            agentScores=agent_scores,
         ))
 
     return result

@@ -6,28 +6,28 @@
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "RULE-ACTIVE-ENROLL",
-            "project_definition": "A validation rule preventing the removal of a learning offering if linked student registrations exist, triggering a 409 status code."
+            "project_definition": "A validation rule that prevents the removal of a learning path if associated students are currently linked to it, triggering a 409 status code."
         },
         {
             "term": "CORS Standard",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
-            "contextual_anchor": "API-AUTH-JWT",
-            "project_definition": "The browser-level security mechanism governing cross-origin resource sharing for the provided API endpoints."
+            "contextual_anchor": "RESP-ENVELOPE",
+            "project_definition": "The mechanism governing cross-origin resource sharing to ensure the API endpoints are accessible only by authorized external domains."
         },
         {
             "term": "Cryptographic Hashing",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
-            "contextual_anchor": "REQ-AUTH-REG",
-            "project_definition": "The one-way mathematical transformation applied to user passwords during the registration process to ensure secure storage."
+            "contextual_anchor": "FR-REG-USER",
+            "project_definition": "The process of transforming sensitive account credentials into a fixed-size string for secure persistence."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "API-AUTH-JWT",
-            "project_definition": "A compact, URL-safe means of representing claims to be transferred between two parties, passed via the Bearer scheme in the Authorization header."
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The compact, URL-safe means of representing claims to be transferred between two parties, passed via the Bearer scheme in the request header."
         }
     ]
 }

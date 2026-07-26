@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "The document is a technical API specification. I have mapped the API endpoints to functional requirements, the data models to entities, and the business rules (like the ActiveEnrollmentConstraint) to constraints. The structural mapping focuses on 'Functional Requirements' as the document primarily defines the 'What' of the API behavior.",
+    "parsing_rationale": "The document is a technical API specification. I have mapped the high-level sections to the template, extracted technical entities (User, Course, etc.), functional requirements based on endpoint behaviors and business rules (e.g., ActiveEnrollmentConstraint, auto-completion of progress), and non-functional requirements regarding authentication and response envelopes. Relationships establish the dependency between API endpoints and the entities they manipulate or the rules they enforce.",
     "project_info": {
         "project_name": "CourseHub",
         "source_type": "refining",
-        "brief_explanation": "API Contracts defining the endpoints, request/response shapes, and business rules for a course management system.",
-        "source_context": "Technical API specification including authentication, course management, and enrollment workflows."
+        "brief_explanation": "API Contract specification for a course management platform including authentication, course lifecycle, and student enrollments.",
+        "source_context": "Technical API contracts document defining endpoints, request/response shapes, and business constraints."
     },
     "doc_type": "spec",
     "sections": [
@@ -124,14 +124,14 @@
             "title": "",
             "level": 1,
             "raw_content": "",
-            "mapped_to_template_field": "Functional Requirements",
+            "mapped_to_template_field": "Non-Functional Requirements",
             "section_index": 16
         },
         {
             "title": "",
             "level": 1,
             "raw_content": "",
-            "mapped_to_template_field": null,
+            "mapped_to_template_field": "Non-Functional Requirements",
             "section_index": 17
         },
         {
@@ -182,22 +182,36 @@
             "raw_content": "",
             "mapped_to_template_field": null,
             "section_index": 24
+        },
+        {
+            "title": "",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null,
+            "section_index": 25
         }
     ],
     "elements": [
         {
             "type": "non_functional_requirement",
-            "identifier": "API-AUTH-JWT",
-            "content": "Authentication must be handled via JWT Bearer tokens in the Authorization header.",
+            "identifier": "AUTH-JWT",
+            "content": "Authentication must use JWT Bearer tokens in the Authorization header.",
             "source_section": "API Overview",
             "attributes": {
                 "header": "Authorization: Bearer <token>"
             }
         },
         {
+            "type": "non_functional_requirement",
+            "identifier": "RESP-ENVELOPE",
+            "content": "All responses must follow a consistent envelope containing 'data', 'meta', and 'errors'.",
+            "source_section": "Response Envelope",
+            "attributes": {}
+        },
+        {
             "type": "entity",
             "identifier": "ENT-USER",
-            "content": "User entity containing id, email, display_name, role (student/instructor), and timestamps.",
+            "content": "User entity containing id, email, display_name, role, and created_at.",
             "source_section": "User",
             "attributes": {}
         },
@@ -211,7 +225,7 @@
         {
             "type": "entity",
             "identifier": "ENT-MODULE",
-            "content": "Module entity linked to a course with a specific order.",
+            "content": "Module entity associated with a course with a specific order.",
             "source_section": "Module",
             "attributes": {}
         },
@@ -224,8 +238,8 @@
         },
         {
             "type": "functional_requirement",
-            "identifier": "REQ-AUTH-REG",
-            "content": "Allow students to self-register with email, password, and display name, triggering an async welcome email.",
+            "identifier": "FR-REG-USER",
+            "content": "Allow students to self-register with email, password, and display name.",
             "source_section": "POST `/api/v1/auth/register`",
             "attributes": {
                 "role": "Student"
@@ -233,8 +247,18 @@
         },
         {
             "type": "functional_requirement",
-            "identifier": "REQ-COURSE-CREATE",
-            "content": "Allow instructors to create courses with associated modules.",
+            "identifier": "FR-REG-EMAIL",
+            "content": "Send a welcome email asynchronously via Resend upon successful registration.",
+            "source_section": "POST `/api/v1/auth/register`",
+            "attributes": {
+                "trigger": "Registration",
+                "async": true
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-COURSE-CREATE",
+            "content": "Allow instructors to create courses with modules.",
             "source_section": "POST `/api/v1/courses`",
             "attributes": {
                 "role": "Instructor"
@@ -243,7 +267,7 @@
         {
             "type": "constraint",
             "identifier": "RULE-ACTIVE-ENROLL",
-            "content": "ActiveEnrollmentConstraint: A course cannot be deleted if it has active enrollments (409 Conflict).",
+            "content": "ActiveEnrollmentConstraint: A course cannot be deleted if it has active enrollments (returns 409 Conflict).",
             "source_section": "DELETE `/api/v1/courses/{course_id}`",
             "attributes": {
                 "error_code": "ACTIVE_ENROLLMENT_CONSTRAINT"
@@ -251,8 +275,8 @@
         },
         {
             "type": "functional_requirement",
-            "identifier": "REQ-ENROLL-STUDENT",
-            "content": "Allow students to enroll in published courses, ensuring no duplicate enrollments.",
+            "identifier": "FR-ENROLL-VALID",
+            "content": "Students can only enroll in published courses and cannot enroll in the same course twice.",
             "source_section": "POST `/api/v1/enrollments`",
             "attributes": {
                 "role": "Student"
@@ -260,37 +284,44 @@
         },
         {
             "type": "functional_requirement",
-            "identifier": "REQ-ENROLL-AUTOCOMPLETE",
-            "content": "Automatically set completed_at timestamp when progress reaches 100%.",
+            "identifier": "FR-PROGRESS-AUTO",
+            "content": "If enrollment progress is updated to 100 and completed_at is null, system must automatically set completed_at to current timestamp.",
             "source_section": "PUT `/api/v1/enrollments/{enrollment_id}`",
             "attributes": {
                 "trigger": "progress == 100"
             }
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-PROGRESS-RANGE",
+            "content": "Enrollment progress must be an integer between 0 and 100 inclusive.",
+            "source_section": "PUT `/api/v1/enrollments/{enrollment_id}`",
+            "attributes": {}
         }
     ],
     "relationships": [
         {
-            "source": "REQ-AUTH-REG",
+            "source": "FR-REG-USER",
             "to": "ENT-USER",
             "relation_type": "implements"
         },
         {
-            "source": "REQ-COURSE-CREATE",
+            "source": "FR-COURSE-CREATE",
             "to": "ENT-COURSE",
             "relation_type": "implements"
         },
         {
-            "source": "REQ-COURSE-CREATE",
+            "source": "FR-COURSE-CREATE",
             "to": "ENT-MODULE",
             "relation_type": "contains"
         },
         {
-            "source": "REQ-ENROLL-STUDENT",
+            "source": "FR-ENROLL-VALID",
             "to": "ENT-ENROLLMENT",
             "relation_type": "implements"
         },
         {
-            "source": "REQ-ENROLL-STUDENT",
+            "source": "FR-ENROLL-VALID",
             "to": "ENT-COURSE",
             "relation_type": "depends_on"
         },
@@ -300,16 +331,26 @@
             "relation_type": "depends_on"
         },
         {
-            "source": "REQ-ENROLL-AUTOCOMPLETE",
+            "source": "RULE-ACTIVE-ENROLL",
+            "to": "ENT-COURSE",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "FR-PROGRESS-AUTO",
             "to": "ENT-ENROLLMENT",
             "relation_type": "implements"
+        },
+        {
+            "source": "RULE-PROGRESS-RANGE",
+            "to": "ENT-ENROLLMENT",
+            "relation_type": "relates_to"
         }
     ],
     "structural_gaps": [
         {
             "missing_section": "Goals & Objectives",
             "priority": "HIGH",
-            "remediation_advice": "The document defines the 'How' (API) but not the 'Why' (Business Goals). Add a section explaining the purpose of CourseHub."
+            "remediation_advice": "The document defines 'How' (API) but not the overarching business 'Why' or high-level goals."
         },
         {
             "missing_section": "Scope & Out-of-Scope",
@@ -319,7 +360,7 @@
         {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "List any undecided API behaviors or future iterations."
+            "remediation_advice": "Add a section for unresolved technical decisions (e.g., specific JWT expiration strategies or pagination limits)."
         }
     ],
     "open_questions": []

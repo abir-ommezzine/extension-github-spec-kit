@@ -8,19 +8,22 @@
         "macro_micro_traceability_index": 0.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
-            "Section requise absente des correspondances : scope & out-of-scope",
             "Section requise absente des correspondances : open questions & uncertainties",
             "Section requise absente des correspondances : goals & objectives",
-            "Défaut d'ancrage : L'élément 'API-AUTH-JWT' pointe vers une section introuvable",
+            "Section requise absente des correspondances : scope & out-of-scope",
+            "Défaut d'ancrage : L'élément 'AUTH-JWT' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'RESP-ENVELOPE' pointe vers une section introuvable",
             "Défaut d'ancrage : L'élément 'ENT-USER' pointe vers une section introuvable",
             "Défaut d'ancrage : L'élément 'ENT-COURSE' pointe vers une section introuvable",
             "Défaut d'ancrage : L'élément 'ENT-MODULE' pointe vers une section introuvable",
             "Défaut d'ancrage : L'élément 'ENT-ENROLLMENT' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'REQ-AUTH-REG' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'REQ-COURSE-CREATE' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'FR-REG-USER' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'FR-REG-EMAIL' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'FR-COURSE-CREATE' pointe vers une section introuvable",
             "Défaut d'ancrage : L'élément 'RULE-ACTIVE-ENROLL' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'REQ-ENROLL-STUDENT' pointe vers une section introuvable",
-            "Défaut d'ancrage : L'élément 'REQ-ENROLL-AUTOCOMPLETE' pointe vers une section introuvable"
+            "Défaut d'ancrage : L'élément 'FR-ENROLL-VALID' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'FR-PROGRESS-AUTO' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'RULE-PROGRESS-RANGE' pointe vers une section introuvable"
         ]
     },
     "project_management_kpis": {
@@ -28,8 +31,8 @@
         "completeness_score": 40.0,
         "readiness_status": "NEEDS_REFINEMENT",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 10,
-            "total_edges_extracted": 7
+            "total_nodes_extracted": 13,
+            "total_edges_extracted": 9
         },
         "gaps_summary": {
             "high_severity": 1,

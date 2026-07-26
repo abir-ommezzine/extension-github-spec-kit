@@ -138,3 +138,4 @@ class DocumentRow(BaseModel):
     kpi: Optional[float] = None
     doc_version_id: Optional[UUID] = None
     pipeline_run_id: Optional[UUID] = None
+    agentScores: Optional[dict] = None

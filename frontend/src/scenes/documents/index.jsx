@@ -16,8 +16,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Tabs,
-  Tab,
   Chip,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
@@ -31,57 +29,32 @@ const API_BASE = "http://localhost:8000/api/v1/docs";
 const POLL_INTERVAL = 3000;
 const ACTIVE_STATUSES = ["parsing", "summary", "glossary", "diagram", "writing", "layout", "rendering", "pending"];
 
-const agentLabels = {
-  parsing: "Parsing Agent",
-  summary: "Summary Agent",
-  glossary: "Glossary Agent",
-  diagram: "Diagram Agent",
-  docWriter: "Documentation Writer Agent",
-  layout: "Layout Agent",
-};
+const agentDisplayNames = [
+  { key: "Parsing", color: "#4caf50" },
+  { key: "Summary", color: "#2196f3" },
+  { key: "Glossary", color: "#ff9800" },
+  { key: "Diagram", color: "#e91e63" },
+  { key: "Doc Writer", color: "#9c27b0" },
+  { key: "Layout", color: "#00bcd4" },
+];
 
-const agentColors = {
-  parsing: "#4caf50",
-  summary: "#2196f3",
-  glossary: "#ff9800",
-  diagram: "#e91e63",
-  docWriter: "#9c27b0",
-  layout: "#00bcd4",
-};
-
-const formatKey = (key) =>
-  key
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-
-const getValueColor = (key, value) => {
-  if (typeof value !== "number") return "inherit";
-  if (key.includes("rate") || key.includes("score") || key.includes("adherence") || key.includes("index")) {
-    if (value >= 90) return "#4caf50";
-    if (value >= 75) return "#ff9800";
-    return "#f44336";
-  }
-  return "inherit";
+const getScoreColor = (score, colors) => {
+  if (score == null) return colors.grey[600];
+  if (score >= 90) return colors.greenAccent[600];
+  if (score >= 75) return "#ff9800";
+  return colors.redAccent ? colors.redAccent[500] : "#f44336";
 };
 
 const KpiPopup = ({ open, onClose, document }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [tabIndex, setTabIndex] = useState(0);
-  const agentKeys = Object.keys(document?.agentEvaluations || {});
-  const currentAgent = agentKeys[tabIndex];
-  const agentData = document?.agentEvaluations?.[currentAgent];
-
-  if (!agentData) return null;
-
-  const techEval = agentData.technical_evaluation || {};
-  const pmKpis = agentData.project_management_kpis || {};
+  const agentScores = document?.agentScores || {};
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
@@ -100,10 +73,10 @@ const KpiPopup = ({ open, onClose, document }) => {
       >
         <Box>
           <Typography variant="h3" fontWeight="bold" color={colors.grey[100]}>
-            KPI Metrics
+            Agent Scores
           </Typography>
           <Typography variant="h6" color={colors.greenAccent[400]} sx={{ mt: "5px" }}>
-            {document?.name} — Score: {document?.kpi}%
+            {document?.name} — Global: {document?.kpi != null ? `${document.kpi}%` : "--"}
           </Typography>
         </Box>
         <IconButton onClick={onClose}>
@@ -111,170 +84,66 @@ const KpiPopup = ({ open, onClose, document }) => {
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 0 }}>
-        <Tabs
-          value={tabIndex}
-          onChange={(_, v) => setTabIndex(v)}
-          variant="scrollable"
-          scrollButtons="auto"
-          sx={{
-            borderBottom: `1px solid ${colors.grey[700]}`,
-            "& .MuiTab-root": { color: colors.grey[300] },
-            "& .Mui-selected": { color: `${colors.greenAccent[500]} !important` },
-            "& .MuiTabs-indicator": { backgroundColor: colors.greenAccent[500] },
-          }}
+      <DialogContent sx={{ pt: "20px !important" }}>
+        <TableContainer
+          component={Paper}
+          sx={{ backgroundColor: colors.primary[400], borderRadius: "8px" }}
         >
-          {agentKeys.map((key) => (
-            <Tab
-              key={key}
-              label={
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Box
-                    sx={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      backgroundColor: agentColors[key],
-                    }}
-                  />
-                  {agentLabels[key] || key}
-                </Box>
-              }
-            />
-          ))}
-        </Tabs>
-
-        <Box p={3}>
-          <Typography variant="h5" fontWeight="bold" color={colors.greenAccent[400]} mb={2}>
-            {agentLabels[currentAgent] || currentAgent}
-          </Typography>
-
-          <Box mb={3}>
-            <Typography variant="h6" fontWeight="bold" color={colors.grey[100]} mb={1}>
-              Technical Evaluation
-            </Typography>
-            <TableContainer
-              component={Paper}
-              sx={{ backgroundColor: colors.primary[400], borderRadius: "8px" }}
-            >
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}` }}>
-                      Metric
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}`, fontWeight: "bold" }}>
+                  Agent
+                </TableCell>
+                <TableCell
+                  sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}`, fontWeight: "bold" }}
+                  align="right"
+                >
+                  Score
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {agentDisplayNames.map(({ key, color }) => {
+                const score = agentScores[key];
+                return (
+                  <TableRow key={key}>
+                    <TableCell sx={{ color: colors.grey[100], borderBottom: `1px solid ${colors.grey[700]}` }}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            backgroundColor: color,
+                            flexShrink: 0,
+                          }}
+                        />
+                        {key}
+                      </Box>
                     </TableCell>
-                    <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
-                      Value
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Object.entries(techEval).map(([key, value]) => (
-                    <TableRow key={key}>
-                      <TableCell sx={{ color: colors.grey[100], borderBottom: `1px solid ${colors.grey[700]}` }}>
-                        {formatKey(key)}
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
-                        {typeof value === "boolean" ? (
-                          <Chip
-                            label={value ? "Yes" : "No"}
-                            size="small"
-                            sx={{
-                              backgroundColor: value ? colors.greenAccent[600] : colors.redAccent ? colors.redAccent[500] : "#f44336",
-                              color: colors.grey[100],
-                            }}
-                          />
-                        ) : typeof value === "number" ? (
-                          <Typography fontWeight="bold" sx={{ color: getValueColor(key, value) }}>
-                            {value}{key.includes("rate") || key.includes("score") || key.includes("adherence") || key.includes("index") ? "%" : ""}
-                          </Typography>
-                        ) : (
-                          <Chip
-                            label={value}
-                            size="small"
-                            sx={{
-                              backgroundColor:
-                                value === "READY_FOR_EXECUTION" || value === "READY_FOR_PUBLICATION" || value === "READY_FOR_ANCHORING"
-                                  ? colors.greenAccent[600]
-                                  : value === "BLOCKED"
-                                  ? colors.redAccent ? colors.redAccent[500] : "#f44336"
-                                  : colors.blueAccent[700],
-                              color: colors.grey[100],
-                            }}
-                          />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-
-          <Box>
-            <Typography variant="h6" fontWeight="bold" color={colors.grey[100]} mb={1}>
-              Project Management KPIs
-            </Typography>
-            <TableContainer
-              component={Paper}
-              sx={{ backgroundColor: colors.primary[400], borderRadius: "8px" }}
-            >
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}` }}>
-                      KPI
-                    </TableCell>
-                    <TableCell sx={{ color: colors.grey[300], borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
-                      Value
+                    <TableCell sx={{ borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
+                      {score != null ? (
+                        <Chip
+                          label={`${score}%`}
+                          size="small"
+                          sx={{
+                            backgroundColor: getScoreColor(score, colors),
+                            color: colors.grey[100],
+                            fontWeight: "bold",
+                            minWidth: "60px",
+                          }}
+                        />
+                      ) : (
+                        <Typography color={colors.grey[500]}>--</Typography>
+                      )}
                     </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Object.entries(pmKpis).map(([key, value]) => (
-                    <TableRow key={key}>
-                      <TableCell sx={{ color: colors.grey[100], borderBottom: `1px solid ${colors.grey[700]}` }}>
-                        {formatKey(key)}
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: `1px solid ${colors.grey[700]}` }} align="right">
-                        {typeof value === "boolean" ? (
-                          <Chip
-                            label={value ? "Yes" : "No"}
-                            size="small"
-                            sx={{
-                              backgroundColor: value ? colors.greenAccent[600] : colors.redAccent ? colors.redAccent[500] : "#f44336",
-                              color: colors.grey[100],
-                            }}
-                          />
-                        ) : typeof value === "number" ? (
-                          <Typography fontWeight="bold" sx={{ color: getValueColor(key, value) }}>
-                            {value}{key.includes("score") || key.includes("index") ? "%" : ""}
-                          </Typography>
-                        ) : (
-                          <Chip
-                            label={value}
-                            size="small"
-                            sx={{
-                              backgroundColor:
-                                value === "READY_FOR_EXECUTION" || value === "READY_FOR_PUBLICATION"
-                                  ? colors.greenAccent[600]
-                                  : value === "ÉLEVÉ"
-                                  ? colors.redAccent ? colors.redAccent[500] : "#f44336"
-                                  : value === "MOYEN"
-                                  ? colors.orange ? colors.orange[500] : "#ff9800"
-                                  : colors.blueAccent[700],
-                              color: colors.grey[100],
-                            }}
-                          />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </Box>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </DialogContent>
 
       <DialogActions sx={{ borderTop: `1px solid ${colors.grey[700]}`, p: "16px !important" }}>
