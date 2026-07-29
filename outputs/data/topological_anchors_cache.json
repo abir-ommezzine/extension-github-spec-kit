@@ -1,17 +1,7 @@
 [
-  "ARCH-3LAYER",
-  "Complexity Tracking",
-  "Constitution Check",
-  "Documentation (this feature)",
-  "Implementation Plan: Enhanced Expense Tracker",
-  "LAYER-CLI",
-  "LAYER-MODELS",
-  "LAYER-REPO",
-  "LAYER-SERVICE",
-  "Project Structure",
-  "STACK-PY310",
-  "STORAGE-SQLITE",
-  "Source Code (repository root)",
-  "TEST-PYTEST",
-  "Technical Context"
+  "CONST-STATE",
+  "ENT-EXPENSE",
+  "RULE-AMT-POS",
+  "RULE-DATE-ISO",
+  "data-model.md"
 ]

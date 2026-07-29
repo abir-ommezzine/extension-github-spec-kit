@@ -28,7 +28,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Header from "../../components/Header";
 
-const API_BASE = "http://localhost:8000/api/v1/docs";
+const API_BASE = "http://localhost:8000/api/v1/pipeline";
 const POLL_INTERVAL = 3000;
 
 const agentLabels = {

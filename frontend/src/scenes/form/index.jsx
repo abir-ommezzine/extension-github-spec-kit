@@ -16,7 +16,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 
-const API_BASE = "http://localhost:8000/api/v1/docs";
+const API_BASE = "http://localhost:8000/api/v1/pipeline";
 
 const Form = () => {
   const theme = useTheme();
@@ -33,7 +33,7 @@ const Form = () => {
     try {
       const formData = new FormData();
       formData.append("file", values.file);
-      formData.append("project_name", values.projectName);
+      formData.append("projectName", values.projectName);
 
       // Envoi du formulaire au backend FastAPI
       const response = await fetch(`${API_BASE}/upload`, {

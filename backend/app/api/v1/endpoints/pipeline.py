@@ -235,7 +235,9 @@ async def upload_and_process_document(
             "prefix": paths["prefix"]
         }
 
+        print(f"\n[🚀 PIPELINE] Starting LangGraph workflow for {file_path}...", flush=True)
         final_state = await app_graph.ainvoke(initial_state)
+        print("[✅ PIPELINE] LangGraph workflow completed!", flush=True)
 
         evaluations = {
             "parsing": load_json_if_exists(paths.get("parsing_eval")),
