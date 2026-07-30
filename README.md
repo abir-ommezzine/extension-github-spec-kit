@@ -1,226 +1,108 @@
-# 🚀 Spec Kit
+# AgentDocx SpecKit
 
-**Spec Kit** est un pipeline multi-agents avancé conçu pour la génération, l'enrichissement et la validation automatisée de spécifications d'architecture logicielle. Il transforme des documents techniques bruts en livrables structurés et certifiés.
+**AgentDocx SpecKit** est une extension VS Code conçue pour le suivi et le déclenchement du pipeline de documentation **Spec Kit**.
 
----
+## 🚀 Fonctionnalités
 
-## 📌 Structure & Présentation Générale
+* **Serveur FastAPI** : Démarrage/arrêt du serveur FastAPI (port 8000) depuis VS Code
+* **Watcher Python** : Surveillance en temps réel du dossier `specs/` avec détection de changements
+* **Pipeline Spéc Kit** : Déclenchement et suivi du pipeline de documentation (LangGraph agents)
+* **Sortie en temps réel** : Deux canaux de sortie dédiés (`AgentDocx Server` et `AgentDocx Watcher`)
+* **Intégration fluide** : Commandes accessibles depuis la palette de commandes (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+* **Démarrage automatique** : Serveur + Watcher lancés automatiquement au chargement de l'extension
 
-Le projet est organisé de manière modulaire pour séparer l'orchestration IA, l'interface de suivi et les mécanismes d'automatisation.
+## 🛠️ Commandes disponibles
 
-### 📂 Arborescence du Projet
+| Commande | Intitulé | Description |
+| :--- | :--- | :--- |
+| `agentdocx-speckit.start_server` | `AgentDocx SpecKit: Démarrer le Serveur FastAPI` | Lance le serveur FastAPI (port 8000) |
+| `agentdocx-speckit.stopServer` | `AgentDocx SpecKit: Arrêter le Serveur FastAPI` | Arrête le serveur FastAPI |
+| `agentdocx-speckit.startWatcher` | `AgentDocx SpecKit: Démarrer le Watcher Python` | Lance le watcher de fichiers `specs/` |
+| `agentdocx-speckit.stopWatcher` | `AgentDocx SpecKit: Arrêter le Watcher Python` | Arrête le watcher |
+| `agentdocx-speckit.triggerPipeline` | `AgentDocx SpecKit: Déclencher la régénération` | Déclenche le pipeline via `/health` |
 
-- **`/backend`** : ⚙️ Pipeline d'enrichissement et d'évaluation. Propulsé par **FastAPI** et **LangGraph**, il orchestre la chaîne d'agents et gère la logique métier.
-- **`/frontend`** : 🖥️ Dashboard **React** permettant le suivi en temps réel des exécutions, la visualisation des KPIs et le téléversement de nouveaux documents.
-- **`/scripts`** : 🛠️ Watchers de fichiers et scripts d'automatisation qui font le pont entre le système de fichiers et le pipeline.
-- **`/extensions`** : 🔌 Intégrations CLI SpecKit pour déclencher automatiquement le pipeline lors de la génération d'artefacts.
-- **`/outputs`** : 📦 Dossier centralisé des livrables, organisé par projet :
-  - `data/` : Données structurées JSON.
-  - `markdowns/` : Fichiers enrichis.
-  - `diagrams/` : Schémas générés.
-  - `evaluations/` : Métriques de qualité des agents.
-  - `pdf/` : Documents finaux versionnés.
+## 📦 Installation & Développement
 
----
+1. Clonez le dépôt dans votre répertoire local.
+2. Installez les dépendances :
+   ```bash
+   npm install
+   ```
+3. Compilez l'extension :
+   ```bash
+   npm run compile
+   ```
+4. Lancez l'extension en mode développement (`F5` dans VS Code).
 
-## 🖥️ Interface Frontend
+## 🐍 Prérequis Python
 
-Le Frontend est une application React moderne utilisant **Material-UI** et **DataGrid** pour offrir une expérience de monitoring fluide et intuitive.
+* Python 3.10+
+* Ollama installé et modèle `gemma4:31b-cloud` téléchargé (`ollama pull gemma4:31b-cloud`)
+* `ollama serve` en cours d'exécution
+* Dépendances Python (installées via `pip install -r scripts/python/requirements.txt` si nécessaire)
 
-### 🔍 Fonctionnalités Clés
-- **Suivi Temps Réel** : Visualisation instantanée de l'état d'avancement des agents.
-- **Analyse de Performance** : Affichage des KPIs de qualité pour chaque étape du pipeline.
-- **Gestion Documentaire** : Interface d'upload simplifiée pour initier de nouveaux processus.
+## 📁 Structure du projet
 
-### 📸 Aperçus
-| 📑 Page Documents | ➕ Ajouter un Document |
-| :---: | :---: |
-| ![Documents Page](documents.png) | ![Add Document Page](form.png) |
-| *Suivi des exécutions, status et viewer PDF* | *Formulaire d'upload et zone Drag & Drop (.md)* |
-
-> 📖 Pour une documentation technique complète sur le frontend, consultez le fichier [`frontend/README.md`](frontend/README.md).
-
----
-
-## 🗄️ Traçabilité & Versioning BDD (PostgreSQL)
-
-Le système s'appuie sur une base de données PostgreSQL pour garantir l'immuabilité des versions et la traçabilité complète de chaque modification.
-
-### 📊 Modèle de Données
-- **`projects`** : L'entité parente regroupant tous les artefacts et exécutions d'un projet spécifique.
-- **`artifacts`** : Registre des fichiers sources surveillés dans `specs/`, incluant une empreinte **SHA-256** pour détecter précisément chaque modification.
-- **`pipeline_runs`** : Journalisation exhaustive de chaque exécution, stockant les métriques **JSONB** détaillées pour chacun des 6 agents du pipeline.
-- **`doc_versions`** : Registre immuable gérant le versioning dynamique des documents et le lien vers les fichiers PDF certifiés.
-
----
-
-## 🔌 Extension VS Code SpecKit (Nouveau)
-
-> **⚠️ En cours de développement** — Non publiée sur le Marketplace pour le moment.  
-> **Branche dédiée** : [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) pour le code complet, tests et documentation détaillée.
-
-L'extension VS Code **AgentDocx SpecKit** remplace le dossier `scripts/` et offre une expérience intégrée :
-- **Deux canaux de logs séparés** : `AgentDocx Server` (FastAPI) et `AgentDocx Watcher` (Python watchdog)
-- **Démarrage automatique** au chargement de l'extension (F5)
-- **Progression temps réel** visible dans le frontend (DocVersion créée dès le début, statut `pending` → `completed`)
-- **Commandes palette** : `start_server`, `stopServer`, `startWatcher`, `stopWatcher`, `triggerPipeline`
-
-> 📸 **Captures de l'extension** :  
-> 1. **AgentDocx Watcher** — logs watchdog, détection fichiers, file d'attente  
->    ![AgentDocx Watcher](AgentDocxWatcher.png)  
-> 2. **AgentDocx Server** — logs FastAPI, progression agents (Parsing → Summary → Glossary → Diagram → DocWriter → Layout), KPIs  
->    ![AgentDocx Server](AgentDocxServer.png)
-
----
-
-## 🚀 Quick Start (Guide de Lancement)
-
-Suivez ces étapes pour mettre en place l'environnement Spec Kit sur votre machine.
-
-### ⚠️ Prérequis Base de Données
-Avant de démarrer les services, assurez-vous impérativement que :
-- **PostgreSQL** est lancé en arrière-plan.
-- OU que **pgAdmin4** est ouvert avec une connexion active à la base de données du projet.
-
----
-
-### 🛠️ Méthode 1 : Scripts Standalone (Version Actuelle — 4 Terminaux)
-
-> **Approche classique** avec scripts Python standalone. Idéale pour développement sans l'extension.
-
-#### Prérequis Base de Données
-- PostgreSQL lancé (ou pgAdmin4 connecté)
-
-#### Procédure de Lancement
-
-**Étape 0 : Environnement Virtuel Python & Dépendances**
-```bash
-# Créer l'environnement virtuel
-python -m venv env
-
-# Activer l'environnement
-# Sur Windows : env\Scripts\activate
-# Sur Linux/Mac : source env/bin/activate
-
-# Installer les dépendances
-pip install -r requirements.txt
+```
+agentdocx-speckit/
+├── src/
+│   ├── extension.ts          # Point d'entrée de l'extension
+│   └── test/
+│       └── extension.test.ts # Tests d'intégration
+├── scripts/
+│   ├── python/
+│   │   ├── start_server.py   # Lancement serveur FastAPI + uvicorn
+│   │   ├── spec_watcher.py   # Watchdog watcher pour specs/
+│   │   ├── run_pipeline_cli.py # CLI manuel pour pipeline
+│   │   └── spec_watcher.py   # Watcher avec debounce + retry
+│   └── bash/
+│       ├── start-watcher.sh
+│       └── create-doc-pipeline.sh
+├── src/test/extension.test.ts
+├── dist/                     # Build output (esbuild)
+├── package.json
+├── tsconfig.json
+├── esbuild.js
+├── CHANGELOG.md
+└── README.md
 ```
 
-**Étape 1 : Démarrer le Backend FastAPI** (Terminal 1)
-```bash
-cd backend
-uvicorn app.main:app --reload --port 8000
+## 🔄 Workflow complet
+
+```text
+[ F5 / Ctrl+Shift+P > start_server ] 
+    │
+    ▼
+[ Serveur FastAPI :8000 démarré ]
+[ Watcher specs/ démarré ]
+    │
+    ▼
+[ Édition spec.md / requirements.md dans specs/ ]
+    │
+    ▼
+[ Watcher détecte changement → Stabilisation → File d'attente ]
+    │
+    ▼
+[ Pipeline LangGraph : Parsing → Summary → Glossary → Diagram → DocWriter → Layout ]
+    │
+    ▼
+[ PDF généré dans outputs/<project>/ ]
 ```
 
-**Étape 2 : Démarrer l'interface Frontend React** (Terminal 2)
-```bash
-cd frontend
-npm install
-npm start
-```
-> 💡 Si erreurs (dépendances, Node.js, `cross-env`, ports) → voir `configFrontEnd.pdf` à la racine.
+## 📚 Documentation
 
-**Étape 3 : Lancer le Watcher Temps Réel** (Terminal 3)
-```bash
-python scripts/python/spec_watcher.py
-```
+* [Scripts Python](./scripts/README.md) - Documentation détaillée des scripts Python
+* [CHANGELOG](./CHANGELOG.md) - Historique des versions
+* [API Endpoints](./docs/api.md) - Documentation de l'API FastAPI (si disponible)
 
-**Étape 4 : Exécuter Spec Kit via Claude Code** (Terminal 4)
-```bash
-ollama launch claude
-```
-*Utilisez les commandes Spec Kit (ex: `/speckit-specify`, `/doc-pipeline`) pour générer vos spécifications.*
+## 🤝 Contribution
 
----
+1. Fork le projet
+2. Créez une branche (`git checkout -b feature/amazing-feature`)
+3. Committez (`git commit -m 'Add amazing feature'`)
+4. Push (`git push origin feature/amazing-feature`)
+5. Ouvrez une Pull Request
 
-### 🛠️ Méthode 2 : Extension VS Code (En Développement — Branche `extension`)
+## 📄 Licence
 
-> **Remplace** le dossier `scripts/` par une extension VS Code intégrée.  
-> **Branche** : [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) — contient le code complet, tests et doc détaillée.
-
-#### Architecture
-- **Dossier `agentdocx-speckit/`** remplace `scripts/` (extension VS Code complète)
-- **2 Terminaux pour le Frontend** : 
-  1. `cd frontend && npm start` 
-  2. `cd frontend && npm run dev` (si applicable)
-- **Fenêtre Extension (F5)** : Ouvre une fenêtre **Extension Development Host** avec :
-  - Canal **AgentDocx Watcher** — logs watchdog, détection fichiers, file d'attente
-  - Canal **AgentDocx Server** — logs FastAPI, progression agents, KPIs
-- **Terminal Claude Code** : pour commandes Speckit (`/speckit-specify`, `/doc-pipeline`)
-
-#### Prérequis Supplémentaires
-- **Ollama** installé + modèle `gemma4:31b-cloud` (`ollama pull gemma4:31b-cloud`)
-- **Ollama serve** en cours d'exécution
-- **Python 3.10+**, dépendances `scripts/python/requirements.txt` si test hors extension
-
-#### ⚙️ Configuration VS Code Recommandée (pour l'extension)
-Créez un fichier `.vscode/settings.json` à la racine du projet `agentdocx-speckit/` pour que l'extension Python reconnaisse le module `backend` utilisé par `spec_watcher.py` :
-
-```json
-{
-  "python.analysis.extraPaths": [
-    "./backend"
-  ],
-  "python.defaultInterpreterPath": "${workspaceFolder}/env/Scripts/python.exe"
-}
-```
-
-> **Note** : Le chemin `./backend` permet à l'analyseur Python (Pylance) de résoudre les imports comme `from app.api.v1.endpoints import pipeline` utilisés dans `spec_watcher.py` qui lance le serveur via `start_server.py`.
-
-#### Procédure de Lancement
-
-**Étape 0 : Environnement Python (optionnel pour tests hors extension)**
-```bash
-python -m venv env
-# Windows: env\Scripts\activate
-# Linux/Mac: source env/bin/activate
-pip install -r scripts/python/requirements.txt
-```
-
-**Étape 1 : Frontend React** (Terminal 1)
-```bash
-cd frontend
-npm install
-npm start
-```
-
-**Étape 2 : Ouvrir l'Extension Dev Host** (Terminal 2 — racine `agentdocx-speckit/`)
-```bash
-cd agentdocx-speckit
-npm install
-npm run compile
-# Puis F5 dans VS Code pour ouvrir l'Extension Development Host
-```
-> L'extension démarre **automatiquement** serveur + watcher au chargement (voir canaux `AgentDocx Server` / `AgentDocx Watcher`).
-
-**Étape 3 : Claude Code** (Terminal 3)
-```bash
-ollama launch claude
-```
-*Commandes disponibles : `/speckit-specify`, `/doc-pipeline`, `/speckit-plan`, etc.*
-
----
-
-## 🔄 Résumé : Quelle méthode choisir ?
-
-| Critère | Méthode 1 (Scripts) | Méthode 2 (Extension) |
-|---------|---------------------|----------------------|
-| **Statut** | Production | Développement (branche `extension`) |
-| **Terminaux** | 4 | 3 (Frontend×2 + Claude) + Fenêtre Extension |
-| **Logs** | Unifiés dans terminaux | Séparés : `AgentDocx Watcher` / `AgentDocx Server` |
-| **Progression v2+** | Visible seulement à la fin | Temps réel (DocVersion `pending` → `completed`) |
-| **Publication** | N/A | Pas encore sur Marketplace |
-
-> Pour les détails complets sur l'extension : voir branche [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) et documentation dans `agentdocx-speckit/README.md`.
-
----
-
-### 📚 Ressources Complémentaires
-- `configFrontEnd.pdf` — Dépannage Frontend
-- `scripts/README.md` — Documentation scripts Python
-- `agentdocx-speckit/README.md` — Doc extension (branche `extension`)
-- `configFrontEnd.pdf` — Configuration Frontend détaillée
-
----
-
-*Dernière mise à jour : 2026-07-30 — Spec Kit v0.0.2 (Extension en développement)*
+MIT License - voir [LICENSE](LICENSE) pour plus de détails.

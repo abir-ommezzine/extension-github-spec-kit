@@ -1,10 +1,5 @@
-.env
-__pycache__/
-*.pyc
-node_modules/
-outputs/
-storage/
-*.pdf
-*.png
-*.jpg
-configFrontEnd.pdf
+out
+dist
+node_modules
+.vscode-test/
+*.vsix
