@@ -1,17 +1,78 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useTheme } from "@mui/material/styles";
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Chip,
+  IconButton,
+  Typography,
+  Button,
+  Grid,
+  Paper,
+  CircularProgress,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  Avatar,
+  Tooltip,
+  Divider,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+  Tabs,
+  Tab,
+  Snackbar,
+} from "@mui/material";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
+import {
+  Add as AddIcon,
+  Refresh as RefreshIcon,
+  Analytics as AnalyticsIcon,
+  Description as DescriptionIcon,
+  Comment as CommentIcon,
+  History as HistoryIcon,
+  CheckBox as CheckBoxIcon,
+  CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon,
+  IndeterminateCheckBox as IndeterminateCheckBoxIcon,
+  OpenInNew as OpenInNewIcon,
+  Close as CloseIcon,
+  Send as SendIcon,
+  PictureAsPdf as PictureAsPdfIcon,
+  Error as ErrorIcon,
+} from "@mui/icons-material";
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
-import Header from "../../components/Header";
-import LineChart from "../../components/LineChart";
-import GeographyChart from "../../components/GeographyChart";
-import BarChart from "../../components/BarChart";
-import StatBox from "../../components/StatBox";
-import ProgressCircle from "../../components/ProgressCircle";
+import {
+  fetchTickets,
+  updateTicketStatus,
+  addTicketComment,
+  fetchTicketComments,
+  fetchTicketEvents,
+  ingestTasks,
+  fetchProgress,
+  fetchDocPdf,
+  setProjectName,
+  setSelectedTicket,
+  clearSelectedTicket,
+  reorderTickets,
+  updateTicketInState,
+} from "./kanbanSlice";
 
 const GlassCard = ({ children, ...props }) => {
   const theme = useTheme();
@@ -26,7 +87,7 @@ const GlassCard = ({ children, ...props }) => {
         border: theme.palette.mode === "dark"
           ? "1px solid rgba(255, 255, 255, 0.08)"
           : "1px solid rgba(0, 0, 0, 0.06)",
-        borderRadius: "20px",
+        borderRadius: "16px",
         transition: "all 0.3s ease",
         "&:hover": {
           border: theme.palette.mode === "dark"
@@ -44,289 +105,649 @@ const GlassCard = ({ children, ...props }) => {
   );
 };
 
-const Dashboard = () => {
+const StatusChip = ({ status }) => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-
+  const colors = tokens(theme.palette.mode) || {};
+  
+  const statusConfig = {
+    todo: { label: "To Do", color: colors.blueAccent?.['500'] || '#2196f3', bg: colors.blueAccent?.['100'] || '#bbdefb' },
+    in_progress: { label: "In Progress", color: colors.orangeAccent?.['500'] || '#ff9800', bg: colors.orangeAccent?.['100'] || '#ffe0b2' },
+    done: { label: "Done", color: colors.greenAccent?.['500'] || '#4cceac', bg: colors.greenAccent?.['100'] || '#b2dfdb' },
+  };
+  
+  const config = statusConfig[status] || statusConfig.todo;
+  
   return (
-    <Box m="24px">
-      {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb="24px">
-        <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
-
-        <Button
-          sx={{
-            background: `linear-gradient(135deg, ${colors.greenAccent[600]}, ${colors.blueAccent[600] || colors.greenAccent[700]})`,
-            color: "#fff",
-            fontSize: "14px",
-            fontWeight: 600,
-            padding: "12px 24px",
-            borderRadius: "12px",
-            boxShadow: theme.palette.mode === "dark"
-              ? "0 4px 14px rgba(28, 164, 123, 0.3)"
-              : "0 4px 14px rgba(76, 206, 172, 0.3)",
-            "&:hover": {
-              background: `linear-gradient(135deg, ${colors.greenAccent[700]}, ${colors.blueAccent[700] || colors.greenAccent[800]})`,
-              boxShadow: theme.palette.mode === "dark"
-                ? "0 6px 20px rgba(28, 164, 123, 0.4)"
-                : "0 6px 20px rgba(76, 206, 172, 0.4)",
-              transform: "translateY(-1px)",
-            },
-            transition: "all 0.2s ease",
-          }}
-        >
-          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-          Download Reports
-        </Button>
-      </Box>
-
-      {/* GRID & CHARTS */}
-      <Box
-        display="grid"
-        gridTemplateColumns="repeat(12, 1fr)"
-        gridAutoRows="160px"
-        gap="20px"
-      >
-        {/* ROW 1 */}
-        <GlassCard gridColumn="span 3" display="flex" alignItems="center" justifyContent="center">
-          <StatBox
-            title="12,361"
-            subtitle="Emails Sent"
-            progress="0.75"
-            increase="+14%"
-            icon={
-              <EmailIcon
-                sx={{ color: colors.greenAccent[500], fontSize: "26px" }}
-              />
-            }
-          />
-        </GlassCard>
-        <GlassCard gridColumn="span 3" display="flex" alignItems="center" justifyContent="center">
-          <StatBox
-            title="431,225"
-            subtitle="Sales Obtained"
-            progress="0.50"
-            increase="+21%"
-            icon={
-              <PointOfSaleIcon
-                sx={{ color: colors.greenAccent[500], fontSize: "26px" }}
-              />
-            }
-          />
-        </GlassCard>
-        <GlassCard gridColumn="span 3" display="flex" alignItems="center" justifyContent="center">
-          <StatBox
-            title="32,441"
-            subtitle="New Clients"
-            progress="0.30"
-            increase="+5%"
-            icon={
-              <PersonAddIcon
-                sx={{ color: colors.greenAccent[500], fontSize: "26px" }}
-              />
-            }
-          />
-        </GlassCard>
-        <GlassCard gridColumn="span 3" display="flex" alignItems="center" justifyContent="center">
-          <StatBox
-            title="1,325,134"
-            subtitle="Traffic Received"
-            progress="0.80"
-            increase="+43%"
-            icon={
-              <TrafficIcon
-                sx={{ color: colors.greenAccent[500], fontSize: "26px" }}
-              />
-            }
-          />
-        </GlassCard>
-
-        {/* ROW 2 */}
-        <GlassCard gridColumn="span 8" gridRow="span 2">
-          <Box
-            mt="24px"
-            p="0 28px"
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Box>
-              <Typography
-                variant="h5"
-                fontWeight="600"
-                color={colors.grey[100]}
-                sx={{ letterSpacing: "-0.01em" }}
-              >
-                Revenue Generated
-              </Typography>
-              <Typography
-                variant="h2"
-                fontWeight="700"
-                sx={{
-                  background: `linear-gradient(135deg, ${colors.greenAccent[400]}, ${colors.greenAccent[600]})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  mt: "4px",
-                }}
-              >
-                $59,342.32
-              </Typography>
-            </Box>
-            <IconButton
-              sx={{
-                backgroundColor: theme.palette.mode === "dark"
-                  ? "rgba(28, 164, 123, 0.1)"
-                  : "rgba(76, 206, 172, 0.1)",
-                "&:hover": {
-                  backgroundColor: theme.palette.mode === "dark"
-                    ? "rgba(28, 164, 123, 0.2)"
-                    : "rgba(76, 206, 172, 0.15)",
-                },
-              }}
-            >
-              <DownloadOutlinedIcon
-                sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
-              />
-            </IconButton>
-          </Box>
-          <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
-          </Box>
-        </GlassCard>
-
-        <GlassCard gridColumn="span 4" gridRow="span 2" overflow="auto">
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            borderBottom={theme.palette.mode === "dark"
-              ? "1px solid rgba(255, 255, 255, 0.06)"
-              : "1px solid rgba(0, 0, 0, 0.06)"}
-            p="18px 20px"
-          >
-            <Typography
-              color={colors.grey[100]}
-              variant="h5"
-              fontWeight="600"
-              sx={{ letterSpacing: "-0.01em" }}
-            >
-              Recent Transactions
-            </Typography>
-          </Box>
-          {mockTransactions.map((transaction, i) => (
-            <Box
-              key={`${transaction.txId}-${i}`}
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              borderBottom={theme.palette.mode === "dark"
-                ? "1px solid rgba(255, 255, 255, 0.04)"
-                : "1px solid rgba(0, 0, 0, 0.04)"}
-              p="14px 20px"
-              sx={{
-                "&:hover": {
-                  backgroundColor: theme.palette.mode === "dark"
-                    ? "rgba(255, 255, 255, 0.02)"
-                    : "rgba(0, 0, 0, 0.02)",
-                },
-                transition: "background-color 0.2s ease",
-              }}
-            >
-              <Box>
-                <Typography
-                  color={colors.greenAccent[500]}
-                  variant="h5"
-                  fontWeight="600"
-                  sx={{ letterSpacing: "-0.01em" }}
-                >
-                  {transaction.txId}
-                </Typography>
-                <Typography color={colors.grey[300]} sx={{ fontSize: "13px" }}>
-                  {transaction.user}
-                </Typography>
-              </Box>
-              <Typography color={colors.grey[300]} sx={{ fontSize: "13px" }}>
-                {transaction.date}
-              </Typography>
-              <Box
-                sx={{
-                  background: `linear-gradient(135deg, ${colors.greenAccent[600]}, ${colors.greenAccent[700]})`,
-                  p: "6px 14px",
-                  borderRadius: "8px",
-                  color: "#fff",
-                  fontWeight: 600,
-                  fontSize: "13px",
-                }}
-              >
-                ${transaction.cost}
-              </Box>
-            </Box>
-          ))}
-        </GlassCard>
-
-        {/* ROW 3 */}
-        <GlassCard gridColumn="span 4" gridRow="span 2" p="28px">
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            color={colors.grey[100]}
-            sx={{ letterSpacing: "-0.01em" }}
-          >
-            Campaign
-          </Typography>
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            mt="24px"
-          >
-            <ProgressCircle size="130" />
-            <Typography
-              variant="h5"
-              color={colors.greenAccent[500]}
-              sx={{ mt: "16px", fontWeight: 600 }}
-            >
-              $48,352 revenue generated
-            </Typography>
-            <Typography
-              color={colors.grey[300]}
-              sx={{ mt: "4px", fontSize: "13px" }}
-            >
-              Includes extra misc expenditures and costs
-            </Typography>
-          </Box>
-        </GlassCard>
-
-        <GlassCard gridColumn="span 4" gridRow="span 2">
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            color={colors.grey[100]}
-            sx={{ padding: "28px 28px 0 28px", letterSpacing: "-0.01em" }}
-          >
-            Sales Quantity
-          </Typography>
-          <Box height="250px" mt="-20px">
-            <BarChart isDashboard={true} />
-          </Box>
-        </GlassCard>
-
-        <GlassCard gridColumn="span 4" gridRow="span 2" p="28px">
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            color={colors.grey[100]}
-            sx={{ marginBottom: "16px", letterSpacing: "-0.01em" }}
-          >
-            Geography Based Traffic
-          </Typography>
-          <Box height="200px">
-            <GeographyChart isDashboard={true} />
-          </Box>
-        </GlassCard>
-      </Box>
-    </Box>
+    <Chip
+      label={config.label}
+      size="small"
+      sx={{
+        backgroundColor: config.bg,
+        color: config.color,
+        fontWeight: 600,
+        border: `1px solid ${config.color}`,
+      }}
+    />
   );
 };
 
-export default Dashboard;
+const CheckboxIcon = ({ state }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode) || {};
+  
+  switch (state) {
+    case "checked":
+      return <CheckBoxIcon sx={{ color: colors.greenAccent?.['500'] || '#4cceac', fontSize: 20 }} />;
+    case "mixed":
+      return <IndeterminateCheckBoxIcon sx={{ color: colors.orangeAccent?.['500'] || '#ff9800', fontSize: 20 }} />;
+    default:
+      return <CheckBoxOutlineBlankIcon sx={{ color: colors.grey?.['400'] || '#bdbdbd', fontSize: 20 }} />;
+  }
+};
+
+const TicketCard = ({ ticket, onClick, index }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode) || {};
+  
+  const statusColors = {
+    todo: { border: colors.blueAccent?.['500'] || '#2196f3', bg: colors.blueAccent?.['50'] || '#e3f2fd' },
+    in_progress: { border: colors.orangeAccent?.['500'] || '#ff9800', bg: colors.orangeAccent?.['50'] || '#fff3e0' },
+    done: { border: colors.greenAccent?.['500'] || '#4cceac', bg: colors.greenAccent?.['50'] || '#e0f2f1' },
+  };
+  
+  const statusStyle = statusColors[ticket.status] || statusColors.todo;
+  
+  return (
+    <Draggable draggableId={ticket.id} index={index}>
+      {(provided, snapshot) => (
+        <Paper
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          elevation={snapshot.isDragging ? 8 : 2}
+          sx={{
+            borderLeft: `4px solid ${statusStyle.border}`,
+            backgroundColor: snapshot.isDragging ? statusStyle.bg : "inherit",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            "&:hover": {
+              boxShadow: theme.palette.mode === "dark"
+                ? "0 4px 20px rgba(0, 0, 0, 0.4)"
+                : "0 4px 20px rgba(0, 0, 0, 0.12)",
+              transform: snapshot.isDragging ? "none" : "translateY(-2px)",
+            },
+          }}
+          onClick={onClick}
+        >
+          <Box p={2}>
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+              <Tooltip title={`Checkbox: ${ticket.checkbox_state || "unchecked"}`}>
+                <CheckboxIcon state={ticket.checkbox_state} />
+              </Tooltip>
+              <StatusChip status={ticket.status} />
+            </Box>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: colors.grey[100] }}>
+              {ticket.title}
+            </Typography>
+            {ticket.description && (
+              <Typography variant="body2" color={colors.grey[300]} sx={{ display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                {ticket.description}
+              </Typography>
+            )}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+              <Typography variant="caption" color={colors.grey[400]}>
+                Updated: {new Date(ticket.updated_at).toLocaleDateString()}
+              </Typography>
+              <Tooltip title="Open details">
+                <IconButton size="small" onClick={(e) => { e.stopPropagation(); onClick(); }}>
+                  <OpenInNewIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+        </Paper>
+      )}
+    </Draggable>
+  );
+};
+
+const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode) || {};
+  
+  const statusColors = {
+    todo: colors.blueAccent?.['500'] || '#2196f3',
+    in_progress: colors.orangeAccent?.['500'] || '#ff9800',
+    done: colors.greenAccent?.['500'] || '#4cceac',
+  };
+  
+  const color = statusColors[status] || colors.grey?.['500'] || '#9e9e9e';
+  
+  return (
+    <Droppable droppableId={status} {...droppableProps}>
+      {(provided, snapshot) => (
+        <Paper
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          sx={{
+            minHeight: 400,
+            backgroundColor: snapshot.isDraggingOver ? `${color}10` : "transparent",
+            border: snapshot.isDraggingOver ? `2px dashed ${color}` : "none",
+            borderRadius: "12px",
+            transition: "all 0.2s ease",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyIn: "space-between",
+              p: 2,
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              backgroundColor: theme.palette.mode === "dark" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.02)",
+              borderRadius: "12px 12px 0 0",
+            }}
+          >
+            <Typography variant="h6" fontWeight={700} sx={{ color, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              {title}
+            </Typography>
+            <Chip
+              label={tickets.length}
+              size="small"
+              sx={{ backgroundColor: `${color}20`, color, fontWeight: 600 }}
+            />
+          </Box>
+          <Box
+            sx={{ flex: 1, overflow: "auto", p: 1 }}
+          >
+            {tickets.length === 0 ? (
+              <Box
+                /* REMOVED: {...provided.placeholder} */
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: 200,
+                  color: colors.grey?.['400'] || '#bdbdbd',
+                  border: `2px dashed ${colors.grey?.['300'] || '#e0e0e0'}`,
+                  borderRadius: "8px",
+                  mx: 1,
+                }}
+              >
+                <Typography variant="body2">{placeholder}</Typography>
+              </Box>
+            ) : (
+              tickets.map((ticket, index) => (
+                <TicketCard key={ticket.id} ticket={ticket} index={index} onClick={() => droppableProps.onTicketClick(ticket)} />
+              ))
+            )}
+            {/* provided.placeholder is already correctly rendered here as a JSX element */}
+            {provided.placeholder}
+          </Box>
+        </Paper>
+      )}
+    </Droppable>
+  );
+};
+const CommentItem = ({ comment }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const isAgent = comment.author_type === "agent";
+  
+  return (
+    <ListItem sx={{ py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
+      <Avatar
+        sx={{
+          width: 36,
+          height: 36,
+          backgroundColor: isAgent ? colors.purpleAccent[500] : colors.greenAccent[500],
+          mr: 2,
+        }}
+      >
+        {isAgent ? "🤖" : "👤"}
+      </Avatar>
+      <ListItemText
+        primary={
+          <Box display="flex" alignItems="center" gap={1}>
+            <Typography variant="body2" fontWeight={600} color={colors.grey[100]}>
+              {isAgent ? "Agent" : "User"}
+            </Typography>
+            <Chip label={isAgent ? "AI" : "Human"} size="small" variant="outlined" sx={{ fontSize: 10 }} />
+          </Box>
+        }
+        secondary={
+          <Box>
+            <Typography variant="body2" color={colors.grey[300]}>{comment.body}</Typography>
+            <Typography variant="caption" color={colors.grey[500]}>
+              {new Date(comment.created_at).toLocaleString()}
+            </Typography>
+          </Box>
+        }
+      />
+    </ListItem>
+  );
+};
+
+const EventItem = ({ event }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  
+  const eventIcons = {
+    status_change: "🔄",
+    status_override: "⚠️",
+    comment_added: "💬",
+    doc_regenerated: "📄",
+  };
+  
+  const icon = eventIcons[event.event_type] || "📋";
+  
+  return (
+    <ListItem sx={{ py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
+      <Avatar
+        sx={{
+          width: 36,
+          height: 36,
+          backgroundColor: colors.grey[800],
+          mr: 2,
+        }}
+      >
+        {icon}
+      </Avatar>
+      <ListItemText
+        primary={
+          <Typography variant="body2" fontWeight={600} color={colors.grey[100]}>
+            {event.event_type.replace("_", " ")}
+          </Typography>
+        }
+        secondary={
+          <Box>
+            <Typography variant="body2" color={colors.grey[300]}>
+              {event.payload ? JSON.stringify(event.payload) : "No payload"}
+            </Typography>
+            <Typography variant="caption" color={colors.grey[500]}>
+              {new Date(event.created_at).toLocaleString()} • {event.author_type === "agent" ? "🤖 Agent" : "👤 User"}
+            </Typography>
+          </Box>
+        }
+      />
+    </ListItem>
+  );
+};
+
+const TicketDetailDialog = ({ ticket, open, onClose, onAddComment, onRefreshPdf }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const [commentText, setCommentText] = useState("");
+  const [activeTab, setActiveTab] = useState(0);
+  const [comments, setComments] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [loadingPdf, setLoadingPdf] = useState(false);
+  
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    if (open && ticket) {
+      loadData();
+    }
+  }, [open, ticket]);
+  
+  const loadData = async () => {
+    setLoadingComments(true);
+    setLoadingEvents(true);
+    try {
+      const [commentsRes, eventsRes] = await Promise.all([
+        dispatch(fetchTicketComments(ticket.id)).unwrap(),
+        dispatch(fetchTicketEvents(ticket.id)).unwrap(),
+      ]);
+      setComments(commentsRes);
+      setEvents(eventsRes);
+    } catch (err) {
+      console.error("Failed to load ticket details:", err);
+    } finally {
+      setLoadingComments(false);
+      setLoadingEvents(false);
+    }
+  };
+  
+  const handleAddComment = async () => {
+    if (!commentText.trim()) return;
+    try {
+      await dispatch(addTicketComment({ ticketId: ticket.id, body: commentText, authorType: "human" })).unwrap();
+      setCommentText("");
+      loadData();
+    } catch (err) {
+      console.error("Failed to add comment:", err);
+    }
+  };
+  
+  const handlePdfLoad = async () => {
+    setLoadingPdf(true);
+    try {
+      const blob = await dispatch(fetchDocPdf(ticket.id)).unwrap();
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+      window.open(url, "_blank");
+    } catch (err) {
+      console.error("Failed to load PDF:", err);
+    } finally {
+      setLoadingPdf(false);
+    }
+  };
+  
+  if (!open) return null;
+  
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth sx={{ "& .MuiDialog-paper": { maxHeight: "90vh", overflow: "auto" } }}>
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box display="flex" alignItems="center" gap={2}>
+          <CheckboxIcon state={ticket.checkbox_state} />
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ color: colors.grey[100] }}>
+              {ticket.title}
+            </Typography>
+            <StatusChip status={ticket.status} />
+          </Box>
+        </Box>
+        <IconButton onClick={onClose}><CloseIcon /></IconButton>
+      </DialogTitle>
+      <DialogContent sx={{ maxHeight: "70vh", overflow: "auto" }}>
+        <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)} sx={{ mb: 2 }}>
+          <Tab label="Description" icon={<DescriptionIcon />} />
+          <Tab label="Comments" icon={<CommentIcon />} />
+          <Tab label="Events" icon={<HistoryIcon />} />
+          <Tab label="Document" icon={<PictureAsPdfIcon />} />
+        </Tabs>
+        
+        {activeTab === 0 && (
+          <Box>
+            <Typography variant="body1" color={colors.grey[300]} sx={{ whiteSpace: "pre-wrap" }}>
+              {ticket.description || "No description available"}
+            </Typography>
+          </Box>
+        )}
+        
+        {activeTab === 1 && (
+          <Box>
+            <Divider sx={{ mb: 2 }} />
+            <List>
+              {loadingComments ? (
+                <Box display="flex" justifyContent="center" py={4}>
+                  <CircularProgress size={24} />
+                </Box>
+              ) : comments.length === 0 ? (
+                <Typography variant="body2" color={colors.grey[400]} align="center" sx={{ py: 4 }}>
+                  No comments yet
+                </Typography>
+              ) : (
+                comments.map((comment) => <CommentItem key={comment.id} comment={comment} />)
+              )}
+            </List>
+            <Divider sx={{ my: 2 }} />
+            <Box display="flex" gap={2} alignItems="flex-end">
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                placeholder="Add a comment..."
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                sx={{ flex: 1 }}
+              />
+              <Button variant="contained" onClick={handleAddComment} startIcon={<SendIcon />}>
+                Post
+              </Button>
+            </Box>
+          </Box>
+        )}
+        
+        {activeTab === 2 && (
+          <Box>
+            <Divider sx={{ mb: 2 }} />
+            <List>
+              {loadingEvents ? (
+                <Box display="flex" justifyContent="center" py={4}>
+                  <CircularProgress size={24} />
+                </Box>
+              ) : events.length === 0 ? (
+                <Typography variant="body2" color={colors.grey[400]} align="center" sx={{ py: 4 }}>
+                  No events yet
+                </Typography>
+              ) : (
+                events.map((event) => <EventItem key={event.id} event={event} />)
+              )}
+            </List>
+          </Box>
+        )}
+        
+        {activeTab === 3 && (
+          <Box>
+            <Divider sx={{ mb: 2 }} />
+            <Box display="flex" flexDirection="column" alignItems="center" py={4}>
+              <Typography variant="h6" color={colors.grey[300]} gutterBottom>
+                Linked Document (PDF)
+              </Typography>
+              <Typography variant="body2" color={colors.grey[500]} sx={{ mb: 3, textAlign: "center" }}>
+                This ticket is linked to an artifact from Feature 1. The latest generated PDF will be shown here.
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<PictureAsPdfIcon />}
+                onClick={handlePdfLoad}
+                disabled={loadingPdf}
+                size="large"
+              >
+                {loadingPdf ? "Loading..." : "Open PDF Preview"}
+              </Button>
+              {pdfUrl && (
+                <Box mt={2} sx={{ width: "100%", maxWidth: 600 }}>
+                  <iframe
+                    src={pdfUrl}
+                    style={{ width: "100%", height: 500, border: "none", borderRadius: 8 }}
+                    title="Document Preview"
+                  />
+                </Box>
+              )}
+            </Box>
+          </Box>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const ProgressBar = ({ progress }) => {
+  const theme = useTheme();
+  // Fallback to empty object if tokens are undefined
+  const colors = tokens(theme.palette.mode) || {}; 
+
+  // 1. Guard check: If data hasn't loaded yet, show a clean loading state
+  if (!progress) {
+    return (
+      <GlassCard sx={{ mb: 3, p: 3, display: "flex", justifyContent: "center" }}>
+        <CircularProgress size={24} />
+      </GlassCard>
+    );
+  }
+
+  // 2. Safe color fallbacks using optional chaining
+  // If the color family doesn't exist in the theme, it falls back to standard hex codes
+  const green500 = colors.greenAccent?.['500'] || '#4cceac';
+  const green400 = colors.greenAccent?.['400'] || '#70d8bd';
+  const blue500 = colors.blueAccent?.['500'] || '#2196f3';
+  const orange500 = colors.orangeAccent?.['500'] || '#ff9800';
+  const grey800 = colors.grey?.['800'] || '#424242';
+  const grey300 = colors.grey?.['300'] || '#e0e0e0';
+  const grey100 = colors.grey?.['100'] || '#f5f5f5';
+
+  return (
+    <GlassCard sx={{ mb: 3, p: 3 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h6" fontWeight={600} color={grey100}>
+          Project Progress
+        </Typography>
+        <Chip
+          label={`${progress.progress_pct || 0}%`}
+          size="small"
+          sx={{
+            backgroundColor: `${green500}20`,
+            color: green500,
+            fontWeight: 600,
+          }}
+        />
+      </Box>
+      <Box sx={{ height: 12, borderRadius: 6, backgroundColor: grey800, overflow: "hidden" }}>
+        <Box
+          sx={{
+            height: "100%",
+            width: `${progress.progress_pct || 0}%`,
+            background: `linear-gradient(90deg, ${green500}, ${green400})`,
+            borderRadius: 6,
+            transition: "width 0.5s ease",
+          }}
+        />
+      </Box>
+      <Box display="flex" justifyContent="space-between" mt={2}>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: blue500 }} />
+          <Typography variant="caption" color={grey300}>To Do: {progress.todo || 0}</Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: orange500 }} />
+          <Typography variant="caption" color={grey300}>In Progress: {progress.in_progress || 0}</Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: green500 }} />
+          <Typography variant="caption" color={grey300}>Done: {progress.done || 0}</Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography variant="caption" color={grey300}>Total: {progress.total || 0}</Typography>
+        </Box>
+      </Box>
+    </GlassCard>
+  );
+};
+
+const KanbanBoard = () => {
+  const dispatch = useDispatch();
+  const { tickets, todoTickets, inProgressTickets, doneTickets, selectedTicket, progress, loading, projectName } = useSelector((state) => state.kanban);
+  
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
+  
+  useEffect(() => {
+    dispatch(fetchTickets({ projectName }));
+    dispatch(fetchProgress(projectName));
+  }, [dispatch, projectName]);
+  
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    
+    const { source, destination, draggableId } = result;
+    
+    if (source.droppableId === destination.droppableId && source.index === destination.index) {
+      return;
+    }
+    
+    dispatch(
+      reorderTickets({
+        sourceStatus: source.droppableId,
+        destinationStatus: destination.droppableId,
+        sourceIndex: source.index,
+        destinationIndex: destination.index,
+      })
+    );
+    
+    const ticket = tickets.find(t => t.id === draggableId);
+    if (ticket && source.droppableId !== destination.droppableId) {
+      dispatch(updateTicketStatus({ ticketId: ticket.id, status: destination.droppableId }))
+        .then(() => {
+          setSnackbar({ open: true, message: `Moved to ${destination.droppableId.replace("_", " ")}`, severity: "success" });
+          dispatch(fetchProgress(projectName));
+        })
+        .catch(() => {
+          dispatch(fetchTickets({ projectName }));
+          setSnackbar({ open: true, message: "Failed to update status. Reverting...", severity: "error" });
+        });
+    }
+  };
+  
+  const handleIngest = async () => {
+    try {
+      await dispatch(ingestTasks({ projectName })).unwrap();
+      setSnackbar({ open: true, message: "Tasks ingested successfully!", severity: "success" });
+      dispatch(fetchProgress(projectName));
+    } catch (err) {
+      setSnackbar({ open: true, message: "Failed to ingest tasks", severity: "error" });
+    }
+  };
+  
+  const columns = [
+    { id: "todo", title: "To Do", tickets: todoTickets, placeholder: "No tasks yet. Ingest tasks to get started." },
+    { id: "in_progress", title: "In Progress", tickets: inProgressTickets, placeholder: "Drag tasks here when work begins." },
+    { id: "done", title: "Done", tickets: doneTickets, placeholder: "Completed tasks will appear here." },
+  ];
+  
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Box sx={{ flexGrow: 1, p: 3, bgcolor: "grey.50", minHeight: "100vh" }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Box>
+            <Typography variant="h4" fontWeight={700} sx={{ color: "grey.900" }}>
+              Kanban Board
+            </Typography>
+            <Typography variant="body1" color="grey.600">
+              Project: <strong>{projectName}</strong>
+            </Typography>
+          </Box>
+          <Box display="flex" gap={2}>
+            <Button variant="outlined" startIcon={<RefreshIcon />} onClick={handleIngest}>
+              Ingest Tasks
+            </Button>
+            <Button variant="contained" startIcon={<AnalyticsIcon />} onClick={() => dispatch(fetchProgress(projectName))}>
+              Refresh Progress
+            </Button>
+          </Box>
+        </Box>
+        
+        <ProgressBar progress={progress} />
+        
+        <Grid container spacing={3}>
+          {columns.map((col) => (
+            <Grid item xs={12} md={4} key={col.id}>
+              <Column
+                title={col.title}
+                status={col.id}
+                tickets={col.tickets}
+                placeholder={col.placeholder}
+                onTicketClick={(ticket) => dispatch(setSelectedTicket(ticket))}
+              />
+            </Grid>
+          ))}
+        </Grid>
+        
+        <TicketDetailDialog
+          ticket={selectedTicket}
+          open={!!selectedTicket}
+          onClose={() => dispatch(clearSelectedTicket())}
+        />
+        
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={3000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        >
+          <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </Box>
+    </DragDropContext>
+  );
+};
+
+export default KanbanBoard;

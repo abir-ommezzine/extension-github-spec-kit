@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+node_modules/
+outputs/
+storage/
+*.pdf
+*.png
+*.jpg
+configFrontEnd.pdf

@@ -1,5 +1,6 @@
 import json
 import asyncio
+import time
 from pathlib import Path
 from typing import Dict, Any, Optional
 
@@ -32,6 +33,7 @@ from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.schemas.diagram_agent_schema import DiagramOutputModel
 from app.schemas.layout_agent_schema import LayoutOutputModel
 from app.graph.state import GraphState
+from app.graph.progress import PIPELINE_PROGRESS, report_agent_start, report_agent_done
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
 
@@ -98,7 +100,8 @@ def _sync_stage_to_db(
 # 1. PARSING NODE
 # ------------------------------------------------------------------------------
 def parsing_node(state: GraphState) -> Dict[str, Any]:
-    print("\n[🚀 NODE] Exécution du Parsing Agent...")
+    report_agent_start("parsing")
+    print("\n[🚀 NODE] === PARSING AGENT START ===", flush=True)
     file_name = state["file_name"]
     file_content = state["file_content"]
     run_id = state.get("run_id")
@@ -106,7 +109,15 @@ def parsing_node(state: GraphState) -> Dict[str, Any]:
 
     paths = build_pipeline_paths(file_name, version_label=version_label)
 
-    parsed_doc = run_parsing_agent(file_name=file_name, file_content=file_content)
+    print(f"[🚀 NODE] Parsing Agent: file={file_name}, content_len={len(file_content)}", flush=True)
+    try:
+        parsed_doc = run_parsing_agent(file_name=file_name, file_content=file_content)
+    except Exception as e:
+        print(f"[❌ NODE] Parsing Agent FAILED: {type(e).__name__}: {e}", flush=True)
+        import traceback; traceback.print_exc()
+        raise
+    print("[✅ NODE] Parsing Agent DONE", flush=True)
+    report_agent_done("parsing")
     parsed_json_dict = parsed_doc.model_dump()
 
     template_path = BASE_DIR / "app" / "resources" / "sdd_templates.json"
@@ -125,7 +136,7 @@ def parsing_node(state: GraphState) -> Dict[str, Any]:
     # 2. Sauvegarde en BDD PostgreSQL
     _sync_stage_to_db(
         run_id=run_id,
-        stage=PipelineStage.parallel_enrichment,
+        stage=PipelineStage.parsing,
         output_attr="structured_json",
         output_data=parsed_json_dict,
         eval_attr="parsing_eval",
@@ -143,7 +154,8 @@ def parsing_node(state: GraphState) -> Dict[str, Any]:
 # 2. SUMMARY NODE
 # ------------------------------------------------------------------------------
 def summary_node(state: GraphState) -> Dict[str, Any]:
-    print("\n[🚀 NODE] Exécution du Summary Agent...")
+    report_agent_start("summary")
+    print("\n[🚀 NODE] === SUMMARY AGENT START ===", flush=True)
     file_name = state["file_name"]
     parsed_json_dict = state["parsed_json_dict"]
     parsed_doc = state["parsed_doc"]
@@ -163,6 +175,8 @@ def summary_node(state: GraphState) -> Dict[str, Any]:
         parsed_json_dict=parsed_json_dict,
         summary_spec_dict=summary_spec_dict
     )
+    print("[✅ NODE] Summary Agent DONE", flush=True)
+    report_agent_done("summary")
 
     report = SummaryEvaluatorService.evaluate(summary_doc, parsed_doc)
     summary_text = summary_doc.model_dump_json() if hasattr(summary_doc, "model_dump_json") else str(summary_doc)
@@ -174,7 +188,7 @@ def summary_node(state: GraphState) -> Dict[str, Any]:
     # 2. Sauvegarde en BDD PostgreSQL
     _sync_stage_to_db(
         run_id=run_id,
-        stage=PipelineStage.parallel_enrichment,
+        stage=PipelineStage.summary,
         output_attr="summary_output",
         output_data=summary_text,
         eval_attr="summary_eval",
@@ -191,7 +205,8 @@ def summary_node(state: GraphState) -> Dict[str, Any]:
 # 3. GLOSSARY NODE
 # ------------------------------------------------------------------------------
 def glossary_node(state: GraphState) -> Dict[str, Any]:
-    print("\n[🚀 NODE] Exécution du Glossary Agent...")
+    report_agent_start("glossary")
+    print("\n[🚀 NODE] === GLOSSARY AGENT START ===", flush=True)
     file_name = state["file_name"]
     parsed_json_dict = state["parsed_json_dict"]
     parsed_doc = state["parsed_doc"]
@@ -215,6 +230,8 @@ def glossary_node(state: GraphState) -> Dict[str, Any]:
         glossary_spec_dict=glossary_spec_dict,
         valid_anchors=valid_anchors
     )
+    print("[✅ NODE] Glossary Agent DONE", flush=True)
+    report_agent_done("glossary")
 
     report = GlossaryEvaluatorService.evaluate(glossary_doc, parsed_doc, candidate_terms)
     glossary_dict = glossary_doc.model_dump() if hasattr(glossary_doc, "model_dump") else glossary_doc
@@ -226,7 +243,7 @@ def glossary_node(state: GraphState) -> Dict[str, Any]:
     # 2. Sauvegarde en BDD PostgreSQL
     _sync_stage_to_db(
         run_id=run_id,
-        stage=PipelineStage.parallel_enrichment,
+        stage=PipelineStage.glossary,
         output_attr="glossary_output",
         output_data=glossary_dict,
         eval_attr="glossary_eval",
@@ -243,7 +260,8 @@ def glossary_node(state: GraphState) -> Dict[str, Any]:
 # 4. DIAGRAM NODE
 # ------------------------------------------------------------------------------
 def diagram_node(state: GraphState) -> Dict[str, Any]:
-    print("\n[🚀 NODE] Exécution du Diagram Agent...")
+    report_agent_start("diagram")
+    print("\n[🚀 NODE] === DIAGRAM AGENT START ===", flush=True)
     file_name = state["file_name"]
     parsed_json_dict = state["parsed_json_dict"]
     parsed_doc = state["parsed_doc"]
@@ -266,6 +284,8 @@ def diagram_node(state: GraphState) -> Dict[str, Any]:
             parsed_json_dict=parsed_json_dict,
             diagram_spec_dict=diagram_spec_dict
         )
+        print("[✅ NODE] Diagram Agent DONE", flush=True)
+        report_agent_done("diagram")
     except Exception as exc:
         print(f"[⚠️ WARNING] Diagram Agent error : {exc}")
         return {"diagram_doc": None, "diagram_metrics": {}, "diagram_pdf_path": None}
@@ -295,7 +315,7 @@ def diagram_node(state: GraphState) -> Dict[str, Any]:
     # 2. Sauvegarde en BDD PostgreSQL
     _sync_stage_to_db(
         run_id=run_id,
-        stage=PipelineStage.parallel_enrichment,
+        stage=PipelineStage.diagram,
         output_attr="diagram_output",
         output_data=diagram_dict,
         eval_attr="diagram_eval",
@@ -313,7 +333,8 @@ def diagram_node(state: GraphState) -> Dict[str, Any]:
 # 5. DOC WRITER NODE
 # ------------------------------------------------------------------------------
 def doc_writer_node(state: GraphState) -> Dict[str, Any]:
-    print("\n[🚀 NODE] Exécution du Documentation Writer Agent...")
+    report_agent_start("doc_writer")
+    print("\n[🚀 NODE] === DOC WRITER AGENT START ===", flush=True)
     file_name = state["file_name"]
     run_id = state.get("run_id")
     version_label = state.get("version_label", "1.0")
@@ -370,6 +391,8 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
             glossary_data=glossary_doc,
             diagram_data=fallback_diagram
         )
+        print("[✅ NODE] Doc Writer Agent DONE", flush=True)
+        report_agent_done("doc_writer")
 
         eval_report_dict = _to_json_primitive(eval_report)
 
@@ -404,7 +427,8 @@ def doc_writer_node(state: GraphState) -> Dict[str, Any]:
 # 6. LAYOUT NODE
 # ------------------------------------------------------------------------------
 def layout_node(state: GraphState) -> Dict[str, Any]:
-    print("\n[🚀 NODE] Exécution du Layout Agent...")
+    report_agent_start("layout")
+    print("\n[🚀 NODE] === LAYOUT AGENT START ===", flush=True)
     file_name = state["file_name"]
     run_id = state.get("run_id")
     version_label = state.get("version_label", "1.0")
@@ -446,6 +470,8 @@ def layout_node(state: GraphState) -> Dict[str, Any]:
 
         if layout_result and layout_result.pdf_generated:
             pdf_path_str = str(output_pdf_path)
+            print("[✅ NODE] Layout Agent DONE", flush=True)
+            report_agent_done("layout")
 
             eval_report = {
                 "project_name": layout_result.project_name,

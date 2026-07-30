@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     # --- AJOUT CONFIGURATION OLLAMA ---
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "gemma4:31b-cloud"
+    OLLAMA_API_KEY: Optional[str] = None
     
     PDF_STORAGE_DIR: str = "./storage/pdfs"
     LOG_LEVEL: str = "INFO"

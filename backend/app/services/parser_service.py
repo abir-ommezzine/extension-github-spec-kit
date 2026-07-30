@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.utils.markdown_parser import pre_parse_markdown_to_sections, calculate_file_hash
-from app.core.llm_client import ollama_openai_client, get_ollama_model
+from app.core.llm_client import ollama_native_client, get_ollama_model
 from app.core.llm_utils import parse_and_validate_json
 from app.core.prompts import get_parsing_agent_prompt
 
@@ -74,15 +74,14 @@ def run_parsing_agent(file_name: str, file_content: str) -> ParsingAgentOutput:
     }
 
     # 5. Appel au LLM Ollama
-    response = ollama_openai_client.chat.completions.create(
+    response = ollama_native_client.chat(
         model=get_ollama_model(),
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(user_message, ensure_ascii=False)}
         ],
-        response_format={"type": "json_object"},
-        temperature=0.0
+        options={"temperature": 0.0}
     )
     
-    raw_output = response.choices[0].message.content
+    raw_output = response["message"]["content"]
     return parse_and_validate_json(raw_output, ParsingAgentOutput)

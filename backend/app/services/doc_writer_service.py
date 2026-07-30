@@ -18,7 +18,7 @@ from app.schemas.diagram_agent_schema import DiagramOutputModel
 
 # Outils et utilitaires
 from app.core.prompts import get_doc_writer_prompt
-from app.core.llm_client import ollama_openai_client, get_ollama_model
+from app.core.llm_client import ollama_native_client, get_ollama_model
 from app.core.llm_utils import clean_markdown_response
 from app.utils.doc_writer_tools import extract_markdown_toc, sanitize_mermaid_blocks, save_markdown_artifact
 
@@ -64,16 +64,16 @@ class DocWriterAgentService:
         user_prompt = json.dumps(pipeline_state_payload, ensure_ascii=False)
 
         # 5. Inférence LLM via le client centralisé (Génération du Markdown unifié)
-        response = ollama_openai_client.chat.completions.create(
+        response = ollama_native_client.chat(
             model=get_ollama_model(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.1
+            options={"temperature": 0.1}
         )
 
-        raw_markdown = response.choices[0].message.content
+        raw_markdown = response["message"]["content"]
 
         # 6. Sanitisation et nettoyage de la réponse Markdown
         clean_md = clean_markdown_response(raw_markdown)

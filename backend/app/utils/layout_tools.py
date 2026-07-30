@@ -22,7 +22,7 @@ from reportlab.platypus import (
 )
 from reportlab.pdfgen import canvas
 
-print("[⚡] ENGINE : layout_tools.py (Optimisation Visuelle HD & Polices 11pt) Actif")
+print("[ENGINE] layout_tools.py (Optimisation Visuelle HD & Polices 11pt) Actif")
 
 
 # ===========================================================================

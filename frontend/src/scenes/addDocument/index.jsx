@@ -23,7 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 
-const API_BASE = "http://localhost:8000/api/v1/docs";
+const API_BASE = "http://localhost:8000/api/v1/pipeline";
 
 const AddDocument = () => {
   const theme = useTheme();

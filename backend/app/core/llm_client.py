@@ -16,11 +16,14 @@ from app.config import settings
 # Note : Pour Ollama, l'API compatible OpenAI est hébergée sur l'URL de base suivie de '/v1'
 ollama_openai_client = OpenAI(
     base_url=f"{settings.OLLAMA_BASE_URL}/v1",
-    api_key="ollama"  # Clé factice requise pour valider l'initialisation du SDK OpenAI
+    api_key=settings.OLLAMA_API_KEY or "ollama"
 )
 
 # 2. Initialisation du client natif Ollama (Optionnel mais utile pour d'autres fonctionnalités)
-ollama_native_client = ollama.Client(host=settings.OLLAMA_BASE_URL)
+ollama_native_client = ollama.Client(
+    host=settings.OLLAMA_BASE_URL,
+    headers={"Authorization": f"Bearer {settings.OLLAMA_API_KEY}"} if settings.OLLAMA_API_KEY else None
+)
 
 
 def get_ollama_model() -> str:

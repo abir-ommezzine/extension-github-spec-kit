@@ -5,11 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import engine, Base
 
-
 import app.models  
 
 # Import du router pipeline (qui contient la logique BDD & LangGraph)
 from app.api.v1.endpoints import pipeline
+
+# Import du router tickets (Board Sync Agent)
+from app.api.v1.endpoints import tickets
 
 # 1. Création automatique des tables BDD si elles n'existent pas
 Base.metadata.create_all(bind=engine)
@@ -34,8 +36,11 @@ app.add_middleware(
 # 5. Inclusion du Router Pipeline (Incorpore /status, /run et la BDD)
 app.include_router(pipeline.router, prefix="/api/v1/pipeline", tags=["Pipeline"])
 
+# 6. Inclusion du Router Tickets (Board Sync Agent)
+app.include_router(tickets.router, prefix="/api/v1", tags=["Tickets"])
 
-# 6. Endpoints de santé (Health Checks)
+
+# 7. Endpoints de santé (Health Checks)
 @app.get("/", tags=["Health"])
 async def root():
     return {
