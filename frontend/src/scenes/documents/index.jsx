@@ -595,6 +595,7 @@ const Documents = () => {
   const [kpiView, setKpiView] = useState({ mode: "closed", document: null, selectedAgentKey: null });
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(null);
   const pollRef = useRef(null);
 
   const fetchDocuments = async () => {
@@ -611,10 +612,22 @@ const Documents = () => {
     }
   };
 
+  const fetchProgress = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/progress`);
+      if (response.ok) {
+        const data = await response.json();
+        setProgress(data);
+      }
+    } catch (err) {}
+  };
+
   useEffect(() => {
     fetchDocuments();
+    fetchProgress();
     pollRef.current = setInterval(() => {
       fetchDocuments();
+      fetchProgress();
     }, POLL_INTERVAL);
     return () => clearInterval(pollRef.current);
   }, []);
@@ -667,57 +680,61 @@ const Documents = () => {
     {
       field: "status",
       headerName: "Status",
-      flex: 1,
+      flex: 1.5,
       headerClassName: "glass-header",
-      renderCell: ({ row: { status } }) => {
+      renderCell: ({ row }) => {
+        const status = row.status;
+        const isRunning = progress && progress.is_running;
+        const currentAgent = progress?.current_agent;
+        const agentTimings = progress?.agent_timings || {};
+        const completedAgents = progress?.completed_agents || [];
+
+        const agentDisplayNames = {
+          parsing: "Parsing", summary: "Summary", glossary: "Glossary",
+          diagram: "Diagram", doc_writer: "Doc Writer", layout: "Layout"
+        };
+        const agentColors = {
+          parsing: colors.greenAccent[600], summary: "#2196f3",
+          glossary: "#ff9800", diagram: "#e91e63",
+          doc_writer: "#9c27b0", layout: "#00bcd4"
+        };
+
+        if (isRunning && currentAgent) {
+          const currentFileName = progress.current_file?.split(/[/\\]/).pop()?.replace(/\.[^.]+$/, "");
+          const isThisFile = row.name === currentFileName;
+          if (isThisFile) {
+            const timing = agentTimings[currentAgent];
+            const elapsed = timing?.elapsed || 0;
+            const fmt = elapsed < 60 ? `${Math.round(elapsed)}s` : `${Math.floor(elapsed/60)}m ${Math.round(elapsed%60)}s`;
+            return (
+              <Box display="flex" alignItems="center" gap={1} width="100%" p="4px 0">
+                <Box width={8} height={8} borderRadius="50%" sx={{
+                  backgroundColor: agentColors[currentAgent],
+                  animation: "pulse 1.5s infinite",
+                  "@keyframes pulse": { "0%": { opacity: 1 }, "50%": { opacity: 0.4 }, "100%": { opacity: 1 } }
+                }} />
+                <Typography fontSize="12px" fontWeight="bold" color={agentColors[currentAgent]}>
+                  {agentDisplayNames[currentAgent]}
+                </Typography>
+                <Typography fontSize="11px" color={colors.grey[400]} ml="auto">
+                  {fmt}
+                </Typography>
+              </Box>
+            );
+          }
+        }
+
         let bgColor;
         switch (status) {
-          case "completed":
-            bgColor = colors.greenAccent[600];
-            break;
-          case "parsing":
-            bgColor = colors.blueAccent[700];
-            break;
-          case "summary":
-            bgColor = "#2196f3";
-            break;
-          case "glossary":
-            bgColor = "#ff9800";
-            break;
-          case "diagram":
-            bgColor = "#e91e63";
-            break;
-          case "writing":
-            bgColor = "#9c27b0";
-            break;
-          case "layout":
-          case "rendering":
-            bgColor = "#00bcd4";
-            break;
-          case "failed":
-            bgColor = colors.redAccent ? colors.redAccent[500] : "#f44336";
-            break;
-          case "pending":
-            bgColor = colors.grey[600];
-            break;
-          default:
-            bgColor = colors.grey[600];
+          case "completed": bgColor = colors.greenAccent[600]; break;
+          case "failed": bgColor = colors.redAccent ? colors.redAccent[500] : "#f44336"; break;
+          case "pending": bgColor = colors.grey[600]; break;
+          default: bgColor = colors.grey[600];
         }
         return (
-          <Box
-            width="80%"
-            m="0 auto"
-            p="6px 12px"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            backgroundColor={bgColor}
-            borderRadius="8px"
-            sx={{
-              boxShadow: `0 2px 8px ${bgColor}33`,
-            }}
-          >
-            <Typography color={colors.grey[200]} sx={{ ml: "5px", fontSize: "13px", fontWeight: 600 }}>
+          <Box width="80%" m="0 auto" p="6px 12px" display="flex" justifyContent="center" alignItems="center"
+            backgroundColor={bgColor} borderRadius="8px" sx={{ boxShadow: `0 2px 8px ${bgColor}33` }}>
+            <Typography color={colors.grey[200]} sx={{ fontSize: "13px", fontWeight: 600 }}>
               {status}
             </Typography>
           </Box>

@@ -21,9 +21,6 @@ API_CHECK_URL = "http://127.0.0.1:8000/api/v1/pipeline/check-file"
 IGNORED_FILES = {"template.md", "spec-template.md"}
 IGNORED_FOLDERS = {"outputs", ".specify", ".git", "__pycache__", ".venv"}
 
-# 🎯 Types d'artefacts autorisés à déclencher le pipeline
-ALLOWED_ARTIFACT_TYPES = {"spec", "plan", "tasks", "task", "constitution", "requirements", "contracts"}
-
 # 🎯 File d'attente & verrous pour la synchronisation des événements
 file_queue = Queue()
 pending_files = set()
@@ -184,13 +181,8 @@ class SpecWatcherHandler(FileSystemEventHandler):
         if abs_path.name in IGNORED_FILES or "template" in abs_path.name.lower():
             return
 
-        # 3. Traiter uniquement les fichiers .md faisant partie des types autorisés
+        # 3. Traiter tous les fichiers .md
         if abs_path.suffix.lower() == ".md":
-            # Extraire la racine du nom (ex: "plan(1)" -> "plan", "spec_v1.0" -> "spec")
-            clean_stem = abs_path.stem.lower().split('(')[0].split('_')[0].strip()
-            if clean_stem not in ALLOWED_ARTIFACT_TYPES:
-                return
-
             print(f"👁️ [WATCHER] Modification/Création détectée : {abs_path.name}")
             Thread(target=handle_file_event, args=(abs_path,), daemon=True).start()
 
@@ -224,11 +216,6 @@ def initial_scan():
         if abs_path.name in IGNORED_FILES or "template" in abs_path.name.lower():
             continue
 
-        # Filtrage par type d'artefact autorisé
-        clean_stem = abs_path.stem.lower().split('(')[0].split('_')[0].strip()
-        if clean_stem not in ALLOWED_ARTIFACT_TYPES:
-            continue
-
         if is_file_already_in_db(abs_path):
             print(f"⏩ [WATCHER] Ignoré au démarrage (déjà en BDD) : {abs_path.name}")
         else:
@@ -238,7 +225,7 @@ def initial_scan():
 
 if __name__ == "__main__":
     print(f"👀 [WATCHER] Surveillance active sur le dossier : {WATCH_DIR.resolve()}")
-    print(f"🎯 [WATCHER] Types d'artefacts écoutés : {', '.join(sorted(ALLOWED_ARTIFACT_TYPES))}\n")
+    print(f"🎯 [WATCHER] Types de fichiers écoutés : Tous les *.md\n")
 
     Thread(target=queue_worker, daemon=True).start()
 
