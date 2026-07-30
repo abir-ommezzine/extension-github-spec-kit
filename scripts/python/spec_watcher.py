@@ -7,36 +7,9 @@ from threading import Thread, Lock
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-# ============================================
-# CONFIGURATION CONSOLE & ENCODAGE (Windows)
-# ============================================
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(line_buffering=True, encoding='utf-8')
-if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(line_buffering=True, encoding='utf-8')
-
-# ============================================
-# CONFIGURATION DE BASE & DÉTECTION SPECS
-# ============================================
-CURRENT_FILE = Path(__file__).resolve()
-
-# Hiérarchie des dossiers :
-# parents[0] = python/
-# parents[1] = scripts/
-# parents[2] = agentdocx-speckit/
-# parents[3] = StageTalan/
-STAGE_TALAN_DIR = CURRENT_FILE.parents[3] if len(CURRENT_FILE.parents) > 3 else CURRENT_FILE.parents[2]
-AGENTDOCX_DIR = CURRENT_FILE.parents[2]
-
-# 🎯 Détection prioritaire automatique du dossier 'specs'
-if (STAGE_TALAN_DIR / "specs").exists():
-    BASE_DIR = STAGE_TALAN_DIR
-elif (AGENTDOCX_DIR / "specs").exists():
-    BASE_DIR = AGENTDOCX_DIR
-else:
-    BASE_DIR = STAGE_TALAN_DIR
-
-WATCH_DIR = BASE_DIR / "specs"
+# --- CONFIGURATION ---
+BASE_DIR = Path(__file__).resolve().parents[2]
+WATCH_DIR = Path(r"C:\Users\MSI\Bureau\test-project\specs")
 
 # Sécurité : crée automatiquement le dossier 'specs' s'il n'existe pas encore
 WATCH_DIR.mkdir(parents=True, exist_ok=True)
