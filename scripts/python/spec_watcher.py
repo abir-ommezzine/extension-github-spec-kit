@@ -8,7 +8,7 @@ from watchdog.events import FileSystemEventHandler
 
 # --- CONFIGURATION ---
 BASE_DIR = Path(__file__).resolve().parents[2]
-WATCH_DIR = BASE_DIR / "specs"
+WATCH_DIR = Path(r"C:\Users\MSI\Bureau\test-project\specs")
 
 # Sécurité : crée automatiquement le dossier 'specs' s'il n'existe pas encore
 WATCH_DIR.mkdir(parents=True, exist_ok=True)
