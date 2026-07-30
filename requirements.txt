@@ -1,9 +1,0 @@
-fastapi
-pydantic
-uvicorn
-sqlalchemy
-aiosqlite
-pytest
-httpx
-ruff
-black
