@@ -99,6 +99,41 @@ L'extension VS Code **AgentDocx SpecKit** remplace le dossier `scripts/` et offr
 
 ---
 
+### 🏗️ Construction & Publication de l'Extension (pour développeurs)
+
+> Pour générer le fichier `.vsix` à partir des sources (branche `extension`) :
+
+```bash
+# 1. Installer l'outil de packaging VS Code (une seule fois)
+npm install -g @vscode/vsce
+
+# 2. Cloner la branche extension
+git clone -b extension https://github.com/ahmed200346/Extension_GithubSpecKit.git
+cd Extension_GithubSpecKit
+
+# 3. Installer les dépendances et compiler
+npm install
+npm run compile
+
+# 4. Générer le fichier .vsix
+vsce package
+# → Génère agentdocx-speckit-0.0.2.vsix à la racine
+```
+
+> **Pour publier sur le Marketplace** (nécessite un Personal Access Token Azure DevOps) :
+```bash
+vsce publish -p <VOTRE_PAT>
+# ou
+vsce publish  # mode interactif
+```
+
+> 📖 Pour créer un PAT : https://dev.azure.com/ → User Settings → Personal Access Tokens → New Token
+> Scopes : **Marketplace > Manage (Publish, Manage)**
+
+---
+
+---
+
 ## 🚀 Quick Start (Guide de Lancement)
 
 Suivez ces étapes pour mettre en place l'environnement Spec Kit sur votre machine.
