@@ -52,21 +52,46 @@ class DiagramExporterTool:
         if not any(first_line.startswith(hdr) for hdr in valid_headers):
             code = f"flowchart TD\n{code}"
 
-        # 4. Correction des formes de nœuds invalides ou doublons
+        # 4. PRÉ-NETTOYAGE : Normaliser les espaces DANS les délimiteurs avant le moteur principal
+        # Corriger: { "Label" } -> {"Label"}, [ "Label" ] -> ["Label"], ( "Label" ) -> ("Label")
+        code = re.sub(r'\{\s+"([^"]+)"\s+\}', r'{"\1"}', code)
+        code = re.sub(r'\{\s+\'([^\']+)\'\s+\}', r"{'\1'}", code)
+        code = re.sub(r'\[\s+"([^"]+)"\s+\]', r'["\1"]', code)
+        code = re.sub(r"\[\s+'([^']+)'\s+\]", r"['\1']", code)
+        code = re.sub(r'\(\s+"([^"]+)"\s+\)', r'("\1")', code)
+        code = re.sub(r"\(\s+'([^']+)'\s+\)", r"('\1')", code)
+        
+        # Corriger les doubles délimiteurs: {{Label}} -> ["Label"], [[Label]] -> ["Label"], ((Label)) -> ("Label"), ((Label)) -> ("Label")
+        code = re.sub(r'\{\{([^}]+)\}\}', r'["\1"]', code)
+        code = re.sub(r'\[\[([^\]]+)\]\]', r'["\1"]', code)
+        code = re.sub(r'\(\(([^)]+)\)\)', r'("\1")', code)
+        code = re.sub(r'\(\[([^\]]+)\]\)', r'["\1"]', code)
+
+        # 5. Normalisation Unicode (espaces insécables, guillemets typographiques)
+        code = code.replace("\xa0", " ").replace("\u200b", "").replace("\r\n", "\n")
+        code = code.replace("“", '"').replace("”", '"').replace("‘", "'").replace("’", "'").replace("«", '"').replace("»", '"')
+
+        # 6. Vérification / Ajout de l'en-tête de diagramme s'il est manquant
+        valid_headers = ("flowchart", "graph", "sequenceDiagram", "classDiagram", "erDiagram", "stateDiagram", "gantt", "mindmap", "pie", "gitGraph", "C4Context")
+        lines = [line.strip() for line in code.split("\n") if line.strip()]
+        first_line = next((l for l in lines if not l.startswith("%%")), "")
+
+        if not any(first_line.startswith(hdr) for hdr in valid_headers):
+            code = f"flowchart TD\n{code}"
+
+        # 7. Correction des formes de nœuds invalides ou doublons (restent après pré-nettoyage)
         code = re.sub(r'\(\[([^\]]+)\]\)', r'["\1"]', code)
         code = re.sub(r'\(\(([^)]+)\)\)', r'["\1"]', code)
         code = re.sub(r'\[\[([^\]]+)\]\]', r'["\1"]', code)
         code = re.sub(r'\{\{([^}]+)\}\}', r'["\1"]', code)
 
-        # 5. Encapsulation automatique des libellés de nœuds avec guillemets (Auto-Quoting Engine)
-        # Transforme A[Texte (avec) deux: points] en A["Texte (avec) deux: points"]
+        # 8. Encapsulation automatique des libellés de nœuds avec guillemets (Auto-Quoting Engine)
         def quote_node_label(match):
             node_id = match.group(1)
             open_symbol = match.group(2)
             label = match.group(3).strip()
             close_symbol = match.group(4)
 
-            # Si déjà sous guillemets, on nettoie les guillemets internes
             if (label.startswith('"') and label.endswith('"')) or (label.startswith("'") and label.endswith("'")):
                 clean_label = label[1:-1].replace('"', "'")
                 return f'{node_id}{open_symbol}"{clean_label}"{close_symbol}'
@@ -74,7 +99,6 @@ class DiagramExporterTool:
             clean_label = label.replace('"', "'")
             return f'{node_id}{open_symbol}"{clean_label}"{close_symbol}'
 
-        # Regex capturant ID[Label], ID(Label), ID{Label}, ID([Label])
         node_pattern = re.compile(r'(\b[A-Za-z0-9_]+)(\[\s*|\(\s*|\{\s*)("(?:[^"\\]|\\.)*"|\'(?:[^\'\\]|\\.)*\'|[^\]\}\)]+)(\s*\]|\s*\)|\s*\})')
 
         cleaned_lines = []
@@ -88,12 +112,10 @@ class DiagramExporterTool:
                 cleaned_lines.append(line_str)
                 continue
 
-            # Ne pas modifier la ligne de type d'en-tête ou sous-graphes
             if any(stripped.startswith(hdr) for hdr in valid_headers) or stripped.startswith("subgraph") or stripped == "end":
                 cleaned_lines.append(line_str)
                 continue
 
-            # --- Correctif spécifique pour erDiagram (Style UML -> Mermaid) ---
             if "erDiagram" in code:
                 if re.match(r'^[A-Za-z_][A-Za-z0-9_]*\s*\{', stripped):
                     in_er_block = True
@@ -112,20 +134,20 @@ class DiagramExporterTool:
                         cleaned_lines.append(leading + fixed)
                         continue
 
-            # --- Correctif pour les flèches avec labels: -->|Label| ---
+            # Correctif pour les flèches avec labels: -->|Label| ---
             line_str = re.sub(
                 r'(-->|---|==>|-\.->)\|([^"|\n]+)\|',
-                lambda m: f'{m.group(1)}|"{m.group(2).strip().replace('"', "'")}"|',
+                lambda m: f'{m.group(1)}|"{m.group(2).strip().replace(chr(34), chr(39))}"|',
                 line_str
             )
 
-            # --- Encapsulation automatique des nœuds standards ---
+            # Encapsulation automatique des nœuds standards
             line_str = node_pattern.sub(quote_node_label, line_str)
             cleaned_lines.append(line_str)
 
         code = "\n".join(cleaned_lines)
 
-        # 6. Correctifs de syntaxe sur les flèches mal fermées et espaces
+        # 9. Correctifs finaux sur les flèches mal fermées et espaces
         code = re.sub(r'-->\|([^|]+)\|>', r'-->|\1|', code)
         code = re.sub(r'\n\s*\n', '\n', code)
 
