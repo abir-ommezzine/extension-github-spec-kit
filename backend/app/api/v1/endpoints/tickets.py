@@ -302,8 +302,26 @@ async def ingest_tasks(
     if request.tasks_dir:
         tasks_dir = Path(request.tasks_dir)
     else:
-        tasks_dir = BASE_DIR / "specs" / "001-task-management-api"
-
+        # Use project_name to find the correct tasks directory
+        project_name = request.project_name
+        if not project_name:
+            raise HTTPException(status_code=400, detail="project_name is required when tasks_dir is not provided")
+        
+        # Find the project in DB to get its artifacts path
+        from app.models import Project, Artifact
+        project = db.query(Project).filter(Project.name == project_name).first()
+        if not project:
+            raise HTTPException(status_code=404, detail=f"Project not found: {project_name}")
+        
+        # Get the specs directory for this project from artifacts
+        artifact = db.query(Artifact).filter(Artifact.project_id == project.id).first()
+        if artifact:
+            # Get the specs directory from the artifact's source_path
+            tasks_dir = Path(artifact.source_path).parent
+        else:
+            # Fallback to default specs location (backend/specs)
+            tasks_dir = BASE_DIR / "backend" / "specs" / project_name
+    
     if not tasks_dir.exists():
         raise HTTPException(status_code=404, detail=f"Tasks directory not found: {tasks_dir}")
 

@@ -5,8 +5,7 @@ from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.utils.summary_pruner import SummaryPrunerService
 from app.services.evaluation_service import ParsingEvaluatorService
 from app.core.prompts import get_summary_agent_prompt
-
-from app.core.llm_client import ollama_native_client, get_ollama_model
+from app.core.llm_client import chat_completion, get_default_model
 from app.core.llm_utils import parse_and_validate_json
 
 class SummaryAgentService:
@@ -40,17 +39,17 @@ class SummaryAgentService:
         # 5. Payload d'entrée utilisateur (JSON élagué et compacté)
         user_prompt = json.dumps(pruned_payload, ensure_ascii=False)
 
-        # 6. Appel déterministe au LLM Ollama/Gemma
-        response = ollama_native_client.chat(
-            model=get_ollama_model(),
+        # 6. Appel déterministe au LLM (provider-agnostic)
+        response = chat_completion(
+            model=get_default_model(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            options={"temperature": 0.0}
+            temperature=0.0
         )
         
-        raw_output = response["message"]["content"]
+        raw_output = response.choices[0].message.content
 
         # 7. Extraction Regex et validation avec le schéma Pydantic strict
         return parse_and_validate_json(raw_output, SummaryOutputModel)

@@ -3,6 +3,14 @@ import axios from "axios";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8000/api/v1";
 
+export const fetchProjects = createAsyncThunk(
+  "kanban/fetchProjects",
+  async () => {
+    const response = await axios.get(`${API_BASE}/pipeline/projects`);
+    return response.data;
+  }
+);
+
 export const fetchTickets = createAsyncThunk(
   "kanban/fetchTickets",
   async ({ projectName, status } = {}) => {
@@ -98,7 +106,8 @@ const initialState = {
   progress: { total: 0, done: 0, in_progress: 0, todo: 0, progress_pct: 0 },
   loading: false,
   error: null,
-  projectName: "001-task-management-api",
+  projectName: "",
+  projects: [],
 };
 
 const kanbanSlice = createSlice({
@@ -207,6 +216,13 @@ const kanbanSlice = createSlice({
       })
       .addCase(fetchTicketEvents.fulfilled, (state, action) => {
         state.events = action.payload;
+      })
+      .addCase(fetchProjects.fulfilled, (state, action) => {
+        state.projects = action.payload;
+        // Auto-select first project if none selected
+        if (!state.projectName && action.payload.length > 0) {
+          state.projectName = action.payload[0].name;
+        }
       })
       .addCase(ingestTasks.fulfilled, (state, action) => {
         state.tickets = action.payload;

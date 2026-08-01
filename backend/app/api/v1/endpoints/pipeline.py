@@ -88,6 +88,33 @@ async def get_pipeline_status():
     return PIPELINE_STATUS
 
 
+@router.get("/projects")
+async def list_projects(db: Session = Depends(get_db)):
+    """List all unique projects from the database."""
+    projects = db.query(Project).order_by(Project.created_at.desc()).all()
+    result = []
+    for project in projects:
+        # Count artifacts for this project
+        artifact_count = db.query(Artifact).filter(Artifact.project_id == project.id).count()
+        # Get latest activity
+        latest_run = (
+            db.query(PipelineRun)
+            .join(Artifact)
+            .filter(Artifact.project_id == project.id)
+            .order_by(PipelineRun.started_at.desc())
+            .first()
+        )
+        result.append({
+            "id": str(project.id),
+            "name": project.name,
+            "repo_url": project.repo_url,
+            "artifact_count": artifact_count,
+            "latest_activity": latest_run.started_at.isoformat() if latest_run else None,
+            "created_at": project.created_at.isoformat()
+        })
+    return result
+
+
 @router.get("/progress")
 async def get_pipeline_progress():
     p = PIPELINE_PROGRESS

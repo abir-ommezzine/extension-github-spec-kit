@@ -1,7 +1,7 @@
 # app/config.py
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -11,10 +11,33 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     OPENAI_API_KEY: Optional[str] = None  
     
-    # --- AJOUT CONFIGURATION OLLAMA ---
+    # --- LLM PROVIDER CONFIGURATION ---
+    # Supported providers: "ollama", "openai", "anthropic", "groq", "openai_compatible"
+    LLM_PROVIDER: Literal["ollama", "openai", "anthropic", "groq", "openai_compatible"] = "ollama"
+    
+    # Ollama settings
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "gemma4:31b-cloud"
     OLLAMA_API_KEY: Optional[str] = None
+    
+    # OpenAI settings
+    OPENAI_API_KEY: Optional[str] = None
+    OPENAI_MODEL: str = "gpt-4o"
+    OPENAI_BASE_URL: Optional[str] = None
+    
+    # Anthropic settings
+    ANTHROPIC_API_KEY: Optional[str] = None
+    ANTHROPIC_MODEL: str = "claude-3-5-sonnet-20241022"
+    
+    # Groq settings (OpenAI-compatible)
+    GROQ_API_KEY: Optional[str] = None
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
+    
+    # Generic OpenAI-compatible API settings
+    OPENAI_COMPATIBLE_API_KEY: Optional[str] = None
+    OPENAI_COMPATIBLE_MODEL: str = "gpt-4o"
+    OPENAI_COMPATIBLE_BASE_URL: Optional[str] = None
     
     PDF_STORAGE_DIR: str = "./storage/pdfs"
     LOG_LEVEL: str = "INFO"

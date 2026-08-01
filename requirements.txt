@@ -7,3 +7,8 @@ pytest
 httpx
 ruff
 black
+openai
+ollama
+anthropic
+pydantic-settings
+python-dotenv

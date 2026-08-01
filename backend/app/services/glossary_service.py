@@ -7,7 +7,7 @@ from app.schemas.parsing_agent_schema import ParsingAgentOutput
 # Importations des composants et outils d'infrastructure
 from app.utils.glossary_tools import GlossaryHarvesterService
 from app.core.prompts import get_glossary_agent_prompt
-from app.core.llm_client import ollama_native_client, get_ollama_model
+from app.core.llm_client import chat_completion, get_default_model
 from app.core.llm_utils import parse_and_validate_json
 
 class GlossaryAgentService:
@@ -55,18 +55,18 @@ class GlossaryAgentService:
         # Transmission de l'intégralité du JSON épuré pour l'association des ancres textuelles
         user_prompt = json.dumps(parsed_json_dict, ensure_ascii=False)
 
-        # 5. Inférence LLM via le client centralisé
+        # 5. Inférence LLM via le client centralisé (provider-agnostic)
         # Mode déterministe pur (temperature=0.0) et typage JSON strict imposé au modèle
-        response = ollama_native_client.chat(
-            model=get_ollama_model(),
+        response = chat_completion(
+            model=get_default_model(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            options={"temperature": 0.0}
+            temperature=0.0
         )
         
-        raw_output = response["message"]["content"]
+        raw_output = response.choices[0].message.content
 
         # 6. Extraction Regex et validation mathématique finale via le schéma Pydantic
         return parse_and_validate_json(raw_output, GlossaryOutputModel)
