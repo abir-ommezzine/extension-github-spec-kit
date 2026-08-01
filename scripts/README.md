@@ -21,6 +21,9 @@ The Watcher is a background service that monitors the `specs/` directory. Its pr
   - **Stabilization**: The `wait_until_file_is_stable` function prevents triggering the pipeline while a file is still being written to disk (prevents partial reads).
   - **Database Guard**: The `is_file_already_in_db` check ensures that existing files aren't re-processed unnecessarily upon watcher restart.
   - **Sequential Processing**: Uses a `Queue` and a dedicated `queue_worker` thread to process files one-by-one, preventing server overload and race conditions.
+  - **Debounce** (v2): `DEBOUNCE_SECONDS = 1.0` - ignore événements répétés sur le même fichier dans un court délai.
+  - **Server Wait** (v2): `wait_for_server(max_wait=60s)` - attend que `/health` réponde avant le scan initial.
+  - **Retry API** (v2): `is_file_already_in_db` avec retry 3x / 1s pour gérer le serveur qui n'est pas encore prêt.
 
 ---
 
@@ -77,3 +80,32 @@ The following diagram represents the end-to-end lifecycle of a specification wit
                                  ▼
 [ Storage ] ➔ Final artifacts organized in /outputs/<project-folder>/
 ```
+
+---
+
+## 📦 Requirements
+
+### Python
+```bash
+pip install watchdog requests
+```
+Ou via requirements :
+```bash
+pip install -r scripts/python/requirements.txt
+```
+
+### Node.js / VS Code Extension
+```bash
+npm install
+npm run compile
+```
+
+---
+
+## 🚀 Quick Start
+
+1. **Démarrer le serveur + watcher** : F5 dans VS Code (extension dev host)
+2. **Créer un nouveau projet** : `./scripts/bash/create-doc-pipeline.sh "my-feature"`
+3. **Éditer** : Ouvrir `specs/001-my-feature/spec.md` et modifier
+4. **Sauvegarder** (Ctrl+S) → Watcher détecte → Pipeline s'exécute
+5. **Résultat** : PDF dans `outputs/001-my-feature/`
