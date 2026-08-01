@@ -1,6 +1,7 @@
 import json
 import hashlib
 import traceback
+import urllib.parse
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 from uuid import UUID
@@ -339,7 +340,10 @@ async def upload_and_process_document(
 
     # ============ ÉTAPE 1 : ENREGISTREMENT DU FICHIER SUR LE DISQUE ============
     # Nettoyage immediat des parametres HTTP pour supprimer les antislashs Windows
-    project_clean = sanitize_path_string(projectName.strip()) if projectName and projectName.strip() else "Default Project"
+    # 🛡️ Décoder l'URL encoding (ex: + -> espace, %20 -> espace) AVANT sanitize
+    raw_project = projectName.strip() if projectName and projectName.strip() else "Default Project"
+    decoded_project = urllib.parse.unquote(raw_project.replace("+", " "))
+    project_clean = sanitize_path_string(decoded_project)
     file.filename = sanitize_path_string(file.filename)
     
     # Créer le répertoire cible sous <RACINE>/specs/<projectName>/ (pas backend/specs)
@@ -391,6 +395,14 @@ async def upload_and_process_document(
             version_label=next_version_label,
             project_name=project_clean
         )
+        
+        # DEBUG: Log the generated paths
+        print(f"[PIPELINE][DEBUG] file_name={to_posix_str(file_path_posix)}", flush=True)
+        print(f"[PIPELINE][DEBUG] project_name={project_clean}", flush=True)
+        print(f"[PIPELINE][DEBUG] version_label={next_version_label}", flush=True)
+        print(f"[PIPELINE][DEBUG] final_pdf path={paths.get('final_pdf')}", flush=True)
+        print(f"[PIPELINE][DEBUG] final_pdf POSIX={to_posix_str(paths.get('final_pdf'))}", flush=True)
+        print(f"[PIPELINE][DEBUG] final_pdf exists={Path(paths.get('final_pdf')).exists()}", flush=True)
 
         # Préparation de l'état initial pour LangGraph
         # 🎯 content est décodé de bytes vers str
@@ -400,7 +412,8 @@ async def upload_and_process_document(
             "version_label": next_version_label,
             "run_id": pipeline_run.id,
             "doc_version_id": str(doc_version.id),
-            "prefix": paths["prefix"]
+            "prefix": paths["prefix"],
+            "project_name": project_clean
         }
 
         # ============ ÉTAPE 4 : EXÉCUTION DU WORKFLOW LANGGRAPH ============

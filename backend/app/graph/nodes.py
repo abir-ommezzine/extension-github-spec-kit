@@ -414,8 +414,30 @@ def layout_node(state: GraphState) -> Dict[str, Any]:
     file_name = state["file_name"]
     run_id = state.get("run_id")
     version_label = state.get("version_label", "1.0")
+    project_name = state.get("project_name")  # Récupère le nom de projet passé par pipeline.py
 
-    paths = build_pipeline_paths(file_name, version_label=version_label)
+    # 🛡️ SÉCURITÉ : Si project_name du state diffère de ce qu'on extrairait du chemin,
+    # on utilise l'extrait pour garantir la cohérence des chemins (évite PDF introuvable)
+    from app.utils.path_builder import extract_project_name_from_path, sanitize_path_string
+    from pathlib import Path
+    extracted_project = extract_project_name_from_path(Path(file_name))
+    if project_name and sanitize_path_string(project_name) != sanitize_path_string(extracted_project):
+        print(f"[LAYOUT][WARN] project_name mismatch: state='{project_name}' vs extracted='{extracted_project}' -> using extracted", flush=True)
+        project_name = extracted_project
+    elif not project_name:
+        project_name = extracted_project
+        print(f"[LAYOUT][INFO] project_name not in state, using extracted: '{project_name}'", flush=True)
+
+    # Utilise project_name pour garantir le même chemin que pipeline.py
+    paths = build_pipeline_paths(file_name, version_label=version_label, project_name=project_name)
+    
+    # DEBUG: Log the generated paths
+    print(f"[LAYOUT][DEBUG] file_name={file_name}", flush=True)
+    print(f"[LAYOUT][DEBUG] project_name={project_name}", flush=True)
+    print(f"[LAYOUT][DEBUG] version_label={version_label}", flush=True)
+    print(f"[LAYOUT][DEBUG] final_pdf path={paths.get('final_pdf')}", flush=True)
+    print(f"[LAYOUT][DEBUG] final_pdf str={str(paths.get('final_pdf'))}", flush=True)
+    print(f"[LAYOUT][DEBUG] final_pdf parent exists={paths.get('final_pdf').parent.exists()}", flush=True)
 
     doc_writer_doc = state.get("doc_writer_doc")
     markdown_text = ""
@@ -450,36 +472,38 @@ def layout_node(state: GraphState) -> Dict[str, Any]:
             output_pdf_path=str(output_pdf_path)
         )
 
+        # TOUJOURS construire le rapport d'évaluation, même si PDF échoue
+        # Cela évite "NA" pour le layout agent dans le frontend
+        eval_report = {
+            "project_name": layout_result.project_name,
+            "layout_publication_status": str(
+                layout_result.layout_publication_status.value
+                if hasattr(layout_result.layout_publication_status, 'value')
+                else layout_result.layout_publication_status
+            ),
+            "page_count": layout_result.page_count,
+            "file_size_kb": layout_result.file_size_kb,
+            "rendered_diagrams_count": layout_result.rendered_diagrams_count,
+            "technical_evaluation": layout_result.technical_evaluation,
+            "project_management_kpis": layout_result.project_management_kpis,
+            "execution_warnings": layout_result.execution_warnings
+        }
+
+        _save_json(eval_json_path, eval_report)
+        eval_path_str = str(eval_json_path)
+
+        # Enregistrement en BDD avec le stage 'rendering' - TOUJOURS, pas seulement si PDF généré
+        _sync_stage_to_db(
+            run_id=run_id,
+            stage=PipelineStage.rendering,
+            output_attr="layout_output",
+            output_data=str(layout_result),
+            eval_attr="layout_eval",
+            eval_data=eval_report
+        )
+
         if layout_result and layout_result.pdf_generated:
             pdf_path_str = str(output_pdf_path)
-
-            eval_report = {
-                "project_name": layout_result.project_name,
-                "layout_publication_status": str(
-                    layout_result.layout_publication_status.value
-                    if hasattr(layout_result.layout_publication_status, 'value')
-                    else layout_result.layout_publication_status
-                ),
-                "page_count": layout_result.page_count,
-                "file_size_kb": layout_result.file_size_kb,
-                "rendered_diagrams_count": layout_result.rendered_diagrams_count,
-                "technical_evaluation": layout_result.technical_evaluation,
-                "project_management_kpis": layout_result.project_management_kpis,
-                "execution_warnings": layout_result.execution_warnings
-            }
-
-            _save_json(eval_json_path, eval_report)
-            eval_path_str = str(eval_json_path)
-
-            # Enregistrement en BDD avec le stage 'rendering'
-            _sync_stage_to_db(
-                run_id=run_id,
-                stage=PipelineStage.rendering,
-                output_attr="layout_output",
-                output_data=str(layout_result),
-                eval_attr="layout_eval",
-                eval_data=eval_report
-            )
 
     except Exception as exc:
         print(f"[❌ ERROR] Exécution LayoutAgent : {exc}", flush=True)
