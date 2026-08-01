@@ -24,9 +24,10 @@ def parse_task_lines(content: str) -> List[Dict[str, Any]]:
     """
     Parse a tasks/*.md file and extract individual task items.
     Returns a list of dicts with: id, title, description, checkbox_state, raw_line
+    Deduplicates by task ID, keeping the best status (checked > in_progress > unchecked).
     """
     lines = content.splitlines()
-    tasks = []
+    tasks_by_id = {}  # Deduplication map
     
     current_task = None
     in_task_list = False
@@ -34,19 +35,21 @@ def parse_task_lines(content: str) -> List[Dict[str, Any]]:
     for i, line in enumerate(lines):
         stripped = line.strip()
         
-        # Detect task list items: - [x] T001 Description or - [ ] T001 Description
-        task_match = re.match(r'^-\s*\[([xX\s])\]\s*(.+)$', stripped)
+        # Detect task list items: - [x] T001 Description or - [ ] T001 Description or - [~] T001 Description
+        task_match = re.match(r'^-\s*\[([xX\s~/])\]\s*(.+)$', stripped)
         if task_match:
             checkbox = task_match.group(1)
             task_text = task_match.group(2).strip()
             
             # Extract task ID (e.g., T001, T002)
             id_match = re.match(r'^(T\d+)', task_text)
-            task_id = id_match.group(1) if id_match else f"task_{len(tasks) + 1}"
+            task_id = id_match.group(1) if id_match else f"task_{len(tasks_by_id) + 1}"
             
             # Determine checkbox state
             if checkbox.lower() == 'x':
                 checkbox_state = "checked"
+            elif checkbox in ('~', '/'):
+                checkbox_state = "in_progress"
             else:
                 checkbox_state = "unchecked"
             
@@ -57,27 +60,40 @@ def parse_task_lines(content: str) -> List[Dict[str, Any]]:
                 # Remove leading punctuation like ":" or "-"
                 title = title.lstrip(":- ").strip()
             
-            tasks.append({
+            task_data = {
                 "id": task_id,
                 "title": title or task_text,
                 "description": "",
                 "checkbox_state": checkbox_state,
                 "raw_line": stripped,
                 "line_number": i,
-            })
+            }
+            
+            # Deduplicate: keep the best status for each task ID
+            # Priority: checked > in_progress > unchecked
+            status_priority = {"checked": 3, "in_progress": 2, "unchecked": 1}
+            
+            if task_id not in tasks_by_id or \
+               status_priority.get(task_data["checkbox_state"], 0) > \
+               status_priority.get(tasks_by_id[task_id]["checkbox_state"], 0):
+                tasks_by_id[task_id] = task_data
+            
             in_task_list = True
             continue
         
         # If we're in a task list and hit a non-task line, check if it's a continuation
         if in_task_list and stripped and not stripped.startswith("- ["):
-            # This could be a description for the last task
-            if tasks and not stripped.startswith("#"):
-                tasks[-1]["description"] += ("\n" if tasks[-1]["description"] else "") + stripped
+            # This could be a description for the last task (the one we just added/kept)
+            if tasks_by_id and not stripped.startswith("#"):
+                # Find the most recently processed task (highest line_number so far)
+                latest_task = max(tasks_by_id.values(), key=lambda t: t["line_number"])
+                latest_task["description"] += ("\n" if latest_task["description"] else "") + stripped
         elif stripped.startswith("#"):
             # New section, reset
             in_task_list = False
     
-    return tasks
+    # Return sorted by line_number to maintain order
+    return sorted(tasks_by_id.values(), key=lambda t: t["line_number"])
 
 
 def infer_status_from_checkbox(checkbox_state: str) -> TicketStatus:
@@ -85,9 +101,12 @@ def infer_status_from_checkbox(checkbox_state: str) -> TicketStatus:
     Infer ticket status from checkbox state:
     - unchecked -> todo
     - checked -> done
+    - in_progress (~ or /) -> in_progress
     """
     if checkbox_state == "checked":
         return TicketStatus.done
+    elif checkbox_state in ("~", "/"):
+        return TicketStatus.in_progress
     return TicketStatus.todo
 
 
@@ -253,7 +272,12 @@ def ingest_all_tasks(
         db.refresh(project)
     
     all_tickets = []
-    task_files = sorted(tasks_dir.glob("*.md"))
+    # Only process tasks.md file (not requirements.md, spec.md, etc.)
+    task_files = [tasks_dir / "tasks.md"]
+    
+    if not task_files[0].exists():
+        # Fallback: try any .md file if tasks.md doesn't exist
+        task_files = sorted(tasks_dir.glob("*.md"))
     
     for task_file in task_files:
         artifact = (

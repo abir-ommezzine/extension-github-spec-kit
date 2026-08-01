@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
@@ -40,7 +41,7 @@ import {
   Droppable,
   Draggable,
   DropResult,
-} from "react-beautiful-dnd";
+} from "@hello-pangea/dnd";
 import {
   Add as AddIcon,
   Refresh as RefreshIcon,
@@ -72,6 +73,7 @@ import {
   clearSelectedTicket,
   reorderTickets,
   updateTicketInState,
+  fetchProjects,
 } from "./kanbanSlice";
 
 const GlassCard = ({ children, ...props }) => {
@@ -131,19 +133,37 @@ const StatusChip = ({ status }) => {
   );
 };
 
-const CheckboxIcon = ({ state }) => {
+const CheckboxIcon = React.forwardRef(({ state, ...props }, ref) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode) || {};
   
   switch (state) {
     case "checked":
-      return <CheckBoxIcon sx={{ color: colors.greenAccent?.['500'] || '#4cceac', fontSize: 20 }} />;
+      return (
+        <CheckBoxIcon 
+          ref={ref} 
+          {...props} 
+          sx={{ color: colors.greenAccent?.['500'] || '#4cceac', fontSize: 20 }} 
+        />
+      );
     case "mixed":
-      return <IndeterminateCheckBoxIcon sx={{ color: colors.orangeAccent?.['500'] || '#ff9800', fontSize: 20 }} />;
+      return (
+        <IndeterminateCheckBoxIcon 
+          ref={ref} 
+          {...props} 
+          sx={{ color: colors.orangeAccent?.['500'] || '#ff9800', fontSize: 20 }} 
+        />
+      );
     default:
-      return <CheckBoxOutlineBlankIcon sx={{ color: colors.grey?.['400'] || '#bdbdbd', fontSize: 20 }} />;
+      return (
+        <CheckBoxOutlineBlankIcon 
+          ref={ref} 
+          {...props} 
+          sx={{ color: colors.grey?.['400'] || '#bdbdbd', fontSize: 20 }} 
+        />
+      );
   }
-};
+});
 
 const TicketCard = ({ ticket, onClick, index }) => {
   const theme = useTheme();
@@ -635,13 +655,29 @@ const ProgressBar = ({ progress }) => {
 
 const KanbanBoard = () => {
   const dispatch = useDispatch();
-  const { tickets, todoTickets, inProgressTickets, doneTickets, selectedTicket, progress, loading, projectName } = useSelector((state) => state.kanban);
+  const { tickets, todoTickets, inProgressTickets, doneTickets, selectedTicket, progress, loading, projectName, projects } = useSelector((state) => state.kanban);
   
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
   
   useEffect(() => {
-    dispatch(fetchTickets({ projectName }));
-    dispatch(fetchProgress(projectName));
+    dispatch(fetchProjects());
+  }, [dispatch]);
+  
+  // Auto-refresh tickets and progress when project is selected
+  useEffect(() => {
+    if (!projectName) return;
+    
+    const refresh = () => {
+      dispatch(fetchTickets({ projectName }));
+      dispatch(fetchProgress(projectName));
+    };
+    
+    refresh(); // Initial load
+    
+    // Poll every 10 seconds for updates
+    const interval = setInterval(refresh, 10000);
+    
+    return () => clearInterval(interval);
   }, [dispatch, projectName]);
   
   const handleDragEnd = (result) => {
@@ -701,16 +737,42 @@ const KanbanBoard = () => {
               Kanban Board
             </Typography>
             <Typography variant="body1" color="grey.600">
-              Project: <strong>{projectName}</strong>
+              Project: <strong>{projectName || "Select a project"}</strong>
             </Typography>
           </Box>
-          <Box display="flex" gap={2}>
-            <Button variant="outlined" startIcon={<RefreshIcon />} onClick={handleIngest}>
-              Ingest Tasks
-            </Button>
-            <Button variant="contained" startIcon={<AnalyticsIcon />} onClick={() => dispatch(fetchProgress(projectName))}>
-              Refresh Progress
-            </Button>
+          <Box display="flex" gap={2} alignItems="center">
+            {projects.length > 0 && (
+              <Box sx={{ minWidth: 250 }}>
+                <label style={{ fontSize: '0.875rem', color: 'grey.600', marginBottom: '0.25rem', display: 'block' }}>Select Project</label>
+                <select
+                  value={projectName || ""}
+                  onChange={(e) => dispatch(setProjectName(e.target.value))}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    borderRadius: '8px',
+                    border: '1px solid #e0e0e0',
+                    backgroundColor: 'white',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  <option value="">-- Choose Project --</option>
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.name}>
+                      {p.name} ({p.artifact_count} artifacts)
+                    </option>
+                  ))}
+                </select>
+              </Box>
+            )}
+            <Box display="flex" gap={2}>
+              <Button variant="outlined" startIcon={<RefreshIcon />} onClick={handleIngest} disabled={!projectName}>
+                Ingest Tasks
+              </Button>
+              <Button variant="contained" startIcon={<AnalyticsIcon />} onClick={() => dispatch(fetchProgress(projectName))} disabled={!projectName}>
+                Refresh Progress
+              </Button>
+</Box>
           </Box>
         </Box>
         

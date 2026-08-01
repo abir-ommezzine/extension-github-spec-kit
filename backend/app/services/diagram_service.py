@@ -9,7 +9,7 @@ from app.schemas.parsing_agent_schema import ParsingAgentOutput
 
 # Importations des composants d'infrastructure
 from app.core.prompts import get_diagram_agent_prompt
-from app.core.llm_client import ollama_native_client, get_ollama_model
+from app.core.llm_client import chat_completion, get_default_model
 from app.core.llm_utils import parse_and_validate_json
 
 
@@ -98,17 +98,17 @@ class DiagramAgentService:
         # 3. Payload d'entrée utilisateur (JSON parsé épuré)
         user_prompt = json.dumps(parsed_json_dict, ensure_ascii=False)
 
-        # 4. Inférence LLM via le client centralisé
-        response = ollama_native_client.chat(
-            model=get_ollama_model(),
+        # 4. Inférence LLM via le client centralisé (provider-agnostic)
+        response = chat_completion(
+            model=get_default_model(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            options={"temperature": 0.1}
+            temperature=0.1
         )
 
-        raw_output = response["message"]["content"]
+        raw_output = response.choices[0].message.content
 
         # 5. Extraction Regex et validation Pydantic
         diagram_doc = parse_and_validate_json(raw_output, DiagramOutputModel)
