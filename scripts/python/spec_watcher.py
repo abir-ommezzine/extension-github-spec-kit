@@ -1,6 +1,8 @@
 import sys
 import time
 import requests
+import json
+import re
 from pathlib import Path
 from queue import Queue
 from threading import Thread, Lock
@@ -14,14 +16,18 @@ WATCH_DIR = Path(r"C:\Users\MSI\Bureau\test-project\specs")
 # Sécurité : crée automatiquement le dossier 'specs' s'il n'existe pas encore
 WATCH_DIR.mkdir(parents=True, exist_ok=True)
 
-# API Endpoints
+# Task state tracking file (outside .specify)
+TASK_STATE_DIR = BASE_DIR / ".task_runtime"
+TASK_STATE_DIR.mkdir(parents=True, exist_ok=True)
+TASK_STATE_FILE = TASK_STATE_DIR / "agent-state.json"
+
 API_RUN_URL = "http://127.0.0.1:8000/api/v1/pipeline/upload"
 API_STATUS_URL = "http://127.0.0.1:8000/api/v1/pipeline/status"
 API_CHECK_URL = "http://127.0.0.1:8000/api/v1/pipeline/check-file"
 
 # Fichiers et dossiers à ignorer strictement
 IGNORED_FILES = {"template.md", "spec-template.md"}
-IGNORED_FOLDERS = {"outputs", ".specify", ".git", "__pycache__", ".venv"}
+IGNORED_FOLDERS = {"outputs", ".specify", ".git", "__pycache__", ".venv", ".task_runtime"}
 
 # 🎯 Types d'artefacts autorisés à déclencher le pipeline
 ALLOWED_ARTIFACT_TYPES = {"spec", "plan", "tasks", "task", "constitution", "requirements", "contracts"}
@@ -30,6 +36,10 @@ ALLOWED_ARTIFACT_TYPES = {"spec", "plan", "tasks", "task", "constitution", "requ
 file_queue = Queue()
 pending_files = set()
 pending_lock = Lock()
+
+# Task state management
+task_state_lock = Lock()
+current_task_state = {}
 
 
 # ============================================
@@ -130,6 +140,141 @@ def is_file_already_in_db(file_path: Path) -> bool:
         print(f"⚠️ [WATCHER] Impossible de vérifier la BDD pour {file_path.name} : {e}", flush=True)
     
     return False
+
+
+# ===== TASK STATE MANAGEMENT =====
+
+def load_task_state() -> dict:
+    """Load task state from JSON file."""
+    if TASK_STATE_FILE.exists():
+        try:
+            with open(TASK_STATE_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {
+        "session_id": "",
+        "feature": "",
+        "current_task": 0,
+        "total_tasks": 0,
+        "task_status": {},
+        "started_at": None,
+        "updated_at": None
+    }
+
+def save_task_state(state: dict):
+    """Save task state to JSON file atomically."""
+    with task_state_lock:
+        state["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        tmp_file = TASK_STATE_FILE.with_suffix(".tmp")
+        with open(tmp_file, "w", encoding="utf-8") as f:
+            json.dump(state, f, indent=2)
+        tmp_file.replace(TASK_STATE_FILE)
+
+def parse_task_marker(content: str) -> tuple[int, str] | None:
+    """
+    Parse task marker from agent output.
+    Supports: [TASK:2], [TASK 2], TASK:2, etc.
+    Returns (task_number, action) where action is 'start' or 'done'
+    """
+    patterns = [
+        r'\[TASK\s*[:#]?\s*(\d+)\s*(?:START|STARTED|BEGIN|IN_PROGRESS)\]',
+        r'\[TASK\s*[:#]?\s*(\d+)\s*(?:DONE|COMPLETE|FINISHED)\]',
+        r'\[TASK\s*[:#]?\s*(\d+)\]',
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, content, re.IGNORECASE)
+        if match:
+            task_num = int(match.group(1))
+            action = "start" if any(w in pattern.upper() for w in ["START", "BEGIN", "IN_PROGRESS"]) else "done"
+            if "DONE" in pattern.upper() or "COMPLETE" in pattern.upper() or "FINISH" in pattern.upper():
+                action = "done"
+            return (task_num, action)
+    return None
+
+def update_task_state_from_file(file_path: Path):
+    """Extract task markers from a file and update state."""
+    if file_path.name != "tasks.md":
+        return
+    
+    try:
+        content = file_path.read_text(encoding="utf-8")
+        
+        # Look for task markers in recent changes
+        marker = parse_task_marker(content)
+        if not marker:
+            return
+        
+        task_num, action = marker
+        
+        state = load_task_state()
+        state["feature"] = file_path.parent.name
+        
+        if action == "start":
+            state["current_task"] = task_num
+            state["task_status"][str(task_num)] = "in_progress"
+        elif action == "done":
+            state["task_status"][str(task_num)] = "done"
+            # Find next pending task
+            for i in range(1, state.get("total_tasks", 0) + 1):
+                if state["task_status"].get(str(i)) not in ("done", "in_progress"):
+                    state["current_task"] = i
+                    state["task_status"][str(i)] = "in_progress"
+                    break
+        
+        save_task_state(state)
+        print(f"[TASK STATE] Updated: Task {task_num} -> {state['task_status'].get(str(task_num), 'unknown')}")
+        
+    except Exception as e:
+        print(f"[TASK STATE] Error updating from {file_path.name}: {e}")
+
+def initialize_task_state_from_md(file_path: Path):
+    """Initialize task state from tasks.md on first run."""
+    if file_path.name != "tasks.md":
+        return
+    
+    try:
+        content = file_path.read_text(encoding="utf-8")
+        task_matches = re.findall(r'^-\s*\[([xX\s~/])\]\s*(T\d+)', content, re.MULTILINE)
+        
+        if not task_matches:
+            return
+        
+        state = load_task_state()
+        state["feature"] = file_path.parent.name
+        
+        # Deduplicate by task ID, keeping best status (checked > in_progress > unchecked)
+        status_priority = {"checked": 3, "in_progress": 2, "pending": 1}
+        checkbox_map = {"x": "checked", "X": "checked", "~": "in_progress", "/": "in_progress", " ": "pending", "": "pending"}
+        
+        unique_tasks = {}
+        for checkbox, task_id in task_matches:
+            num = int(task_id[1:])
+            status = checkbox_map.get(checkbox, "pending")
+            
+            if num not in unique_tasks or status_priority.get(status, 0) > status_priority.get(unique_tasks[num], 0):
+                unique_tasks[num] = status
+        
+        state["total_tasks"] = len(unique_tasks)
+        
+        for num, status in sorted(unique_tasks.items()):
+            state["task_status"][str(num)] = status
+        
+        # Set first pending as current if none in progress
+        if state["current_task"] == 0:
+            for i in range(1, state["total_tasks"] + 1):
+                if state["task_status"].get(str(i)) == "pending":
+                    state["current_task"] = i
+                    state["task_status"][str(i)] = "in_progress"
+                    break
+        
+        state["started_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        save_task_state(state)
+        print(f"[TASK STATE] Initialized for {file_path.parent.name}: {state['total_tasks']} unique tasks, current: {state['current_task']}")
+        
+    except Exception as e:
+        print(f"[TASK STATE] Error initializing from {file_path.name}: {e}")
 
 
 def trigger_pipeline(file_path: Path):

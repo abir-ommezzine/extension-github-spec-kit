@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "Technology Stack",
+            "type": "flowchart",
+            "description": "Overview of the selected technology stack",
+            "mermaid_code": "flowchart LR\n    id1[TypeScript 4.9] --> id2[React 18]\n    id2 --> id3[Node.js 18]\n    id3 --> id4[Express.js]\n    id4 --> id5[PostgreSQL 14]\n    id5 --> id6[Sequelize ORM]"
+        },
+        {
+            "title": "Requirements Traceability",
+            "type": "flowchart",
+            "description": "Mapping of requirements to their dependencies",
+            "mermaid_code": "flowchart LR\n    LANG-01[LANG-01: Utiliser TypeScript 4.9] -->|depends_on| STACK-01[STACK-01: Utiliser React 18 avec TypeScript]\n    STACK-01 -->|depends_on| DB-01[DB-01: Utiliser PostgreSQL 14]\n    DB-01 -->|depends_on| TEST-01[TEST-01: Utiliser Jest et React Testing Library]\n    TEST-01 -->|depends_on| AUTH-01[AUTH-01: Implémenter l'authentification avec OAuth 2.0 / OpenID Connect]"
+        },
+        {
+            "title": "System Components",
+            "type": "erDiagram",
+            "description": "Entity-relationship diagram of the system components",
+            "mermaid_code": "erDiagram\n    USER ||--o{ AUTHENTICATION : \"utilise\"\n    AUTHENTICATION }|..|{ SESSION : \"gère\"\n    SESSION ||--|{ MATCH_DATA : \"contient\"\n    MATCH_DATA }|..|{ FOOTBALL_DATA_API : \"intègre\""
+        },
+        {
+            "title": "Testing Strategy",
+            "type": "flowchart",
+            "description": "Overview of the testing strategy",
+            "mermaid_code": "flowchart LR\n    id1[Jest] --> id2[React Testing Library]\n    id2 --> id3[Supertest]\n    id3 --> id4[API Testing]\n    id4 --> id5[End-to-End Testing]\n    id5 --> id6[Code Coverage]"
+        }
+    ]
+}

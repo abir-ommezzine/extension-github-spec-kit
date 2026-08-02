@@ -1,0 +1,103 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "The specific version control pointer designated for the development of this feature set."
+        },
+        {
+            "term": "Date",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "The chronological timestamp marking the creation or last update of the operational roadmap."
+        },
+        {
+            "term": "Spec",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "The markdown document containing the detailed functional and non-functional requirements."
+        },
+        {
+            "term": "Python 3.11",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The designated runtime environment version for backend logic execution."
+        },
+        {
+            "term": "Primary Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The external software libraries and frameworks essential for system operation."
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The persistence layer mechanism used for retaining state and entity data."
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The framework and methodology used to verify the correctness of the implementation."
+        },
+        {
+            "term": "Target Platform",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The intended operating system or hardware environment where the software will be deployed."
+        },
+        {
+            "term": "Project Type",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The high-level architectural classification of the software artifact."
+        },
+        {
+            "term": "Performance Goals",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The quantitative throughput and latency targets the system must satisfy."
+        },
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The hard technical limitations regarding memory, time, or environment connectivity."
+        },
+        {
+            "term": "GATE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "The mandatory validation checkpoint that must be cleared before progressing to the next development phase."
+        },
+        {
+            "term": "Structure Decision",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
+            "project_definition": "The final selection of the directory layout from the provided architectural templates."
+        },
+        {
+            "term": "iOS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
+            "project_definition": "The specific mobile operating system targeted for the frontend implementation."
+        }
+    ]
+}

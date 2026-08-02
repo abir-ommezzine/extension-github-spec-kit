@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "Football Match Manager Data Model",
+            "type": "erDiagram",
+            "description": "Entity Relationship Diagram modeling the core data structures for matches, teams, leagues, and user tracking.",
+            "mermaid_code": "erDiagram\n    ENT-USER ||--o{ ENT-USERFOLLOW : \"tracks\"\n    ENT-MATCH ||--o{ ENT-USERFOLLOW : \"is tracked by\"\n    ENT-LEAGUE ||--o{ ENT-MATCH : \"contains\"\n    ENT-TEAM ||--o{ ENT-MATCH : \"participates in\"\n\n    ENT-USER {\n        string userId PK\n        string username\n        string email\n    }\n    ENT-MATCH {\n        string matchId PK\n        string homeTeam\n        string awayTeam\n        datetime dateTime\n        string venue\n        string league\n        string status\n        int homeScore\n        int awayScore\n    }\n    ENT-TEAM {\n        string teamId PK\n        string name\n        string logo\n    }\n    ENT-LEAGUE {\n        string leagueId PK\n        string name\n        string sport\n    }\n    ENT-USERFOLLOW {\n        string userId FK\n        string matchId FK\n        timestamp followedAt\n    }"
+        },
+        {
+            "title": "Match Following Workflow",
+            "type": "flowchart",
+            "description": "Business logic for adding and removing matches from a user's interest list, including authentication checks.",
+            "mermaid_code": "flowchart TD\n    START[Start] --> VIEW_LIST[\"View Match List\"]\n    VIEW_LIST --> CLICK_FOLLOW{\"Click Follow/Following?\"}\n    \n    CLICK_FOLLOW --> AUTH_CHECK{\"Is User Authenticated?\"}\n    \n    AUTH_CHECK -- \"No\" --> LOGIN_PROMPT[\"Prompt Third-Party Login\"]\n    LOGIN_PROMPT --> AUTH_CHECK\n    \n    AUTH_CHECK -- \"Yes\" --> STATE_CHECK{\"Current State?\"}\n    \n    STATE_CHECK -- \"Not Following\" --> ADD_FOLLOW[\"Add to ENT-USERFOLLOW\"]\n    ADD_FOLLOW --> UPDATE_UI[\"Update Button to 'Following'\"]\n    \n    STATE_CHECK -- \"Following\" --> REMOVE_FOLLOW[\"Remove from ENT-USERFOLLOW\"]\n    REMOVE_FOLLOW --> REVERT_UI[\"Update Button to 'Follow'\"]\n    \n    UPDATE_UI --> END[End]\n    REVERT_UI --> END"
+        },
+        {
+            "title": "Requirements Traceability Matrix",
+            "type": "flowchart",
+            "description": "Mapping of User Stories to Functional Requirements and underlying Entities for full traceability.",
+            "mermaid_code": "flowchart LR\n    subgraph User_Stories [User Stories]\n        US-VIEW-LIST[\"US-VIEW-LIST: View Match List\"]\n        US-FOLLOW-MATCH[\"US-FOLLOW-MATCH: Follow Match\"]\n        US-VIEW-FOLLOWED[\"US-VIEW-FOLLOWED: View Followed Matches\"]\n    end\n\n    subgraph Functional_Requirements [Functional Requirements]\n        FR-FILTER-LEAGUE[\"FR-FILTER-LEAGUE: Filter by League\"]\n        FR-USER-FOLLOW[\"FR-USER-FOLLOW: Follow/Unfollow Logic\"]\n    end\n\n    subgraph Data_Layer [Data Entities]\n        ENT-USERFOLLOW[\"ENT-USERFOLLOW: User-Match Join\"]\n        ENT-MATCH[\"ENT-MATCH: Match Data\"]\n    end\n\n    US-VIEW-LIST -->|implements| FR-FILTER-LEAGUE\n    US-FOLLOW-MATCH -->|implements| FR-USER-FOLLOW\n    US-VIEW-FOLLOWED -->|implements| FR-USER-FOLLOW\n    \n    FR-USER-FOLLOW -->|persists in| ENT-USERFOLLOW\n    ENT-USERFOLLOW -->|references| ENT-MATCH"
+        },
+        {
+            "title": "Match Data Retrieval Sequence",
+            "type": "sequenceDiagram",
+            "description": "Interaction flow between the User, Application, and External Sports API for retrieving match data.",
+            "mermaid_code": "sequenceDiagram\n    participant User\n    participant App as Application\n    participant API as Sports Data API\n    participant DB as Database\n\n    User ->> App: Request Match List\n    App ->> DB: Check for Cached Data\n    DB -->> App: Return Cached Data (if valid)\n    \n    alt Cache Expired or Missing\n        App ->> API: GET /matches (Filter/Search)\n        API -->> App: Return Match JSON\n        App ->> DB: Update Match Store (FR-DATA-STORE)\n    end\n\n    App -->> User: Display Match List (FR-4.1)"
+        }
+    ]
+}

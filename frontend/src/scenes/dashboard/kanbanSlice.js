@@ -11,6 +11,14 @@ export const fetchProjects = createAsyncThunk(
   }
 );
 
+export const fetchTaskState = createAsyncThunk(
+  "kanban/fetchTaskState",
+  async (projectName) => {
+    const response = await axios.get(`${API_BASE}/pipeline/task-state/${projectName}`);
+    return response.data;
+  }
+);
+
 export const fetchTickets = createAsyncThunk(
   "kanban/fetchTickets",
   async ({ projectName, status } = {}) => {
@@ -108,6 +116,13 @@ const initialState = {
   error: null,
   projectName: "",
   projects: [],
+  taskState: {
+    current_task: 0,
+    total_tasks: 0,
+    task_status: {},
+    started_at: null,
+    updated_at: null
+  },
 };
 
 const kanbanSlice = createSlice({
@@ -116,6 +131,20 @@ const kanbanSlice = createSlice({
   reducers: {
     setProjectName: (state, action) => {
       state.projectName = action.payload;
+      if (!action.payload) {
+    state.tickets = [];
+    state.todoTickets = [];
+    state.inProgressTickets = [];
+    state.doneTickets = [];
+    state.progress = { total: 0, done: 0, in_progress: 0, todo: 0, progress_pct: 0 };
+    state.taskState = {
+      current_task: 0,
+      total_tasks: 0,
+      task_status: {},
+      started_at: null,
+      updated_at: null,
+    };
+  }
     },
     setSelectedTicket: (state, action) => {
       state.selectedTicket = action.payload;
@@ -223,6 +252,9 @@ const kanbanSlice = createSlice({
         if (!state.projectName && action.payload.length > 0) {
           state.projectName = action.payload[0].name;
         }
+      })
+      .addCase(fetchTaskState.fulfilled, (state, action) => {
+        state.taskState = action.payload;
       })
       .addCase(ingestTasks.fulfilled, (state, action) => {
         state.tickets = action.payload;

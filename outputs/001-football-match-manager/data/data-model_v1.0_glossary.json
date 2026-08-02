@@ -1,0 +1,89 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-FOLLOW-UNIQ",
+            "project_definition": "Persistence layer rules enforcing data integrity, specifically including multi-column uniqueness requirements."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "RULE-USER-EMAIL-UNIQ",
+            "project_definition": "One-way transformation process required for securing stored credentials as implied by the password complexity mandate."
+        },
+        {
+            "term": "DateTime",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "Temporal data primitive used for scheduling events and recording system-generated timestamps."
+        },
+        {
+            "term": "MUN",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-TEAM",
+            "project_definition": "An example of a short-form identifier for a sports club used to demonstrate the five-character limit."
+        },
+        {
+            "term": "Match Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Validation Rules",
+            "project_definition": "Logical checks ensuring no team plays itself, dates are chronologically correct for upcoming states, and scores are provided upon completion."
+        },
+        {
+            "term": "Relationships",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "Structural associations between entities such as leagues, teams, and users."
+        },
+        {
+            "term": "Team Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-TEAM-NAME-UNIQ",
+            "project_definition": "Enforcement of a globally distinct identifier for every registered sports organization."
+        },
+        {
+            "term": "UTC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The standardized time reference used to synchronize match schedules across different geographic zones."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "128-bit unique identifier used as the primary key for all main entities to ensure global uniqueness."
+        },
+        {
+            "term": "User Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-USER-EMAIL-UNIQ",
+            "project_definition": "Verification of distinct electronic mail addresses and strict adherence to credential complexity standards."
+        },
+        {
+            "term": "UserFollow",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USERFOLLOW",
+            "project_definition": "An association entity that maps the interest of an account holder toward a specific athletic event."
+        },
+        {
+            "term": "UserFollow Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-FOLLOW-UNIQ",
+            "project_definition": "The restriction preventing a single account from creating duplicate interest records for the same event."
+        }
+    ]
+}

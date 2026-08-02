@@ -1,0 +1,124 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "ACID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DB-POSTGRES",
+            "project_definition": "The set of properties ensuring transactional reliability and data integrity for user follows and match records."
+        },
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-FOOTBALL",
+            "project_definition": "The RESTful interface used to retrieve external football data through a service layer with caching and rate limiting."
+        },
+        {
+            "term": "CSRF",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-OAUTH",
+            "project_definition": "The security mechanism implemented to prevent cross-site request forgery within the authentication flow."
+        },
+        {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "UI-FRAMEWORK",
+            "project_definition": "The styling layer implemented via a utility-first approach for rapid interface development."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-OAUTH",
+            "project_definition": "The unique minimal identifier stored for users linked to third-party authentication providers."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "DB-POSTGRES",
+            "project_definition": "The lightweight data-interchange format used for communicating with external football data providers."
+        },
+        {
+            "term": "JSONB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DB-POSTGRES",
+            "project_definition": "The binary storage format in the relational database used for flexible data schemas from external sources."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-OAUTH",
+            "project_definition": "The signed token format utilized for secure session management."
+        },
+        {
+            "term": "JavaScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "LANG-TS",
+            "project_definition": "The baseline scripting language rejected as the primary development choice in favor of a typed alternative."
+        },
+        {
+            "term": "LTS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-BE",
+            "project_definition": "The long-term support version of the runtime environment to ensure stability and performance."
+        },
+        {
+            "term": "MUI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "UI-FRAMEWORK",
+            "project_definition": "The component library following Material Design guidelines for the user interface."
+        },
+        {
+            "term": "OAuth 2.0",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-OAUTH",
+            "project_definition": "The authorization framework used for third-party logins via Google, Facebook, and Apple."
+        },
+        {
+            "term": "ORM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DB-POSTGRES",
+            "project_definition": "The abstraction layer provided by Sequelize or TypeORM for database interactions and migrations."
+        },
+        {
+            "term": "PostgreSQL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DB-POSTGRES",
+            "project_definition": "The primary relational database engine version 14 used for structured match and user data."
+        },
+        {
+            "term": "React",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-FE",
+            "project_definition": "The frontend library version 18 utilizing concurrent features and hooks for the user interface."
+        },
+        {
+            "term": "TypeScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "LANG-TS",
+            "project_definition": "The static type-checked language version 4.9 used across the entire application stack."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "UI-FRAMEWORK",
+            "project_definition": "The visual layer developed using a combination of utility-first styles or pre-built components."
+        }
+    ]
+}

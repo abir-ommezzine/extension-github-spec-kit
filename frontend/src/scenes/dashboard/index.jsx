@@ -74,6 +74,7 @@ import {
   reorderTickets,
   updateTicketInState,
   fetchProjects,
+  fetchTaskState,
 } from "./kanbanSlice";
 
 const GlassCard = ({ children, ...props }) => {
@@ -206,16 +207,25 @@ const TicketCard = ({ ticket, onClick, index }) => {
               </Tooltip>
               <StatusChip status={ticket.status} />
             </Box>
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: colors.grey[100] }}>
-              {ticket.title}
-            </Typography>
-            {ticket.description && (
-              <Typography variant="body2" color={colors.grey[300]} sx={{ display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                {ticket.description}
-              </Typography>
-            )}
+           <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: theme.palette.text.primary }}>
+    {ticket.title}
+  </Typography>
+           {ticket.description && (
+    <Typography 
+      variant="body2" 
+      sx={{ 
+        color: theme.palette.text.secondary, 
+        display: "-webkit-box", 
+        WebkitLineClamp: 3, 
+        WebkitBoxOrient: "vertical", 
+        overflow: "hidden" 
+      }}
+    >
+      {ticket.description}
+    </Typography>
+  )}
             <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
-              <Typography variant="caption" color={colors.grey[400]}>
+              <Typography variant="caption" color={theme.palette.text.secondary}>
                 Updated: {new Date(ticket.updated_at).toLocaleDateString()}
               </Typography>
               <Tooltip title="Open details">
@@ -233,7 +243,8 @@ const TicketCard = ({ ticket, onClick, index }) => {
 
 const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode) || {};
+  const colors = tokens(theme.palette.mode);
+  const { taskState } = useSelector((state) => state.kanban);
   
   const statusColors = {
     todo: colors.blueAccent?.['500'] || '#2196f3',
@@ -243,6 +254,10 @@ const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
   
   const color = statusColors[status] || colors.grey?.['500'] || '#9e9e9e';
   
+  // Check if this column has the current in-progress task
+  const isCurrentInProgress = status === "in_progress" && taskState.current_task > 0;
+  const currentTaskStatus = taskState.task_status[taskState.current_task];
+  
   return (
     <Droppable droppableId={status} {...droppableProps}>
       {(provided, snapshot) => (
@@ -251,8 +266,8 @@ const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
           {...provided.droppableProps}
           sx={{
             minHeight: 400,
-            backgroundColor: snapshot.isDraggingOver ? `${color}10` : "transparent",
-            border: snapshot.isDraggingOver ? `2px dashed ${color}` : "none",
+            backgroundColor: snapshot.isDraggingOver ? `${color}10` : (isCurrentInProgress ? `${color}08` : "transparent"),
+            border: snapshot.isDraggingOver ? `2px dashed ${color}` : (isCurrentInProgress ? `2px solid ${color}66` : "none"),
             borderRadius: "12px",
             transition: "all 0.2s ease",
             display: "flex",
@@ -270,9 +285,28 @@ const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
               borderRadius: "12px 12px 0 0",
             }}
           >
-            <Typography variant="h6" fontWeight={700} sx={{ color, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-              {title}
-            </Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Typography variant="h6" fontWeight={700} sx={{ color, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                {title}
+              </Typography>
+              {isCurrentInProgress && currentTaskStatus === "in_progress" && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <Box
+                    sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      backgroundColor: color,
+                      animation: "pulse 1.5s infinite",
+                      "@keyframes pulse": { "0%": { opacity: 1 }, "50%": { opacity: 0.4 }, "100%": { opacity: 1 } }
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ color, fontWeight: 600 }}>
+                    Task {taskState.current_task}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
             <Chip
               label={tickets.length}
               size="small"
@@ -608,12 +642,13 @@ const ProgressBar = ({ progress }) => {
   return (
     <GlassCard sx={{ mb: 3, p: 3 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h6" fontWeight={600} color={grey100}>
-          Project Progress
-        </Typography>
-        <Chip
-          label={`${progress.progress_pct || 0}%`}
-          size="small"
+  {/* UPDATE THIS: Use theme.palette.text.primary instead of grey100 */}
+  <Typography variant="h6" fontWeight={600} color={theme.palette.text.primary}>
+    Project Progress
+  </Typography>
+  <Chip
+    label={`${progress.progress_pct || 0}%`}
+    size="small"
           sx={{
             backgroundColor: `${green500}20`,
             color: green500,
@@ -633,29 +668,35 @@ const ProgressBar = ({ progress }) => {
         />
       </Box>
       <Box display="flex" justifyContent="space-between" mt={2}>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: blue500 }} />
-          <Typography variant="caption" color={grey300}>To Do: {progress.todo || 0}</Typography>
-        </Box>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: orange500 }} />
-          <Typography variant="caption" color={grey300}>In Progress: {progress.in_progress || 0}</Typography>
-        </Box>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: green500 }} />
-          <Typography variant="caption" color={grey300}>Done: {progress.done || 0}</Typography>
-        </Box>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Typography variant="caption" color={grey300}>Total: {progress.total || 0}</Typography>
-        </Box>
-      </Box>
+  <Box display="flex" alignItems="center" gap={1}>
+    <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: blue500 }} />
+    {/* UPDATE THIS */}
+    <Typography variant="caption" color={theme.palette.text.secondary}>To Do: {progress.todo || 0}</Typography>
+  </Box>
+  <Box display="flex" alignItems="center" gap={1}>
+    <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: orange500 }} />
+    {/* UPDATE THIS */}
+    <Typography variant="caption" color={theme.palette.text.secondary}>In Progress: {progress.in_progress || 0}</Typography>
+  </Box>
+  <Box display="flex" alignItems="center" gap={1}>
+    <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: green500 }} />
+    {/* UPDATE THIS */}
+    <Typography variant="caption" color={theme.palette.text.secondary}>Done: {progress.done || 0}</Typography>
+  </Box>
+  <Box display="flex" alignItems="center" gap={1}>
+    {/* UPDATE THIS */}
+    <Typography variant="caption" color={theme.palette.text.secondary}>Total: {progress.total || 0}</Typography>
+  </Box>
+</Box>
     </GlassCard>
   );
 };
 
 const KanbanBoard = () => {
   const dispatch = useDispatch();
-  const { tickets, todoTickets, inProgressTickets, doneTickets, selectedTicket, progress, loading, projectName, projects } = useSelector((state) => state.kanban);
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const { tickets, todoTickets, inProgressTickets, doneTickets, selectedTicket, progress, loading, projectName, projects, taskState } = useSelector((state) => state.kanban);
   
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
   
@@ -663,13 +704,21 @@ const KanbanBoard = () => {
     dispatch(fetchProjects());
   }, [dispatch]);
   
-  // Auto-refresh tickets and progress when project is selected
+  // Fetch task state when project changes
+  useEffect(() => {
+    if (projectName) {
+      dispatch(fetchTaskState(projectName));
+    }
+  }, [dispatch, projectName]);
+  
+  // Auto-refresh tickets, progress, and task state when project is selected
   useEffect(() => {
     if (!projectName) return;
     
     const refresh = () => {
       dispatch(fetchTickets({ projectName }));
       dispatch(fetchProgress(projectName));
+      dispatch(fetchTaskState(projectName));
     };
     
     refresh(); // Initial load
@@ -730,32 +779,69 @@ const KanbanBoard = () => {
   
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <Box sx={{ flexGrow: 1, p: 3, bgcolor: "grey.50", minHeight: "100vh" }}>
+      <Box sx={{ flexGrow: 1, p: 3, backgroundColor: "transparent", minHeight: "100vh" }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Box>
-            <Typography variant="h4" fontWeight={700} sx={{ color: "grey.900" }}>
+<Box>
+            <Typography variant="h4" fontWeight={700} sx={{ color: theme.palette.text.primary }}>
               Kanban Board
             </Typography>
-            <Typography variant="body1" color="grey.600">
-              Project: <strong>{projectName || "Select a project"}</strong>
-            </Typography>
+            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap" mt={1}>
+              <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
+                Project: <strong>{projectName || "Select a project"}</strong>
+              </Typography>
+              {taskState.total_tasks > 0 && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 280 }}>
+                  <Box sx={{ flex: 1, minWidth: 150, height: 6, borderRadius: 3, backgroundColor: colors.grey[700] }}>
+                    <Box
+                      sx={{
+                        height: "100%",
+                        width: `${taskState.total_tasks > 0 ? (taskState.current_task / taskState.total_tasks) * 100 : 0}%`,
+                        borderRadius: 3,
+                        background: `linear-gradient(90deg, ${colors.greenAccent[500]}, ${colors.blueAccent[500]})`,
+                        transition: "width 0.3s ease",
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary, whiteSpace: "nowrap", minWidth: 80 }}>
+                    Task {taskState.current_task || 1} / {taskState.total_tasks}
+                  </Typography>
+                  <Chip
+                    label={taskState.task_status[taskState.current_task] === "in_progress" ? "In Progress" : taskState.task_status[taskState.current_task] === "done" ? "Done" : "Pending"}
+                    size="small"
+                    sx={{
+                      backgroundColor: taskState.task_status[taskState.current_task] === "in_progress"
+                        ? `${colors.greenAccent[500]}33`
+                        : taskState.task_status[taskState.current_task] === "done"
+                        ? `${colors.greenAccent[500]}33`
+                        : `${colors.orangeAccent[500]}33`,
+                    }}
+                  />
+                </Box>
+              )}
+            </Box>
           </Box>
           <Box display="flex" gap={2} alignItems="center">
             {projects.length > 0 && (
               <Box sx={{ minWidth: 250 }}>
-                <label style={{ fontSize: '0.875rem', color: 'grey.600', marginBottom: '0.25rem', display: 'block' }}>Select Project</label>
-                <select
-                  value={projectName || ""}
-                  onChange={(e) => dispatch(setProjectName(e.target.value))}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    borderRadius: '8px',
-                    border: '1px solid #e0e0e0',
-                    backgroundColor: 'white',
-                    fontSize: '0.875rem'
-                  }}
-                >
+                <label style={{ fontSize: '0.875rem', color: theme.palette.text.secondary, marginBottom: '0.25rem', display: 'block' }}>
+  Select Project
+</label>
+<select
+  value={projectName || ""}
+  onChange={(e) => dispatch(setProjectName(e.target.value))}
+  style={{
+    width: '100%',
+    padding: '0.5rem',
+    borderRadius: '8px',
+    border: `1px solid ${colors.grey[500]}`,
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(14, 20, 35, 0.6)" : "rgba(255, 255, 255, 0.7)",
+    
+    // UPDATE THIS: Change color from colors.grey[100] to theme.palette.text.primary
+    color: theme.palette.text.primary,
+    
+    fontSize: '0.875rem'
+  }}
+>
                   <option value="">-- Choose Project --</option>
                   {projects.map((p) => (
                     <option key={p.id} value={p.name}>

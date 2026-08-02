@@ -31,7 +31,7 @@ function App() {
           <CssBaseline />
           <div className="app">
             <Sidebar isSidebar={isSidebar} />
-            <main className="content">
+            <main className="content" style={{ backgroundColor: theme.palette.background.default }}>
               <Topbar setIsSidebar={setIsSidebar} />
               <Routes>
                 <Route path="/" element={<Dashboard />} />

@@ -1,0 +1,188 @@
+{
+    "parsing_rationale": "Analyse du document plan pour extraire les sections, les éléments techniques et les relations entre eux.",
+    "project_info": {
+        "project_name": "Football Match Manager",
+        "source_type": "scratch",
+        "brief_explanation": "Plan d'implémentation pour la gestion de matchs de football",
+        "source_context": "Document plan généré par la commande /speckit.plan"
+    },
+    "doc_type": "plan",
+    "sections": [
+        {
+            "title": "Implementation Plan: Football Match Manager",
+            "level": 1,
+            "raw_content": "**Branch**: `001-football-match-manager` | **Date**: 2026-07-30 | **Spec**: [spec.md](./spec.md)\n\n**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`\n\n**Note**: This template is filled in by the `/speckit.plan` command; its definition describes the execution workflow",
+            "mapped_to_template_field": "System Architecture & Topology"
+        },
+        {
+            "title": "Summary",
+            "level": 2,
+            "raw_content": "[Extract from feature spec: primary requirement + technical approach from research]",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Technical Context",
+            "level": 2,
+            "raw_content": "<!--\n  ACTION REQUIRED: Replace the content in this section with the technical details\n  for the project. The structure here is presented in advisory capacity to guide\n  the iteration process.\n-->\n\n**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]\n\n**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]\n\n**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]\n\n**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]\n\n**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]\n\n**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]\n\n**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]\n\n**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]\n\n**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]",
+            "mapped_to_template_field": "Tech Stack & Tooling"
+        },
+        {
+            "title": "Constitution Check",
+            "level": 2,
+            "raw_content": "*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*\n\n[Gates determined based on constitution file]",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Project Structure",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Documentation (this feature)",
+            "level": 3,
+            "raw_content": "```text\nspecs/[###-feature]/\n├── plan.md              # This file (/speckit.plan command output)\n├── research.md          # Phase 0 output (/speckit.plan command)\n├── data-model.md        # Phase 1 output (/speckit.plan command)\n├── quickstart.md        # Phase 1 output (/speckit.plan command)\n├── contracts/           # Phase 1 output (/speckit.plan command)\n└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Source Code (repository root)",
+            "level": 3,
+            "raw_content": "<!--\n  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout\n  for this feature. Delete unused options and expand the chosen structure with\n  real paths (e.g., apps/admin, packages/something). The delivered plan must\n  not include Option labels.\n-->\n\n```text",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "[REMOVE IF UNUSED] Option 1: Single project (DEFAULT)",
+            "level": 1,
+            "raw_content": "src/\n├── models/\n├── services/\n├── cli/\n└── lib/\n\ntests/\n├── contract/\n├── integration/\n└── unit/",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "[REMOVE IF UNUSED] Option 2: Web application (when \"frontend\" + \"backend\" detected)",
+            "level": 1,
+            "raw_content": "backend/\n├── src/\n│   ├── models/\n│   ├── services/\n│   └── api/\n└── tests/\n\nfrontend/\n├── src/\n│   ├── components/\n│   ├── pages/\n│   └── services/\n└── tests/",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
+            "level": 1,
+            "raw_content": "api/\n└── [same as backend above]\n\nios/ or android/\n└── [platform-specific structure: feature modules, UI flows, platform tests]\n```\n\n**Structure Decision**: [Document the selected structure and reference the real\ndirectories captured above]",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Complexity Tracking",
+            "level": 2,
+            "raw_content": "> **Fill ONLY if Constitution Check has violations that must be justified**\n\n| Violation | Why Needed | Simpler Alternative Rejected Because |\n|-----------|------------|-------------------------------------|\n| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |\n| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "phase",
+            "identifier": "PHASE-0",
+            "content": "Phase 0 : Recherche",
+            "source_section": "Implementation Plan: Football Match Manager",
+            "attributes": {}
+        },
+        {
+            "type": "phase",
+            "identifier": "PHASE-1",
+            "content": "Phase 1 : Conception",
+            "source_section": "Implementation Plan: Football Match Manager",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "TASK-01",
+            "content": "Tâche 1 : Définition des exigences",
+            "source_section": "Summary",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "TASK-02",
+            "content": "Tâche 2 : Définition de l'approche technique",
+            "source_section": "Summary",
+            "attributes": {}
+        },
+        {
+            "type": "decision",
+            "identifier": "DECISION-01",
+            "content": "Décision 1 : Choix de la technologie",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "milestone",
+            "identifier": "MILESTONE-01",
+            "content": "Jalon 1 : Fin de la phase 0",
+            "source_section": "Constitution Check",
+            "attributes": {}
+        },
+        {
+            "type": "endpoint",
+            "identifier": "ENDPOINT-01",
+            "content": "Point de terminaison 1 : API de gestion de matchs",
+            "source_section": "Source Code (repository root)",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENTITY-01",
+            "content": "Entité 1 : Équipe de football",
+            "source_section": "Documentation (this feature)",
+            "attributes": {}
+        },
+        {
+            "type": "architecture_choice",
+            "identifier": "ARCH-CHOICE-01",
+            "content": "Choix d'architecture 1 : Utilisation d'un modèle de données relationnel",
+            "source_section": "Technical Context",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "PHASE-0",
+            "to": "TASK-01",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "TASK-02",
+            "relation_type": "contains"
+        },
+        {
+            "source": "DECISION-01",
+            "to": "ARCH-CHOICE-01",
+            "relation_type": "implements"
+        },
+        {
+            "source": "MILESTONE-01",
+            "to": "PHASE-0",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "ENDPOINT-01",
+            "to": "ENTITY-01",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Data Models & Schemas",
+            "priority": "HIGH",
+            "remediation_advice": "Ajouter une section pour décrire les modèles de données et les schémas de données"
+        },
+        {
+            "missing_section": "API Contracts & Flow",
+            "priority": "MEDIUM",
+            "remediation_advice": "Ajouter une section pour décrire les contrats et les flux d'API"
+        },
+        {
+            "missing_section": "Security & Identity",
+            "priority": "LOW",
+            "remediation_advice": "Ajouter une section pour décrire les mesures de sécurité et d'identité"
+        }
+    ],
+    "open_questions": []
+}

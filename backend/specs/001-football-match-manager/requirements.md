@@ -31,7 +31,7 @@
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-07-30
-**Feature**: [Football Match Manager](./spec.md)
+**Feature**: [Football Match Manager](../spec.md)
 
 ## Content Quality
 

@@ -1,6 +1,6 @@
 # app/core/llm_client.py
 """
-LLM Client — Provider-agnostic LLM client manager
+LLM Client — Provider-agnostic LLM client manager with rate limiting & retry logic
 
 Supports multiple providers:
 - Ollama (local)
@@ -14,12 +14,57 @@ Provides a unified interface for all services.
 
 from abc import ABC, abstractmethod
 from typing import Any, Optional
-from openai import OpenAI
-from anthropic import Anthropic
+import time
+import logging
+from openai import OpenAI, RateLimitError
+from anthropic import Anthropic, RateLimitError as AnthropicRateLimitError
 import ollama
 from pydantic import BaseModel
 
 from app.config import settings
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Rate limit retry configuration
+MAX_RETRIES = 3
+BASE_DELAY = 5  # seconds
+MAX_DELAY = 60  # seconds
+
+
+def retry_on_rate_limit(func):
+    """Decorator to retry on rate limit errors with exponential backoff."""
+    def wrapper(*args, **kwargs):
+        last_exception = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                return func(*args, **kwargs)
+            except (RateLimitError, AnthropicRateLimitError) as e:
+                last_exception = e
+                if attempt < MAX_RETRIES - 1:
+                    delay = min(BASE_DELAY * (2 ** attempt), MAX_DELAY)
+                    logger.warning(f"Rate limit hit (attempt {attempt + 1}/{MAX_RETRIES}), waiting {delay}s: {e}")
+                    time.sleep(delay)
+                else:
+                    logger.error(f"Max retries ({MAX_RETRIES}) exceeded for rate limit")
+                    raise
+            except Exception as e:
+                # Check if it's a rate limit error from the response
+                error_str = str(e).lower()
+                if "rate limit" in error_str or "429" in error_str:
+                    last_exception = e
+                    if attempt < MAX_RETRIES - 1:
+                        delay = min(BASE_DELAY * (2 ** attempt), MAX_DELAY)
+                        logger.warning(f"Rate limit detected (attempt {attempt + 1}/{MAX_RETRIES}), waiting {delay}s: {e}")
+                        time.sleep(delay)
+                    else:
+                        logger.error(f"Max retries ({MAX_RETRIES}) exceeded for rate limit")
+                        raise
+                else:
+                    raise
+        raise last_exception
+    return wrapper
 
 
 class LLMProvider(ABC):
@@ -51,9 +96,11 @@ class OllamaProvider(LLMProvider):
             api_key=settings.OLLAMA_API_KEY or "ollama"
         )
     
+    @retry_on_rate_limit
     def chat_completion(self, messages: list[dict], model: str, **kwargs) -> Any:
         return self.client.chat(model=model, messages=messages, **kwargs)
     
+    @retry_on_rate_limit
     def chat_completion_structured(self, messages: list[dict], model: str, response_format: type[BaseModel], **kwargs) -> Any:
         return self.openai_client.beta.chat.completions.parse(
             model=model,
@@ -75,6 +122,7 @@ class OpenAIProvider(LLMProvider):
             base_url=settings.OPENAI_BASE_URL
         )
     
+    @retry_on_rate_limit
     def chat_completion(self, messages: list[dict], model: str, **kwargs) -> Any:
         return self.client.chat.completions.create(
             model=model,
@@ -82,6 +130,7 @@ class OpenAIProvider(LLMProvider):
             **kwargs
         )
     
+    @retry_on_rate_limit
     def chat_completion_structured(self, messages: list[dict], model: str, response_format: type[BaseModel], **kwargs) -> Any:
         return self.client.beta.chat.completions.parse(
             model=model,
@@ -100,6 +149,7 @@ class AnthropicProvider(LLMProvider):
     def __init__(self):
         self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
     
+    @retry_on_rate_limit
     def chat_completion(self, messages: list[dict], model: str, **kwargs) -> Any:
         # Convert OpenAI format to Anthropic format
         system_msg = None
@@ -118,6 +168,7 @@ class AnthropicProvider(LLMProvider):
             **{k: v for k, v in kwargs.items() if k != "max_tokens"}
         )
     
+    @retry_on_rate_limit
     def chat_completion_structured(self, messages: list[dict], model: str, response_format: type[BaseModel], **kwargs) -> Any:
         # Anthropic doesn't have native structured output, use JSON mode with prompt engineering
         import json
@@ -156,14 +207,16 @@ class AnthropicProvider(LLMProvider):
 class OpenAICompatibleProvider(LLMProvider):
     """Generic OpenAI-compatible provider (Groq, vLLM, LM Studio, etc.)"""
     
-    def __init__(self, base_url: str, api_key: str, default_model: str, supports_structured_output: bool = False):
+    def __init__(self, base_url: str, api_key: str, default_model: str, supports_structured_output: bool = False, timeout: float = 60.0):
         self.client = OpenAI(
             api_key=api_key,
-            base_url=base_url
+            base_url=base_url,
+            timeout=timeout
         )
         self._default_model = default_model
         self._supports_structured = supports_structured_output
     
+    @retry_on_rate_limit
     def chat_completion(self, messages: list[dict], model: str, **kwargs) -> Any:
         return self.client.chat.completions.create(
             model=model,
@@ -171,6 +224,7 @@ class OpenAICompatibleProvider(LLMProvider):
             **kwargs
         )
     
+    @retry_on_rate_limit
     def chat_completion_structured(self, messages: list[dict], model: str, response_format: type[BaseModel], **kwargs) -> Any:
         if self._supports_structured:
             return self.client.beta.chat.completions.parse(
@@ -229,7 +283,24 @@ def get_provider() -> LLMProvider:
             base_url=settings.GROQ_BASE_URL,
             api_key=settings.GROQ_API_KEY,
             default_model=settings.GROQ_MODEL,
-            supports_structured_output=False  # Groq doesn't support json_schema response_format
+            supports_structured_output=False,  # Groq doesn't support json_schema response_format
+            timeout=60.0
+        )
+    elif provider_type == "nvidia":
+        return OpenAICompatibleProvider(
+            base_url=settings.NVIDIA_BASE_URL,
+            api_key=settings.NVIDIA_API_KEY,
+            default_model=settings.NVIDIA_MODEL,
+            supports_structured_output=False,  # NVIDIA NIM doesn't support json_schema
+            timeout=180.0  # Longer timeout for NVIDIA NIM cold starts
+        )
+    elif provider_type == "huggingface":
+        return OpenAICompatibleProvider(
+            base_url=settings.HUGGINGFACE_BASE_URL,
+            api_key=settings.HUGGINGFACE_API_KEY,
+            default_model=settings.HUGGINGFACE_MODEL,
+            supports_structured_output=False,  # HF Inference API doesn't support json_schema
+            timeout=120.0
         )
     elif provider_type == "openai_compatible":
         return OpenAICompatibleProvider(

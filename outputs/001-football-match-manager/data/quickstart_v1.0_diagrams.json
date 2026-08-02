@@ -1,0 +1,16 @@
+{
+    "diagrams": [
+        {
+            "title": "Local Development Setup Workflow",
+            "type": "flowchart",
+            "description": "A detailed process flow for setting up the Football Match Manager environment, including dependency installation, database configuration, and server startup.",
+            "mermaid_code": "flowchart TD\n    START[Start Setup] --> CLONE[\"Clone Repository\"]\n    CLONE --> INSTALL_DEP[\"Install Dependencies (Backend & Frontend)\"]\n    INSTALL_DEP --> DB_START[\"Start PostgreSQL Server\"]\n    DB_START --> DB_CREATE[\"Create Database & User\"]\n    DB_CREATE --> ENV_CONF[\"Configure .env File\"]\n    \n    ENV_CONF --> MIGRATE[\"Run Sequelize Migrations\"]\n    MIGRATE --> SEED_DEC{\"Seed Data Required?\"}\n    \n    SEED_DEC -- Yes --> SEED_RUN[\"Run db:seed:all\"]\n    SEED_DEC -- No --> START_BACKEND[\"Start Backend Server (npm run dev)\"]\n    SEED_RUN --> START_BACKEND\n    \n    START_BACKEND --> START_FRONTEND[\"Start Frontend Server (npm start)\"]\n    START_FRONTEND --> VERIFY_DEC{\"Home Page Loading?\"}\n    \n    VERIFY_DEC -- No --> TROUBLESHOOT[\"Check .env and DB Connection\"]\n    TROUBLESHOOT --> ENV_CONF\n    \n    VERIFY_DEC -- Yes --> END[Setup Complete]"
+        },
+        {
+            "title": "Technical Dependency Map",
+            "type": "flowchart",
+            "description": "Traceability map showing the relationship between environment configurations and technical prerequisites.",
+            "mermaid_code": "flowchart LR\n    subgraph \"Prerequisites\"\n        TECH-NODE[\"TECH-NODE: Node.js v18+\"]\n        TECH-PG[\"TECH-PG: PostgreSQL v14+\"]\n        TECH-GIT[\"TECH-GIT: Git\"]\n    end\n\n    subgraph \"Environment Configuration\"\n        ENV-DB[\"ENV-DB: Database Config\"]\n        ENV-AUTH[\"ENV-AUTH: JWT Secret\"]\n        ENV-PORT[\"ENV-PORT: Backend Port\"]\n    end\n\n    subgraph \"Verification\"\n        VERIFY-UI[\"VERIFY-UI: Home Page Access\"]\n    end\n\n    ENV-DB -->|depends_on| TECH-PG\n    VERIFY-UI -->|depends_on| ENV-PORT\n    ENV-PORT -->|requires| TECH-NODE\n    ENV-AUTH -->|requires| TECH-NODE"
+        }
+    ]
+}
