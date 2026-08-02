@@ -83,11 +83,6 @@ class LayoutAgentService:
         else:
             os.makedirs(os.path.dirname(output_pdf_path) or ".", exist_ok=True)
 
-        # DEBUG: Log the output path
-        print(f"[LAYOUT_SVC][DEBUG] output_pdf_path received={output_pdf_path}", flush=True)
-        print(f"[LAYOUT_SVC][DEBUG] output_pdf_path dirname={os.path.dirname(output_pdf_path)}", flush=True)
-        print(f"[LAYOUT_SVC][DEBUG] output_pdf_path dir exists={os.path.exists(os.path.dirname(output_pdf_path))}", flush=True)
-
         # 3. ÉTAPE 1 : Conversion des diagrammes Mermaid en images PNG/SVG
         try:
             updated_markdown, rendered_diagram_paths = render_mermaid_diagrams(
@@ -108,11 +103,9 @@ class LayoutAgentService:
                 layout_spec=layout_spec_dict
             )
             pdf_generated = compilation_result.get("output_pdf_path") is not None and os.path.exists(output_pdf_path)
-            print(f"[LAYOUT_SVC][DEBUG] After compile: pdf_generated={pdf_generated}, file exists={os.path.exists(output_pdf_path)}, size={os.path.getsize(output_pdf_path) if os.path.exists(output_pdf_path) else 'N/A'}", flush=True)
         except Exception as e:
             execution_warnings.append(f"Erreur critique lors de la compilation PDF : {str(e)}")
             pdf_generated = False
-            print(f"[LAYOUT_SVC][DEBUG] Compilation failed: {e}", flush=True)
 
         # 5. ÉTAPE 3 : Inspection binaire du PDF produit pour extraction des métadonnées
         # On exécute TOUJOURS l'inspection et l'évaluation, même en cas d'échec,
