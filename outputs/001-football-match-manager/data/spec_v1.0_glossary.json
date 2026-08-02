@@ -1,0 +1,26 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "A1: Data Source",
+            "project_definition": "The system utilizes a reliable sports data source to retrieve match data, which is assumed to be provided via an API, enabling real-time or near real-time updates for live matches and historical match data retrieval."
+        },
+        {
+            "term": "MATCH",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Match",
+            "project_definition": "A football match is an event where two teams compete, characterized by attributes such as matchId, homeTeam, awayTeam, dateTime, venue, league, and status, with relationships to leagues and teams."
+        },
+        {
+            "term": "Scenario",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Scenario 1: Viewing Match List",
+            "project_definition": "A scenario represents a specific sequence of actions and expected outcomes within the application, such as viewing a list of upcoming matches or adding a match to interests, which helps define the system's functional requirements."
+        }
+    ]
+}

@@ -1,0 +1,75 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API Contract: Football Match Manager",
+            "project_definition": "The primary interface for interacting with the Football Match Manager backend, providing endpoints for various operations."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "API Contract: Football Match Manager",
+            "project_definition": "A set of rules governing cross-origin resource sharing, ensuring secure data exchange between web pages and servers."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "MATCH-01",
+            "project_definition": "A unique identifier assigned to each entity, such as a match, team, or user, for tracking and reference purposes."
+        },
+        {
+            "term": "IP",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Rate Limiting",
+            "project_definition": "A numerical label assigned to each device connected to a network, used for communication and identification."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Data Models",
+            "project_definition": "A lightweight data interchange format, used for exchanging data between servers, web applications, and mobile apps."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Authentication",
+            "project_definition": "An open standard for securely transmitting information between parties, used for authentication and authorization."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "MATCH-01",
+            "project_definition": "A 128-bit label used for information in computer systems, providing a unique identifier for each entity."
+        },
+        {
+            "term": "dateFrom",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Matches",
+            "project_definition": "A parameter used for filtering matches, specifying the start date for the range of matches to be retrieved."
+        },
+        {
+            "term": "dateTo",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Matches",
+            "project_definition": "A parameter used for filtering matches, specifying the end date for the range of matches to be retrieved."
+        },
+        {
+            "term": "leagueId",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Matches",
+            "project_definition": "A parameter used for filtering matches, specifying the league for which matches are to be retrieved."
+        }
+    ]
+}

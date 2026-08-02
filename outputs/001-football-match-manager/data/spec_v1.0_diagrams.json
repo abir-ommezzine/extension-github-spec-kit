@@ -1,0 +1,10 @@
+{
+    "diagrams": [
+        {
+            "title": "Project Structure & Gap Analysis",
+            "type": "flowchart",
+            "description": "A high-level map of the provided document structure and the identified critical gaps for the Football Match Manager project.",
+            "mermaid_code": "flowchart TD\n    START[\"Start: Document Analysis\"] --> DOC{\"Document Content?\"}\n    DOC -- \"Empty\" --> GAPS[\"Identify Structural Gaps\"]\n    DOC -- \"Present\" --> PROC[\"Process Elements\"]\n    \n    GAPS --> GAP1[\"GAP-01: Non-Functional Requirements\"]\n    GAPS --> GAP2[\"GAP-02: Scope & Out-of-Scope\"]\n    \n    GAP1 --> REM1[\"Remediation: Define Performance/Security\"]\n    GAP2 --> REM2[\"Remediation: Define Feature Boundaries\"]\n    \n    REM1 --> END[\"End: Analysis Complete\"]\n    REM2 --> END"
+        }
+    ]
+}

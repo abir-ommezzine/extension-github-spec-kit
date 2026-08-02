@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = None  
     
     # --- LLM PROVIDER CONFIGURATION ---
-    # Supported providers: "ollama", "openai", "anthropic", "groq", "openai_compatible"
-    LLM_PROVIDER: Literal["ollama", "openai", "anthropic", "groq", "openai_compatible"] = "ollama"
+    # Supported providers: "ollama", "openai", "anthropic", "groq", "openai_compatible", "huggingface", "nvidia"
+    LLM_PROVIDER: Literal["ollama", "openai", "anthropic", "groq", "openai_compatible", "huggingface", "nvidia"] = "ollama"
     
     # Ollama settings
     OLLAMA_BASE_URL: str = "http://localhost:11434"
@@ -33,6 +33,16 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[str] = None
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
     GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
+    
+    # NVIDIA NIM settings (OpenAI-compatible)
+    NVIDIA_API_KEY: Optional[str] = None
+    NVIDIA_MODEL: str = "nvidia/nemotron-3-ultra"
+    NVIDIA_BASE_URL: str = "https://integrate.api.nvidia.com/v1"
+    
+    # Hugging Face settings (OpenAI-compatible inference API)
+    HUGGINGFACE_API_KEY: Optional[str] = None
+    HUGGINGFACE_MODEL: str = "meta-llama/Llama-3.3-70B-Instruct"
+    HUGGINGFACE_BASE_URL: str = "https://api-inference.huggingface.co/v1"
     
     # Generic OpenAI-compatible API settings
     OPENAI_COMPATIBLE_API_KEY: Optional[str] = None

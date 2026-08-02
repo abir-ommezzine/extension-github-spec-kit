@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "Football Match Manager Data Model",
+            "type": "erDiagram",
+            "description": "Entity Relationship Diagram showing the structure of matches, teams, leagues, and users based on the API data models.",
+            "mermaid_code": "erDiagram\n    USER ||--o{ FOLLOW : \"creates\"\n    MATCH ||--o{ FOLLOW : \"is followed by\"\n    LEAGUE ||--o{ MATCH : \"hosts\"\n    TEAM ||--o{ MATCH : \"plays in\"\n\n    USER {\n        uuid id PK\n        string email\n        string displayName\n        url avatarUrl\n    }\n    MATCH {\n        uuid id PK\n        string dateTime\n        string venue\n        string status\n        int homeScore\n        int awayScore\n        string lastUpdated\n    }\n    TEAM {\n        uuid id PK\n        string name\n        string abbreviation\n        url crestUrl\n        int foundedYear\n    }\n    LEAGUE {\n        uuid id PK\n        string name\n        string sport\n        string country\n        url logoUrl\n        string currentSeason\n    }\n    FOLLOW {\n        uuid userId FK\n        uuid matchId FK\n        string followedAt\n        boolean notificationsEnabled\n    }"
+        },
+        {
+            "title": "Match Following Sequence",
+            "type": "sequenceDiagram",
+            "description": "Interaction flow for a user to follow a specific football match, including authentication validation.",
+            "mermaid_code": "sequenceDiagram\n    actor User\n    participant API as API Gateway\n    participant Auth as Auth Service\n    participant DB as Database\n\n    User->>API: POST /follows {matchId: \"uuid\"}\n    API->>Auth: Validate JWT Token\n    Auth-->>API: Token Valid (User ID)\n    \n    API->>DB: Create Follow Record (userId, matchId)\n    DB-->>API: Record Created\n    \n    API-->>User: 201 Created (Follow Response)"
+        },
+        {
+            "title": "API Request Processing Workflow",
+            "type": "flowchart",
+            "description": "Logic flow for handling incoming API requests, including rate limiting and authentication checks.",
+            "mermaid_code": "flowchart TD\n    START[Start Request] --> RATE_CHECK{? Rate Limit Exceeded}\n    \n    RATE_CHECK -- Yes --> ERR_429[\"Return 429 Too Many Requests\"]\n    RATE_CHECK -- No --> AUTH_CHECK{? Is Auth Endpoint}\n    \n    AUTH_CHECK -- Yes --> PROCESS_AUTH[\"Process Auth Logic (Register/Login)\"]\n    AUTH_CHECK -- No --> JWT_VAL{? Valid JWT Token}\n    \n    JWT_VAL -- No --> ERR_401[\"Return 401 Unauthorized\"]\n    JWT_VAL -- Yes --> EXECUTE_REQ[\"Execute Functional Requirement (e.g., API-MATCH-LIST)\"]\n    \n    PROCESS_AUTH --> END[End Request]\n    ERR_429 --> END\n    ERR_401 --> END\n    EXECUTE_REQ --> END"
+        },
+        {
+            "title": "Requirements Traceability Map",
+            "type": "flowchart",
+            "description": "Mapping of functional API requirements to the underlying data entities they implement.",
+            "mermaid_code": "flowchart LR\n    subgraph \"Functional Requirements\"\n        API-MATCH-LIST[\"API-MATCH-LIST: Get Match List\"]\n        API-MATCH-DETAIL[\"API-MATCH-DETAIL: Get Match Detail\"]\n        API-FOLLOW-MATCH[\"API-FOLLOW-MATCH: Follow Match\"]\n    end\n\n    subgraph \"Data Entities\"\n        ENT-MATCH[\"ENT-MATCH: Match Object\"]\n        ENT-TEAM[\"ENT-TEAM: Team Object\"]\n        ENT-LEAGUE[\"ENT-LEAGUE: League Object\"]\n    end\n\n    subgraph \"Cross-Cutting Concerns\"\n        AUTH-JWT[\"AUTH-JWT: JWT Authentication\"]\n    end\n\n    API-MATCH-LIST -->|implements| ENT-MATCH\n    API-MATCH-DETAIL -->|implements| ENT-MATCH\n    API-FOLLOW-MATCH -->|depends_on| AUTH-JWT\n    ENT-MATCH -->|contains| ENT-TEAM\n    ENT-MATCH -->|contains| ENT-LEAGUE"
+        }
+    ]
+}

@@ -27,7 +27,7 @@ Authorization: Bearer <token>
     - `status` (string): Filter by status (upcoming, live, finished)
     - `search` (string): Search by team name (home or away)
     - `page` (int): Page number for pagination (default: 1)
-    - `limit` (int): Items per page (default: 20)
+    - `limit` (int): Items per page (default: 20)...
 - `GET /matches/:id` - Get a specific match by ID
 - `GET /matches/:id/followers` - Get users following a specific match (requires auth)
 

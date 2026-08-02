@@ -1,0 +1,152 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T015",
+            "project_definition": "The structural interface for server-side controllers handling requests and responses."
+        },
+        {
+            "term": "ARIA",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-8",
+            "project_definition": "Attributes used to improve the accessibility of the user interface for assistive technologies."
+        },
+        {
+            "term": "AuthContext",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The global state provider managing session-related information across the frontend."
+        },
+        {
+            "term": "CORS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The security mechanism regulating cross-origin resource sharing between the client and server."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The industry-standard protocol for managing cross-domain request permissions."
+        },
+        {
+            "term": "FilterPanel",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-3",
+            "project_definition": "A frontend component facilitating the refinement of the match list by league or date."
+        },
+        {
+            "term": "FollowedMatches",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-7",
+            "project_definition": "A curated collection of sports events a user has marked as interests."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T014",
+            "project_definition": "The signed token used for stateless authentication and verification of identities."
+        },
+        {
+            "term": "MatchDetail",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T053",
+            "project_definition": "The frontend component rendering exhaustive information for a single specific game."
+        },
+        {
+            "term": "MatchDetails",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T052",
+            "project_definition": "The granular data view containing venue, timestamps, and scoring information."
+        },
+        {
+            "term": "MatchItem",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T025",
+            "project_definition": "The atomic frontend unit representing a single entry within a listing of games."
+        },
+        {
+            "term": "MatchList",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T024",
+            "project_definition": "The frontend component responsible for iterating and displaying a collection of sports events."
+        },
+        {
+            "term": "Middleware",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T014",
+            "project_definition": "The interceptor layer used for authentication verification before reaching the final request handler."
+        },
+        {
+            "term": "ORM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The abstraction layer used for mapping relational database tables to software objects via Sequelize."
+        },
+        {
+            "term": "README",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The primary documentation file containing setup instructions and architectural overviews."
+        },
+        {
+            "term": "SEO",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-8",
+            "project_definition": "The application of meta tags and indexing optimizations to increase search engine visibility."
+        },
+        {
+            "term": "SearchBar",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T027",
+            "project_definition": "The frontend input field used for filtering games by team names."
+        },
+        {
+            "term": "TypeScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T001",
+            "project_definition": "The strongly-typed superset of JavaScript used across both frontend and backend layers."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T037",
+            "project_definition": "The visual layer of the application, including the implementation of optimistic updates."
+        },
+        {
+            "term": "UX",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T072",
+            "project_definition": "The overall user interaction quality, enhanced by loading skeletons and placeholders."
+        },
+        {
+            "term": "UserFollow",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T011",
+            "project_definition": "The relational entity linking a person to a specific sports event of interest."
+        }
+    ]
+}

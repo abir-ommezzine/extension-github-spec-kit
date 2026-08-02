@@ -115,6 +115,46 @@ async def list_projects(db: Session = Depends(get_db)):
     return result
 
 
+@router.get("/task-state/{project_name}")
+async def get_task_state(project_name: str):
+    """Get current task state for a project from the watcher's state file."""
+    import json
+    from pathlib import Path
+    
+    BASE_DIR = Path(__file__).resolve().parents[3]
+    TASK_STATE_FILE = BASE_DIR / ".task_runtime" / "agent-state.json"
+    
+    if not TASK_STATE_FILE.exists():
+        return {
+            "project_name": project_name,
+            "current_task": 0,
+            "total_tasks": 0,
+            "task_status": {},
+            "started_at": None,
+            "updated_at": None
+        }
+    
+    try:
+        with open(TASK_STATE_FILE, "r", encoding="utf-8") as f:
+            state = json.load(f)
+        return {
+            "project_name": state.get("feature", project_name),
+            "current_task": state.get("current_task", 0),
+            "total_tasks": state.get("total_tasks", 0),
+            "task_status": state.get("task_status", {}),
+            "started_at": state.get("started_at"),
+            "updated_at": state.get("updated_at")
+        }
+    except Exception as e:
+        return {
+            "project_name": project_name,
+            "current_task": 0,
+            "total_tasks": 0,
+            "task_status": {},
+            "error": str(e)
+        }
+
+
 @router.get("/progress")
 async def get_pipeline_progress():
     p = PIPELINE_PROGRESS

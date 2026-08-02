@@ -1,0 +1,10 @@
+{
+    "diagrams": [
+        {
+            "title": "Entity-Relationship Diagram for Football Match Management",
+            "type": "erDiagram",
+            "description": "Entity-relationship model for the football match management system",
+            "mermaid_code": "erDiagram\n\tMATCH-01 {\n\t\tUUID id PK\n\t\tUUID homeTeamId FK\n\t\tUUID awayTeamId FK\n\t\tDateTime dateTime\n\t\tString venue\n\t\tUUID leagueId FK\n\t\tEnum status\n\t\tInteger homeScore\n\t\tInteger awayScore\n\t\tDateTime lastUpdated\n\t}\n\tTEAM-01 {\n\t\tUUID id PK\n\t\tString name\n\t\tString abbreviation\n\t\tURL crestUrl\n\t\tInteger foundedYear\n\t}\n\tLEAGUE-01 {\n\t\tUUID id PK\n\t\tString name\n\t\tString sport\n\t\tString country\n\t\tURL logoUrl\n\t\tString currentSeason\n\t}\n\tUSER-01 {\n\t\tUUID id PK\n\t\tString email\n\t\tString displayName\n\t\tURL avatarUrl\n\t\tBoolean isActive\n\t\tDateTime createdAt\n\t\tDateTime lastLoginAt\n\t}\n\tUSERFOLLOW-01 {\n\t\tUUID userId FK\n\t\tUUID matchId FK\n\t\tDateTime followedAt\n\t\tBoolean notificationsEnabled\n\t}\n\tMATCH-01 ||--o{ LEAGUE-01 : \"belongs to\"\n\tMATCH-01 }|--|{ TEAM-01 : \"has two\"\n\tTEAM-01 }|--|{ MATCH-01 : \"participates in\"\n\tUSER-01 }|--|{ MATCH-01 : \"can follow\"\n\tUSERFOLLOW-01 }|--|{ USER-01 : \"belongs to\"\n\tUSERFOLLOW-01 }|--|{ MATCH-01 : \"belongs to\""
+        }
+    ]
+}

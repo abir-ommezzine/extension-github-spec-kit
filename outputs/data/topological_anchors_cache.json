@@ -1,0 +1,19 @@
+[
+  "API Contract: Football Match Manager",
+  "AUTH-01",
+  "Base URL",
+  "Data Models",
+  "Error Responses",
+  "FOLLOWS-01",
+  "Follow Response",
+  "LEAGUE-01",
+  "MATCH-01",
+  "MATCHES-01",
+  "RATE-LIMITING-01",
+  "Rate Limiting",
+  "TEAM-01",
+  "USER-01",
+  "User (authenticated user only)",
+  "User Follows",
+  "VERSIONING-01"
+]

@@ -1,0 +1,148 @@
+{
+    "parsing_rationale": "Cette analyse découpe le document en sections et sous-sections pour identifier les éléments clés tels que les histoires utilisateur, les exigences fonctionnelles et non fonctionnelles, les entités, les critères de succès, les hypothèses et les questions ouvertes. Chaque élément est ensuite associé à son type, un identifiant unique et la section d'où il provient.",
+    "project_info": {
+        "project_name": "Football Match Manager",
+        "source_type": "scratch",
+        "brief_explanation": "Application de gestion de matches de football pour les fans",
+        "source_context": "Spécification fonctionnelle"
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "Feature Specification: Football Match Manager",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "User Scenarios & Testing",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Scenario 1: Viewing Match List",
+            "level": 3,
+            "raw_content": "As a football fan, I want to see a list of upcoming football matches so that I can decide which matches to follow.\n- Given I open the application\n- When I navigate to the matches page\n- Then I see a list of upcoming matches with details (teams, date, time, league)\n- And I can filter matches by league, date range, or search by team name",
+            "mapped_to_template_field": "Goals & Objectives"
+        },
+        {
+            "title": "Scenario 2: Adding Match to Interests",
+            "level": 3,
+            "raw_content": "As a football fan, I want to mark a match as interesting so that I can easily track it later.\n- Given I am viewing a match in the list\n- When I click the \"Follow\" button on that match\n- Then the match is added to my followed matches list\n- And I see a confirmation indicator (e.g., button changes to \"Following\")",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Functional Requirements",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "FR1: Match Data Management",
+            "level": 3,
+            "raw_content": "The system shall provide functionality to manage football match data including:\n- FR1.1: Store match information (teams, date/time, venue, league, status)\n- FR1.2: Retrieve match data from a reliable sports data source (assumed to be via API)\n- FR1.3: Update match status and scores in real-time or near real-time for live matches\n- FR1.4: Archive historical match data for completed matches",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Success Criteria",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Success Criteria"
+        },
+        {
+            "title": "SC1: User Adoption",
+            "level": 3,
+            "raw_content": "- At least 70% of users who visit the site follow at least one match within their first session\n- Users who follow matches return to the site at least twice per week on average",
+            "mapped_to_template_field": "Success Criteria"
+        },
+        {
+            "title": "Key Entities",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Scope & Out-of-Scope"
+        },
+        {
+            "title": "Match",
+            "level": 3,
+            "raw_content": "- Attributes: matchId (unique identifier), homeTeam, awayTeam, dateTime, venue, league, status (upcoming, live, finished), homeScore, awayScore\n- Relationships: Belongs to a league, has two teams",
+            "mapped_to_template_field": "Scope & Out-of-Scope"
+        },
+        {
+            "title": "Assumptions",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Open Questions & Uncertainties"
+        },
+        {
+            "title": "A1: Data Source",
+            "level": 3,
+            "raw_content": "We assume access to a reliable football match data API that provides:\n- Upcoming match schedules\n- Live scores and match status\n- Historical match data\n- Team and league information\nIf such an API is not available, we may need to consider alternative data sources or manual data entry (which would significantly change scope).",
+            "mapped_to_template_field": "Open Questions & Uncertainties"
+        }
+    ],
+    "elements": [
+        {
+            "type": "user_story",
+            "identifier": "MATCH-01",
+            "content": "As a football fan, I want to see a list of upcoming football matches so that I can decide which matches to follow.",
+            "source_section": "Scenario 1: Viewing Match List",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "FR1.1",
+            "content": "Store match information (teams, date/time, venue, league, status)",
+            "source_section": "FR1: Match Data Management",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "MATCH",
+            "content": "Attributes: matchId (unique identifier), homeTeam, awayTeam, dateTime, venue, league, status (upcoming, live, finished), homeScore, awayScore",
+            "source_section": "Match",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC1",
+            "content": "At least 70% of users who visit the site follow at least one match within their first session",
+            "source_section": "SC1: User Adoption",
+            "attributes": {}
+        },
+        {
+            "type": "assumption",
+            "identifier": "A1",
+            "content": "We assume access to a reliable football match data API",
+            "source_section": "A1: Data Source",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "MATCH-01",
+            "to": "FR1.1",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FR1.1",
+            "to": "MATCH",
+            "relation_type": "contains"
+        },
+        {
+            "source": "MATCH",
+            "to": "SC1",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Non-Functional Requirements",
+            "priority": "HIGH",
+            "remediation_advice": "Ajouter une section pour les exigences non fonctionnelles"
+        }
+    ],
+    "open_questions": [
+        "Q1: User Authentication Approach"
+    ]
+}

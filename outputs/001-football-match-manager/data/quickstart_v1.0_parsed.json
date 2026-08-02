@@ -1,0 +1,391 @@
+{
+    "parsing_rationale": "Analyse du document pour extraire les spécifications fonctionnelles et techniques du projet Football Match Manager.",
+    "project_info": {
+        "project_name": "Football Match Manager",
+        "source_type": "scratch",
+        "brief_explanation": "Projet de gestion de matchs de football avec backend et frontend.",
+        "source_context": "Document de démarrage rapide pour le projet Football Match Manager."
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "Quick Start Guide: Football Match Manager",
+            "level": 1,
+            "raw_content": "This guide provides instructions for setting up and running the Football Match Manager application locally for development and testing purposes.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Prerequisites",
+            "level": 2,
+            "raw_content": "Before you begin, ensure you have the following installed on your machine:\n\n- [Node.js](https://nodejs.org/) (v18 or later)\n- [npm](https://www.npmjs.com/) (comes with Node.js) or [Yarn](https://yarnpkg.com/)\n- [PostgreSQL](https://www.postgresql.org/) (v14 or later)\n- [Git](https://git-scm.com/)",
+            "mapped_to_template_field": "Prerequisites"
+        },
+        {
+            "title": "Getting Started",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "1. Clone the Repository",
+            "level": 3,
+            "raw_content": "```bash\ngit clone <repository-url>\ncd football-match-manager\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "2. Install Dependencies",
+            "level": 3,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Backend",
+            "level": 4,
+            "raw_content": "```bash\ncd backend\nnpm install\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Frontend",
+            "level": 4,
+            "raw_content": "```bash\ncd ../frontend\nnpm install\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "3. Set Up the Database",
+            "level": 3,
+            "raw_content": "1. Start your PostgreSQL server.\n2. Create a new database for the application:\n   ```sql\n   CREATE DATABASE football_match_manager;\n   ```\n3. Create a user and grant privileges (optional but recommended):\n   ```sql\n   CREATE USER fm_user WITH PASSWORD 'your_password';\n   GRANT ALL PRIVILEGES ON DATABASE football_match_manager TO fm_user;\n   ```",
+            "mapped_to_template_field": "Database Setup"
+        },
+        {
+            "title": "4. Configure Environment Variables",
+            "level": 3,
+            "raw_content": "Create a `.env` file in the `backend` directory based on the provided `.env.example`:\n\n```bash\ncd backend\ncp .env.example .env\n```\n\nEdit the `.env` file to match your database configuration:\n\n```\nDB_HOST=localhost\nDB_PORT=5432\nDB_NAME=football_match_manager\nDB_USER=your_username\nDB_PASSWORD=your_password",
+            "mapped_to_template_field": "Environment Variables"
+        },
+        {
+            "title": "JWT secret for authentication (use a strong, random string in production)",
+            "level": 1,
+            "raw_content": "JWT_SECRET=your_super_secret_jwt_key_change_in_production",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Port for the backend server",
+            "level": 1,
+            "raw_content": "PORT=5000",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Optional: Third-party football API key (if required by the chosen API)",
+            "level": 1,
+            "raw_content": "FOOTBALL_API_KEY=your_api_key_here",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "5. Run Database Migrations",
+            "level": 3,
+            "raw_content": "We use Sequelize for ORM and migrations. Run the following to set up the database schema:\n\n```bash\nnpx sequelize-cli db:migrate\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "6. Seed Initial Data (Optional)",
+            "level": 3,
+            "raw_content": "If you have seed data for leagues, teams, etc., you can run:\n\n```bash\nnpx sequelize-cli db:seed:all\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "7. Start the Development Servers",
+            "level": 3,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Backend",
+            "level": 4,
+            "raw_content": "```bash",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "From the backend directory",
+            "level": 1,
+            "raw_content": "npm run dev\n```\nThe backend server will start on `http://localhost:5000` (or the port specified in your .env file).",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Frontend",
+            "level": 4,
+            "raw_content": "```bash",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "From the frontend directory (in a new terminal)",
+            "level": 1,
+            "raw_content": "npm start\n```\nThe frontend development server will start on `http://localhost:3000`.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "8. Verify the Setup",
+            "level": 3,
+            "raw_content": "Open your browser and navigate to `http://localhost:3000`. You should see the Football Match Manager home page.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Available Scripts",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Backend (`backend` directory)",
+            "level": 3,
+            "raw_content": "- `npm run dev`: Start the server in development mode with auto-restart\n- `npm start`: Start the server in production mode\n- `npm test`: Run the test suite\n- `npm run lint`: Run ESLint for code quality",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Frontend (`frontend` directory)",
+            "level": 3,
+            "raw_content": "- `npm start`: Start the development server\n- `npm run build`: Build the production bundle\n- `npm test`: Run the test suite\n- `npm run eject`: Eject from Create React App (use with caution)",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Testing the Application",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Running Tests",
+            "level": 3,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Backend Tests",
+            "level": 4,
+            "raw_content": "```bash",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "From the backend directory",
+            "level": 1,
+            "raw_content": "npm test\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Frontend Tests",
+            "level": 4,
+            "raw_content": "```bash",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "From the frontend directory",
+            "level": 1,
+            "raw_content": "npm test\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "API Documentation",
+            "level": 3,
+            "raw_content": "Once the backend is running, you can view the API documentation at:\n`http://localhost:5000/api-docs` (if Swagger/OpenAPI documentation is enabled)",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Troubleshooting",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Common Issues",
+            "level": 3,
+            "raw_content": "1. **Database Connection Errors**\n   - Verify that PostgreSQL is running\n   - Check your `.env` file for correct database credentials\n   - Ensure the database exists and the user has sufficient privileges\n\n2. **Port Already in Use**\n   - Another process is using the port specified in your `.env` file\n   - Either change the port or stop the conflicting process\n\n3. **Module Not Found Errors**\n   - Ensure you have run `npm install` in both `backend` and `frontend` directories\n   - Try deleting `node_modules` and `package-lock.json` (or `yarn.lock`) and reinstalling\n\n4. **Authentication Issues**\n   - Verify that the JWT secret is set correctly in the `.env` file\n   - Ensure you are sending the token in the `Authorization` header as `Bearer <token>`",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Next Steps",
+            "level": 2,
+            "raw_content": "After getting the application running locally, you can:\n\n1. Explore the API endpoints using tools like Postman or curl\n2. Begin implementing features based on the specification\n3. Write additional tests to improve coverage\n4. Prepare for deployment by setting up production environments",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Support",
+            "level": 2,
+            "raw_content": "If you encounter any issues or have questions, please refer to the project documentation or contact the development team.",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "requirement",
+            "identifier": "REQ-001",
+            "content": "Node.js (v18 or later) must be installed.",
+            "source_section": "Prerequisites",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "REQ-002",
+            "content": "npm (comes with Node.js) or Yarn must be installed.",
+            "source_section": "Prerequisites",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "REQ-003",
+            "content": "PostgreSQL (v14 or later) must be installed.",
+            "source_section": "Prerequisites",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "REQ-004",
+            "content": "Git must be installed.",
+            "source_section": "Prerequisites",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FUNC-001",
+            "content": "The application must allow users to clone the repository.",
+            "source_section": "1. Clone the Repository",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FUNC-002",
+            "content": "The application must allow users to install dependencies.",
+            "source_section": "2. Install Dependencies",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FUNC-003",
+            "content": "The application must allow users to set up the database.",
+            "source_section": "3. Set Up the Database",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FUNC-004",
+            "content": "The application must allow users to configure environment variables.",
+            "source_section": "4. Configure Environment Variables",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "NON-FUNC-001",
+            "content": "The application must use a strong, random string for the JWT secret.",
+            "source_section": "JWT secret for authentication (use a strong, random string in production)",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "NON-FUNC-002",
+            "content": "The application must use a port for the backend server.",
+            "source_section": "Port for the backend server",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-001",
+            "content": "Database",
+            "source_section": "3. Set Up the Database",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-002",
+            "content": "User",
+            "source_section": "4. Configure Environment Variables",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-001",
+            "content": "The application must start on `http://localhost:5000` (or the port specified in the .env file).",
+            "source_section": "From the backend directory",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-002",
+            "content": "The application must start on `http://localhost:3000`.",
+            "source_section": "From the frontend directory (in a new terminal)",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "REQ-001",
+            "to": "FUNC-001",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "REQ-002",
+            "to": "FUNC-001",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "REQ-003",
+            "to": "FUNC-003",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "REQ-004",
+            "to": "FUNC-001",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FUNC-001",
+            "to": "FUNC-002",
+            "relation_type": "contains"
+        },
+        {
+            "source": "FUNC-002",
+            "to": "FUNC-003",
+            "relation_type": "contains"
+        },
+        {
+            "source": "FUNC-003",
+            "to": "FUNC-004",
+            "relation_type": "contains"
+        },
+        {
+            "source": "ENT-001",
+            "to": "FUNC-003",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "ENT-002",
+            "to": "FUNC-004",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "SC-001",
+            "to": "FUNC-003",
+            "relation_type": "implements"
+        },
+        {
+            "source": "SC-002",
+            "to": "FUNC-004",
+            "relation_type": "implements"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Goals & Objectives",
+            "priority": "HIGH",
+            "remediation_advice": "Add a section to describe the goals and objectives of the project."
+        },
+        {
+            "missing_section": "Scope & Out-of-Scope",
+            "priority": "MEDIUM",
+            "remediation_advice": "Add a section to describe the scope and out-of-scope items for the project."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Add a section to describe any open questions or uncertainties related to the project."
+        }
+    ],
+    "open_questions": []
+}

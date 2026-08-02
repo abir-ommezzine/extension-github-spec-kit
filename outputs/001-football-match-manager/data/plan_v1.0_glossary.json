@@ -1,0 +1,215 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "ACTION",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the process of executing a specific task or operation within the system"
+        },
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENDPOINT-01",
+            "project_definition": "an interface that allows different applications to communicate with each other"
+        },
+        {
+            "term": "Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "a separate line of development in a version control system"
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a security feature that restricts web pages from making requests to a different origin than the one the web page was loaded from"
+        },
+        {
+            "term": "Constraints",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "limitations or restrictions on the system or its components"
+        },
+        {
+            "term": "CoreData",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a framework for managing model data in applications"
+        },
+        {
+            "term": "DB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a repository for storing and managing data"
+        },
+        {
+            "term": "Date",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "a point in time or a specific day"
+        },
+        {
+            "term": "GATE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "a checkpoint or a control point in a process"
+        },
+        {
+            "term": "IF",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a conditional statement used in programming"
+        },
+        {
+            "term": "LLVM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a compiler infrastructure used for building and optimizing applications"
+        },
+        {
+            "term": "LOC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a measure of the size of a software program"
+        },
+        {
+            "term": "NOT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a logical operator used in programming"
+        },
+        {
+            "term": "Note",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "a comment or a remark added to a document or a plan"
+        },
+        {
+            "term": "ONLY",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a keyword used in programming to specify a single option or choice"
+        },
+        {
+            "term": "Option",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a choice or a selection available to the user"
+        },
+        {
+            "term": "Performance Goals",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "targets or objectives for the performance of a system or application"
+        },
+        {
+            "term": "Primary Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the main dependencies or libraries required by a project"
+        },
+        {
+            "term": "Project Type",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the type or classification of a project"
+        },
+        {
+            "term": "Python 3.11",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a version of the Python programming language"
+        },
+        {
+            "term": "REMOVE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "to delete or eliminate something"
+        },
+        {
+            "term": "Spec",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "a specification or a detailed description of a system or component"
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a repository or a location for storing data"
+        },
+        {
+            "term": "Structure Decision",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a decision or a choice related to the organization or architecture of a system"
+        },
+        {
+            "term": "Target Platform",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the intended platform or environment for a system or application"
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the process of evaluating or verifying the functionality of a system or application"
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the user interface or the visual components of a system or application"
+        },
+        {
+            "term": "UNUSED",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "not used or utilized"
+        },
+        {
+            "term": "WASM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a binary format for executing code in web browsers"
+        },
+        {
+            "term": "iOS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a mobile operating system developed by Apple"
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "Entity Relationship Diagram",
+            "type": "erDiagram",
+            "description": "Entity relationship diagram for the Football Match Manager project",
+            "mermaid_code": "erDiagram\n  ENTITY-01 ||--o{ ARCH-CHOICE-01 : \"implements\"\n  ENTITY-01 {\n    int id PK\n    string name\n  }"
+        },
+        {
+            "title": "Sequence Diagram for API Endpoint",
+            "type": "sequenceDiagram",
+            "description": "Sequence diagram for the API endpoint ENDPOINT-01",
+            "mermaid_code": "sequenceDiagram\n  participant Client\n  participant ENDPOINT-01\n  Client->>ENDPOINT-01: Request\n  ENDPOINT-01->>Client: Response"
+        },
+        {
+            "title": "Flowchart for Project Phases",
+            "type": "flowchart",
+            "description": "Flowchart for the project phases",
+            "mermaid_code": "flowchart\n  START[Start]\n  PHASE-0[PHASE-0: Recherche]\n  PHASE-1[PHASE-1: Conception]\n  START --> PHASE-0\n  PHASE-0 --> PHASE-1\n  PHASE-1 --> END[End]"
+        },
+        {
+            "title": "Flowchart for Task and Decision",
+            "type": "flowchart",
+            "description": "Flowchart for the task and decision",
+            "mermaid_code": "flowchart\n  TASK-01[TASK-01: Créer la structure de projet]\n  DECISION-01{DECISION-01: Choisir la technologie de stockage}\n  TASK-01 --> DECISION-01\n  DECISION-01 -->|Oui| ENDPOINT-01[ENDPOINT-01: API de gestion de matchs]\n  DECISION-01 -->|Non| TASK-01"
+        }
+    ]
+}

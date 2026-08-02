@@ -1,0 +1,33 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-DATA-API",
+            "project_definition": "the external sports data interface used to retrieve schedules, live scores, and league information"
+        },
+        {
+            "term": "MVP",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "A3: Scope Limitations",
+            "project_definition": "the initial version of the product focused on tracking interests and viewing data, excluding social features and push notifications"
+        },
+        {
+            "term": "Scenario",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Scenario 1: Viewing Match List",
+            "project_definition": "a described user journey mapping specific interactions and expected outcomes for a football fan"
+        },
+        {
+            "term": "UserFollow",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USERFOLLOW",
+            "project_definition": "the join entity associating a specific authenticated account with a targeted game via a timestamped relationship"
+        }
+    ]
+}

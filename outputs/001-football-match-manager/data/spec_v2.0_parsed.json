@@ -1,0 +1,325 @@
+{
+    "parsing_rationale": "The document is a comprehensive functional specification for a Football Match Manager. I have extracted the user scenarios as user_stories, the detailed functional requirements as functional_requirements, the success criteria as success_criteria, and the technical entities. Assumptions and constraints were mapped to the appropriate types. The structural gap analysis reflects that 'Goals & Objectives' and 'Scope & Out-of-Scope' are not explicitly defined as separate top-level sections, although scope is mentioned within assumptions.",
+    "project_info": {
+        "project_name": "Football Match Manager",
+        "source_type": "scratch",
+        "brief_explanation": "A web application allowing football fans to browse matches, follow specific games, and track real-time scores.",
+        "source_context": "Functional specification document focusing on user journeys, data management, and tracking requirements."
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "Scenario 1: Viewing Match List",
+            "level": 3,
+            "raw_content": "As a football fan, I want to see a list of upcoming football matches so that I can decide which matches to follow.\n- Given I open the application\n- When I navigate to the matches page\n- Then I see a list of upcoming matches with details (teams, date, time, league)\n- And I can filter matches by league, date range, or search by team name",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Scenario 2: Adding Match to Interests",
+            "level": 3,
+            "raw_content": "As a football fan, I want to mark a match as interesting so that I can easily track it later.\n- Given I am viewing a match in the list\n- When I click the \"Follow\" button on that match\n- Then the match is added to my followed matches list\n- And I see a confirmation indicator (e.g., button changes to \"Following\")",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Scenario 3: Removing Match from Interests",
+            "level": 3,
+            "raw_content": "As a football fan, I want to remove a match from my followed list so that I only track matches I care about.\n- Given I am viewing a match I am currently following\n- When I click the \"Following\" button (or unfollow)\n- Then the match is removed from my followed matches list\n- And I see the button revert to \"Follow\"",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Scenario 4: Viewing Match Details",
+            "level": 3,
+            "raw_content": "As a football fan, I want to see detailed information about a specific match so that I can get more context.\n- Given I am viewing a match in the list\n- When I click on a match to see its details\n- Then I see detailed information including: teams, venue, date/time, league, match status (upcoming, live, finished), and if available, live scores or final score",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Scenario 5: Viewing Followed Matches",
+            "level": 3,
+            "raw_content": "As a football fan, I want to see only the matches I am following so that I can quickly access my interests.\n- Given I have followed one or more matches\n- When I navigate to the \"My Matches\" or \"Followed\" section\n- Then I see a list of only the matches I am following\n- And each match shows its current status and time until start (if upcoming)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "FR1: Match Data Management",
+            "level": 3,
+            "raw_content": "The system shall provide functionality to manage football match data including:\n- FR1.1: Store match information (teams, date/time, venue, league, status)\n- FR1.2: Retrieve match data from a reliable sports data source (assumed to be via API)\n- FR1.3: Update match status and scores in real-time or near real-time for live matches\n- FR1.4: Archive historical match data for completed matches",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "FR2: User Interest Tracking",
+            "level": 3,
+            "raw_content": "The system shall allow users to track their interest in specific matches:\n- FR2.1: Authenticated users can follow/unfollow any match\n- FR2.2: The system persists user follow relationships across sessions\n- FR2.3: Users can view a list of matches they are following\n- FR2.4: Following a match triggers no notifications by default (assumption: notifications are out of scope for MVP)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "FR3: Match Filtering and Search",
+            "level": 3,
+            "raw_content": "The system shall enable users to find matches efficiently:\n- FR3.1: Filter matches by league/competition\n- FR3.2: Filter matches by date range (today, tomorrow, this week, custom range)\n- FR3.3: Search matches by team name (partial match)\n- FR3.4: Sort matches by date/time (ascending/descending)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "FR4: Match Presentation",
+            "level": 3,
+            "raw_content": "The system shall present match information in a clear and usable format:\n- FR4.1: Display essential match details in the list view (teams, time, league, status)\n- FR4.2: Show visual indicators for match status (upcoming, live, finished)\n- FR4.3: Provide detailed view with additional information (venue, referee, etc. if available)\n- FR4.4: Responsive design that works on mobile and desktop devices",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "FR5: Data Freshness",
+            "level": 3,
+            "raw_content": "The system shall ensure match data is reasonably up-to-date:\n- FR5.1: Match data for upcoming matches shall be refreshed at least every 6 hours\n- FR5.2: Live match scores shall be updated at least every minute during active matches\n- FR5.3: Final scores shall be updated within 5 minutes of match completion",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "SC1: User Adoption",
+            "level": 3,
+            "raw_content": "- At least 70% of users who visit the site follow at least one match within their first session\n- Users who follow matches return to the site at least twice per week on average",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "SC2: Performance",
+            "level": 3,
+            "raw_content": "- Match list loads in under 2 seconds for 95% of requests (with cached data)\n- Detail page loads in under 1.5 seconds for 95% of requests",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "SC3: Data Accuracy",
+            "level": 3,
+            "raw_content": "- Match information (teams, time, league) is 100% accurate when displayed\n- Live scores are updated with less than 60 seconds delay during active matches\n- Final scores are accurate and updated within 5 minutes of match end",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "SC4: User Satisfaction",
+            "level": 3,
+            "raw_content": "- Users rate the ease of finding matches of interest as 4+ out of 5 in surveys\n- Less than 5% of users report difficulty in following/unfollowing matches",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "Match",
+            "level": 3,
+            "raw_content": "- Attributes: matchId (unique identifier), homeTeam, awayTeam, dateTime, venue, league, status (upcoming, live, finished), homeScore, awayScore\n- Relationships: Belongs to a league, has two teams",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Team",
+            "level": 3,
+            "raw_content": "- Attributes: teamId (unique identifier), name, abbreviation/logo (if available)\n- Relationships: Participates in many matches",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "League",
+            "level": 3,
+            "raw_content": "- Attributes: leagueId (unique identifier), name, sport (always football/soccer for this app)\n- Relationships: Has many matches",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "User (if authentication implemented)",
+            "level": 3,
+            "raw_content": "- Attributes: userId (unique identifier), username, email (if applicable)\n- Relationships: Can follow many matches",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "UserFollow (join entity)",
+            "level": 3,
+            "raw_content": "- Attributes: userId, matchId, followedAt (timestamp)\n- Relationships: Links a user to a match they follow",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "A1: Data Source",
+            "level": 3,
+            "raw_content": "We assume access to a reliable football match data API that provides:\n- Upcoming match schedules\n- Live scores and match status\n- Historical match data\n- Team and league information",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "A2: User Authentication",
+            "level": 3,
+            "raw_content": "For the MVP, we will implement third-party login (e.g., Google, Facebook, Apple) to persist followed matches across sessions.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "A3: Scope Limitations",
+            "level": 3,
+            "raw_content": "- The initial version focuses on tracking match interests and viewing match data\n- Social features (sharing, commenting) are out of scope for MVP\n- Advanced features like predictive analytics, betting odds, or detailed player statistics are out of scope\n- Push notifications for match events are considered a post-MVP enhancement",
+            "mapped_to_template_field": "Scope & Out-of-Scope"
+        },
+        {
+            "title": "Q1: Authentication Method",
+            "level": 3,
+            "raw_content": "What authentication method should we implement for the MVP?",
+            "mapped_to_template_field": "Open Questions & Uncertainties"
+        },
+        {
+            "title": "Q2: Data Source Selection",
+            "level": 3,
+            "raw_content": "Which football data API should we use (considering cost, coverage, reliability)?",
+            "mapped_to_template_field": "Open Questions & Uncertainties"
+        }
+    ],
+    "elements": [
+        {
+            "type": "user_story",
+            "identifier": "US-VIEW-LIST",
+            "content": "As a football fan, I want to see a list of upcoming football matches so that I can decide which matches to follow.",
+            "source_section": "Scenario 1: Viewing Match List",
+            "attributes": {}
+        },
+        {
+            "type": "user_story",
+            "identifier": "US-FOLLOW-MATCH",
+            "content": "As a football fan, I want to mark a match as interesting so that I can easily track it later.",
+            "source_section": "Scenario 2: Adding Match to Interests",
+            "attributes": {}
+        },
+        {
+            "type": "user_story",
+            "identifier": "US-UNFOLLOW-MATCH",
+            "content": "As a football fan, I want to remove a match from my followed list so that I only track matches I care about.",
+            "source_section": "Scenario 3: Removing Match from Interests",
+            "attributes": {}
+        },
+        {
+            "type": "user_story",
+            "identifier": "US-MATCH-DETAILS",
+            "content": "As a football fan, I want to see detailed information about a specific match so that I can get more context.",
+            "source_section": "Scenario 4: Viewing Match Details",
+            "attributes": {}
+        },
+        {
+            "type": "user_story",
+            "identifier": "US-VIEW-FOLLOWED",
+            "content": "As a football fan, I want to see only the matches I am following so that I can quickly access my interests.",
+            "source_section": "Scenario 5: Viewing Followed Matches",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-DATA-STORE",
+            "content": "Store match information (teams, date/time, venue, league, status)",
+            "source_section": "FR1: Match Data Management",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-DATA-API",
+            "content": "Retrieve match data from a reliable sports data source via API",
+            "source_section": "FR1: Match Data Management",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-USER-FOLLOW",
+            "content": "Authenticated users can follow/unfollow any match",
+            "source_section": "FR2: User Interest Tracking",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-FILTER-LEAGUE",
+            "content": "Filter matches by league/competition",
+            "source_section": "FR3: Match Filtering and Search",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "NFR-FRESH-LIVE",
+            "content": "Live match scores shall be updated at least every minute during active matches",
+            "source_section": "FR5: Data Freshness",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-PERF-LOAD",
+            "content": "Match list loads in under 2 seconds for 95% of requests (with cached data)",
+            "source_section": "SC2: Performance",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-MATCH",
+            "content": "Match: matchId, homeTeam, awayTeam, dateTime, venue, league, status, scores",
+            "source_section": "Match",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-TEAM",
+            "content": "Team: teamId, name, logo",
+            "source_section": "Team",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-USER",
+            "content": "User: userId, username, email",
+            "source_section": "User (if authentication implemented)",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-USERFOLLOW",
+            "content": "UserFollow: Links a user to a match they follow (userId, matchId)",
+            "source_section": "UserFollow (join entity)",
+            "attributes": {}
+        },
+        {
+            "type": "assumption",
+            "identifier": "AS-API-AVAIL",
+            "content": "Assume access to a reliable football match data API",
+            "source_section": "A1: Data Source",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "C-NO-NOTIF",
+            "content": "Push notifications are considered a post-MVP enhancement",
+            "source_section": "A3: Scope Limitations",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "US-VIEW-LIST",
+            "to": "FR-FILTER-LEAGUE",
+            "relation_type": "implements"
+        },
+        {
+            "source": "US-FOLLOW-MATCH",
+            "to": "FR-USER-FOLLOW",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FR-DATA-API",
+            "to": "AS-API-AVAIL",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-USER-FOLLOW",
+            "to": "ENT-USERFOLLOW",
+            "relation_type": "implements"
+        },
+        {
+            "source": "ENT-USERFOLLOW",
+            "to": "ENT-MATCH",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "ENT-USERFOLLOW",
+            "to": "ENT-USER",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "NFR-FRESH-LIVE",
+            "to": "SC-PERF-LOAD",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Goals & Objectives",
+            "priority": "HIGH",
+            "remediation_advice": "Define the high-level business goals and success KPIs for the project to align the team on 'Why' this is being built."
+        }
+    ],
+    "open_questions": [
+        "What authentication method should we implement for the MVP?",
+        "Which football data API should we use?"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "diagrams": [
+        {
+            "title": "Implementation Workflow Process",
+            "type": "flowchart",
+            "description": "Models the execution workflow of the implementation plan from research to task generation based on the provided template structure.",
+            "mermaid_code": "flowchart TD\n    START[Start Implementation] --> PH0[Phase 0: Research]\n    PH0 --> DEC1{\"Constitution Check Passed?\"}\n    DEC1 -- \"No\" --> JUSTIFY[\"Justify Violations in Complexity Tracking\"]\n    JUSTIFY --> PH0\n    DEC1 -- \"Yes\" --> PH1[Phase 1: Design]\n    \n    subgraph Design_Outputs [Phase 1 Deliverables]\n        D1[\"data-model.md\"]\n        D2[\"quickstart.md\"]\n        D3[\"contracts/\"]\n    end\n    \n    PH1 --> D1\n    PH1 --> D2\n    PH1 --> D3\n    \n    D1 & D2 & D3 --> DEC2{\"Design Validated?\"}\n    DEC2 -- \"No\" --> PH1\n    DEC2 -- \"Yes\" --> PH2[Phase 2: Task Generation]\n    \n    PH2 --> T1[\"tasks.md (via /speckit.tasks)\"]\n    T1 --> END[End Implementation Planning]"
+        },
+        {
+            "title": "Project Documentation Topology",
+            "type": "flowchart",
+            "description": "Visualizes the structured documentation layout defined in the DOC-LAYOUT element.",
+            "mermaid_code": "flowchart LR\n    subgraph DOC_ROOT [specs/feature-folder]\n        DOC-LAYOUT[\"DOC-LAYOUT: Documentation Structure\"]\n        \n        PLAN[\"plan.md: Implementation Plan\"]\n        RES[\"research.md: Phase 0 Research\"]\n        DM[\"data-model.md: Phase 1 Data Model\"]\n        QS[\"quickstart.md: Phase 1 Quickstart\"]\n        CON[\"contracts/: Phase 1 API Contracts\"]\n        TSK[\"tasks.md: Phase 2 Tasks\"]\n    end\n    \n    DOC-LAYOUT --> PLAN\n    DOC-LAYOUT --> RES\n    DOC-LAYOUT --> DM\n    DOC-LAYOUT --> QS\n    DOC-LAYOUT --> CON\n    DOC-LAYOUT --> TSK"
+        }
+    ]
+}

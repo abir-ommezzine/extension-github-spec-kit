@@ -1,0 +1,28 @@
+{
+    "diagrams": [
+        {
+            "title": "Entity Relationship Diagram",
+            "type": "erDiagram",
+            "description": "Relationships between entities in the Football Match Manager API",
+            "mermaid_code": "erDiagram\n  MATCH-01 ||--o{ TEAM-01 : \"contains\"\n  MATCH-01 ||--o{ LEAGUE-01 : \"relates_to\"\n  USER-01 ||--o{ MATCH-01 : \"follows\""
+        },
+        {
+            "title": "Sequence Diagram for Authentication",
+            "type": "sequenceDiagram",
+            "description": "Sequence of events for user authentication",
+            "mermaid_code": "sequenceDiagram\n  participant User\n  participant Auth\n  User->>Auth: Register\n  Auth-->>User: JWT Token\n  User->>Auth: Login\n  Auth-->>User: JWT Token"
+        },
+        {
+            "title": "Flowchart for Matches Endpoint",
+            "type": "flowchart",
+            "description": "Flowchart for the matches endpoint",
+            "mermaid_code": "graph LR\n  A[MATCHES-01] -->|depends_on| B[AUTH-01]\n  B -->|implements| C[FOLLOWS-01]\n  C -->|relates_to| D[MATCH-01]\n  D -->|contains| E[TEAM-01]\n  D -->|relates_to| F[LEAGUE-01]"
+        },
+        {
+            "title": "Flowchart for Rate Limiting",
+            "type": "flowchart",
+            "description": "Flowchart for rate limiting",
+            "mermaid_code": "graph LR\n  A[RATE-LIMITING-01] -->|constrains| B[MATCHES-01]\n  B -->|depends_on| C[AUTH-01]\n  C -->|implements| D[FOLLOWS-01]\n  D -->|relates_to| E[MATCH-01]"
+        }
+    ]
+}

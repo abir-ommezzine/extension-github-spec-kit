@@ -1,0 +1,199 @@
+{
+    "parsing_rationale": "Analyse du document pour extraire les tâches et les phases du projet Football Match Manager",
+    "project_info": {
+        "project_name": "Football Match Manager",
+        "source_type": "scratch",
+        "brief_explanation": "Projet de gestion de matchs de football",
+        "source_context": "Document de spécifications du projet"
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Football Match Manager Tasks",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Phase 1: Setup (Project Initialization)",
+            "level": 2,
+            "raw_content": "- [ ] T001 Initialize backend project structure with Node.js, Express, TypeScript\n- [ ] T002 Initialize frontend project structure with React, TypeScript\n- [ ] T003 Set up PostgreSQL database and configure connection\n- [ ] T004 Configure development tools (ESLint, Prettier, Jest)\n- [ ] T005 Create initial README with project overview and setup instructions\n- [ ] T006 Set up version control (git) and initial commit\n- [ ] T007 Configure environment variables template (.env.example)\n- [ ] T008 Set up basic backend server with health check endpoint\n- [ ] T009 Set up basic frontend app with routing (React Router)\n- [ ] T010 Configure CORS and basic security headers",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Phase 2: Foundational (Blocking Prerequisites)",
+            "level": 2,
+            "raw_content": "- [X] T011 [P] Define database models based on data-model.md (Match, Team, League, User, UserFollow)\n- [X] T012 [P] Implement database migrations for initial schema\n- [X] T013 [P] Set up Sequelize ORM configuration and connection pooling\n- [X] T014 [P] Implement authentication middleware for JWT verification\n- [X] T015 [P] Create base API controller structure with error handling\n- [X] T016 [P] Set up API documentation structure (Swagger/OpenAPI)\n- [X] T017 [P] Create frontend layout components (header, footer, layout)\n- [X] T018 [P] Implement global state management context (AuthContext)\n- [X] T019 [P] Set up HTTP service layer for API requests (Axios instance)\n- [X] T020 [P] Implement basic error boundary and loading components",
+            "mapped_to_template_field": "Dependencies & Integration Points"
+        },
+        {
+            "title": "Phase 3: User Story 1 - Viewing Match List (P1)",
+            "level": 2,
+            "raw_content": "- [X] T021 [US1] Implement GET /matches endpoint with filtering, sorting, and pagination\n- [X] T022 [US1] Create Match service layer for data access and business logic\n- [X] T023 [US1] Design and implement MatchList page route\n- [X] T024 [US1] Create MatchList component to display list of matches\n- [X] T025 [US1] Create MatchItem component for individual match display\n- [X] T026 [US1] Implement FilterPanel component for league and date filters\n- [X] T027 [US1] Implement SearchBar component for team name search\n- [X] T028 [US1] Add loading and error states for match list\n- [X] T029 [US1] Style match list with responsive design (mobile-first)\n- [X] T030 [US1] Write unit tests for Match service and API controller\n- [X] T031 [US1] Write integration tests for match listing endpoint\n- [X] T032 [US1] Write frontend unit tests for MatchList and MatchItem components",
+            "mapped_to_template_field": "Acceptance Criteria"
+        },
+        {
+            "title": "Phase 4: User Story 2 - Adding Match to Interests (Follow) (P2)",
+            "level": 2,
+            "raw_content": "- [X] T033 [US2] Implement POST /follows endpoint to follow a match\n- [X] T034 [US2] Create UserFollow service layer for follow operations\n- [X] T035 [US2] Add follow/unfollow button to MatchItem component\n- [X] T036 [US2] Add follow/unfollow button to MatchDetail component\n- [X] T037 [US2] Implement optimistic UI updates for follow actions\n- [X] T038 [US2] Handle authentication state for follow button visibility\n- [X] T039 [US2] Write unit tests for UserFollow service\n- [X] T040 [US2] Write integration tests for follow/unfollow endpoints\n- [X] T041 [US2] Write frontend tests for follow button interactions",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Phase 5: User Story 3 - Removing Match from Interests (Unfollow) (P3)",
+            "level": 2,
+            "raw_content": "- [X] T042 [US3] Implement DELETE /follows/:matchId endpoint to unfollow a match\n- [X] T043 [US3] Extend UserFollow service to handle unfollow operations\n- [X] T044 [US3] Update follow button to toggle between follow/unfollow states\n- [X] T045 [US3] Add visual feedback for follow/unsuccessful unfollow operations\n- [X] T046 [US3] Ensure followed state persists across page refreshes\n- [X] T047 [US3] Write unit tests for unfollow functionality\n- [X] T048 [US3] Write integration tests for unfollow endpoint\n- [X] T049 [US3] Test follow/unfollow race conditions and edge cases",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "Phase 6: User Story 4 - Viewing Match Details (P4)",
+            "level": 2,
+            "raw_content": "- [X] T050 [US4] Implement GET /matches/:matchId endpoint for match details\n- [X] T051 [US4] Create MatchDetail service layer for match details data access\n- [X] T052 [US4] Design and implement MatchDetail page route\n- [X] T053 [US4] Create MatchDetail component to display match details\n- [X] T054 [US4] Implement MatchDetailHeader component for match metadata\n- [X] T055 [US4] Implement MatchDetailBody component for match content\n- [X] T056 [US4] Add loading and error states for match details\n- [X] T057 [US4] Style match details with responsive design (mobile-first)\n- [X] T058 [US4] Write unit tests for MatchDetail service and API controller\n- [X] T059 [US4] Write integration tests for match details endpoint\n- [X] T060 [US4] Write frontend unit tests for MatchDetail component",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        },
+        {
+            "title": "Phase 7: User Story 5 - Viewing Followed Matches (P5)",
+            "level": 2,
+            "raw_content": "- [ ] T061 [US5] Implement GET /follows endpoint to get user's followed matches\n- [ ] T062 [US5] Extend UserFollow service to retrieve followed matches with details\n- [ ] T063 [US5] Design and implement FollowedMatches page route\n- [ ] T064 [US5] Create FollowedMatches list component (similar to MatchList)\n- [ ] T065 [US5] Show follow status and ability to unfollow from this list\n- [ ] T066 [US5] Add empty state message when no matches are followed\n- [ ] T067 [US5] Implement sorting and filtering for followed matches\n- [ ] T068 [US5] Write unit tests for followed matches service\n- [ ] T069 [US5] Write integration tests for followed matches endpoint\n- [ ] T070 [US5] Write frontend tests for FollowedMatches page",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Phase 8: User Story 6 - Deleting Match Details (P6)",
+            "level": 2,
+            "raw_content": "- [X] T070 [US6] Implement DELETE /matches/:matchId endpoint for match deletion\n- [X] T071 [US6] Extend MatchDetail service to handle delete operations\n- [X] T072 [US6] Add delete button to MatchDetail component\n- [X] T073 [US6] Implement match deletion confirmation dialog\n- [X] T074 [US6] Handle validation and error handling for match deletion\n- [X] T075 [US6] Ensure deleted match details do not persist across page refreshes\n- [X] T076 [US6] Write unit tests for match deletion functionality\n- [X] T077 [US6] Write integration tests for match deletion endpoint\n- [X] T078 [US6] Test match deletion race conditions and edge cases",
+            "mapped_to_template_field": "Open Questions & Uncertainties"
+        }
+    ],
+    "elements": [
+        {
+            "type": "phase",
+            "identifier": "PHASE-1",
+            "content": "Phase 1: Setup (Project Initialization)",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T001",
+            "content": "Initialize backend project structure with Node.js, Express, TypeScript",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T002",
+            "content": "Initialize frontend project structure with React, TypeScript",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T003",
+            "content": "Set up PostgreSQL database and configure connection",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T004",
+            "content": "Configure development tools (ESLint, Prettier, Jest)",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T005",
+            "content": "Create initial README with project overview and setup instructions",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T006",
+            "content": "Set up version control (git) and initial commit",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T007",
+            "content": "Configure environment variables template (.env.example)",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T008",
+            "content": "Set up basic backend server with health check endpoint",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T009",
+            "content": "Set up basic frontend app with routing (React Router)",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T010",
+            "content": "Configure CORS and basic security headers",
+            "source_section": "Phase 1: Setup (Project Initialization)",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "PHASE-1",
+            "to": "T001",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T002",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T003",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T004",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T005",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T006",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T007",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T008",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T009",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PHASE-1",
+            "to": "T010",
+            "relation_type": "contains"
+        }
+    ],
+    "structural_gaps": [],
+    "open_questions": []
+}

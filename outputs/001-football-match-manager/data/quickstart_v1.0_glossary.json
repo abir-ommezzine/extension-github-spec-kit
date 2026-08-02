@@ -1,0 +1,75 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API Documentation",
+            "project_definition": "The application programming interface used for data exchange between the frontend and backend."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "JWT secret for authentication (use a strong, random string in production)",
+            "project_definition": "A token-based authentication mechanism used to securely transmit information between the client and server."
+        },
+        {
+            "term": "USER",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-002",
+            "project_definition": "An entity that interacts with the application, having specific roles and permissions."
+        },
+        {
+            "term": "DATABASE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-001",
+            "project_definition": "A storage system used to manage and retrieve data for the application."
+        },
+        {
+            "term": "AUTHORIZATION",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Common Issues",
+            "project_definition": "The process of determining what actions a user can perform on a resource."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "From the backend directory",
+            "project_definition": "A security feature implemented in web browsers to prevent web pages from making requests to a different origin than the one the web page was loaded from."
+        },
+        {
+            "term": "CREATE",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FUNC-001",
+            "project_definition": "The action of adding new data or resources to the application."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "NON-FUNC-001",
+            "project_definition": "A one-way mathematical function used to securely store and verify passwords."
+        },
+        {
+            "term": "npm install",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Backend",
+            "project_definition": "A command used to install dependencies required by the application."
+        },
+        {
+            "term": "npm start",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "From the backend directory",
+            "project_definition": "A command used to start the development server for the application."
+        }
+    ]
+}

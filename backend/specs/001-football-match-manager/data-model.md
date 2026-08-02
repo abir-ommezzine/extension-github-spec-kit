@@ -38,7 +38,7 @@ Represents a football team.
 - Participates in many Matches (as home or away team)
 
 ### League
-Represents a football league or tournament.
+Represents a football league or tournament
 
 | Field | Type | Description | Validation |
 |-------|------|-------------|------------|
