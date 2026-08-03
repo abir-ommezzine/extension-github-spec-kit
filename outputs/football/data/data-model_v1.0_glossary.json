@@ -1,0 +1,89 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-USERFOLLOW-UNIQUE",
+            "project_definition": "The set of composite uniqueness requirements and logical limitations applied to data persistence to ensure integrity."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "RULE-USER-UNIQUE-EMAIL",
+            "project_definition": "The implied security mechanism for storing sensitive credentials to meet the mentioned complexity requirements."
+        },
+        {
+            "term": "DateTime",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "A temporal data type used for scheduling events and tracking system audit stamps."
+        },
+        {
+            "term": "MUN",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-TEAM",
+            "project_definition": "A specific example of a short-form identifier assigned to a sports club."
+        },
+        {
+            "term": "Match Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Validation Rules",
+            "project_definition": "The logical checks ensuring teams are distinct, dates are future-dated for upcoming states, and scores are present upon completion."
+        },
+        {
+            "term": "Relationships",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The associative links between entities, such as the foreign key dependencies between competitions, teams, and schedules."
+        },
+        {
+            "term": "Team Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-TEAM-UNIQUE-NAME",
+            "project_definition": "The requirement that club names must remain globally distinct within the database."
+        },
+        {
+            "term": "UTC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The standardized time reference used to eliminate offset ambiguity for global event scheduling."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "A 128-bit universally unique identifier used as the primary key for all main entities."
+        },
+        {
+            "term": "User Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-USER-UNIQUE-EMAIL",
+            "project_definition": "The verification process ensuring electronic mail addresses are unique and credentials meet minimum character lengths."
+        },
+        {
+            "term": "UserFollow",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USERFOLLOW",
+            "project_definition": "A join entity linking a person to a specific sporting event they wish to monitor."
+        },
+        {
+            "term": "UserFollow Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-USERFOLLOW-UNIQUE",
+            "project_definition": "The logic preventing a single person from creating multiple subscriptions to the same sporting event."
+        }
+    ]
+}

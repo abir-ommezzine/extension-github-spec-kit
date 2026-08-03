@@ -348,7 +348,7 @@ const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
 };
 const CommentItem = ({ comment }) => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const colors = tokens(theme.palette.mode) || {};
   const isAgent = comment.author_type === "agent";
   
   return (
@@ -357,7 +357,7 @@ const CommentItem = ({ comment }) => {
         sx={{
           width: 36,
           height: 36,
-          backgroundColor: isAgent ? colors.purpleAccent[500] : colors.greenAccent[500],
+          backgroundColor: isAgent ? (colors.purpleAccent?.['500'] || '#9c27b0') : (colors.greenAccent?.['500'] || '#4cceac'),
           mr: 2,
         }}
       >
@@ -366,7 +366,7 @@ const CommentItem = ({ comment }) => {
       <ListItemText
         primary={
           <Box display="flex" alignItems="center" gap={1}>
-            <Typography variant="body2" fontWeight={600} color={colors.grey[100]}>
+            <Typography variant="body2" fontWeight={600} color={colors.grey?.['100'] || '#f5f5f5'}>
               {isAgent ? "Agent" : "User"}
             </Typography>
             <Chip label={isAgent ? "AI" : "Human"} size="small" variant="outlined" sx={{ fontSize: 10 }} />
@@ -374,8 +374,8 @@ const CommentItem = ({ comment }) => {
         }
         secondary={
           <Box>
-            <Typography variant="body2" color={colors.grey[300]}>{comment.body}</Typography>
-            <Typography variant="caption" color={colors.grey[500]}>
+            <Typography variant="body2" color={colors.grey?.['300'] || '#e0e0e0'}>{comment.body}</Typography>
+            <Typography variant="caption" color={colors.grey?.['500'] || '#9e9e9e'}>
               {new Date(comment.created_at).toLocaleString()}
             </Typography>
           </Box>
@@ -387,7 +387,7 @@ const CommentItem = ({ comment }) => {
 
 const EventItem = ({ event }) => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const colors = tokens(theme.palette.mode) || {};
   
   const eventIcons = {
     status_change: "🔄",
@@ -404,7 +404,7 @@ const EventItem = ({ event }) => {
         sx={{
           width: 36,
           height: 36,
-          backgroundColor: colors.grey[800],
+          backgroundColor: colors.grey?.['800'] || '#424242',
           mr: 2,
         }}
       >
@@ -412,16 +412,16 @@ const EventItem = ({ event }) => {
       </Avatar>
       <ListItemText
         primary={
-          <Typography variant="body2" fontWeight={600} color={colors.grey[100]}>
+          <Typography variant="body2" fontWeight={600} color={colors.grey?.['100'] || '#f5f5f5'}>
             {event.event_type.replace("_", " ")}
           </Typography>
         }
         secondary={
           <Box>
-            <Typography variant="body2" color={colors.grey[300]}>
+            <Typography variant="body2" color={colors.grey?.['300'] || '#e0e0e0'}>
               {event.payload ? JSON.stringify(event.payload) : "No payload"}
             </Typography>
-            <Typography variant="caption" color={colors.grey[500]}>
+            <Typography variant="caption" color={colors.grey?.['500'] || '#9e9e9e'}>
               {new Date(event.created_at).toLocaleString()} • {event.author_type === "agent" ? "🤖 Agent" : "👤 User"}
             </Typography>
           </Box>
@@ -702,6 +702,7 @@ const KanbanBoard = () => {
   
   useEffect(() => {
     dispatch(fetchProjects());
+    dispatch(setProjectName(""));
   }, [dispatch]);
   
   // Fetch task state when project changes
@@ -725,6 +726,30 @@ const KanbanBoard = () => {
     
     // Poll every 10 seconds for updates
     const interval = setInterval(refresh, 10000);
+    
+    return () => clearInterval(interval);
+  }, [dispatch, projectName]);
+  
+  // Auto-ingest tasks for the selected project (once + every 30s)
+  useEffect(() => {
+    if (!projectName) return;
+    
+    const ingestAndRefresh = () => {
+      dispatch(ingestTasks({ projectName }))
+        .unwrap()
+        .then(() => {
+          dispatch(fetchTickets({ projectName }));
+          dispatch(fetchProgress(projectName));
+        })
+        .catch(() => {
+          dispatch(fetchTickets({ projectName }));
+          dispatch(fetchProgress(projectName));
+        });
+    };
+    
+    ingestAndRefresh(); // Initial load
+    
+    const interval = setInterval(ingestAndRefresh, 30000);
     
     return () => clearInterval(interval);
   }, [dispatch, projectName]);
@@ -790,34 +815,34 @@ const KanbanBoard = () => {
                 Project: <strong>{projectName || "Select a project"}</strong>
               </Typography>
               {taskState.total_tasks > 0 && (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 280 }}>
-                  <Box sx={{ flex: 1, minWidth: 150, height: 6, borderRadius: 3, backgroundColor: colors.grey[700] }}>
-                    <Box
-                      sx={{
-                        height: "100%",
-                        width: `${taskState.total_tasks > 0 ? (taskState.current_task / taskState.total_tasks) * 100 : 0}%`,
-                        borderRadius: 3,
-                        background: `linear-gradient(90deg, ${colors.greenAccent[500]}, ${colors.blueAccent[500]})`,
-                        transition: "width 0.3s ease",
-                      }}
-                    />
-                  </Box>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary, whiteSpace: "nowrap", minWidth: 80 }}>
-                    Task {taskState.current_task || 1} / {taskState.total_tasks}
-                  </Typography>
-                  <Chip
-                    label={taskState.task_status[taskState.current_task] === "in_progress" ? "In Progress" : taskState.task_status[taskState.current_task] === "done" ? "Done" : "Pending"}
-                    size="small"
-                    sx={{
-                      backgroundColor: taskState.task_status[taskState.current_task] === "in_progress"
-                        ? `${colors.greenAccent[500]}33`
-                        : taskState.task_status[taskState.current_task] === "done"
-                        ? `${colors.greenAccent[500]}33`
-                        : `${colors.orangeAccent[500]}33`,
-                    }}
-                  />
-                </Box>
-              )}
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 280 }}>
+    <Box sx={{ flex: 1, minWidth: 150, height: 6, borderRadius: 3, backgroundColor: colors.grey?.['700'] || '#616161' }}>
+      <Box
+        sx={{
+          height: "100%",
+          width: `${taskState.total_tasks > 0 ? (taskState.current_task / taskState.total_tasks) * 100 : 0}%`,
+          borderRadius: 3,
+          background: `linear-gradient(90deg, ${colors.greenAccent?.['500'] || '#4cceac'}, ${colors.blueAccent?.['500'] || '#2196f3'})`,
+          transition: "width 0.3s ease",
+        }}
+      />
+    </Box>
+    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, whiteSpace: "nowrap", minWidth: 80 }}>
+      Task {taskState.current_task || 1} / {taskState.total_tasks}
+    </Typography>
+    <Chip
+      label={taskState.task_status[taskState.current_task] === "in_progress" ? "In Progress" : taskState.task_status[taskState.current_task] === "done" ? "Done" : "Pending"}
+      size="small"
+      sx={{
+        backgroundColor: taskState.task_status[taskState.current_task] === "in_progress"
+          ? `${colors.greenAccent?.['500'] || '#4cceac'}33`
+          : taskState.task_status[taskState.current_task] === "done"
+          ? `${colors.greenAccent?.['500'] || '#4cceac'}33`
+          : `${colors.orangeAccent?.['500'] || '#ff9800'}33`,
+      }}
+    />
+  </Box>
+)}
             </Box>
           </Box>
           <Box display="flex" gap={2} alignItems="center">
@@ -833,12 +858,9 @@ const KanbanBoard = () => {
     width: '100%',
     padding: '0.5rem',
     borderRadius: '8px',
-    border: `1px solid ${colors.grey[500]}`,
+    border: `1px solid ${colors.grey?.['500'] || '#9e9e9e'}`, // <-- Added optional chaining here
     backgroundColor: theme.palette.mode === "dark" ? "rgba(14, 20, 35, 0.6)" : "rgba(255, 255, 255, 0.7)",
-    
-    // UPDATE THIS: Change color from colors.grey[100] to theme.palette.text.primary
     color: theme.palette.text.primary,
-    
     fontSize: '0.875rem'
   }}
 >

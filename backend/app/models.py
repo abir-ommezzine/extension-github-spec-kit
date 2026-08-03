@@ -44,12 +44,32 @@ class GeneratedBy(str, enum.Enum):
 class PipelineStage(str, enum.Enum):
     """Étape courante du pipeline pour le suivi temps réel sur le dashboard."""
     parsing = "parsing"
-    parallel_enrichment = "parallel_enrichment"   # Summary / Diagram / Glossary
-    writing = "writing"                            # Documentation Writer
+    summary = "summary"                             # Legacy: Summary Agent (renamed to parallel_enrichment)
+    parallel_enrichment = "parallel_enrichment"     # Summary / Diagram / Glossary
+    glossary = "glossary"                           # Legacy: Glossary Agent
+    diagram = "diagram"                             # Legacy: Diagram Agent
+    writing = "writing"                             # Documentation Writer
     layout = "layout"                               # Design/Layout Agent
     rendering = "rendering"                         # Markdown/HTML -> PDF Generator
     completed = "completed"
     failed = "failed"
+
+
+class TicketStatus(str, enum.Enum):
+    todo = "todo"
+    in_progress = "in_progress"
+    done = "done"
+
+
+class TicketEventType(str, enum.Enum):
+    status_change = "status_change"
+    status_override = "status_override"
+    comment_added = "comment_added"
+
+
+class AuthorType(str, enum.Enum):
+    human = "human"
+    agent = "agent"
 
 
 # ============================================
@@ -67,6 +87,7 @@ class Project(Base):
     artifacts = relationship(
         "Artifact", back_populates="project", cascade="all, delete-orphan"
     )
+    tickets = relationship("Ticket", back_populates="project", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<Project id={self.id} name={self.name!r}>"
@@ -100,6 +121,7 @@ class Artifact(Base):
         cascade="all, delete-orphan",
         order_by="PipelineRun.started_at",
     )
+    tickets = relationship("Ticket", back_populates="artifact", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<Artifact id={self.id} source_path={self.source_path!r}>"
@@ -196,4 +218,92 @@ class PipelineRun(Base):
 
     def __repr__(self) -> str:
         return f"<PipelineRun id={self.id} stage={self.current_stage} score={self.global_kpi_score}>"
+
+
+# ============================================
+# Tickets / Comments / Events (Kanban Board)
+# ============================================
+
+class Ticket(Base):
+    __tablename__ = "tickets"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=_uuid)
+    project_id = Column(
+        UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
+    )
+    artifact_id = Column(
+        UUID(as_uuid=True), ForeignKey("artifacts.id", ondelete="CASCADE"), nullable=True
+    )
+    source_path = Column(String(500), nullable=False)
+    title = Column(String(500), nullable=False)
+    description = Column(Text, nullable=True)
+    status = Column(
+        SAEnum(TicketStatus, name="ticket_status_enum", native_enum=False),
+        nullable=False,
+        default=TicketStatus.todo,
+    )
+    position = Column(Integer, nullable=False, default=0)
+    checkbox_state = Column(String(20), nullable=True)
+    file_hash = Column(String(64), nullable=True)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime, server_default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+    project = relationship("Project", back_populates="tickets")
+    artifact = relationship("Artifact", back_populates="tickets")
+    comments = relationship(
+        "TicketComment", back_populates="ticket", cascade="all, delete-orphan"
+    )
+    events = relationship(
+        "TicketEvent", back_populates="ticket", cascade="all, delete-orphan"
+    )
+
+    def __repr__(self) -> str:
+        return f"<Ticket id={self.id} title={self.title!r} status={self.status}>"
+
+
+class TicketComment(Base):
+    __tablename__ = "ticket_comments"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=_uuid)
+    ticket_id = Column(
+        UUID(as_uuid=True), ForeignKey("tickets.id", ondelete="CASCADE"), nullable=False
+    )
+    author_type = Column(
+        SAEnum(AuthorType, name="author_type_enum", native_enum=False),
+        nullable=False,
+        default=AuthorType.human,
+    )
+    body = Column(Text, nullable=False)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    ticket = relationship("Ticket", back_populates="comments")
+
+    def __repr__(self) -> str:
+        return f"<TicketComment id={self.id} author={self.author_type}>"
+
+
+class TicketEvent(Base):
+    __tablename__ = "ticket_events"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=_uuid)
+    ticket_id = Column(
+        UUID(as_uuid=True), ForeignKey("tickets.id", ondelete="CASCADE"), nullable=False
+    )
+    event_type = Column(
+        SAEnum(TicketEventType, name="ticket_event_type_enum", native_enum=False),
+        nullable=False,
+    )
+    author_type = Column(
+        SAEnum(AuthorType, name="author_type_enum", native_enum=False),
+        nullable=False,
+    )
+    payload = Column(JSONB, nullable=True)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    ticket = relationship("Ticket", back_populates="events")
+
+    def __repr__(self) -> str:
+        return f"<TicketEvent id={self.id} type={self.event_type}>"
 

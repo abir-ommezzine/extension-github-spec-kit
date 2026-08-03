@@ -22,8 +22,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
-
-const API_BASE = "http://localhost:8000/api/v1/pipeline";
+import { apiFetch } from "../../apiClient";
 
 const AddDocument = () => {
   const theme = useTheme();
@@ -109,7 +108,7 @@ const AddDocument = () => {
       formData.append("file", selectedFile);
       formData.append("projectName", values.projectName);
 
-      const response = await fetch(`${API_BASE}/upload`, {
+      const response = await apiFetch("/pipeline/upload", {
         method: "POST",
         body: formData,
       });

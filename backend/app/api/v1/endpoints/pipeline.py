@@ -81,6 +81,50 @@ async def get_pipeline_status():
     return PIPELINE_STATUS
 
 
+@router.get("/projects")
+async def list_projects(db: Session = Depends(get_db)):
+    """GET /projects - Liste tous les projets avec leur nombre d'artefacts."""
+    projects = db.query(Project).order_by(Project.created_at.desc()).all()
+    return [
+        {
+            "id": str(p.id),
+            "name": p.name,
+            "repo_url": p.repo_url,
+            "artifact_count": len(p.artifacts),
+            "created_at": p.created_at.isoformat() if p.created_at else "",
+        }
+        for p in projects
+    ]
+
+
+@router.get("/task-state/{project_name}")
+async def get_task_state(project_name: str):
+    """GET /task-state/{project_name} - État courant des tâches pour le Kanban."""
+    state_file = BASE_DIR / ".task_runtime" / "agent-state.json"
+    default_state = {
+        "current_task": 0,
+        "total_tasks": 0,
+        "task_status": {},
+        "started_at": None,
+        "updated_at": None,
+    }
+
+    if not state_file.exists():
+        return default_state
+
+    try:
+        state = json.loads(state_file.read_text(encoding="utf-8"))
+        return {
+            "current_task": state.get("current_task", 0),
+            "total_tasks": state.get("total_tasks", 0),
+            "task_status": state.get("task_status", {}),
+            "started_at": state.get("started_at"),
+            "updated_at": state.get("updated_at"),
+        }
+    except Exception:
+        return default_state
+
+
 @router.get("/documents")
 async def list_documents(db: Session = Depends(get_db)):
     artifacts = db.query(Artifact).order_by(Artifact.created_at.desc()).all()

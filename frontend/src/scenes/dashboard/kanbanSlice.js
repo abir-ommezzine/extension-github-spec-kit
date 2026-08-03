@@ -1,12 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8000/api/v1";
+import { apiRequest } from "../../apiClient";
 
 export const fetchProjects = createAsyncThunk(
   "kanban/fetchProjects",
   async () => {
-    const response = await axios.get(`${API_BASE}/pipeline/projects`);
+    const response = await apiRequest("get", "/pipeline/projects");
     return response.data;
   }
 );
@@ -14,8 +12,8 @@ export const fetchProjects = createAsyncThunk(
 export const fetchTaskState = createAsyncThunk(
   "kanban/fetchTaskState",
   async (projectName) => {
-    const response = await axios.get(`${API_BASE}/pipeline/task-state/${projectName}`);
-    return response.data;
+    const response = await apiRequest("get", `/pipeline/task-state/${projectName}`);
+    return { projectName, taskState: response.data };
   }
 );
 
@@ -25,15 +23,15 @@ export const fetchTickets = createAsyncThunk(
     const params = new URLSearchParams();
     if (projectName) params.append("project_name", projectName);
     if (status) params.append("status", status);
-    const response = await axios.get(`${API_BASE}/tickets?${params.toString()}`);
-    return response.data;
+    const response = await apiRequest("get", `/tickets?${params.toString()}`);
+    return { projectName, tickets: response.data };
   }
 );
 
 export const fetchTicket = createAsyncThunk(
   "kanban/fetchTicket",
   async (ticketId) => {
-    const response = await axios.get(`${API_BASE}/tickets/${ticketId}`);
+    const response = await apiRequest("get", `/tickets/${ticketId}`);
     return response.data;
   }
 );
@@ -41,7 +39,7 @@ export const fetchTicket = createAsyncThunk(
 export const updateTicketStatus = createAsyncThunk(
   "kanban/updateTicketStatus",
   async ({ ticketId, status }) => {
-    const response = await axios.patch(`${API_BASE}/tickets/${ticketId}/status`, { status });
+    const response = await apiRequest("patch", `/tickets/${ticketId}/status`, { data: { status } });
     return response.data;
   }
 );
@@ -49,7 +47,7 @@ export const updateTicketStatus = createAsyncThunk(
 export const addTicketComment = createAsyncThunk(
   "kanban/addTicketComment",
   async ({ ticketId, body, authorType = "human" }) => {
-    const response = await axios.post(`${API_BASE}/tickets/${ticketId}/comments`, { body, author_type: authorType });
+    const response = await apiRequest("post", `/tickets/${ticketId}/comments`, { data: { body, author_type: authorType } });
     return response.data;
   }
 );
@@ -57,7 +55,7 @@ export const addTicketComment = createAsyncThunk(
 export const fetchTicketComments = createAsyncThunk(
   "kanban/fetchTicketComments",
   async (ticketId) => {
-    const response = await axios.get(`${API_BASE}/tickets/${ticketId}/comments`);
+    const response = await apiRequest("get", `/tickets/${ticketId}/comments`);
     return response.data;
   }
 );
@@ -65,7 +63,7 @@ export const fetchTicketComments = createAsyncThunk(
 export const fetchTicketEvents = createAsyncThunk(
   "kanban/fetchTicketEvents",
   async (ticketId) => {
-    const response = await axios.get(`${API_BASE}/tickets/${ticketId}/events`);
+    const response = await apiRequest("get", `/tickets/${ticketId}/events`);
     return response.data;
   }
 );
@@ -73,15 +71,15 @@ export const fetchTicketEvents = createAsyncThunk(
 export const ingestTasks = createAsyncThunk(
   "kanban/ingestTasks",
   async ({ tasksDir, projectName } = {}) => {
-    const response = await axios.post(`${API_BASE}/ingest`, { tasks_dir: tasksDir, project_name: projectName });
-    return response.data;
+    const response = await apiRequest("post", "/ingest", { data: { tasks_dir: tasksDir, project_name: projectName } });
+    return { projectName, tickets: response.data };
   }
 );
 
 export const refineFromCommit = createAsyncThunk(
   "kanban/refineFromCommit",
   async ({ commitMessage, projectName }) => {
-    const response = await axios.post(`${API_BASE}/commit-refine`, { commit_message: commitMessage, project_name: projectName });
+    const response = await apiRequest("post", "/commit-refine", { data: { commit_message: commitMessage, project_name: projectName } });
     return response.data;
   }
 );
@@ -90,15 +88,15 @@ export const fetchProgress = createAsyncThunk(
   "kanban/fetchProgress",
   async (projectName) => {
     const params = projectName ? `?project_name=${projectName}` : "";
-    const response = await axios.get(`${API_BASE}/progress${params}`);
-    return response.data;
+    const response = await apiRequest("get", `/progress${params}`);
+    return { projectName, progress: response.data };
   }
 );
 
 export const fetchDocPdf = createAsyncThunk(
   "kanban/fetchDocPdf",
   async (ticketId) => {
-    const response = await axios.get(`${API_BASE}/tickets/${ticketId}/doc-pdf`, { responseType: "blob" });
+    const response = await apiRequest("get", `/tickets/${ticketId}/doc-pdf`, { responseType: "blob" });
     return response.data;
   }
 );
@@ -211,11 +209,12 @@ const kanbanSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchTickets.fulfilled, (state, action) => {
+        if (action.payload.projectName !== state.projectName) return;
         state.loading = false;
-        state.tickets = action.payload;
-        state.todoTickets = action.payload.filter(t => t.status === "todo").sort((a, b) => a.position - b.position);
-        state.inProgressTickets = action.payload.filter(t => t.status === "in_progress").sort((a, b) => a.position - b.position);
-        state.doneTickets = action.payload.filter(t => t.status === "done").sort((a, b) => a.position - b.position);
+        state.tickets = action.payload.tickets;
+        state.todoTickets = action.payload.tickets.filter(t => t.status === "todo").sort((a, b) => a.position - b.position);
+        state.inProgressTickets = action.payload.tickets.filter(t => t.status === "in_progress").sort((a, b) => a.position - b.position);
+        state.doneTickets = action.payload.tickets.filter(t => t.status === "done").sort((a, b) => a.position - b.position);
       })
       .addCase(fetchTickets.rejected, (state, action) => {
         state.loading = false;
@@ -248,22 +247,21 @@ const kanbanSlice = createSlice({
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.projects = action.payload;
-        // Auto-select first project if none selected
-        if (!state.projectName && action.payload.length > 0) {
-          state.projectName = action.payload[0].name;
-        }
       })
       .addCase(fetchTaskState.fulfilled, (state, action) => {
-        state.taskState = action.payload;
+        if (action.payload.projectName !== state.projectName) return;
+        state.taskState = action.payload.taskState;
       })
       .addCase(ingestTasks.fulfilled, (state, action) => {
-        state.tickets = action.payload;
-        state.todoTickets = action.payload.filter(t => t.status === "todo").sort((a, b) => a.position - b.position);
-        state.inProgressTickets = action.payload.filter(t => t.status === "in_progress").sort((a, b) => a.position - b.position);
-        state.doneTickets = action.payload.filter(t => t.status === "done").sort((a, b) => a.position - b.position);
+        if (action.payload.projectName !== state.projectName) return;
+        state.tickets = action.payload.tickets;
+        state.todoTickets = action.payload.tickets.filter(t => t.status === "todo").sort((a, b) => a.position - b.position);
+        state.inProgressTickets = action.payload.tickets.filter(t => t.status === "in_progress").sort((a, b) => a.position - b.position);
+        state.doneTickets = action.payload.tickets.filter(t => t.status === "done").sort((a, b) => a.position - b.position);
       })
       .addCase(fetchProgress.fulfilled, (state, action) => {
-        state.progress = action.payload;
+        if (action.payload.projectName !== state.projectName) return;
+        state.progress = action.payload.progress;
       });
   },
 });

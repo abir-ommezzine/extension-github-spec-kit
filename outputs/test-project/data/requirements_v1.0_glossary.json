@@ -1,0 +1,12 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "Feature",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "QUAL-04",
+            "project_definition": "A distinct unit of system functionality that must satisfy specific measurable outcomes and possess validated acceptance criteria prior to technical planning."
+        }
+    ]
+}

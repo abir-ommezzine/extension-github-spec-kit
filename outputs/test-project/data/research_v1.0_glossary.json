@@ -1,0 +1,145 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "ACID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-DB",
+            "project_definition": "A set of properties ensuring reliable transaction-processing for match and follower data integrity."
+        },
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-FOOTBALL",
+            "project_definition": "The interface used to fetch external football data via a service layer abstraction."
+        },
+        {
+            "term": "BE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "STACK-BE",
+            "project_definition": "The server-side logic powered by Node.js and Express.js."
+        },
+        {
+            "term": "CSRF",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-SESS",
+            "project_definition": "A security mechanism preventing unauthorized command transmission from a user's browser."
+        },
+        {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "UI-STYLE",
+            "project_definition": "The styling layer implemented via utility-first or pre-built component frameworks."
+        },
+        {
+            "term": "FE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "STACK-FE",
+            "project_definition": "The client-side interface developed using React 18."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Authentication Integration (Third-party Login)",
+            "project_definition": "The unique alphanumeric identifier used to link a third-party account to internal user records."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "STACK-DB",
+            "project_definition": "The lightweight data-interchange format used for external API responses."
+        },
+        {
+            "term": "JSONB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-DB",
+            "project_definition": "The binary storage format used in the relational database for flexible, indexed semi-structured data."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-SESS",
+            "project_definition": "A compact, URL-safe means of representing claims to be transferred between two parties for session management."
+        },
+        {
+            "term": "JavaScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-LANG",
+            "project_definition": "The baseline scripting language rejected as the primary development target in favor of a typed alternative."
+        },
+        {
+            "term": "LTS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-BE",
+            "project_definition": "The long-term support version of the runtime environment, specifically version 18."
+        },
+        {
+            "term": "MUI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "UI-STYLE",
+            "project_definition": "A library providing pre-built components based on Material Design guidelines."
+        },
+        {
+            "term": "OAuth 2.0",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-OAUTH",
+            "project_definition": "The authorization framework enabling third-party logins via Google, Facebook, and Apple."
+        },
+        {
+            "term": "ORM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-DB",
+            "project_definition": "An abstraction layer using Sequelize or TypeORM to manage database interactions and migrations."
+        },
+        {
+            "term": "PostgreSQL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-DB",
+            "project_definition": "The relational database management system used for structured match and team data."
+        },
+        {
+            "term": "React",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-FE",
+            "project_definition": "The frontend library version 18 utilized for building the user interface."
+        },
+        {
+            "term": "TypeScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-LANG",
+            "project_definition": "The strongly typed superset of the baseline scripting language, version 4.9+, used for both application layers."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "UI-STYLE",
+            "project_definition": "The visual layer styled via Tailwind or Material components."
+        },
+        {
+            "term": "Vue",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STACK-FE",
+            "project_definition": "The alternative frontend framework rejected due to a lack of team expertise."
+        }
+    ]
+}

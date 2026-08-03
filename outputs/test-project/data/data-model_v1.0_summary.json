@@ -1,0 +1,27 @@
+{
+    "executive_brief": "The Football Match Manager is a specialized data layer designed to track soccer match entities, team memberships, and user followings. It implements a relational schema focused on match lifecycle state transitions, scoring validation, and user-match associations, hosted within a structured database environment using UUIDs for entity identification.",
+    "technical_stack": {
+        "languages_and_frameworks": [],
+        "architectural_constraints": [
+            "Match dateTime must be in the future for 'upcoming' status",
+            "homeScore and awayScore must be non-null when status is 'finished'",
+            "Scores must be strictly non-negative (min 0)",
+            "homeTeamId must not equal awayTeamId",
+            "Team name must be globally unique",
+            "User email must be unique",
+            "UserFollow requires a composite unique constraint on (userId, matchId)",
+            "Team foundedYear must be between 1800 and current year",
+            "Team abbreviation max length: 5 characters",
+            "Team name and League name max length: 100 characters",
+            "Venue max length: 200 characters"
+        ]
+    },
+    "maturity_assessment": "The project is currently in a REFINEMENT state. While the data model is structurally complete from a schema perspective, there are high-severity gaps regarding business goals and scope definition. The lack of a defined project objective and the uncertainty surrounding the authentication implementation for the User entity prevent an immediate transition to a ready state.",
+    "critical_dependencies": [
+        "Referential integrity: Match depends on Team and League entities",
+        "Referential integrity: UserFollow depends on User and Match entities",
+        "Composite key dependency: UserFollow uniqueness bound to (userId, matchId)",
+        "Indexing requirements: (leagueId, dateTime) and (status) on Match entity for performance filtering",
+        "Indexing requirements: (email) on User for authentication lookups"
+    ]
+}

@@ -9,6 +9,7 @@ import app.models
 
 # Import du router pipeline (BDD & LangGraph)
 from app.api.v1.endpoints import pipeline
+from app.api.v1.endpoints import tickets
 
 # 1. Création automatique des tables BDD si elles n'existent pas
 Base.metadata.create_all(bind=engine)
@@ -36,6 +37,9 @@ app.include_router(pipeline.router, prefix="/api/v1/docs", tags=["Documents & Pi
 
 # -> Prefix /api/v1/pipeline : Conservé pour vos scripts CLI, Watcher ou outils externes
 app.include_router(pipeline.router, prefix="/api/v1/pipeline", tags=["Pipeline CLI"])
+
+# -> Prefix /api/v1 : Endpoints Kanban (tickets, progress, ingest, commit-refine)
+app.include_router(tickets.router, prefix="/api/v1", tags=["Tickets Kanban"])
 
 
 # 5. Endpoints de santé (Health Checks)

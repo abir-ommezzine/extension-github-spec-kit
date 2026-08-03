@@ -1,0 +1,145 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "The version control pointer designated as 001-football-match-manager."
+        },
+        {
+            "term": "Date",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "The temporal marker set to 2026-07-30."
+        },
+        {
+            "term": "Spec",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Football Match Manager",
+            "project_definition": "The technical requirement document located at spec.md."
+        },
+        {
+            "term": "Python 3.11",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "An illustrative language version used as a placeholder for the execution environment."
+        },
+        {
+            "term": "Primary Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "External libraries or frameworks such as FastAPI or UIKit serving as foundational building blocks."
+        },
+        {
+            "term": "CoreData",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "An example persistent framework for local object management."
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The persistence layer mechanism, such as PostgreSQL or local files."
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The validation suite utilizing tools like pytest or XCTest."
+        },
+        {
+            "term": "Target Platform",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The intended deployment environment such as Linux server or WASM."
+        },
+        {
+            "term": "Project Type",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The architectural classification, for instance, a web-service or mobile-app."
+        },
+        {
+            "term": "Performance Goals",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "Quantifiable efficiency targets such as 60 fps or 1000 req/s."
+        },
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "Strict operational limits including <200ms p95 or <100MB memory."
+        },
+        {
+            "term": "LOC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "A metric measuring the total volume of written code, exemplified by 1M units."
+        },
+        {
+            "term": "GATE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "A mandatory validation checkpoint that must be cleared before proceeding to research or design phases."
+        },
+        {
+            "term": "LLVM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "A compiler infrastructure example listed as a potential dependency."
+        },
+        {
+            "term": "WASM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "A binary instruction format used as an example target execution environment."
+        },
+        {
+            "term": "iOS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STRUC-OPT3",
+            "project_definition": "The Apple mobile operating system environment requiring specific directory structures for UI flows."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STRUC-OPT3",
+            "project_definition": "The visual interface layer containing platform-specific flow modules."
+        },
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STRUC-OPT2",
+            "project_definition": "The interface layer managing communication between the backend and frontend components."
+        },
+        {
+            "term": "Structure Decision",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STRUC-OPT3",
+            "project_definition": "The final selection of the repository layout among the provided options."
+        }
+    ]
+}

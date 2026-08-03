@@ -1,0 +1,89 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-USER-FOLLOW-ONCE",
+            "project_definition": "Restrictive database rules, specifically the composite unique requirement preventing duplicate entries for the same pair of associated identifiers."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "RULE-USER-EMAIL-UNIQUE",
+            "project_definition": "The implicit security mechanism required to protect stored credentials mentioned in the complexity requirements for account access."
+        },
+        {
+            "term": "DateTime",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "A temporal data type used for scheduling events and recording system timestamps."
+        },
+        {
+            "term": "MUN",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-TEAM",
+            "project_definition": "An example of a short-form identification string for a specific athletic club."
+        },
+        {
+            "term": "Match Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-MATCH-TEAMS",
+            "project_definition": "The set of business rules ensuring logical consistency for sporting events, such as forbidding a team from playing against itself and requiring final scores upon completion."
+        },
+        {
+            "term": "Relationships",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The structural links between different data entities, including one-to-many and many-to-many associations."
+        },
+        {
+            "term": "Team Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-TEAM-UNIQUE",
+            "project_definition": "Operational checks verifying that no two athletic organizations share the same identity name."
+        },
+        {
+            "term": "UTC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The standardized global time reference used to avoid ambiguity across different geographical time zones."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "A 128-bit universally unique identifier used as the primary key for all major system entities."
+        },
+        {
+            "term": "User Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-USER-EMAIL-UNIQUE",
+            "project_definition": "The integrity checks performed on account data, focusing on the uniqueness of contact addresses and credential strength."
+        },
+        {
+            "term": "UserFollow",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USERFOLLOW",
+            "project_definition": "A junction entity tracking the subscription interest of a profile toward a specific sporting event."
+        },
+        {
+            "term": "UserFollow Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-USER-FOLLOW-ONCE",
+            "project_definition": "The specific logic ensuring a single account cannot subscribe to the same event more than once."
+        }
+    ]
+}

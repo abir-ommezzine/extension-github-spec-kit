@@ -27,7 +27,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
-const API_BASE = "http://localhost:8000/api/v1/pipeline";
+import { apiFetch, getApiBase } from "../../apiClient";
 const POLL_INTERVAL = 3000;
 
 const agentLabels = {
@@ -635,7 +635,7 @@ const Documents = () => {
 
   const fetchDocuments = async () => {
     try {
-      const response = await fetch(`${API_BASE}/documents`);
+      const response = await apiFetch("/pipeline/documents");
       if (response.ok) {
         const data = await response.json();
         setDocuments(data);
@@ -649,7 +649,7 @@ const Documents = () => {
 
   const fetchProgress = async () => {
     try {
-      const response = await fetch(`${API_BASE}/progress`);
+      const response = await apiFetch("/pipeline/progress");
       if (response.ok) {
         const data = await response.json();
         setProgress(data);
@@ -667,9 +667,10 @@ const Documents = () => {
     return () => clearInterval(pollRef.current);
   }, []);
 
-  const handleViewPdf = (docVersionId) => {
+  const handleViewPdf = async (docVersionId) => {
     if (docVersionId) {
-      window.open(`${API_BASE}/pdf/${docVersionId}`, "_blank");
+      const base = await getApiBase();
+      window.open(`${base}/pipeline/pdf/${docVersionId}`, "_blank");
     }
   };
 

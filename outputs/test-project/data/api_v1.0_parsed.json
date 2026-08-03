@@ -1,0 +1,245 @@
+{
+    "parsing_rationale": "The document is a technical API specification. I have mapped the core API endpoints as functional requirements, the data models as entities, and the authentication/rate-limiting rules as non-functional requirements. Since the document focuses on 'How' (API contract) rather than 'Why' (Business Goals), most of the structural template fields are missing, which I have flagged in structural_gaps.",
+    "project_info": {
+        "project_name": "Football Match Manager",
+        "source_type": "scratch",
+        "brief_explanation": "RESTful API specification for managing football matches, leagues, teams, and user follow mechanisms.",
+        "source_context": "API Contract definition document including endpoints, data models, and security constraints."
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "API Contract: Football Match Manager",
+            "level": 1,
+            "raw_content": "This document defines the RESTful API endpoints for the Football Match Manager backend.",
+            "mapped_to_template_field": "Goals & Objectives"
+        },
+        {
+            "title": "Base URL",
+            "level": 2,
+            "raw_content": "/api/v1",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Authentication",
+            "level": 2,
+            "raw_content": "All endpoints (except auth endpoints) require a valid JWT token in the Authorization header:\n```\nAuthorization: Bearer <token>\n```",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "Endpoints",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Authentication",
+            "level": 3,
+            "raw_content": "- `POST /auth/register` - Register a new user\n- `POST /auth/login` - Login and receive JWT token\n- `POST /auth/logout` - logout (client-side token removal)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Matches",
+            "level": 3,
+            "raw_content": "- `GET /matches` - Get list of matches with optional filtering\n  - Query Parameters:\n    - `leagueId` (UUID): Filter by league\n    - `dateFrom` (ISO string): Matches on or after this date\n    - `dateTo` (ISO string): Matches on or before this date\n    - `status` (string): Filter by status (upcoming, live, finished)\n    - `search` (string): Search by team name (home or away)\n    - `page` (int): Page number for pagination (default: 1)\n    - `limit` (int): Items per page (default: 20)...\n- `GET /matches/:id` - Get a specific match by ID\n- `GET /matches/:id/followers` - Get users following a specific match (requires auth)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "User Follows",
+            "level": 3,
+            "raw_content": "- `POST /follows` - Follow a match\n  - Body: `{ \"matchId\": \"uuid\" }`\n- `DELETE /follows/:matchId` - Unfollow a match\n- `GET /follows` - Get all matches followed by the current user (requires auth)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Teams",
+            "level": 3,
+            "raw_content": "- `GET /teams` - Get list of teams (optional search)\n  - Query Parameters:\n    - `search` (string): Search by team name\n    - `limit` (int): Limit results (default: 50)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Leagues",
+            "level": 3,
+            "raw_content": "- `GET /leagues` - Get list of leagues\n  - Query Parameters:\n    - `country` (string): Filter by country\n    - `active` (boolean): Filter by active leagues",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Data Models",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Match",
+            "level": 3,
+            "raw_content": "```json\n{\n  \"id\": \"uuid\",\n  \"homeTeam\": { ... },\n  \"awayTeam\": { ... },\n  \"dateTime\": \"ISO string\",\n  \"venue\": \"string\",\n  \"league\": { ... },\n  \"status\": \"upcoming|live|finished|postponed|cancelled\",\n  \"homeScore\": \"integer (nullable)\",\n  \"awayScore\": \"integer (nullable)\",\n  \"lastUpdated\": \"ISO string\"\n}\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Team",
+            "level": 3,
+            "raw_content": "```json\n{\n  \"id\": \"uuid\",\n  \"name\": \"string\",\n  \"abbreviation\": \"string\",\n  \"crestUrl\": \"url\",\n  \"foundedYear\": \"integer\"\n}\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "League",
+            "level": 3,
+            "raw_content": "```json\n{\n  \"id\": \"uuid\",\n  \"name\": \"string\",\n  \"sport\": \"string\",\n  \"country\": \"string\",\n  \"logoUrl\": \"url\",\n  \"currentSeason\": \"string\"\n}\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "User (authenticated user only)",
+            "level": 3,
+            "raw_content": "```json\n{\n  \"id\": \"uuid\",\n  \"email\": \"string\",\n  \"displayName\": \"string\",\n  \"avatarUrl\": \"url\"\n}\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Follow Response",
+            "level": 3,
+            "raw_content": "```json\n{\n  \"userId\": \"uuid\",\n  \"matchId\": \"uuid\",\n  \"followedAt\": \"ISO string\",\n  \"notificationsEnabled\": \"boolean\"\n}\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Error Responses",
+            "level": 2,
+            "raw_content": "All endpoints return appropriate HTTP status codes... Error response body...",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "Rate Limiting",
+            "level": 2,
+            "raw_content": "- Auth endpoints: 5 requests per minute per IP\n- All other endpoints: 60 requests per minute per user",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "Versioning",
+            "level": 2,
+            "raw_content": "API version is included in the URL path (`/api/v1/`). Breaking changes will increment the version number.",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        }
+    ],
+    "elements": [
+        {
+            "type": "non_functional_requirement",
+            "identifier": "SEC-JWT",
+            "content": "All endpoints (except auth) require a valid JWT token in the Authorization header.",
+            "source_section": "Authentication",
+            "attributes": {
+                "mechanism": "Bearer Token"
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "API-AUTH-REG",
+            "content": "Allow user registration via POST /auth/register",
+            "source_section": "Authentication",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "API-AUTH-LOG",
+            "content": "Allow user login to receive JWT token via POST /auth/login",
+            "source_section": "Authentication",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "API-MATCH-LIST",
+            "content": "Retrieve a list of matches with filtering by leagueId, date, status, and team name via GET /matches",
+            "source_section": "Matches",
+            "attributes": {
+                "pagination": "page/limit"
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "API-MATCH-DETAIL",
+            "content": "Retrieve a specific match by its unique ID via GET /matches/:id",
+            "source_section": "Matches",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "API-FOLLOW-MATCH",
+            "content": "Allow a user to follow a match via POST /follows",
+            "source_section": "User Follows",
+            "attributes": {
+                "payload": "matchId"
+            }
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "API-UNFOLLOW-MATCH",
+            "content": "Allow a user to unfollow a match via DELETE /follows/:matchId",
+            "source_section": "User Follows",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-MATCH",
+            "content": "Match entity containing homeTeam, awayTeam, dateTime, venue, league, status and scores.",
+            "source_section": "Match",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-TEAM",
+            "content": "Team entity containing name, abbreviation, crestUrl, and foundedYear.",
+            "source_section": "Team",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-LEAGUE",
+            "content": "League entity containing name, sport, country, logoUrl, and currentSeason.",
+            "source_section": "League",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "NFR-RATE-LIMIT",
+            "content": "Auth endpoints limited to 5 req/min/IP; others 60 req/min/user.",
+            "source_section": "Rate Limiting",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "API-MATCH-LIST",
+            "to": "ENT-MATCH",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "API-MATCH-DETAIL",
+            "to": "ENT-MATCH",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "API-FOLLOW-MATCH",
+            "to": "SEC-JWT",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "API-MATCH-LIST",
+            "to": "ENT-LEAGUE",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "ENT-MATCH",
+            "to": "ENT-TEAM",
+            "relation_type": "contains"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Scope & Out-of-Scope",
+            "priority": "MEDIUM",
+            "remediation_advice": "Define what the API will NOT handle (e.g., payment for tickets, real-time player stats)."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Identify any undecided endpoints or data model fields."
+        }
+    ],
+    "open_questions": []
+}

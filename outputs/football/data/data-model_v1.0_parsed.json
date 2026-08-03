@@ -1,0 +1,301 @@
+{
+    "parsing_rationale": "The document is a technical data model specification for a Football Match Manager. I have extracted the entities as 'entity' nodes and the validation/index rules as 'functional_requirement' or 'constraint' nodes. The structural mapping focuses on 'Functional Requirements' as the core of this document, while other mandatory template sections are identified as missing gaps.",
+    "project_info": {
+        "project_name": "Football Match Manager",
+        "source_type": "scratch",
+        "brief_explanation": "Data model and validation rules for managing football matches, teams, leagues, and user followers.",
+        "source_context": "Technical data model specification including entity definitions, validation rules, and state transitions."
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "Data Model: Football Match Manager",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Entities",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Match",
+            "level": 3,
+            "raw_content": "Represents a football match.\n\n| Field | Type | Description | Validation |\n|-------|------|-------------|------------|\n| id | UUID | Unique identifier | Required, unique |\n| homeTeamId | UUID | Reference to Team | Required, exists |\n| awayTeamId | UUID | Reference to Team | Required, exists, not equal to homeTeamId |\n| dateTime | DateTime | Match date and time (UTC) | Required, must be in future for upcoming matches |\n| venue | String (max 200) | Stadium or location name | Optional |\n| leagueId | UUID | Reference to League | Required, exists |\n| status | Enum | Match status: upcoming, live, finished, postponed, cancelled | Required, default: upcoming |\n| homeScore | Integer | Goals scored by home team | Optional, min 0, default null |\n| awayScore | Integer | Goals scored by away team | Optional, min 0, default null |\n| lastUpdated | DateTime | Timestamp of last update | Auto-set on update |\n\n**Relationships**:\n- Belongs to one League (via leagueId)\n- Has two Teams (homeTeamId, awayTeamId)\n- Can be followed by many Users (via UserFollow)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Team",
+            "level": 3,
+            "raw_content": "Represents a football team.\n\n| Field | Type | Description | Validation |\n|-------|------|-------------|------------|\n| id | UUID | Unique identifier | Required, unique |\n| name | String (max 100) | Team name | Required |\n| abbreviation | String (max 5) | Team abbreviation (e.g., MUN for Manchester United) | Optional, unique per league |\n| crestUrl | URL | URL to team crest/logo | Optional, valid URL |\n| foundedYear | Integer | Year the club was founded | Optional, min 1800, max current year |\n\n**Relationships**:\n- Participates in many Matches (as home or away team)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "League",
+            "level": 3,
+            "raw_content": "Represents a football league or tournament\n\n| Field | Type | Description | Validation |\n|-------|------|-------------|------------|\n| id | UUID | Unique identifier | Required, unique |\n| name | String (max 100) | League name (e.g., Premier League, Champions League) | Required |\n| sport | String | Sport type (fixed to \"football/soccer\") | Required, default: \"football\" |\n| country | String (max 100) | Country where league is based | Optional |\n| logoUrl | URL | URL to league logo | Optional, valid URL |\n| currentSeason | String (e.g., \"2023/24\") | Current season identifier | Optional |\n\n**Relationships**:\n- Has many Matches",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "User",
+            "level": 3,
+            "raw_content": "Represents an application user (if authentication is implemented)\n\n| Field | Type | Description | Validation |\n|-------|------|-------------|------------|\n| id | UUID | Unique identifier | Required, unique |\n| email | String (email) | User email address | Required, unique, valid email format |\n| displayName | String (max 50) | Display name for the user | Required |\n| avatarUrl | URL | URL to user avatar/image | Optional, valid URL |\n| isActive | Boolean | Whether the user account is active | Required, default: true |\n| createdAt | DateTime | Account creation timestamp | Auto-set on create |\n| lastLoginAt | DateTime | Last login timestamp | Updated on login |\n\n**Relationships**:\n- Can follow many Matches (via UserFollow)",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "UserFollow",
+            "level": 3,
+            "raw_content": "Represents the relationship between a User and a Match they are following.\n\n| Field | Type | Description | Validation |\n|-------|------|-------------|------------|\n| userId | UUID | Reference to User | Required, exists |\n| matchId | UUID | Reference to Match | Required, exists |\n| followedAt | DateTime | Timestamp when the user started following the match | Required, auto-set on create |\n| notificationsEnabled | Boolean | Whether the user wants notifications for this match | Optional, default: false |\n\n**Constraints**:\n- Composite unique constraint on (userId, matchId) - a user can follow a match only once\n\n**Relationships**:\n- Belongs to one User\n- Belongs to one Match",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Validation Rules",
+            "level": 2,
+            "raw_content": "1. **Match Validation**:\n   - A match cannot have the same team as both home and away.\n   - Match dateTime must be in the future for status \"upcoming\".\n   - When status changes to \"finished\", both homeScore and awayScore must be set (non-null).\n   - Scores cannot be negative.\n\n2. **Team Validation**:\n   - Team name must be unique across all teams (or at least within a league? - for simplicity, global unique).\n\n3. **User Validation**:\n   - Email must be unique.\n   - Password (if using email/password auth) must meet complexity requirements (min 8 chars, etc.).\n\n4. **UserFollow Validation**:\n   - A user can only follow a match once.",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "State Transitions (for Match)",
+            "level": 2,
+            "raw_content": "```mermaid\nstateDiagram-v2\n    [*] --> Upcoming\n    Upcoming --> Live: Match starts\n    Live --> Finished: Match ends\n    Live --> Postponed: Match postponed\n    Upcoming --> Postponed: Match postponed\n    Postponed --> Live: Match resumes and starts\n    Postponed --> Upcoming: New date set\n    Finished --> [*]\n    Postponed --> [*]: Cancelled after postponement\n```",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Indexes (for performance)",
+            "level": 2,
+            "raw_content": "- Matches: index on (leagueId, dateTime) for filtering by league and date\n- Matches: index on (status) for filtering upcoming/live matches\n- Teams: index on (name) for search\n- Users: index on (email) for authentication\n- UserFollow: index on (userId) for getting a user's followed matches\n- UserFollow: index on (matchId) for getting followers of a match",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        }
+    ],
+    "elements": [
+        {
+            "type": "entity",
+            "identifier": "ENT-MATCH",
+            "content": "Football match entity containing details like teams, league, date, and score.",
+            "source_section": "Match",
+            "attributes": {
+                "fields": [
+                    "id",
+                    "homeTeamId",
+                    "awayTeamId",
+                    "dateTime",
+                    "venue",
+                    "leagueId",
+                    "status",
+                    "homeScore",
+                    "awayScore",
+                    "lastUpdated"
+                ]
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-TEAM",
+            "content": "Football team entity including name, abbreviation, and crest.",
+            "source_section": "Team",
+            "attributes": {
+                "fields": [
+                    "id",
+                    "name",
+                    "abbreviation",
+                    "crestUrl",
+                    "foundedYear"
+                ]
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-LEAGUE",
+            "content": "League or tournament entity.",
+            "source_section": "League",
+            "attributes": {
+                "fields": [
+                    "id",
+                    "name",
+                    "sport",
+                    "country",
+                    "logoUrl",
+                    "currentSeason"
+                ]
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-USER",
+            "content": "Application user entity.",
+            "source_section": "User",
+            "attributes": {
+                "fields": [
+                    "id",
+                    "email",
+                    "displayName",
+                    "avatarUrl",
+                    "isActive",
+                    "createdAt",
+                    "lastLoginAt"
+                ]
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-USERFOLLOW",
+            "content": "Join entity representing the relationship between a User and a Match.",
+            "source_section": "UserFollow",
+            "attributes": {
+                "fields": [
+                    "userId",
+                    "matchId",
+                    "followedAt",
+                    "notificationsEnabled"
+                ]
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-MATCH-SAME-TEAM",
+            "content": "A match cannot have the same team as both home and away.",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-MATCH-DATE-FUTURE",
+            "content": "Match dateTime must be in the future for status 'upcoming'.",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-MATCH-FINISH-SCORE",
+            "content": "When status changes to 'finished', both homeScore and awayScore must be set (non-null).",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-SCORE-NON-NEGATIVE",
+            "content": "Scores cannot be negative.",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-TEAM-UNIQUE-NAME",
+            "content": "Team name must be unique across all teams globally.",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-USER-UNIQUE-EMAIL",
+            "content": "User email must be unique.",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-USERFOLLOW-UNIQUE",
+            "content": "A user can only follow a match once (Composite unique constraint on userId, matchId).",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "PERF-IDX-MATCH-LEAGUE",
+            "content": "Index on (leagueId, dateTime) for filtering by league and date.",
+            "source_section": "Indexes (for performance)",
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "PERF-IDX-USER-EMAIL",
+            "content": "Index on (email) for authentication.",
+            "source_section": "Indexes (for performance)",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "ENT-MATCH",
+            "to": "ENT-LEAGUE",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ENT-MATCH",
+            "to": "ENT-TEAM",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ENT-USERFOLLOW",
+            "to": "ENT-USER",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ENT-USERFOLLOW",
+            "to": "ENT-MATCH",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "RULE-MATCH-SAME-TEAM",
+            "to": "ENT-MATCH",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "RULE-MATCH-DATE-FUTURE",
+            "to": "ENT-MATCH",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "RULE-MATCH-FINISH-SCORE",
+            "to": "ENT-MATCH",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "RULE-TEAM-UNIQUE-NAME",
+            "to": "ENT-TEAM",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "RULE-USER-UNIQUE-EMAIL",
+            "to": "ENT-USER",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "RULE-USERFOLLOW-UNIQUE",
+            "to": "ENT-USERFOLLOW",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "PERF-IDX-MATCH-LEAGUE",
+            "to": "ENT-MATCH",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "PERF-IDX-USER-EMAIL",
+            "to": "ENT-USER",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Goals & Objectives",
+            "priority": "HIGH",
+            "remediation_advice": "The document describes 'How' the data is structured but not 'Why' or what the business objectives are."
+        },
+        {
+            "missing_section": "Scope & Out-of-Scope",
+            "priority": "MEDIUM",
+            "remediation_advice": "Define what the football manager system will and will not handle (e.g., player stats, transfers)."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Clarify the uncertainty mentioned in 'Team Validation' regarding global vs league uniqueness."
+        }
+    ],
+    "open_questions": [
+        "Is the team name uniqueness global or scoped to a league?"
+    ]
+}

@@ -134,6 +134,123 @@ vsce publish  # mode interactif
 
 ---
 
+### 🧪 Guide de Test : Nouveau Projet avec l'Extension VS Code
+
+> **Objectif** : Tester l'extension AgentDocx SpecKit sur un **nouveau projet** (dossier séparé, hors du repo source).
+
+#### 1. Prérequis
+- Extension **installée via .vsix** (voir section ci-dessus)
+- **PostgreSQL** en cours d'exécution
+- Dépendances Python installées à la racine du **repo source** :
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+#### 2. Créer le projet de test
+```bash
+mkdir mon-projet-test && cd mon-projet-test
+```
+
+#### 3. Configuration obligatoire : `.vscode/settings.json`
+Créez ce fichier à la racine du **projet de test** (pas dans le repo source) :
+
+```json
+{
+  "agentdocx-speckit": {
+    "projectPath": "specs",
+    "projectName": "mon-projet-test",
+    "apiPort": 8000,
+    "backendPath": "C:/Users/VOTRE_USER/chemin/vers/copy-extension-github-spec-kit/backend",
+    "reload": false
+  }
+}
+```
+
+| Clé | Obligatoire | Description |
+|-----|-------------|-------------|
+| `projectPath` | ✅ | Dossier à surveiller (relatif à la racine du projet test) |
+| `projectName` | ✅ | Identifiant envoyé au pipeline |
+| `apiPort` | ✅ | Port FastAPI (par défaut 8000) |
+| `backendPath` | ✅ | **Chemin ABSOLU** vers le dossier `backend` du **repo source** |
+| `reload` | ❌ | `false` recommandé sur Windows pour éviter erreurs uvicorn |
+
+> ⚠️ **Important** : `backendPath` doit pointer vers le `backend` du **repo source** (celui qui contient `app/main.py`), pas vers une copie locale.
+
+#### 4. Créer le dossier specs
+```bash
+mkdir specs
+```
+
+#### 5. Ouvrir dans VS Code
+```bash
+code .
+```
+L'extension démarre automatiquement :
+- **AgentDocx Server** → FastAPI sur `http://127.0.0.1:8000`
+- **AgentDocx Watcher** → Surveille `specs/`
+
+Vérifiez les logs : `View` → `Output` → dropdown `AgentDocx Server` / `AgentDocx Watcher`
+
+#### 6. Tester le pipeline
+Créez un fichier markdown dans `specs/` :
+```bash
+echo "# Exigences\n\nLe système doit gérer les utilisateurs." > specs/requirements.md
+```
+Le watcher détecte le changement → appelle `/api/v1/pipeline/upload` → pipeline s'exécute.
+
+#### 7. Vérifier les résultats
+- **Logs Server** : progression agents (Parsing → Summary → Glossary → Diagram → DocWriter → Layout)
+- **Frontend** (si lancé) : onglet Documents → nouvelle entrée avec KPIs
+- **Outputs** : PDF générés dans `outputs/<projectName>/pdf/`
+
+---
+
+### 📁 Structure attendue du projet de test
+
+```
+mon-projet-test/
+├── .vscode/
+│   └── settings.json       # ← Configuration obligatoire
+├── specs/                  # ← Créé manuellement
+│   ├── requirements.md
+│   ├── spec.md
+│   └── ...
+├── src/                    # Votre code applicatif (optionnel)
+└── package.json            # Votre projet (optionnel)
+```
+
+---
+
+### 🔧 Dépannage courant
+
+| Problème | Solution |
+|----------|----------|
+| Watcher ne démarre pas | Vérifiez `AgentDocx Watcher` output : erreur import `watchdog` → `pip install watchdog` |
+| Server erreur "No module named app" | `backendPath` incorrect dans settings.json → doit pointer vers `backend` du repo source |
+| Port 8000 occupé | Changez `apiPort` dans settings.json (ex: 8001) |
+| Pipeline 404/422 | Extension utilise `/upload` (multipart), pas `/run` (JSON) — déjà corrigé dans scripts installés |
+| Pas de logs dans Output | Rechargez fenêtre : `Ctrl+R` |
+
+---
+
+### 🔄 Workflow multi-projets
+
+Chaque projet de test a **sa propre config** dans son `.vscode/settings.json` :
+
+```
+projet-A/
+  .vscode/settings.json   # projectName: "projet-A", projectPath: "specs"
+  specs/
+
+projet-B/
+  .vscode/settings.json   # projectName: "projet-B", projectPath: "docs/specs"
+  docs/specs/
+```
+
+L'extension lit la config du **workspace actif** — pas de conflit entre projets.
+
+---
+
 ## 🚀 Quick Start (Guide de Lancement)
 
 Suivez ces étapes pour mettre en place l'environnement Spec Kit sur votre machine.

@@ -14,10 +14,9 @@ import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Header from "../../components/Header";
+import { apiFetch } from "../../apiClient";
 
 // NOTE: We intentionally removed the `tokens` import here to stop the crashes!
-
-const API_BASE = "http://localhost:8000/api/v1/pipeline";
 
 const Form = () => {
   const theme = useTheme();
@@ -35,7 +34,7 @@ const Form = () => {
       formData.append("projectName", values.projectName);
 
       // Envoi du formulaire au backend FastAPI
-      const response = await fetch(`${API_BASE}/upload`, {
+      const response = await apiFetch("/pipeline/upload", {
         method: "POST",
         body: formData,
       });

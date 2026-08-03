@@ -1,0 +1,75 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API Contract: Football Match Manager",
+            "project_definition": "The set of RESTful endpoints versioned as v1 for managing sports data and user interactions."
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Base URL",
+            "project_definition": "The cross-origin resource sharing policy implicitly required to allow browser-based clients to interact with the specified backend endpoints."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-MATCH-DETAIL",
+            "project_definition": "The unique identifier used to retrieve a specific sports event record."
+        },
+        {
+            "term": "IP",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "NFR-RATE-LIMIT",
+            "project_definition": "The network address used as a key to apply a maximum of 5 requests per minute for authentication endpoints."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Data Models",
+            "project_definition": "The lightweight data-interchange format used for all request bodies and response payloads."
+        },
+        {
+            "term": "JWT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "SEC-JWT",
+            "project_definition": "The signed token passed in the Authorization header as a Bearer credential to secure non-auth endpoints."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The 128-bit universally unique format used for primary keys across all entities including matches, teams, and leagues."
+        },
+        {
+            "term": "dateFrom",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-MATCH-LIST",
+            "project_definition": "The ISO string parameter serving as the lower temporal boundary for filtering sports events."
+        },
+        {
+            "term": "dateTo",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-MATCH-LIST",
+            "project_definition": "The ISO string parameter serving as the upper temporal boundary for filtering sports events."
+        },
+        {
+            "term": "leagueId",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "API-MATCH-LIST",
+            "project_definition": "The unique reference to a specific sports competition used to filter the list of events."
+        }
+    ]
+}
