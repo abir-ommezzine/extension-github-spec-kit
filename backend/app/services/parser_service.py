@@ -3,42 +3,16 @@ import json
 from pathlib import Path
 from app.schemas.parsing_agent_schema import ParsingAgentOutput
 from app.utils.markdown_parser import pre_parse_markdown_to_sections, calculate_file_hash
-from app.core.llm_client import chat_completion, get_default_model
+from app.core.llm_client import ollama_openai_client, get_ollama_model
 from app.core.llm_utils import parse_and_validate_json
 from app.core.prompts import get_parsing_agent_prompt
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATES_PATH = BASE_DIR / "resources" / "sdd_templates.json"
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
+TEMPLATES_PATH = BASE_DIR / "app" / "resources" / "sdd_templates.json"
 
 def load_sdd_templates() -> dict:
     with open(TEMPLATES_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
-
-
-def _fix_structural_gaps_contradiction(data: dict) -> dict:
-    """
-    Post-traitement pour corriger la contradiction LLM courante :
-    une section mappée dans 'sections' ne doit pas apparaître dans 'structural_gaps'.
-    """
-    mapped_fields = {
-        s.get("mapped_to_template_field")
-        for s in data.get("sections", [])
-        if s.get("mapped_to_template_field")
-    }
-    
-    if "structural_gaps" in data and isinstance(data["structural_gaps"], list):
-        original_count = len(data["structural_gaps"])
-        data["structural_gaps"] = [
-            gap for gap in data["structural_gaps"]
-            if gap.get("missing_section") not in mapped_fields
-        ]
-        removed = original_count - len(data["structural_gaps"])
-        if removed:
-            print(f"[PARSER] Auto-corrected {removed} contradiction(s) in structural_gaps")
-    
-    return data
-
 
 def run_parsing_agent(file_name: str, file_content: str) -> ParsingAgentOutput:
     """
@@ -99,38 +73,16 @@ def run_parsing_agent(file_name: str, file_content: str) -> ParsingAgentOutput:
         "sections_to_process": pre_parsed_sections
     }
 
-    # 5. Appel au LLM (provider-agnostic)
-    response = chat_completion(
-        model=get_default_model(),
+    # 5. Appel au LLM Ollama
+    response = ollama_openai_client.chat.completions.create(
+        model=get_ollama_model(),
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(user_message, ensure_ascii=False)}
         ],
+        response_format={"type": "json_object"},
         temperature=0.0
     )
     
     raw_output = response.choices[0].message.content
-    print(f"[PARSER DEBUG] Raw output length: {len(raw_output) if raw_output else 0}")
-    print(f"[PARSER DEBUG] Raw output preview: {raw_output[:200] if raw_output else 'EMPTY'}")
-    
-    if not raw_output or not raw_output.strip():
-        raise ValueError("LLM returned empty response")
-    
-    # Strip markdown code fences if present
-    raw_output = raw_output.strip()
-    if raw_output.startswith("```"):
-        lines = raw_output.split("\n")
-        if lines[0].startswith("```"):
-            lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        raw_output = "\n".join(lines)
-    
-    # Parse JSON first to apply fix
-    import json as json_stdlib
-    parsed_dict = json_stdlib.loads(raw_output)
-    
-    # Fix contradictions before Pydantic validation
-    parsed_dict = _fix_structural_gaps_contradiction(parsed_dict)
-    
-    return parse_and_validate_json(json_stdlib.dumps(parsed_dict), ParsingAgentOutput)
+    return parse_and_validate_json(raw_output, ParsingAgentOutput)
