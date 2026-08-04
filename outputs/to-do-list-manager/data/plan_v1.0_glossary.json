@@ -1,0 +1,215 @@
+{
+    "project_name": "to-do-list-manager",
+    "items": [
+        {
+            "term": "ACTION",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "a mandatory modification step requiring replacement of template placeholders with concrete system details"
+        },
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[REMOVE IF UNUSED] Option 2: Web application (when \"frontend\" + \"backend\" detected)",
+            "project_definition": "the communication layer situated within the backend directory for handling external requests"
+        },
+        {
+            "term": "Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: [FEATURE]",
+            "project_definition": "the isolated version control stream identified by a specific feature name pattern"
+        },
+        {
+            "term": "CORS Standard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "[REMOVE IF UNUSED] Option 2: Web application (when \"frontend\" + \"backend\" detected)",
+            "project_definition": "the security protocol governing cross-origin resource sharing between the frontend and backend layers"
+        },
+        {
+            "term": "Constraints",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "domain-specific operational limits such as maximum latency or memory ceilings"
+        },
+        {
+            "term": "CoreData",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORAGE-STRATEGY",
+            "project_definition": "the apple-native object-graph and persistence framework"
+        },
+        {
+            "term": "DATE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: [FEATURE]",
+            "project_definition": "the temporal marker indicating when the execution workflow was initiated"
+        },
+        {
+            "term": "DB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Complexity Tracking",
+            "project_definition": "the persistent relational or non-relational storage engine"
+        },
+        {
+            "term": "GATE",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "a mandatory compliance checkpoint that must be cleared before progressing to subsequent research or design phases"
+        },
+        {
+            "term": "IF",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the conditional logic determining the applicability of a storage mechanism"
+        },
+        {
+            "term": "LLVM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TECH-STACK-DECISION",
+            "project_definition": "the compiler infrastructure utilized as a primary dependency for low-level code generation"
+        },
+        {
+            "term": "LOC",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the quantitative measure of source code volume used to define scale"
+        },
+        {
+            "term": "NOT",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Documentation (this feature)",
+            "project_definition": "the logical negation indicating that a specific file is excluded from the output of the planning command"
+        },
+        {
+            "term": "Note",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: [FEATURE]",
+            "project_definition": "an advisory remark describing the automated generation of the workflow definition"
+        },
+        {
+            "term": "ONLY",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Complexity Tracking",
+            "project_definition": "the restrictive condition limiting the use of a section to cases of constitution violations"
+        },
+        {
+            "term": "Option",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Source Code (repository root)",
+            "project_definition": "a candidate architectural layout that must be selected and then cleaned of labels"
+        },
+        {
+            "term": "Performance Goals",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the quantitative benchmarks for system efficiency such as requests per second or frame rates"
+        },
+        {
+            "term": "Primary Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TECH-STACK-DECISION",
+            "project_definition": "the essential third-party libraries or frameworks required for core functionality"
+        },
+        {
+            "term": "Project Type",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the structural classification of the software such as a web-service or mobile-app"
+        },
+        {
+            "term": "Python 3.11",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TECH-STACK-DECISION",
+            "project_definition": "the specific version of the high-level interpreted language selected for implementation"
+        },
+        {
+            "term": "REMOVE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[REMOVE IF UNUSED] Option 1: Single project (DEFAULT)",
+            "project_definition": "the directive to delete irrelevant structural templates from the final plan"
+        },
+        {
+            "term": "Spec",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: [FEATURE]",
+            "project_definition": "the formal requirement document serving as the primary input for the implementation phase"
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORAGE-STRATEGY",
+            "project_definition": "the chosen persistence mechanism for maintaining system state"
+        },
+        {
+            "term": "Structure Decision",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REPO-STRUCTURE",
+            "project_definition": "the final determination of the directory layout and its mapping to real paths"
+        },
+        {
+            "term": "Target Platform",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the intended operating environment such as a Linux server or specific mobile OS version"
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the framework and strategy used for verifying code correctness"
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
+            "project_definition": "the visual interaction flows and components of the mobile interface"
+        },
+        {
+            "term": "UNUSED",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[REMOVE IF UNUSED] Option 1: Single project (DEFAULT)",
+            "project_definition": "the status of a template section that does not apply to the selected architecture"
+        },
+        {
+            "term": "WASM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "the binary instruction format for a stack-based virtual machine targeting web browsers"
+        },
+        {
+            "term": "iOS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REPO-STRUCTURE",
+            "project_definition": "the specific mobile operating system platform for which a dedicated directory structure is provided"
+        }
+    ]
+}

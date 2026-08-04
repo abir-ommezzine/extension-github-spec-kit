@@ -1,0 +1,40 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-008",
+            "project_definition": "A unique sequential integer assigned to each registered item to ensure deterministic referencing."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-007",
+            "project_definition": "The lightweight data-interchange format used for persistent storage in the home directory and machine-readable output."
+        },
+        {
+            "term": "Python 3.8",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASSUM-PY38",
+            "project_definition": "The minimum required runtime environment version for executing the application logic."
+        },
+        {
+            "term": "todo clear",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-005",
+            "project_definition": "An operation that purges all entries marked as finished while preserving those still pending."
+        },
+        {
+            "term": "todo list",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-002",
+            "project_definition": "A command to retrieve and display the current set of registered items and their associated statuses."
+        }
+    ]
+}

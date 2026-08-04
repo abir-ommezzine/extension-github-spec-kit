@@ -34,6 +34,7 @@ class ArtifactType(str, enum.Enum):
     constitution = "constitution"
     requirements = "requirements"
     contracts = "contracts"
+    
 
 
 class GeneratedBy(str, enum.Enum):
