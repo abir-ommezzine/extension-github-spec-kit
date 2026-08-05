@@ -7,7 +7,9 @@
   "engines": {
     "vscode": "^1.80.0"
   },
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "activationEvents": [
     "onStartupFinished"
   ],
@@ -79,8 +81,12 @@
             },
             "watchPatterns": {
               "type": "array",
-              "items": { "type": "string" },
-              "default": ["**/*.md"],
+              "items": {
+                "type": "string"
+              },
+              "default": [
+                "**/*.md"
+              ],
               "description": "Glob patterns for files to watch"
             }
           }
@@ -96,10 +102,11 @@
     "package": "vsce package"
   },
   "devDependencies": {
-    "@types/vscode": "^1.80.0",
     "@types/node": "^18.0.0",
-    "typescript": "^5.0.0",
+    "@types/vscode": "^1.80.0",
+    "esbuild": "^0.28.1",
     "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
     "vsce": "^2.15.0"
   },
   "dependencies": {

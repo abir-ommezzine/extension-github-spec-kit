@@ -7,6 +7,7 @@ Reads config from .vscode/settings.json
 import json
 import time
 import sys
+import os
 import hashlib
 import requests
 from pathlib import Path
@@ -22,9 +23,12 @@ if hasattr(sys.stderr, "reconfigure"):
 def log(msg):
     print(msg, flush=True)
 
-def load_vscode_config():
-    """Load agentdocx-speckit config from .vscode/settings.json"""
-    settings_path = Path.cwd() / ".vscode" / "settings.json"
+def load_vscode_config(workspace):
+    """Load agentdocx-speckit config from <workspace>/.vscode/settings.json"""
+    if workspace:
+        settings_path = Path(workspace) / ".vscode" / "settings.json"
+    else:
+        settings_path = Path.cwd() / ".vscode" / "settings.json"
     if settings_path.exists():
         try:
             with open(settings_path, "r", encoding="utf-8") as f:
@@ -126,18 +130,21 @@ class MarkdownHandler(FileSystemEventHandler):
             log(f"[WATCHER] Error triggering pipeline: {e}")
 
 def main():
-    config = load_vscode_config()
+    workspace = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("SPECKIT_WORKSPACE")
+    log(f"[WATCHER] Workspace: {workspace}")
+    config = load_vscode_config(workspace)
     
     # Get config with defaults
     project_path = config.get("projectPath", "specs")
-    project_name = config.get("projectName", Path.cwd().name)
+    project_name = config.get("projectName", Path(workspace).name if workspace else Path.cwd().name)
     api_host = config.get("apiHost", "127.0.0.1")
     api_port = config.get("apiPort", 8000)
     debounce = config.get("debounceSeconds", 2)
     watch_patterns = config.get("watchPatterns", ["**/*.md"])
     
-    # Resolve project path
-    watch_dir = Path.cwd() / project_path
+    # Resolve project path relative to the workspace
+    base_dir = Path(workspace) if workspace else Path.cwd()
+    watch_dir = base_dir / project_path
     api_url = f"http://{api_host}:{api_port}"
     
     log(f"[WATCHER] Starting watcher for project: {project_name}")

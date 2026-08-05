@@ -1,0 +1,96 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: CLI To-Do List Manager",
+            "project_definition": "The specific version control pointer `001-cli-todo-manager` used for this feature development."
+        },
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "Mandatory architectural boundaries including offline-only operation, single-user access, and zero-configuration requirements."
+        },
+        {
+            "term": "Date",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: CLI To-Do List Manager",
+            "project_definition": "The temporal marker 2026-08-04 associated with the planning phase."
+        },
+        {
+            "term": "GATE",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "A mandatory validation checkpoint that must be cleared before Phase 0 research and again after Phase 1 design."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CONST-STORAGE",
+            "project_definition": "The lightweight data-interchange format used for persistence at `~/.todos.json` and for scripting output."
+        },
+        {
+            "term": "Performance Goals",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CONST-PERF",
+            "project_definition": "The latency requirement specifying that all primary operations must execute in under 2 seconds."
+        },
+        {
+            "term": "Primary Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DEP-STDLIB",
+            "project_definition": "The exclusive reliance on the built-in modules provided by the language runtime, prohibiting third-party libraries."
+        },
+        {
+            "term": "Project Type",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "A command-line interface application."
+        },
+        {
+            "term": "Python 3.8",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The minimum required runtime environment version for execution."
+        },
+        {
+            "term": "Spec",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: CLI To-Do List Manager",
+            "project_definition": "The reference document located at `spec.md` defining the feature requirements."
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CONST-STORAGE",
+            "project_definition": "The local file-based persistence mechanism situated in the user home directory."
+        },
+        {
+            "term": "Target Platform",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "Cross-platform compatibility covering Windows, macOS, and Linux operating systems."
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TEST-UNIT",
+            "project_definition": "The validation strategy employing `unittest` for coverage and `pylint` or `flake8` for static analysis."
+        }
+    ]
+}

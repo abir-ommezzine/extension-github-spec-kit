@@ -4,13 +4,21 @@ FastAPI Server Launcher for AgentDocx SpecKit
 Reads config from .vscode/settings.json
 """
 import json
+import os
 import socket
 import sys
 from pathlib import Path
 
 def load_vscode_config():
     """Load agentdocx-speckit config from .vscode/settings.json"""
-    settings_path = Path.cwd() / ".vscode" / "settings.json"
+    workspace = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("SPECKIT_WORKSPACE")
+    print(f"[SERVER] Workspace: {workspace}", flush=True)
+    if workspace:
+        settings_path = Path(workspace) / ".vscode" / "settings.json"
+    else:
+        settings_path = Path.cwd() / ".vscode" / "settings.json"
+    print(f"[SERVER] Looking for config at: {settings_path}", flush=True)
+    print(f"[SERVER] Config exists: {settings_path.exists()}", flush=True)
     if settings_path.exists():
         try:
             with open(settings_path, "r", encoding="utf-8") as f:
@@ -36,6 +44,15 @@ def find_available_port(host, preferred_port, max_attempts=100):
         f"No free port found between {preferred_port} and {preferred_port + max_attempts - 1}"
     )
 
+def backend_already_running(host, port, timeout=1):
+    """Return True if a backend already responds on the given port."""
+    try:
+        import urllib.request
+        with urllib.request.urlopen(f"http://{host}:{port}/health", timeout=timeout) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
 def main():
     config = load_vscode_config()
     
@@ -45,10 +62,18 @@ def main():
     reload = config.get("reload", True)
     backend_path = config.get("backendPath", "backend")
     
+    # If a backend already runs on the preferred port, do not start a second one.
+    if backend_already_running(host, preferred_port):
+        print(f"[SERVER] Backend already running on {host}:{preferred_port}. Skipping server start.", flush=True)
+        sys.exit(0)
+    
     # Add backend to Python path
-    backend_dir = Path.cwd() / backend_path
+    backend_dir = Path(backend_path) if Path(backend_path).is_absolute() else Path.cwd() / backend_path
     if backend_dir.exists():
         sys.path.insert(0, str(backend_dir))
+    
+    os.environ["PYTHONPATH"] = str(backend_dir) + os.pathsep + os.environ.get("PYTHONPATH", "")
+    os.chdir(backend_dir)
     
     # Auto-select an available port when the preferred one is busy
     try:
