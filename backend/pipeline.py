@@ -136,7 +136,9 @@ async def list_documents(db: Session = Depends(get_db)):
                     "kpi": round(kpi_val, 1) if kpi_val is not None else None,
                     "doc_version_id": str(doc_ver.id),
                     "pipeline_run_id": str(run_for_eval.id) if run_for_eval else None,
-                    "agentEvaluations": agent_evaluations
+                    "agentEvaluations": agent_evaluations,
+                    "created_at": doc_ver.created_at.isoformat() if doc_ver.created_at else None,
+                    "generated_at": doc_ver.generated_at.isoformat() if doc_ver.generated_at else None,
                 })
         else:
             # Fallback : Au cas où le fichier est enregistré en BDD mais n'a pas encore de DocVersion
@@ -178,7 +180,9 @@ async def list_documents(db: Session = Depends(get_db)):
                 "kpi": round(kpi_val, 1) if kpi_val is not None else None,
                 "doc_version_id": None,
                 "pipeline_run_id": str(latest_run.id) if latest_run else None,
-                "agentEvaluations": agent_evaluations
+                "agentEvaluations": agent_evaluations,
+                "created_at": artifact.created_at.isoformat() if artifact.created_at else None,
+                "generated_at": latest_run.started_at.isoformat() if latest_run and latest_run.started_at else artifact.created_at.isoformat() if artifact.created_at else None,
             })
 
     return result
