@@ -724,8 +724,8 @@ const KanbanBoard = () => {
     
     refresh(); // Initial load
     
-    // Poll every 10 seconds for updates
-    const interval = setInterval(refresh, 10000);
+    // Poll every 5 seconds for faster updates
+    const interval = setInterval(refresh, 5000);
     
     return () => clearInterval(interval);
   }, [dispatch, projectName]);
@@ -877,7 +877,7 @@ const KanbanBoard = () => {
               <Button variant="outlined" startIcon={<RefreshIcon />} onClick={handleIngest} disabled={!projectName}>
                 Ingest Tasks
               </Button>
-              <Button variant="contained" startIcon={<AnalyticsIcon />} onClick={() => dispatch(fetchProgress(projectName))} disabled={!projectName}>
+              <Button variant="contained" startIcon={<AnalyticsIcon />} onClick={() => { dispatch(fetchProgress(projectName)); dispatch(fetchTickets({ projectName })); dispatch(fetchTaskState(projectName)); }} disabled={!projectName}>
                 Refresh Progress
               </Button>
 </Box>

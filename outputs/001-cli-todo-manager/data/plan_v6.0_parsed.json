@@ -1,0 +1,156 @@
+{
+    "parsing_rationale": "The document is an implementation plan for a CLI To-Do Manager. I have mapped the high-level summaries to 'Task Description & Objective', the Technical Context to 'Security & Performance Constraints' and 'Dependencies & Integration Points', and the project structure to 'Implementation Notes & References'. Since the document is a high-level plan and lacks specific granular checklists or test cases, these have been marked as structural gaps.",
+    "project_info": {
+        "project_name": "CLI To-Do List Manager",
+        "source_type": "refining",
+        "brief_explanation": "Development of a Python-based CLI tool for task management with JSON persistence.",
+        "source_context": "Implementation plan based on feature specification 001-cli-todo-manager."
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Implementation Plan: CLI To-Do List Manager",
+            "level": 1,
+            "raw_content": "**Branch**: `001-cli-todo-manager` | **Date**: 2026-08-04 | **Spec**: [spec.md](spec.md)\n\n**Input**: Feature specification from `/specs/001-cli-todo-manager/spec.md`",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Summary",
+            "level": 2,
+            "raw_content": "Build a minimal Python CLI that lets a user add, list, complete, remove, and clear tasks, persisting task data in `~/.todos.json` and supporting human-readable output plus `--json` for scripting....",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Technical Context",
+            "level": 2,
+            "raw_content": "**Language/Version**: Python 3.8+\n\n**Primary Dependencies**: Python standard library only\n\n**Storage**: Local JSON file at `~/.todos.json`\n\n**Testing**: `unittest` with CLI/integration coverage; linting with `pylint` or `flake8`\n\n**Target Platform**: Cross-platform command-line use on Windows, macOS, and Linux\n\n**Project Type**: CLI application\n\n**Performance Goals**: Add, list, complete, remove, and clear operations should complete in under 2 seconds on standard hardware\n\n**Constraints**: Offline-only, single-user, zero-configuration, standard-library-only implementation\n\n**Scale/Scope**: Small local task list, including support for 1000+ tasks in one JSON file",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        },
+        {
+            "title": "Constitution Check",
+            "level": 2,
+            "raw_content": "*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*\n\n| Principle | Status | Notes |\n|-----------|--------|-------|\n| Simplicity-First | Pass | The feature is limited to essential task management commands. |\n| CLI-Only Architecture | Pass | All behavior is exposed through command-line arguments and flags. |\n| JSON Local Storage | Pass | Data is persisted in `~/.todos.json`. |\n| Zero Configuration | Pass | No external services or setup are required beyond Python. |\n| Minimal Dependencies | Pass | The design uses the Python standard library only. |",
+            "mapped_to_template_field": "Dependencies & Integration Points"
+        },
+        {
+            "title": "Project Structure",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Documentation (this feature)",
+            "level": 3,
+            "raw_content": "```text\nspecs/001-cli-todo-manager/\n├── plan.md\n├── research.md\n├── data-model.md\n├── quickstart.md\n└── contracts/\n    └── commands.md\n```",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Source Code (repository root)",
+            "level": 3,
+            "raw_content": "```text\nsrc/\n└── todo_manager/\n    ├── __init__.py\n    ├── __main__.py\n    ├── cli.py\n    ├── models.py\n    ├── storage.py\n    └── service.py\n\ntests/\n├── unit/\n└── integration/\n```\n\n**Structure Decision**: Use a single Python package under `src/todo_manager/` for command parsing, task modeling, storage, and service logic, with `tests/unit/` and `tests/integration/` covering behavior from the CLI down to the JSON file boundary.",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Complexity Tracking",
+            "level": 2,
+            "raw_content": "No constitution violations require justification.",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "task",
+            "identifier": "CLI-CORE",
+            "content": "Build minimal Python CLI for add, list, complete, remove, and clear tasks",
+            "source_section": "Summary",
+            "attributes": {}
+        },
+        {
+            "type": "dependency",
+            "identifier": "DEP-STDLIB",
+            "content": "Python standard library only (no external dependencies)",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONST-STORAGE",
+            "content": "Local JSON file persistence at ~/.todos.json",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONST-PERF",
+            "content": "Operations must complete in under 2 seconds",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONST-SCALE",
+            "content": "Support for 1000+ tasks in one JSON file",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "ARCH-STRUCT",
+            "content": "Implement package structure: cli.py, models.py, storage.py, service.py",
+            "source_section": "Source Code (repository root)",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TEST-UNIT",
+            "content": "unittest with CLI/integration coverage",
+            "source_section": "Technical Context",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "CLI-CORE",
+            "to": "DEP-STDLIB",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "CLI-CORE",
+            "to": "CONST-STORAGE",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ARCH-STRUCT",
+            "to": "CLI-CORE",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TEST-UNIT",
+            "to": "CLI-CORE",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Acceptance Criteria",
+            "priority": "HIGH",
+            "remediation_advice": "Define specific 'Pass/Fail' criteria for each command (add, list, etc.)"
+        },
+        {
+            "missing_section": "Checkboxes Checklist",
+            "priority": "MEDIUM",
+            "remediation_advice": "Create a step-by-step operational checklist for implementation"
+        },
+        {
+            "missing_section": "Testing & Validation",
+            "priority": "MEDIUM",
+            "remediation_advice": "Detail specific test scenarios beyond the general use of unittest"
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Identify potential risks or undecided implementation details"
+        }
+    ],
+    "open_questions": []
+}

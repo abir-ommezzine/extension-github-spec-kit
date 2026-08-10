@@ -413,6 +413,72 @@ async def project_progress(
     return ProgressResponse(**progress)
 
 
+@router.post("/sync-current-task")
+async def sync_current_task(db: Session = Depends(get_db)):
+    """
+    POST /sync-current-task
+    Reads .task_runtime/current-task.json and updates the matching ticket status
+    in the database. Useful as a manual trigger when the file watcher is not available.
+    """
+    import json
+    from app.utils.path_builder import BASE_DIR
+
+    current_task_file = BASE_DIR / ".task_runtime" / "current-task.json"
+
+    if not current_task_file.exists():
+        raise HTTPException(status_code=404, detail="current-task.json not found")
+
+    try:
+        data = json.loads(current_task_file.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as e:
+        raise HTTPException(status_code=500, detail=f"Failed to read current-task.json: {e}")
+
+    task_id: str = data.get("task_id", "")
+    raw_status: str = data.get("status", "in_progress")
+    project_name: str = data.get("project_name", "")
+
+    if not task_id:
+        raise HTTPException(status_code=400, detail="current-task.json missing task_id")
+
+    # Find the ticket whose source_path ends with #<task_id>
+    query = db.query(Ticket).filter(Ticket.source_path.like(f"%#{task_id}"))
+
+    if project_name:
+        from app.models import Project
+        project = db.query(Project).filter(Project.name == project_name).first()
+        if project:
+            query = query.filter(Ticket.project_id == project.id)
+
+    ticket = query.first()
+    if not ticket:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No ticket found for task_id={task_id} (project: {project_name!r})"
+        )
+
+    try:
+        target_status = TicketStatus(raw_status)
+    except ValueError:
+        target_status = TicketStatus.in_progress
+
+    updated = update_ticket_status(db, str(ticket.id), target_status.value, AuthorType.agent)
+
+    return TicketResponse(
+        id=str(updated.id),
+        project_id=str(updated.project_id),
+        artifact_id=str(updated.artifact_id) if updated.artifact_id else None,
+        source_path=updated.source_path,
+        title=updated.title,
+        description=updated.description,
+        status=updated.status.value,
+        position=updated.position,
+        checkbox_state=updated.checkbox_state,
+        file_hash=updated.file_hash,
+        created_at=updated.created_at.isoformat() if updated.created_at else "",
+        updated_at=updated.updated_at.isoformat() if updated.updated_at else "",
+    )
+
+
 @router.get("/tickets/{ticket_id}/doc-pdf")
 async def get_ticket_doc_pdf(
     ticket_id: str,

@@ -14,7 +14,10 @@ from sqlalchemy.orm import Session
 
 # Modèles et session BDD
 from app.database import get_db
-from app.models import Project, Artifact, DocVersion, PipelineRun, ArtifactType, PipelineStage, GeneratedBy
+from app.models import (
+    Project, Artifact, DocVersion, PipelineRun, ArtifactType, PipelineStage, GeneratedBy,
+    Ticket, TicketStatus, TicketEvent, TicketEventType, AuthorType,
+)
 from app.services.db_service import (
     should_process_file,
     check_file_exists_only,
@@ -29,6 +32,9 @@ from app.graph.workflow import create_pipeline_workflow
 
 router = APIRouter()
 app_graph = create_pipeline_workflow()
+
+# In-memory task state store (keyed by project_name)
+_task_state_store: Dict[str, Dict[str, Any]] = {}
 
 PIPELINE_STATUS = {
     "is_running": False,
@@ -101,6 +107,87 @@ def calculate_global_kpi(evaluations: Dict[str, Optional[Dict[str, Any]]]) -> fl
 @router.get("/status")
 async def get_pipeline_status():
     return PIPELINE_STATUS
+
+
+@router.get("/projects")
+async def list_projects(db: Session = Depends(get_db)):
+    """GET /projects - Liste tous les projets avec leur nombre d'artefacts."""
+    projects = db.query(Project).order_by(Project.created_at.desc()).all()
+    return [
+        {
+            "id": str(p.id),
+            "name": p.name,
+            "repo_url": p.repo_url,
+            "artifact_count": len(p.artifacts),
+            "created_at": p.created_at.isoformat() if p.created_at else "",
+        }
+        for p in projects
+    ]
+
+
+@router.get("/task-state/{project_name}")
+async def get_task_state(project_name: str):
+    """GET /task-state/{project_name} - État courant des tâches pour le Kanban."""
+    # Check in-memory store first (set by POST from extension)
+    if project_name in _task_state_store:
+        return _task_state_store[project_name]
+
+    state_file = BASE_DIR / ".task_runtime" / "agent-state.json"
+    default_state = {
+        "current_task": 0,
+        "total_tasks": 0,
+        "task_status": {},
+        "started_at": None,
+        "updated_at": None,
+    }
+
+    if not state_file.exists():
+        return default_state
+
+    try:
+        state = json.loads(state_file.read_text(encoding="utf-8"))
+        return {
+            "current_task": state.get("current_task", 0),
+            "total_tasks": state.get("total_tasks", 0),
+            "task_status": state.get("task_status", {}),
+            "started_at": state.get("started_at"),
+            "updated_at": state.get("updated_at"),
+        }
+    except Exception:
+        return default_state
+
+
+class TaskStateUpdate(BaseModel):
+    current_task_id: Optional[str] = None
+    current_task_file: Optional[str] = None
+    task_status: Dict[str, str] = {}
+    started_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+
+@router.post("/task-state/{project_name}")
+async def update_task_state(project_name: str, state: TaskStateUpdate, db: Session = Depends(get_db)):
+    """
+    POST /task-state/{project_name}
+    Kept for backward compatibility with the VS Code extension.
+    Status updates are now driven exclusively by current-task.json via the file watcher.
+    This endpoint only stores the state in memory for the GET endpoint to return.
+    """
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc).isoformat()
+    clean_task_id = state.current_task_id.lstrip("#") if state.current_task_id else None
+
+    # Store in memory for GET /task-state/{project_name} to return
+    _task_state_store[project_name] = {
+        "current_task_id": clean_task_id or state.current_task_id,
+        "current_task_file": state.current_task_file,
+        "task_status": state.task_status,
+        "started_at": state.started_at or now,
+        "updated_at": now,
+    }
+
+    return {"status": "ok", "updated_at": now}
 
 
 @router.get("/documents")

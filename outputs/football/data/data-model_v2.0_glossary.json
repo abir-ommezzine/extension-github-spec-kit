@@ -1,0 +1,89 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CON-FOLLOW-UNIQUE",
+            "project_definition": "Logical invariants enforced at the persistence layer to maintain data integrity, such as composite uniqueness requirements."
+        },
+        {
+            "term": "Cryptographic Hashing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "CON-USER-EMAIL",
+            "project_definition": "The required transformation process for securing sensitive credentials before storage, implied by the complexity requirements for account access."
+        },
+        {
+            "term": "DateTime",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "Temporal data type used to capture specific chronological points, including event schedules and system audit timestamps."
+        },
+        {
+            "term": "MUN",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-TEAM",
+            "project_definition": "An example of a short-form alphabetic representation of a professional club's identity."
+        },
+        {
+            "term": "Match Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Validation Rules",
+            "project_definition": "The set of operational checks ensuring a sporting event has distinct opposing sides and logically consistent timing and scoring states."
+        },
+        {
+            "term": "Relationships",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The structural associations and dependencies between different data entities, such as foreign key linkages."
+        },
+        {
+            "term": "Team Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CON-TEAM-UNIQUE",
+            "project_definition": "The verification process ensuring that professional club identifiers remain globally distinct within the registry."
+        },
+        {
+            "term": "UTC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The standardized time offset used to ensure temporal consistency across different geographical zones."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "A 128-bit numerically unique identifier used as a primary key for entity disambiguation."
+        },
+        {
+            "term": "User Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CON-USER-EMAIL",
+            "project_definition": "The integrity checks applied to account data, including the verification of unique electronic mail addresses and secret credential strength."
+        },
+        {
+            "term": "UserFollow",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-USERFOLLOW",
+            "project_definition": "The association entity representing a subscription link between an account holder and a specific sporting event."
+        },
+        {
+            "term": "UserFollow Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CON-FOLLOW-UNIQUE",
+            "project_definition": "The rule preventing duplicate subscription entries for the same account and event pair."
+        }
+    ]
+}

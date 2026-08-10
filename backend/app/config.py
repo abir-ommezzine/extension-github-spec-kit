@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     
     PDF_STORAGE_DIR: str = "./storage/pdfs"
     LOG_LEVEL: str = "INFO"
+    
+    # --- TARGET PROJECT CONFIGURATION ---
+    # Path to the project being worked on (where current-task.json should be watched)
+    TARGET_PROJECT_PATH: Optional[str] = None
 
     model_config = SettingsConfigDict(
         env_file=ENV_PATH, 
