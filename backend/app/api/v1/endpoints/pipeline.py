@@ -228,7 +228,8 @@ async def list_documents(db: Session = Depends(get_db)):
                     "kpi": round(kpi_val, 1) if kpi_val is not None else None,
                     "doc_version_id": str(doc_ver.id),
                     "pipeline_run_id": str(run_for_eval.id) if run_for_eval else None,
-                    "agentEvaluations": agent_evaluations
+                    "agentEvaluations": agent_evaluations,
+                    "generated_at": (doc_ver.generated_at or artifact.created_at).isoformat() if (doc_ver.generated_at or artifact.created_at) else None
                 })
         else:
             latest_run = (
@@ -269,10 +270,71 @@ async def list_documents(db: Session = Depends(get_db)):
                 "kpi": round(kpi_val, 1) if kpi_val is not None else None,
                 "doc_version_id": None,
                 "pipeline_run_id": str(latest_run.id) if latest_run else None,
-                "agentEvaluations": agent_evaluations
+                "agentEvaluations": agent_evaluations,
+                "generated_at": artifact.created_at.isoformat() if artifact.created_at else None
             })
 
     return result
+
+
+@router.delete("/documents/{doc_version_id}")
+async def delete_document_version(doc_version_id: str, db: Session = Depends(get_db)):
+    """Delete a specific document version and its associated data."""
+    try:
+        doc_version = db.query(DocVersion).filter(DocVersion.id == doc_version_id).first()
+        if not doc_version:
+            raise HTTPException(status_code=404, detail="Document version not found")
+        
+        # Delete the PDF file if it exists
+        if doc_version.pdf_path and Path(doc_version.pdf_path).exists():
+            Path(doc_version.pdf_path).unlink()
+        
+        # Delete associated pipeline run if exists
+        if doc_version.pipeline_run_id:
+            db.query(PipelineRun).filter(PipelineRun.id == doc_version.pipeline_run_id).delete()
+        
+        # Delete the document version
+        db.delete(doc_version)
+        db.commit()
+        
+        return {"status": "success", "message": f"Document version {doc_version_id} deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete document: {str(e)}")
+
+
+@router.delete("/artifacts/{artifact_id}")
+async def delete_artifact(artifact_id: str, db: Session = Depends(get_db)):
+    """Delete an artifact and all its versions."""
+    try:
+        artifact = db.query(Artifact).filter(Artifact.id == artifact_id).first()
+        if not artifact:
+            raise HTTPException(status_code=404, detail="Artifact not found")
+        
+        # Delete all document versions and their files
+        versions = db.query(DocVersion).filter(DocVersion.artifact_id == artifact_id).all()
+        for version in versions:
+            if version.pdf_path and Path(version.pdf_path).exists():
+                Path(version.pdf_path).unlink()
+        
+        # Delete all pipeline runs
+        db.query(PipelineRun).filter(PipelineRun.artifact_id == artifact_id).delete()
+        
+        # Delete all document versions
+        db.query(DocVersion).filter(DocVersion.artifact_id == artifact_id).delete()
+        
+        # Delete the artifact itself
+        db.delete(artifact)
+        db.commit()
+        
+        return {"status": "success", "message": f"Artifact {artifact_id} and all versions deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete artifact: {str(e)}")
 
 
 @router.post("/upload")
