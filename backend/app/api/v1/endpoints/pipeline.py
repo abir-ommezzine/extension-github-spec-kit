@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import (
     Project, Artifact, DocVersion, PipelineRun, ArtifactType, PipelineStage, GeneratedBy,
-    Ticket, TicketStatus, TicketEvent, AuthorType,
+    Ticket, TicketStatus, TicketEvent, TicketEventType, AuthorType,
 )
 from app.services.db_service import (
     should_process_file,
@@ -145,44 +145,25 @@ class TaskStateUpdate(BaseModel):
 
 @router.post("/task-state/{project_name}")
 async def update_task_state(project_name: str, state: TaskStateUpdate, db: Session = Depends(get_db)):
-    """POST /task-state/{project_name} - Reçoit l'état des tâches de l'extension et met à jour les tickets."""
-    import uuid
+    """
+    POST /task-state/{project_name}
+    Kept for backward compatibility with the VS Code extension.
+    Status updates are now driven exclusively by current-task.json via the file watcher.
+    This endpoint only stores the state in memory for the GET endpoint to return.
+    """
     from datetime import datetime, timezone
 
     now = datetime.now(timezone.utc).isoformat()
+    clean_task_id = state.current_task_id.lstrip("#") if state.current_task_id else None
 
-    # Store in memory
+    # Store in memory for GET /task-state/{project_name} to return
     _task_state_store[project_name] = {
-        "current_task_id": state.current_task_id,
+        "current_task_id": clean_task_id or state.current_task_id,
         "current_task_file": state.current_task_file,
         "task_status": state.task_status,
         "started_at": state.started_at or now,
         "updated_at": now,
     }
-
-    # Update ticket statuses in DB
-    project = db.query(Project).filter(Project.name == project_name).first()
-    if project:
-        for task_id, task_status_val in state.task_status.items():
-            if task_status_val not in ("in_progress", "done"):
-                continue
-            tickets = db.query(Ticket).filter(
-                Ticket.project_id == project.id,
-                Ticket.source_path.contains(f"#{task_id}")
-            ).all()
-            for ticket in tickets:
-                new_status = TicketStatus.in_progress if task_status_val == "in_progress" else TicketStatus.done
-                if ticket.status != new_status:
-                    old_status = ticket.status
-                    ticket.status = new_status
-                    event = TicketEvent(
-                        ticket_id=ticket.id,
-                        event_type="status_change",
-                        author_type="agent",
-                        payload={"from": old_status.value, "to": new_status.value, "source": "agent-state"},
-                    )
-                    db.add(event)
-        db.commit()
 
     return {"status": "ok", "updated_at": now}
 

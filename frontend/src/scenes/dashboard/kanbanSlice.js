@@ -252,12 +252,14 @@ const kanbanSlice = createSlice({
         if (action.payload.projectName !== state.projectName) return;
         state.taskState = action.payload.taskState;
       })
-      .addCase(ingestTasks.fulfilled, (state, action) => {
-        if (action.payload.projectName !== state.projectName) return;
-        state.tickets = action.payload.tickets;
-        state.todoTickets = action.payload.tickets.filter(t => t.status === "todo").sort((a, b) => a.position - b.position);
-        state.inProgressTickets = action.payload.tickets.filter(t => t.status === "in_progress").sort((a, b) => a.position - b.position);
-        state.doneTickets = action.payload.tickets.filter(t => t.status === "done").sort((a, b) => a.position - b.position);
+      // ingestTasks: do NOT update ticket state from the ingest response.
+      // The ingest endpoint re-parses the markdown file and would overwrite
+      // statuses that were set by current-task.json (e.g. in_progress → todo
+      // if the checkbox is still unchecked in tasks.md).
+      // Instead we rely on the fetchTickets poll (every 5s) to pull the
+      // authoritative state straight from the DB.
+      .addCase(ingestTasks.fulfilled, (_state, _action) => {
+        // intentionally left blank — fetchTickets handles state refresh
       })
       .addCase(fetchProgress.fulfilled, (state, action) => {
         if (action.payload.projectName !== state.projectName) return;

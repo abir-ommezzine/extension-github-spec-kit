@@ -1,0 +1,40 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FIELD-ID",
+            "project_definition": "A positive, sequential, and unique integer used to distinguish each entry, calculated as the maximum existing value plus one."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Storage Model",
+            "project_definition": "The structured text format used for the persistent storage file located at ~/.todos.json, containing an array of objects."
+        },
+        {
+            "term": "UTC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FIELD-DATE",
+            "project_definition": "The time standard used for the immutable creation timestamp, formatted according to ISO 8601."
+        },
+        {
+            "term": "complete <id>",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STATE-TRANSITION",
+            "project_definition": "The operational command that triggers a state change from pending to a finished status for a specific record."
+        },
+        {
+            "term": "remove <id>",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STATE-TRANSITION",
+            "project_definition": "The operational command that transitions a record from either pending or finished status to a deleted state."
+        }
+    ]
+}

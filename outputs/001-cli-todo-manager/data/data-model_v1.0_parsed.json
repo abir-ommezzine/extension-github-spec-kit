@@ -1,0 +1,215 @@
+{
+    "parsing_rationale": "The document describes the data model for a CLI To-Do Manager. I have mapped the 'Task' and 'Fields' sections to the Task Description, 'Validation Rules' and 'Operational Rules' to Constraints, and 'State Transitions' to the operational flow. Since this is a data model specification being treated as a 'task' doc type, I have extracted the field definitions as sub-tasks for implementation and the validation rules as constraints.",
+    "project_info": {
+        "project_name": "CLI To-Do List Manager",
+        "source_type": "refining",
+        "brief_explanation": "Definition of the data structure, validation rules, and storage mechanism for a CLI-based task manager.",
+        "source_context": "data-model.md"
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Data Model: CLI To-Do List Manager",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Task",
+            "level": 2,
+            "raw_content": "Represents one to-do item stored in `~/.todos.json`.",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Fields",
+            "level": 3,
+            "raw_content": "- `id`: Integer, unique, sequential, positive, required\n- `description`: String, required, trimmed, must not be empty\n- `completed`: Boolean, required, defaults to `false`\n- `created_at`: ISO 8601 UTC timestamp string, required, immutable after creation",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Validation Rules",
+            "level": 3,
+            "raw_content": "- `id` must be greater than zero and must not duplicate an existing task ID.\n- `description` must contain non-whitespace content after trimming.\n- `completed` must always be a boolean value.\n- `created_at` must be present when the task is written and must not change during later updates...",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        },
+        {
+            "title": "State Transitions",
+            "level": 3,
+            "raw_content": "- `pending` -> `completed` when the user runs `complete <id>`.\n- `pending` -> `deleted` when the user runs `remove <id>`.\n- `completed` -> `deleted` when the user runs `clear` or `remove <id>`",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Storage Model",
+            "level": 2,
+            "raw_content": "The JSON file contains an array of task objects.\n\nExample:\n\n```json\n[\n  {\n    \"id\": 1,\n    \"description\": \"Buy groceries\",\n    \"completed\": false,\n    \"created_at\": \"2026-08-04T12:00:00Z\"\n  }\n]\n```",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Operational Rules",
+            "level": 2,
+            "raw_content": "- Missing storage file means an empty task list.\n- Corrupted JSON must be treated as an error and reported to the user.\n- IDs are assigned from the highest current ID plus one, even if earlier tasks were deleted.",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        }
+    ],
+    "elements": [
+        {
+            "type": "task",
+            "identifier": "MODEL-TASK",
+            "content": "Implement the Task data model stored in ~/.todos.json",
+            "source_section": "Task",
+            "attributes": {}
+        },
+        {
+            "type": "sub_task",
+            "identifier": "FIELD-ID",
+            "content": "Implement id: Integer, unique, sequential, positive, required",
+            "source_section": "Fields",
+            "attributes": {}
+        },
+        {
+            "type": "sub_task",
+            "identifier": "FIELD-DESC",
+            "content": "Implement description: String, required, trimmed, non-empty",
+            "source_section": "Fields",
+            "attributes": {}
+        },
+        {
+            "type": "sub_task",
+            "identifier": "FIELD-COMP",
+            "content": "Implement completed: Boolean, required, default false",
+            "source_section": "Fields",
+            "attributes": {}
+        },
+        {
+            "type": "sub_task",
+            "identifier": "FIELD-DATE",
+            "content": "Implement created_at: ISO 8601 UTC timestamp, required, immutable",
+            "source_section": "Fields",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "VAL-ID-UNIQUE",
+            "content": "id must be > 0 and must not duplicate existing IDs",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "VAL-DESC-CONTENT",
+            "content": "description must contain non-whitespace content after trimming",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "VAL-DATE-IMMUTABLE",
+            "content": "created_at must be present at write and immutable during updates",
+            "source_section": "Validation Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "OP-FILE-MISSING",
+            "content": "Missing storage file must be treated as an empty task list",
+            "source_section": "Operational Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "OP-JSON-CORRUPT",
+            "content": "Corrupted JSON must be reported as an error to the user",
+            "source_section": "Operational Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "OP-ID-GEN",
+            "content": "IDs assigned from highest current ID + 1",
+            "source_section": "Operational Rules",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "STATE-TRANSITION",
+            "content": "Implement state transitions: pending->completed, pending->deleted, completed->deleted",
+            "source_section": "State Transitions",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "MODEL-TASK",
+            "to": "FIELD-ID",
+            "relation_type": "contains"
+        },
+        {
+            "source": "MODEL-TASK",
+            "to": "FIELD-DESC",
+            "relation_type": "contains"
+        },
+        {
+            "source": "MODEL-TASK",
+            "to": "FIELD-COMP",
+            "relation_type": "contains"
+        },
+        {
+            "source": "MODEL-TASK",
+            "to": "FIELD-DATE",
+            "relation_type": "contains"
+        },
+        {
+            "source": "FIELD-ID",
+            "to": "VAL-ID-UNIQUE",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FIELD-ID",
+            "to": "OP-ID-GEN",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FIELD-DESC",
+            "to": "VAL-DESC-CONTENT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FIELD-DATE",
+            "to": "VAL-DATE-IMMUTABLE",
+            "relation_type": "implements"
+        },
+        {
+            "source": "STATE-TRANSITION",
+            "to": "MODEL-TASK",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Dependencies & Integration Points",
+            "priority": "LOW",
+            "remediation_advice": "Define if this model depends on specific JSON libraries or OS file system APIs."
+        },
+        {
+            "missing_section": "Acceptance Criteria",
+            "priority": "HIGH",
+            "remediation_advice": "Define explicit testable criteria for the data model (e.g., 'Verify that a task cannot be saved with an empty description')."
+        },
+        {
+            "missing_section": "Checkboxes Checklist",
+            "priority": "MEDIUM",
+            "remediation_advice": "Create a checklist for the implementation of each field and validation rule."
+        },
+        {
+            "missing_section": "Testing & Validation",
+            "priority": "HIGH",
+            "remediation_advice": "Define test cases for corrupted JSON and ID collision scenarios."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Check if there are limits on the number of tasks or file size."
+        }
+    ],
+    "open_questions": []
+}

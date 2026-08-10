@@ -1,0 +1,117 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "Checkpoint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "A synchronization gate ensuring all blocking infrastructure is verified before parallel feature development commences."
+        },
+        {
+            "term": "Foundational",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The core shared infrastructure layer containing serialization, storage resolution, and dispatch logic required by all subsequent features."
+        },
+        {
+            "term": "Goal",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-3",
+            "project_definition": "The high-level functional objective that a specific user story must satisfy to be considered complete."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T010",
+            "project_definition": "A sequential numeric identifier assigned to each task entity to enable unique referencing and targeted mutation."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T005",
+            "project_definition": "The lightweight data-interchange format used for persistent storage in ~/.todos.json and for scriptable output."
+        },
+        {
+            "term": "MVP",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-3",
+            "project_definition": "The minimum viable product consisting of the ability to create and mark tasks as finished."
+        },
+        {
+            "term": "Organization",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Tasks: CLI To-Do List Manager",
+            "project_definition": "The structural grouping of implementation units by user story to ensure independent testability."
+        },
+        {
+            "term": "Prerequisites",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Tasks: CLI To-Do List Manager",
+            "project_definition": "The set of mandatory design documents including plan, spec, research, data-model, and command contracts."
+        },
+        {
+            "term": "README",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T021",
+            "project_definition": "The primary documentation file detailing command-line usage and persistence behavior."
+        },
+        {
+            "term": "Setup",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The initial phase involving package skeleton creation, directory structuring, and pyproject.toml configuration."
+        },
+        {
+            "term": "T016",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T016",
+            "project_definition": "The specific implementation unit responsible for providing a clear user message when the task collection is empty."
+        },
+        {
+            "term": "Tests",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T002",
+            "project_definition": "The verification suite organized into unit and integration directories, validated via quickstart smoke tests."
+        },
+        {
+            "term": "population in",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T010",
+            "project_definition": "The process of assigning the created_at timestamp during the instantiation of a new task entity."
+        },
+        {
+            "term": "todo clear",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T018",
+            "project_definition": "The operational command that purges all entities marked as finished from the persistent store."
+        },
+        {
+            "term": "todo list",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "T013",
+            "project_definition": "The operational command that retrieves and displays all stored entities in either human-readable or machine-parseable formats."
+        },
+        {
+            "term": "⚠️ CRITICAL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "A blocking constraint indicating that no feature work can proceed until the foundational infrastructure is fully implemented."
+        }
+    ]
+}

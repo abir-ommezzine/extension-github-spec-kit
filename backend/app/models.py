@@ -11,6 +11,7 @@ from sqlalchemy import (
     ForeignKey,
     UniqueConstraint,
     Enum as SAEnum,
+    text,
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
@@ -21,6 +22,7 @@ from app.database import Base
 
 def _uuid() -> uuid.UUID:
     return uuid.uuid4()
+
 
 
 # ============================================
@@ -71,6 +73,37 @@ class TicketEventType(str, enum.Enum):
 class AuthorType(str, enum.Enum):
     human = "human"
     agent = "agent"
+
+
+def sync_native_enums(engine):
+    """
+    S'assure que les types ENUM PostgreSQL natifs possèdent toutes les valeurs 
+    définies dans les classes Enum Python/SQLAlchemy (ex: constitution, requirements, contracts).
+    """
+    native_enums = [
+        (ArtifactType, "artifact_type_enum"),
+        (GeneratedBy, "generated_by_enum"),
+        (PipelineStage, "pipeline_stage_enum"),
+    ]
+
+    try:
+        with engine.connect() as conn:
+            for enum_cls, enum_name in native_enums:
+                query = text(
+                    "SELECT enumlabel FROM pg_enum JOIN pg_type ON pg_enum.enumtypid = pg_type.oid WHERE pg_type.typname = :name"
+                )
+                existing_labels = {r[0] for r in conn.execute(query, {"name": enum_name}).fetchall()}
+                if not existing_labels:
+                    continue
+                for item in enum_cls:
+                    if item.value not in existing_labels:
+                        try:
+                            conn.execute(text(f"ALTER TYPE {enum_name} ADD VALUE '{item.value}'"))
+                            conn.commit()
+                        except Exception:
+                            pass
+    except Exception as e:
+        print(f"[WARN] Impossible de synchroniser les enums DB: {e}")
 
 
 # ============================================
