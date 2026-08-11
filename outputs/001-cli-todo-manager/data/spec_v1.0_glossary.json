@@ -1,0 +1,47 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "Handle",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Edge Cases",
+            "project_definition": "The operational logic used to manage corrupted storage files or concurrent file access attempts."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-008",
+            "project_definition": "A unique sequential integer assigned to each entry for precise referencing and mutation."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-007",
+            "project_definition": "The standardized data interchange format used for local persistence at ~/.todos.json and machine-readable output."
+        },
+        {
+            "term": "Python 3.8",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Specification: CLI To-Do List Manager",
+            "project_definition": "The minimum required runtime environment for executing the application."
+        },
+        {
+            "term": "todo clear",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-005",
+            "project_definition": "The specific command-line trigger that purges all entries marked as finished from the storage."
+        },
+        {
+            "term": "todo list",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-002",
+            "project_definition": "The specific command-line trigger that retrieves and displays all stored entries and their current states."
+        }
+    ]
+}

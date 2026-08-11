@@ -1,0 +1,26 @@
+{
+    "project_name": "CLI Todo Manager",
+    "items": [
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AC-LIST-HUMAN",
+            "project_definition": "A unique numeric reference used to target a specific entry for completion or removal operations."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AC-LIST-JSON",
+            "project_definition": "The structured data format used for both persistent storage in the home directory and machine-readable output."
+        },
+        {
+            "term": "Python 3.8",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DEP-PY38",
+            "project_definition": "The minimum required runtime environment version for executing the command line interface."
+        }
+    ]
+}

@@ -210,20 +210,29 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('agentdocx-speckit.startWatcher');
 
     // =========================================================================
-    // 6. Task State Watcher — détecte les changements dans tasks.md
-    //    + génère .github/copilot-instructions.md
+    // 6. Copilot Instructions — génère .github/copilot-instructions.md
     // =========================================================================
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     if (workspaceFolder) {
-        const config = vscode.workspace.getConfiguration('agentdocx-speckit');
-        const projectName = config.get<string>('projectName', workspaceFolder.name);
-        const apiPort = config.get<number>('apiPort', 8000);
+        const githubDir = path.join(workspaceFolder.uri.fsPath, '.github');
+        if (!fs.existsSync(githubDir)) {
+            fs.mkdirSync(githubDir, { recursive: true });
+        }
 
-        // =========================================================================
-        // 6. Task State — removed old tasks.md watcher + parseTasks logic.
-        //    Status is now driven exclusively by .task_runtime/current-task.json
-        //    which the backend file watcher picks up automatically.
-        // =========================================================================
+        const instructionsPath = path.join(githubDir, 'copilot-instructions.md');
+        const sourceInstructionsPath = path.join(context.extensionPath, '.github', 'copilot-instructions.md');
+
+        if (fs.existsSync(sourceInstructionsPath)) {
+            try {
+                const content = fs.readFileSync(sourceInstructionsPath, 'utf8');
+                fs.writeFileSync(instructionsPath, content, 'utf8');
+                watcherOutputChannel.appendLine(`[INIT] .github/copilot-instructions.md généré avec succès.`);
+            } catch (err) {
+                watcherOutputChannel.appendLine(`[ERREUR] Échec de la génération des instructions Copilot : ${err}`);
+            }
+        } else {
+            watcherOutputChannel.appendLine(`[ERREUR] Fichier source copilot-instructions.md introuvable.`);
+        }
     }
 }
 

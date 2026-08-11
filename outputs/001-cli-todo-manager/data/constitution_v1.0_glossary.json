@@ -1,0 +1,40 @@
+{
+    "project_name": "To-Do List Manager",
+    "items": [
+        {
+            "term": "GUI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-CLI-ONLY",
+            "project_definition": "Prohibited visual interface components for this specific system."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORAGE-JSON",
+            "project_definition": "The exclusive flat-file format for local persistence and optional output encoding."
+        },
+        {
+            "term": "Python 3.8",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TECH-PY38",
+            "project_definition": "The minimum required runtime environment version for execution."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-CLI-ONLY",
+            "project_definition": "Any non-terminal user interface, strictly forbidden by the architectural constraints."
+        },
+        {
+            "term": "YAGNI",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PRINCIPLE-YAGNI",
+            "project_definition": "A software development philosophy mandating that functionality is only implemented when actually required, preventing preemptive engineering."
+        }
+    ]
+}

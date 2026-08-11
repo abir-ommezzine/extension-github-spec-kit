@@ -40,14 +40,14 @@ router = APIRouter()
 class TicketResponse(BaseModel):
     id: str
     project_id: str
-    artifact_id: Optional[str] = None
-    source_path: str
+    ticket_id: Optional[str] = None
+    source_file_path: str
     title: str
     description: Optional[str] = None
     status: str
-    position: int
+    line_number: Optional[int] = None
     checkbox_state: Optional[str] = None
-    file_hash: Optional[str] = None
+    source_file_hash: Optional[str] = None
     created_at: str
     updated_at: str
 
@@ -127,20 +127,20 @@ async def list_tickets(
                 query = query.filter(Ticket.status == status_enum)
             except ValueError:
                 pass
-        tickets = query.order_by(Ticket.project_id, Ticket.position).all()
+        tickets = query.order_by(Ticket.project_id, Ticket.line_number).all()
 
     return [
         TicketResponse(
             id=str(t.id),
             project_id=str(t.project_id),
-            artifact_id=str(t.artifact_id) if t.artifact_id else None,
-            source_path=t.source_path,
+            ticket_id=t.ticket_id,
+            source_file_path=t.source_file_path,
             title=t.title,
             description=t.description,
             status=t.status.value,
-            position=t.position,
+            line_number=t.line_number,
             checkbox_state=t.checkbox_state,
-            file_hash=t.file_hash,
+            source_file_hash=t.source_file_hash,
             created_at=t.created_at.isoformat() if t.created_at else "",
             updated_at=t.updated_at.isoformat() if t.updated_at else "",
         )
@@ -162,14 +162,14 @@ async def get_ticket(
     return TicketResponse(
         id=str(ticket.id),
         project_id=str(ticket.project_id),
-        artifact_id=str(ticket.artifact_id) if ticket.artifact_id else None,
-        source_path=ticket.source_path,
+        ticket_id=ticket.ticket_id,
+        source_file_path=ticket.source_file_path,
         title=ticket.title,
         description=ticket.description,
         status=ticket.status.value,
-        position=ticket.position,
+        line_number=ticket.line_number,
         checkbox_state=ticket.checkbox_state,
-        file_hash=ticket.file_hash,
+        source_file_hash=ticket.source_file_hash,
         created_at=ticket.created_at.isoformat() if ticket.created_at else "",
         updated_at=ticket.updated_at.isoformat() if ticket.updated_at else "",
     )
@@ -200,14 +200,14 @@ async def patch_ticket_status(
     return TicketResponse(
         id=str(ticket.id),
         project_id=str(ticket.project_id),
-        artifact_id=str(ticket.artifact_id) if ticket.artifact_id else None,
-        source_path=ticket.source_path,
+        ticket_id=ticket.ticket_id,
+        source_file_path=ticket.source_file_path,
         title=ticket.title,
         description=ticket.description,
         status=ticket.status.value,
-        position=ticket.position,
+        line_number=ticket.line_number,
         checkbox_state=ticket.checkbox_state,
-        file_hash=ticket.file_hash,
+        source_file_hash=ticket.source_file_hash,
         created_at=ticket.created_at.isoformat() if ticket.created_at else "",
         updated_at=ticket.updated_at.isoformat() if ticket.updated_at else "",
     )
@@ -333,14 +333,14 @@ async def ingest_tasks(
         TicketResponse(
             id=str(t.id),
             project_id=str(t.project_id),
-            artifact_id=str(t.artifact_id) if t.artifact_id else None,
-            source_path=t.source_path,
+            ticket_id=t.ticket_id,
+            source_file_path=t.source_file_path,
             title=t.title,
             description=t.description,
             status=t.status.value,
-            position=t.position,
+            line_number=t.line_number,
             checkbox_state=t.checkbox_state,
-            file_hash=t.file_hash,
+            source_file_hash=t.source_file_hash,
             created_at=t.created_at.isoformat() if t.created_at else "",
             updated_at=t.updated_at.isoformat() if t.updated_at else "",
         )
@@ -368,14 +368,14 @@ async def commit_refine(
         TicketResponse(
             id=str(t.id),
             project_id=str(t.project_id),
-            artifact_id=str(t.artifact_id) if t.artifact_id else None,
-            source_path=t.source_path,
+            ticket_id=t.ticket_id,
+            source_file_path=t.source_file_path,
             title=t.title,
             description=t.description,
             status=t.status.value,
-            position=t.position,
+            line_number=t.line_number,
             checkbox_state=t.checkbox_state,
-            file_hash=t.file_hash,
+            source_file_hash=t.source_file_hash,
             created_at=t.created_at.isoformat() if t.created_at else "",
             updated_at=t.updated_at.isoformat() if t.updated_at else "",
         )
@@ -440,8 +440,8 @@ async def sync_current_task(db: Session = Depends(get_db)):
     if not task_id:
         raise HTTPException(status_code=400, detail="current-task.json missing task_id")
 
-    # Find the ticket whose source_path ends with #<task_id>
-    query = db.query(Ticket).filter(Ticket.source_path.like(f"%#{task_id}"))
+    # Find the ticket whose source_file_path ends with #<task_id>
+    query = db.query(Ticket).filter(Ticket.source_file_path.like(f"%#{task_id}"))
 
     if project_name:
         from app.models import Project
@@ -466,14 +466,14 @@ async def sync_current_task(db: Session = Depends(get_db)):
     return TicketResponse(
         id=str(updated.id),
         project_id=str(updated.project_id),
-        artifact_id=str(updated.artifact_id) if updated.artifact_id else None,
-        source_path=updated.source_path,
+        ticket_id=updated.ticket_id,
+        source_file_path=updated.source_file_path,
         title=updated.title,
         description=updated.description,
         status=updated.status.value,
-        position=updated.position,
+        line_number=updated.line_number,
         checkbox_state=updated.checkbox_state,
-        file_hash=updated.file_hash,
+        source_file_hash=updated.source_file_hash,
         created_at=updated.created_at.isoformat() if updated.created_at else "",
         updated_at=updated.updated_at.isoformat() if updated.updated_at else "",
     )

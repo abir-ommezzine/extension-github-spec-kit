@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "c:\Users\MSI\Bureau\to do list manager\to-do-list-manager\backend\app\api\v1\endpoints\pipeline.py", line 418, in upload_and_process_document
+  File "c:\Users\MSI\Bureau\new copyextension-github-spec-kit\backend\app\api\v1\endpoints\pipeline.py", line 487, in upload_and_process_document
     final_state = await app_graph.ainvoke(initial_state)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\main.py", line 4090, in ainvoke
@@ -39,9 +39,9 @@ Traceback (most recent call last):
     return fn(*args, **kwargs)
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langchain_core\runnables\config.py", line 698, in wrapper
     return func(*args, **kwargs)
-  File "c:\Users\MSI\Bureau\to do list manager\to-do-list-manager\backend\app\graph\nodes.py", line 115, in parsing_node
+  File "c:\Users\MSI\Bureau\new copyextension-github-spec-kit\backend\app\graph\nodes.py", line 115, in parsing_node
     parsed_doc = run_parsing_agent(file_name=file_name, file_content=file_content)
-  File "c:\Users\MSI\Bureau\to do list manager\to-do-list-manager\backend\app\services\parser_service.py", line 77, in run_parsing_agent
+  File "c:\Users\MSI\Bureau\new copyextension-github-spec-kit\backend\app\services\parser_service.py", line 77, in run_parsing_agent
     response = ollama_openai_client.chat.completions.create(
         model=get_ollama_model(),
     ...<5 lines>...
@@ -64,5 +64,5 @@ Traceback (most recent call last):
                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\openai\_base_client.py", line 1105, in request
     raise self._make_status_error_from_response(err.response) from None
-openai.RateLimitError: Error code: 429 - {'error': {'message': 'you (abirommezzine) have reached your session usage limit, upgrade for higher limits: https://ollama.com/upgrade (ref: 140ac14e-bc8f-4e3a-b9a9-8beeb5c3d275)', 'type': 'api_error', 'param': None, 'code': None}}
-During task with name 'parsing_agent' and id 'fe65d80a-5a94-4b9e-d0e6-7d2f31df8df8'
+openai.RateLimitError: Error code: 429 - {'error': {'message': 'you (abirommezzine) have reached your session usage limit, upgrade for higher limits: https://ollama.com/upgrade (ref: 45a1d6b1-507c-4128-b559-a6fc4c9d9b65)', 'type': 'api_error', 'param': None, 'code': None}}
+During task with name 'parsing_agent' and id '245e5b95-4e2d-929f-e55f-9164903b3cea'

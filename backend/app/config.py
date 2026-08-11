@@ -4,11 +4,17 @@ from pathlib import Path
 from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Détermine le répertoire de base du projet
+# Si WORKSPACE_DIR est défini (par l'extension), l'utiliser, sinon calculer depuis __file__
+if os.environ.get("WORKSPACE_DIR"):
+    BASE_DIR = Path(os.environ["WORKSPACE_DIR"])
+else:
+    BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
 ENV_PATH = BASE_DIR / ".env"
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
+    DATABASE_URL: str = "postgresql://speckit:speckit@localhost:5432/speckit"  # Valeur par défaut
     OPENAI_API_KEY: Optional[str] = None  
     
     # --- AJOUT CONFIGURATION OLLAMA ---
@@ -23,9 +29,10 @@ class Settings(BaseSettings):
     TARGET_PROJECT_PATH: Optional[str] = None
 
     model_config = SettingsConfigDict(
-        env_file=ENV_PATH, 
+        env_file=str(ENV_PATH),  # Convertir en string pour compatibilité
         env_file_encoding="utf-8",
-        extra="ignore"
+        extra="ignore",
+        case_sensitive=False  # Ignorer la casse des variables d'environnement
     )
 
 settings = Settings()

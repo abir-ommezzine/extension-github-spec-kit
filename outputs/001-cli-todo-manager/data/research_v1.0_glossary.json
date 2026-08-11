@@ -1,0 +1,47 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "Alternatives considered",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CLI-PARSE",
+            "project_definition": "The set of rejected architectural paths or libraries evaluated against the minimal dependency constraint."
+        },
+        {
+            "term": "Decision",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CLI-PARSE",
+            "project_definition": "The final selected implementation path for a specific functional requirement."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ID-GEN",
+            "project_definition": "A unique sequential integer starting at 1, calculated as the current maximum value plus one."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORAGE-JSON",
+            "project_definition": "The lightweight data-interchange format used for the local flat-file array storage."
+        },
+        {
+            "term": "Rationale",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CLI-PARSE",
+            "project_definition": "The technical justification supporting the selection of a specific tool or pattern."
+        },
+        {
+            "term": "UTC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TIME-ISO",
+            "project_definition": "The primary time standard used for unambiguous timestamp serialization."
+        }
+    ]
+}

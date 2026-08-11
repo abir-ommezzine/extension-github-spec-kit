@@ -1,0 +1,26 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ERR-INVALID-ID",
+            "project_definition": "The unique alphanumeric reference used to target a specific entry for completion or deletion within the persistent storage."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORAGE-JSON",
+            "project_definition": "The lightweight data-interchange format used for the flat-file database located at ~/.todos.json and for optional machine-readable output."
+        },
+        {
+            "term": "todo clear",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CMD-CLEAR",
+            "project_definition": "The operation that purges all entries marked as finished while preserving those still pending."
+        }
+    ]
+}

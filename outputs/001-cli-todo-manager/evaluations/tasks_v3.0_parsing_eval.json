@@ -9,8 +9,8 @@
         "model_template_conformity": 100.0,
         "quality_alerts": [
             "Section requise absente des correspondances : acceptance criteria",
-            "Section requise absente des correspondances : security & performance constraints",
-            "Section requise absente des correspondances : open questions & uncertainties"
+            "Section requise absente des correspondances : open questions & uncertainties",
+            "Section requise absente des correspondances : security & performance constraints"
         ]
     },
     "project_management_kpis": {

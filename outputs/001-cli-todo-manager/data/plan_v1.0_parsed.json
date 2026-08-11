@@ -1,0 +1,189 @@
+{
+    "parsing_rationale": "The document is an implementation plan for a CLI To-Do Manager. I have mapped the 'Summary' to the Task Description, 'Technical Context' to Constraints and Dependencies, and the 'Source Code' section to Implementation Notes. The 'Constitution Check' serves as a set of high-level constraints. I have extracted the technical requirements (storage, performance, language) as specific elements and linked them to the overall project goal.",
+    "project_info": {
+        "project_name": "CLI To-Do List Manager",
+        "source_type": "refining",
+        "brief_explanation": "Build a minimal Python CLI for task management with JSON persistence.",
+        "source_context": "Implementation plan derived from spec.md for branch 001-cli-todo-manager"
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Implementation Plan: CLI To-Do List Manager",
+            "level": 1,
+            "raw_content": "**Branch**: `001-cli-todo-manager` | **Date**: 2026-08-04 | **Spec**: [spec.md](spec.md)\n\n**Input**: Feature specification from `/specs/001-cli-todo-manager/spec.md`",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Summary",
+            "level": 2,
+            "raw_content": "Build a minimal Python CLI that lets a user add, list, complete, remove, and clear tasks, persisting task data in `~/.todos.json` and supporting human-readable output plus `--json` for scripting.",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Technical Context",
+            "level": 2,
+            "raw_content": "**Language/Version**: Python 3.8+\n\n**Primary Dependencies**: Python standard library only\n\n**Storage**: Local JSON file at `~/.todos.json`\n\n**Testing**: `unittest` with CLI/integration coverage; linting with `pylint` or `flake8`\n\n**Target Platform**: Cross-platform command-line use on Windows, macOS, and Linux\n\n**Project Type**: CLI application\n\n**Performance Goals**: Add, list, complete, remove, and clear operations should complete in under 2 seconds on standard hardware\n\n**Constraints**: Offline-only, single-user, zero-configuration, standard-library-only implementation\n\n**Scale/Scope**: Small local task list, including support for 1000+ tasks in one JSON file",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        },
+        {
+            "title": "Constitution Check",
+            "level": 2,
+            "raw_content": "*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*\n\n| Principle | Status | Notes |\n|-----------|--------|-------|\n| Simplicity-First | Pass | The feature is limited to essential task management commands. |\n| CLI-Only Architecture | Pass | All behavior is exposed through command-line arguments and flags. |\n| JSON Local Storage | Pass | Data is persisted in `~/.todos.json`. |\n| Zero Configuration | Pass | No external services or setup are required beyond Python. |\n| Minimal Dependencies | Pass | The design uses the Python standard library only. |",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        },
+        {
+            "title": "Project Structure",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Documentation (this feature)",
+            "level": 3,
+            "raw_content": "```text\nspecs/001-cli-todo-manager/\n├── plan.md\n├── research.md\n├── data-model.md\n├── quickstart.md\n└── contracts/\n    └── commands.md\n```",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Source Code (repository root)",
+            "level": 3,
+            "raw_content": "```text\nsrc/\n└── todo_manager/\n    ├── __init__.py\n    ├── __main__.py\n    ├── cli.py\n    ├── models.py\n    ├── storage.py\n    └── service.py\n\ntests/\n├── unit/\n└── integration/\n```\n\n**Structure Decision**: Use a single Python package under `src/todo_manager/` for command parsing, task modeling, storage, and service logic, with `tests/unit/` and `tests/integration/` covering behavior from the CLI down to the JSON file boundary.",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Complexity Tracking",
+            "level": 2,
+            "raw_content": "No constitution violations require justification.",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "task",
+            "identifier": "CLI-CORE",
+            "content": "Build a minimal Python CLI to add, list, complete, remove, and clear tasks",
+            "source_section": "Summary",
+            "attributes": {
+                "output_formats": [
+                    "human-readable",
+                    "json"
+                ]
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "LANG-PY38",
+            "content": "Language/Version: Python 3.8+",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "dependency",
+            "identifier": "DEP-STDLIB",
+            "content": "Primary Dependencies: Python standard library only",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "STORAGE-JSON",
+            "content": "Local JSON file storage at ~/.todos.json",
+            "source_section": "Technical Context",
+            "attributes": {
+                "path": "~/.todos.json"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "PERF-LATENCY",
+            "content": "Operations (add, list, complete, remove, clear) must complete in under 2 seconds",
+            "source_section": "Technical Context",
+            "attributes": {
+                "threshold": "2s"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "SCALE-LIMIT",
+            "content": "Support for 1000+ tasks in one JSON file",
+            "source_section": "Technical Context",
+            "attributes": {
+                "capacity": "1000+"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "TEST-COVERAGE",
+            "content": "unittest with CLI/integration coverage; linting with pylint or flake8",
+            "source_section": "Technical Context",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONST-OFFLINE",
+            "content": "Offline-only, single-user, zero-configuration implementation",
+            "source_section": "Technical Context",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "CLI-CORE",
+            "to": "LANG-PY38",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "CLI-CORE",
+            "to": "DEP-STDLIB",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "CLI-CORE",
+            "to": "STORAGE-JSON",
+            "relation_type": "implements"
+        },
+        {
+            "source": "CLI-CORE",
+            "to": "PERF-LATENCY",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "CLI-CORE",
+            "to": "SCALE-LIMIT",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "CLI-CORE",
+            "to": "CONST-OFFLINE",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Dependencies & Integration Points",
+            "priority": "LOW",
+            "remediation_advice": "The document mentions 'standard library only', but a formal integration points section is missing."
+        },
+        {
+            "missing_section": "Acceptance Criteria",
+            "priority": "HIGH",
+            "remediation_advice": "Define specific pass/fail criteria for each CLI command (add, list, etc.)."
+        },
+        {
+            "missing_section": "Checkboxes Checklist",
+            "priority": "MEDIUM",
+            "remediation_advice": "Convert the implementation plan into a concrete checklist of tasks."
+        },
+        {
+            "missing_section": "Testing & Validation",
+            "priority": "MEDIUM",
+            "remediation_advice": "Expand the 'Testing' mention in Technical Context into a full validation plan."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Identify any potential edge cases for the JSON storage or CLI parsing."
+        }
+    ],
+    "open_questions": []
+}

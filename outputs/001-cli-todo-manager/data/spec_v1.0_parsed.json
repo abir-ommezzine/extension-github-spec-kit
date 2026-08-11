@@ -1,0 +1,277 @@
+{
+    "parsing_rationale": "The document is a feature specification for a CLI To-Do Manager. I have mapped the User Stories to 'Task Description & Objective', Functional Requirements to 'Checkboxes Checklist' (as they represent the implementation list), and Measurable Outcomes to 'Acceptance Criteria'. Edge cases and assumptions are mapped to 'Security & Performance Constraints' and 'Implementation Notes & References' respectively. I have extracted specific functional requirements as 'task' elements and acceptance scenarios as 'acceptance_criterion' elements, linking them to maintain a technical graph.",
+    "project_info": {
+        "project_name": "CLI To-Do List Manager",
+        "source_type": "scratch",
+        "brief_explanation": "A command-line tool to manage a local to-do list stored in a JSON file.",
+        "source_context": "Feature specification for branch [001-cli-todo-manager]"
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Feature Specification: CLI To-Do List Manager",
+            "level": 1,
+            "raw_content": "**Feature Branch**: `[001-cli-todo-manager]`\n\n**Created**: 2026-08-04\n\n**Status**: Draft\n\n**Input**: User description: \"Create the feature specification for the to-do list manager\"",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "User Scenarios & Testing *(mandatory)*",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "User Story 1 - Add and Manage Tasks (Priority: P1)",
+            "level": 3,
+            "raw_content": "A user needs to quickly capture tasks and manage their completion status through a simple command-line interface.\n\n**Why this priority**: This is the core functionality - without adding and tracking tasks, there is no to-do list manager. It delivers immediate value by enabling task capture and tracking.\n\n**Independent Test**: Can be fully tested by running `todo add \"Task description\"` and `todo list` commands, verifying tasks appear in the list with correct status.\n\n**Acceptance Scenarios**:\n\n1. **Given** a fresh installation with no existing todo file, **When** user runs `todo add \"Buy groceries\"`, **Then** the task is saved to `~/.todos.json` and displayed in the list with status \"pending\"\n2. **Given** a task exists in the todo list, **When** user runs `todo complete 1`, **Then** the task with ID 1 is marked as completed and the list shows the completed status..\n\n---",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "User Story 2 - View and Filter Tasks (Priority: P2)",
+            "level": 3,
+            "raw_content": "A user needs to view their tasks in a clear, readable format and optionally in machine-readable JSON format for scripting or integration purposes.\n\n**Why this priority**: Viewing tasks is essential for daily use. The JSON output option enables automation and integration with other tools, expanding the utility beyond manual use.\n\n**Independent Test**: Can be fully tested by running `todo list` and verifying human-readable output, then `todo list --json` verifying valid JSON output.\n\n**Acceptance Scenarios**:\n\n1. **Given** multiple tasks exist in the todo list, **When** user runs `todo list`, **Then** all tasks are displayed with their IDs, descriptions, and completion status in a human-readable format\n2. **Given** tasks exist in the todo list, **When** user runs `todo list --json`, **Then** valid JSON output is returned containing all tasks with their properties\n\n---",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "User Story 3 - Remove and Clear Tasks (Priority: P3)",
+            "level": 3,
+            "raw_content": "A user needs to remove individual tasks or clear all completed tasks to keep the list clean and focused.\n\n**Why this priority**: Task removal and cleanup are important for maintaining a clean workspace. While not as critical as adding/viewing tasks, they prevent the list from becoming cluttered with irrelevant items.\n\n**Independent Test**: Can be fully tested by adding tasks, running `todo remove <id>`, and verifying the task is deleted, and by adding completed tasks and running `todo clear` to verify they are removed.\n\n**Acceptance Scenarios**:\n\n1. **Given** a task exists in the todo list, **When** user runs `todo remove 1`, **Then** the task with ID 1 is permanently deleted from the storage\n2. **Given** multiple completed tasks exist in the todo list, **When** user runs `todo clear`, **Then** all completed tasks are removed while pending tasks remain\n\n---",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Edge Cases",
+            "level": 3,
+            "raw_content": "- What happens when user tries to complete a task that doesn't exist (invalid ID)?\n- How does system handle corrupted or malformed JSON storage file?\n- What happens when user tries to add an empty task description?\n- How does system handle concurrent access to the todo file?",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        },
+        {
+            "title": "Requirements *(mandatory)*",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Functional Requirements",
+            "level": 3,
+            "raw_content": "- **FR-001**: System MUST allow users to add new tasks with descriptions via the `add` command\n- **FR-002**: System MUST display all tasks with their IDs, descriptions, and completion status via the `list` command\n- **FR-003**: System MUST allow users to mark tasks as completed via the `complete` command\n- **FR-004**: System MUST allow users to remove individual tasks via the `remove` command\n- **FR-005**: System MUST allow users to clear all completed tasks via the `clear` command\n- **FR-006**: System MUST support JSON output format via `--json` flag for machine-readable output\n- **FR-007**: System MUST store all task data in a local JSON file at `~/.todos.json`\n- **FR-008**: System MUST assign unique sequential IDs to tasks\n- **FR-009**: System MUST handle errors gracefully with user-friendly error messages",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Key Entities",
+            "level": 3,
+            "raw_content": "- **Task**: Represents a single to-do item with the following attributes:\n  - `id`: Unique integer identifier (auto-incremented)\n  - `description`: String describing the task\n  - `completed`: Boolean indicating completion status (default: false)\n  - `created_at`: Timestamp of when the task was created",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "Success Criteria *(mandatory)*",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Acceptance Criteria"
+        },
+        {
+            "title": "Measurable Outcomes",
+            "level": 3,
+            "raw_content": "- **SC-001**: Users can add, list, complete, and remove tasks in under 2 seconds on standard hardware\n- **SC-002**: System handles 1000+ tasks in the JSON file without performance degradation\n- **SC-003**: 95% of users can successfully perform basic operations (add, list, complete, remove) on first attempt\n- **SC-004**: JSON output is valid and parseable by standard JSON parsers\n- **SC-005**: Error messages are clear and actionable, reducing user confusion by 80%",
+            "mapped_to_template_field": "Acceptance Criteria"
+        },
+        {
+            "title": "Assumptions",
+            "level": 2,
+            "raw_content": "- Users have Python 3.8+ installed on their system\n- Users have write access to their home directory for creating the todos.json file\n- Tasks are simple text descriptions without complex formatting requirements\n- Single-user scenario (no multi-user or collaborative features needed)\n- No network connectivity required - all operations are local\n- Task descriptions are short enough to fit comfortably in terminal output",
+            "mapped_to_template_field": "Implementation Notes & References"
+        }
+    ],
+    "elements": [
+        {
+            "type": "task",
+            "identifier": "FR-001",
+            "content": "Allow users to add new tasks with descriptions via the `add` command",
+            "source_section": "Functional Requirements",
+            "attributes": {
+                "priority": "P1"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "FR-002",
+            "content": "Display all tasks with their IDs, descriptions, and completion status via the `list` command",
+            "source_section": "Functional Requirements",
+            "attributes": {
+                "priority": "P2"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "FR-003",
+            "content": "Allow users to mark tasks as completed via the `complete` command",
+            "source_section": "Functional Requirements",
+            "attributes": {
+                "priority": "P1"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "FR-004",
+            "content": "Allow users to remove individual tasks via the `remove` command",
+            "source_section": "Functional Requirements",
+            "attributes": {
+                "priority": "P3"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "FR-005",
+            "content": "Allow users to clear all completed tasks via the `clear` command",
+            "source_section": "Functional Requirements",
+            "attributes": {
+                "priority": "P3"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "FR-006",
+            "content": "Support JSON output format via `--json` flag",
+            "source_section": "Functional Requirements",
+            "attributes": {
+                "priority": "P2"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "FR-007",
+            "content": "Store all task data in a local JSON file at `~/.todos.json`",
+            "source_section": "Functional Requirements",
+            "attributes": {
+                "type": "storage"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "FR-008",
+            "content": "Assign unique sequential IDs to tasks",
+            "source_section": "Functional Requirements",
+            "attributes": {
+                "type": "logic"
+            }
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-ADD-01",
+            "content": "Given fresh install, when `todo add \"Buy groceries\"`, then saved to ~/.todos.json and status is pending",
+            "source_section": "User Story 1 - Add and Manage Tasks (Priority: P1)",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-COMP-01",
+            "content": "Given task exists, when `todo complete 1`, then task 1 is marked as completed",
+            "source_section": "User Story 1 - Add and Manage Tasks (Priority: P1)",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-LIST-01",
+            "content": "Given multiple tasks, when `todo list`, then all tasks displayed in human-readable format",
+            "source_section": "User Story 2 - View and Filter Tasks (Priority: P2)",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-JSON-01",
+            "content": "Given tasks exist, when `todo list --json`, then valid JSON output is returned",
+            "source_section": "User Story 2 - View and Filter Tasks (Priority: P2)",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-REM-01",
+            "content": "Given task exists, when `todo remove 1`, then task 1 is permanently deleted",
+            "source_section": "User Story 3 - Remove and Clear Tasks (Priority: P3)",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-CLR-01",
+            "content": "Given completed tasks exist, when `todo clear`, then all completed tasks are removed",
+            "source_section": "User Story 3 - Remove and Clear Tasks (Priority: P3)",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "PERF-01",
+            "content": "Operations must execute in under 2 seconds on standard hardware",
+            "source_section": "Measurable Outcomes",
+            "attributes": {
+                "id": "SC-001"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "PERF-02",
+            "content": "Handle 1000+ tasks without performance degradation",
+            "source_section": "Measurable Outcomes",
+            "attributes": {
+                "id": "SC-002"
+            }
+        }
+    ],
+    "relationships": [
+        {
+            "source": "AC-ADD-01",
+            "to": "FR-001",
+            "relation_type": "implements"
+        },
+        {
+            "source": "AC-COMP-01",
+            "to": "FR-003",
+            "relation_type": "implements"
+        },
+        {
+            "source": "AC-LIST-01",
+            "to": "FR-002",
+            "relation_type": "implements"
+        },
+        {
+            "source": "AC-JSON-01",
+            "to": "FR-006",
+            "relation_type": "implements"
+        },
+        {
+            "source": "AC-REM-01",
+            "to": "FR-004",
+            "relation_type": "implements"
+        },
+        {
+            "source": "AC-CLR-01",
+            "to": "FR-005",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FR-001",
+            "to": "FR-007",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-001",
+            "to": "FR-008",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Dependencies & Integration Points",
+            "priority": "MEDIUM",
+            "remediation_advice": "Define external library dependencies (e.g., argparse, json) and OS-level requirements."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "The 'Edge Cases' section contains questions that should be formally moved here and answered."
+        }
+    ],
+    "open_questions": [
+        "How to handle corrupted or malformed JSON storage file?",
+        "How to handle concurrent access to the todo file?",
+        "What is the behavior for empty task descriptions?"
+    ]
+}

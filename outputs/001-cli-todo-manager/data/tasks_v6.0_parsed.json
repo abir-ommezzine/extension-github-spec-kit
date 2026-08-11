@@ -1,5 +1,5 @@
 {
-    "parsing_rationale": "The document is a detailed task list for a CLI To-Do Manager. I have mapped the phases to 'phase' types and the individual tasks (T001-T025) to 'task' types. The 'Independent Test' descriptions within the User Story phases were extracted as 'test_case' elements. Dependencies were mapped based on the 'Phase Dependencies' and 'User Story Dependencies' sections, creating a clear execution graph from Setup -> Foundational -> User Stories -> Polish.",
+    "parsing_rationale": "The document is a detailed task list for a CLI To-Do Manager. I have mapped the phases to 'phase' types and the individual tasks (T001-T025) to 'task' types. The 'Dependencies & Execution Order' section was used to build the relationship graph, specifically mapping the sequential nature of the phases and the blocking nature of the Foundational phase. User stories are treated as phases containing tasks. Structural gaps were identified for sections like 'Acceptance Criteria' and 'Security & Performance Constraints' which were not explicitly detailed in the source markdown.",
     "project_info": {
         "project_name": "CLI To-Do List Manager",
         "source_type": "refining",
@@ -53,7 +53,7 @@
         {
             "title": "Implementation for User Story 2",
             "level": 3,
-            "raw_content": "- [ ] T013 [US2] Implement human-readable task listing output in `src/todo_manager/cli.py`\n- [ ] T014 [US2] Implement `--json` output formatting in `src/todo_manager/cli.py` using the task serialization helpers in `src/todo_manager/models.py`\n- [ ] T015 [US2] Add listing logic that preserves task order and status fields in `src/todo_manager/service.py`\n- [ ] T016 [US2] Handle the empty-list case with a clear message in `src/todo_manager/cli.py`\n\n**Checkpoint**: User Story 2 should now display tasks correctly in both human-readable and JSON forms.\n\n---",
+            "raw_content": "- [X] T013 [US2] Implement human-readable task listing output in `src/todo_manager/cli.py`\n- [X] T014 [US2] Implement `--json` output formatting in `src/todo_manager/cli.py` using the task serialization helpers in `src/todo_manager/models.py`\n- [X] T015 [US2] Add listing logic that preserves task order and status fields in `src/todo_manager/service.py`\n- [X] T016 [US2] Handle the empty-list case with a clear message in `src/todo_manager/cli.py`\n\n**Checkpoint**: User Story 2 should now display tasks correctly in both human-readable and JSON forms.\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
@@ -65,13 +65,13 @@
         {
             "title": "Implementation for User Story 3",
             "level": 3,
-            "raw_content": "- [ ] T017 [US3] Implement the `remove` command flow in `src/todo_manager/cli.py` and `src/todo_manager/service.py`\n- [ ] T018 [US3] Implement the `clear` command flow for removing completed tasks in `src/todo_manager/service.py`\n- [ ] T019 [US3] Add not-found handling for invalid task IDs in `src/todo_manager/cli.py`\n- [ ] T020 [US3] Ensure storage writes persist removals and clears safely in `src/todo_manager/storage.py`\n\n**Checkpoint**: All user stories should now be independently functional.\n\n---",
+            "raw_content": "- [ ] T017 [US3] Implement the `remove` command flow in `src/todo_manager/cli.py` and `src/todo_manager/service.py`\n- [X] T018 [US3] Implement the `clear` command flow for removing completed tasks in `src/todo_manager/service.py`\n- [X] T019 [US3] Add not-found handling for invalid task IDs in `src/todo_manager/cli.py`\n- [X] T020 [US3] Ensure storage writes persist removals and clears safely in `src/todo_manager/storage.py`\n\n**Checkpoint**: All user stories should now be independently functional.\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 6: Polish & Cross-Cutting Concerns",
             "level": 2,
-            "raw_content": "**Purpose**: Final cleanup and validation across all stories\n\n- [ ] T021 [P] Document the CLI usage and storage behavior in `README.md`\n- [ ] T022 [P] Add quickstart verification notes and examples in `specs/001-cli-todo-manager/quickstart.md`\n- [ ] T023 Run a manual smoke test of `add`, `list`, `complete`, `remove`, and `clear` against `~/.todos.json`\n- [ ] T024 Verify linting and formatting expectations for the source files in `src/todo_manager/`\n- [ ] T025 Confirm the generated JSON output remains parseable for the `todo list --json` path\n\n---",
+            "raw_content": "**Purpose**: Final cleanup and validation across all stories\n\n- [X] T021 [P] Document the CLI usage and storage behavior in `README.md`\n- [X] T022 [P] Add quickstart verification notes and examples in `specs/001-cli-todo-manager/quickstart.md`\n- [X] T023 Run a manual smoke test of `add`, `list`, `complete`, `remove`, and `clear` against `~/.todos.json`\n- [X] T024 Verify linting and formatting expectations for the source files in `src/todo_manager/`\n- [X] T025 Confirm the generated JSON output remains parseable for the `todo list --json` path\n\n---",
             "mapped_to_template_field": "Testing & Validation"
         },
         {
@@ -138,7 +138,7 @@
     "elements": [
         {
             "type": "phase",
-            "identifier": "PHASE-1",
+            "identifier": "PHASE-01",
             "content": "Setup (Shared Infrastructure)",
             "source_section": "Phase 1: Setup (Shared Infrastructure)",
             "attributes": {
@@ -184,7 +184,7 @@
         },
         {
             "type": "phase",
-            "identifier": "PHASE-2",
+            "identifier": "PHASE-02",
             "content": "Foundational (Blocking Prerequisites)",
             "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
             "attributes": {
@@ -239,25 +239,18 @@
         },
         {
             "type": "phase",
-            "identifier": "PHASE-3",
+            "identifier": "PHASE-03",
             "content": "User Story 1 - Add and Manage Tasks",
             "source_section": "Phase 3: User Story 1 - Add and Manage Tasks (Priority: P1) 🎯 MVP",
             "attributes": {
                 "priority": "P1",
-                "goal": "Let a user create tasks and mark existing tasks as completed from the CLI."
+                "goal": "Create tasks and mark as completed"
             }
-        },
-        {
-            "type": "test_case",
-            "identifier": "TEST-US1",
-            "content": "Run `todo add \"Task description\"` and `todo complete <id>`, then confirm the stored task list reflects the new task and its completion status.",
-            "source_section": "Phase 3: User Story 1 - Add and Manage Tasks (Priority: P1) 🎯 MVP",
-            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T009",
-            "content": "Implement the `add` command flow",
+            "content": "Implement the add command flow",
             "source_section": "Implementation for User Story 1",
             "attributes": {
                 "story": "US1"
@@ -266,7 +259,7 @@
         {
             "type": "task",
             "identifier": "T010",
-            "content": "Implement task creation, sequential ID assignment, and `created_at` population",
+            "content": "Implement task creation, sequential ID assignment, and created_at population",
             "source_section": "Implementation for User Story 1",
             "attributes": {
                 "story": "US1"
@@ -292,20 +285,13 @@
         },
         {
             "type": "phase",
-            "identifier": "PHASE-4",
+            "identifier": "PHASE-04",
             "content": "User Story 2 - View and Filter Tasks",
             "source_section": "Phase 4: User Story 2 - View and Filter Tasks (Priority: P2)",
             "attributes": {
                 "priority": "P2",
-                "goal": "Let a user list tasks in readable form or as JSON for scripting."
+                "goal": "List tasks in readable or JSON form"
             }
-        },
-        {
-            "type": "test_case",
-            "identifier": "TEST-US2",
-            "content": "Run `todo list` and `todo list --json` and confirm the output is readable or parseable JSON while showing the full task collection.",
-            "source_section": "Phase 4: User Story 2 - View and Filter Tasks (Priority: P2)",
-            "attributes": {}
         },
         {
             "type": "task",
@@ -319,7 +305,7 @@
         {
             "type": "task",
             "identifier": "T014",
-            "content": "Implement `--json` output formatting",
+            "content": "Implement --json output formatting",
             "source_section": "Implementation for User Story 2",
             "attributes": {
                 "story": "US2"
@@ -345,25 +331,18 @@
         },
         {
             "type": "phase",
-            "identifier": "PHASE-5",
+            "identifier": "PHASE-05",
             "content": "User Story 3 - Remove and Clear Tasks",
             "source_section": "Phase 5: User Story 3 - Remove and Clear Tasks (Priority: P3)",
             "attributes": {
                 "priority": "P3",
-                "goal": "Let a user remove a single task or clear all completed tasks."
+                "goal": "Remove single task or clear completed tasks"
             }
-        },
-        {
-            "type": "test_case",
-            "identifier": "TEST-US3",
-            "content": "Run `todo remove <id>` and `todo clear`, then confirm the targeted task or completed tasks are removed while other tasks remain intact.",
-            "source_section": "Phase 5: User Story 3 - Remove and Clear Tasks (Priority: P3)",
-            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T017",
-            "content": "Implement the `remove` command flow",
+            "content": "Implement the remove command flow",
             "source_section": "Implementation for User Story 3",
             "attributes": {
                 "story": "US3"
@@ -372,7 +351,7 @@
         {
             "type": "task",
             "identifier": "T018",
-            "content": "Implement the `clear` command flow for removing completed tasks",
+            "content": "Implement the clear command flow for removing completed tasks",
             "source_section": "Implementation for User Story 3",
             "attributes": {
                 "story": "US3"
@@ -398,11 +377,11 @@
         },
         {
             "type": "phase",
-            "identifier": "PHASE-6",
+            "identifier": "PHASE-06",
             "content": "Polish & Cross-Cutting Concerns",
             "source_section": "Phase 6: Polish & Cross-Cutting Concerns",
             "attributes": {
-                "purpose": "Final cleanup and validation across all stories"
+                "purpose": "Final cleanup and validation"
             }
         },
         {
@@ -428,7 +407,9 @@
             "identifier": "T023",
             "content": "Run a manual smoke test of add, list, complete, remove, and clear",
             "source_section": "Phase 6: Polish & Cross-Cutting Concerns",
-            "attributes": {}
+            "attributes": {
+                "type": "smoke_test"
+            }
         },
         {
             "type": "task",
@@ -447,177 +428,162 @@
     ],
     "relationships": [
         {
-            "source": "PHASE-1",
+            "source": "PHASE-02",
+            "to": "PHASE-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-03",
+            "to": "PHASE-02",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-04",
+            "to": "PHASE-02",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-05",
+            "to": "PHASE-02",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-06",
+            "to": "PHASE-03",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-06",
+            "to": "PHASE-04",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-06",
+            "to": "PHASE-05",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PHASE-01",
             "to": "T001",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-1",
+            "source": "PHASE-01",
             "to": "T002",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-1",
+            "source": "PHASE-01",
             "to": "T003",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-2",
-            "to": "PHASE-1",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PHASE-2",
+            "source": "PHASE-02",
             "to": "T004",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-2",
+            "source": "PHASE-02",
             "to": "T005",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-2",
+            "source": "PHASE-02",
             "to": "T006",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-2",
+            "source": "PHASE-02",
             "to": "T007",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-2",
+            "source": "PHASE-02",
             "to": "T008",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-3",
-            "to": "PHASE-2",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PHASE-3",
+            "source": "PHASE-03",
             "to": "T009",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-3",
+            "source": "PHASE-03",
             "to": "T010",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-3",
+            "source": "PHASE-03",
             "to": "T011",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-3",
+            "source": "PHASE-03",
             "to": "T012",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-3",
-            "to": "TEST-US1",
-            "relation_type": "implements"
-        },
-        {
-            "source": "PHASE-4",
-            "to": "PHASE-2",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PHASE-4",
+            "source": "PHASE-04",
             "to": "T013",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-4",
+            "source": "PHASE-04",
             "to": "T014",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-4",
+            "source": "PHASE-04",
             "to": "T015",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-4",
+            "source": "PHASE-04",
             "to": "T016",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-4",
-            "to": "TEST-US2",
-            "relation_type": "implements"
-        },
-        {
-            "source": "PHASE-5",
-            "to": "PHASE-2",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PHASE-5",
+            "source": "PHASE-05",
             "to": "T017",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-5",
+            "source": "PHASE-05",
             "to": "T018",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-5",
+            "source": "PHASE-05",
             "to": "T019",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-5",
+            "source": "PHASE-05",
             "to": "T020",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-5",
-            "to": "TEST-US3",
-            "relation_type": "implements"
-        },
-        {
-            "source": "PHASE-6",
-            "to": "PHASE-3",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PHASE-6",
-            "to": "PHASE-4",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PHASE-6",
-            "to": "PHASE-5",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PHASE-6",
+            "source": "PHASE-06",
             "to": "T021",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-6",
+            "source": "PHASE-06",
             "to": "T022",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-6",
+            "source": "PHASE-06",
             "to": "T023",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-6",
+            "source": "PHASE-06",
             "to": "T024",
             "relation_type": "contains"
         },
         {
-            "source": "PHASE-6",
+            "source": "PHASE-06",
             "to": "T025",
             "relation_type": "contains"
         }
@@ -626,17 +592,17 @@
         {
             "missing_section": "Acceptance Criteria",
             "priority": "MEDIUM",
-            "remediation_advice": "While 'Independent Tests' are provided, formal acceptance criteria for each task would improve validation."
+            "remediation_advice": "While 'Independent Tests' are mentioned for user stories, formal acceptance criteria for each task are missing."
         },
         {
             "missing_section": "Security & Performance Constraints",
             "priority": "LOW",
-            "remediation_advice": "The project is a simple CLI tool, but constraints on file size or input sanitization could be added."
+            "remediation_advice": "No specific security or performance constraints were defined for this CLI tool."
         },
         {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "No open questions were listed in the source document."
+            "remediation_advice": "The document appears complete from a task perspective; no open questions were listed."
         }
     ],
     "open_questions": []

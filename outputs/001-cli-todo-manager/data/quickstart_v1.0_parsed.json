@@ -1,0 +1,288 @@
+{
+    "parsing_rationale": "The document is a Quickstart Validation Guide for a CLI Todo Manager. I have mapped the 'Prerequisites' to 'Dependencies & Integration Points', the 'Validate the CLI' section to 'Testing & Validation' (as it contains a step-by-step test suite), and the 'Notes' to 'Implementation Notes & References'. The scenarios are treated as specific test cases. I have extracted each CLI command as a task/test_case and the expected outcomes as acceptance criteria.",
+    "project_info": {
+        "project_name": "CLI Todo Manager",
+        "source_type": "refining",
+        "brief_explanation": "Validation guide for verifying the operational functionality of the todo_manager CLI.",
+        "source_context": "quickstart.md"
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Quickstart Validation Guide",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Prerequisites",
+            "level": 2,
+            "raw_content": "- Python 3.8 or newer\n- Write access to your home directory",
+            "mapped_to_template_field": "Dependencies & Integration Points"
+        },
+        {
+            "title": "Validate the CLI",
+            "level": 2,
+            "raw_content": "1. Start from the repository root.\n2. Confirm the command help is available:\n\n```bash\npython -m todo_manager --help\n```\n\nExpected outcome: the CLI prints the available subcommands and exits successfully.\n\n3. Add a task:\n\n```bash\npython -m todo_manager add \"Buy groceries\"\n```\n\nExpected outcome: the task is stored in `~/.todos.json` and a success message is shown.\n\n4. List tasks in human-readable mode:\n\n```bash\npython -m todo_manager list\n```\n\nExpected outcome: the task appears with its ID, description, and pending/completed status.\n\n5. List tasks as JSON:\n\n```bash\npython -m todo_manager list --json\n```\n\nExpected outcome: the CLI prints valid JSON containing the tasks array.\n\n6. Complete a task:\n\n```bash\npython -m todo_manager complete 1\n```\n\nExpected outcome: the task is marked completed and later listings show the updated status.\n\n7. Remove a task:\n\n```bash\npython -m todo_manager remove 1\n```\n\nExpected outcome: the task is deleted from storage.\n\n8. Clear completed tasks:\n\n```bash\npython -m todo_manager clear\n```\n\nExpected outcome: all completed tasks are removed and pending tasks remain.",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "Verification Examples",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Scenario: Basic Lifecycle",
+            "level": 3,
+            "raw_content": "```bash",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "1. Add a task",
+            "level": 1,
+            "raw_content": "python -m todo_manager add \"Finish report\"",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "2. List it to see the ID (e.g., 1)",
+            "level": 1,
+            "raw_content": "python -m todo_manager list",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "3. Complete it",
+            "level": 1,
+            "raw_content": "python -m todo_manager complete 1",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "4. Verify completion status in list output",
+            "level": 1,
+            "raw_content": "python -m todo_manager list\n```",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "Scenario: Bulk Cleanup",
+            "level": 3,
+            "raw_content": "```bash",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "1. Add multiple tasks",
+            "level": 1,
+            "raw_content": "python -m todo_manager add \"Task A\"\npython -m todo_manager add \"Task B\"",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "2. Complete one of them",
+            "level": 1,
+            "raw_content": "python -m todo_manager complete 1",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "3. Clear completed tasks",
+            "level": 1,
+            "raw_content": "python -m todo_manager clear",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "4. Verify only pending tasks remain",
+            "level": 1,
+            "raw_content": "python -m todo_manager list\n```",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "Notes",
+            "level": 2,
+            "raw_content": "- If the storage file is corrupted, the CLI should stop with a user-friendly error instead of overwriting the file.\n- See [data-model.md](data-model.md) for the expected task shape and [contracts/commands.md](contracts/commands.md) for command behavior.",
+            "mapped_to_template_field": "Implementation Notes & References"
+        }
+    ],
+    "elements": [
+        {
+            "type": "dependency",
+            "identifier": "DEP-PY38",
+            "content": "Python 3.8 or newer",
+            "source_section": "Prerequisites",
+            "attributes": {}
+        },
+        {
+            "type": "dependency",
+            "identifier": "DEP-HOME-WRITE",
+            "content": "Write access to home directory",
+            "source_section": "Prerequisites",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-HELP",
+            "content": "Confirm command help is available: python -m todo_manager --help",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-HELP-OUT",
+            "content": "CLI prints available subcommands and exits successfully",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-ADD",
+            "content": "Add a task: python -m todo_manager add \"Buy groceries\"",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-ADD-OUT",
+            "content": "Task stored in ~/.todos.json and success message shown",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-LIST-HUMAN",
+            "content": "List tasks in human-readable mode: python -m todo_manager list",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-LIST-HUMAN-OUT",
+            "content": "Task appears with ID, description, and status",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-LIST-JSON",
+            "content": "List tasks as JSON: python -m todo_manager list --json",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-LIST-JSON-OUT",
+            "content": "CLI prints valid JSON containing the tasks array",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-COMPLETE",
+            "content": "Complete a task: python -m todo_manager complete 1",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-COMPLETE-OUT",
+            "content": "Task marked completed and updated in listings",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-REMOVE",
+            "content": "Remove a task: python -m todo_manager remove 1",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-REMOVE-OUT",
+            "content": "Task is deleted from storage",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "test_case",
+            "identifier": "TC-CLEAR",
+            "content": "Clear completed tasks: python -m todo_manager clear",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "AC-CLEAR-OUT",
+            "content": "All completed tasks removed, pending tasks remain",
+            "source_section": "Validate the CLI",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONSTR-CORRUPTION",
+            "content": "If storage file is corrupted, CLI should stop with user-friendly error instead of overwriting",
+            "source_section": "Notes",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "TC-HELP",
+            "to": "AC-HELP-OUT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TC-ADD",
+            "to": "AC-ADD-OUT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TC-LIST-HUMAN",
+            "to": "AC-LIST-HUMAN-OUT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TC-LIST-JSON",
+            "to": "AC-LIST-JSON-OUT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TC-COMPLETE",
+            "to": "AC-COMPLETE-OUT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TC-REMOVE",
+            "to": "AC-REMOVE-OUT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TC-CLEAR",
+            "to": "AC-CLEAR-OUT",
+            "relation_type": "implements"
+        },
+        {
+            "source": "TC-ADD",
+            "to": "DEP-HOME-WRITE",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Acceptance Criteria",
+            "priority": "LOW",
+            "remediation_advice": "The document contains 'Expected outcomes' within the test cases, but a dedicated high-level Acceptance Criteria section is missing."
+        },
+        {
+            "missing_section": "Checkboxes Checklist",
+            "priority": "MEDIUM",
+            "remediation_advice": "Convert the 'Validate the CLI' steps into a formal checklist for execution tracking."
+        },
+        {
+            "missing_section": "Security & Performance Constraints",
+            "priority": "LOW",
+            "remediation_advice": "Define performance targets for large todo lists or security constraints for the JSON file."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "No open questions were identified in the source."
+        }
+    ],
+    "open_questions": []
+}

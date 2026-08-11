@@ -136,18 +136,18 @@ def _sync_current_task_to_db() -> dict:
                 .filter(Ticket.project_id == project.id)
                 .all()
             )
-            result["all_ticket_source_paths"] = [t.source_path for t in sample_tickets]
+            result["all_ticket_source_paths"] = [t.source_file_path for t in sample_tickets]
             logger.info(
                 f"[sync] Tickets in project ({len(sample_tickets)} total), source_paths:\n"
-                + "\n".join(f"  [{t.status.value}] {t.source_path}" for t in sample_tickets)
+                + "\n".join(f"  [{t.status.value}] {t.source_file_path}" for t in sample_tickets)
             )
         else:
             # No project filter — dump first 20 tickets across all projects
             sample_tickets = db.query(Ticket).limit(20).all()
-            result["all_ticket_source_paths"] = [t.source_path for t in sample_tickets]
+            result["all_ticket_source_paths"] = [t.source_file_path for t in sample_tickets]
             logger.info(
                 f"[sync] First 20 tickets across all projects:\n"
-                + "\n".join(f"  [{t.status.value}] {t.source_path}" for t in sample_tickets)
+                + "\n".join(f"  [{t.status.value}] {t.source_file_path}" for t in sample_tickets)
             )
 
         # ── Improved ticket lookup strategy ──
@@ -160,7 +160,7 @@ def _sync_current_task_to_db() -> dict:
             logger.info(f"[sync] Strategy 1: Querying tickets with source_path LIKE {like_pattern!r} in project {project_name}")
             ticket = (
                 db.query(Ticket)
-                .filter(Ticket.source_path.like(like_pattern))
+                .filter(Ticket.source_file_path.like(like_pattern))
                 .filter(Ticket.project_id == project.id)
                 .first()
             )
@@ -174,12 +174,12 @@ def _sync_current_task_to_db() -> dict:
             logger.info(f"[sync] Strategy 2: Looking for tickets with source_path containing {current_project_path}")
             
             like_pattern = f"%#{task_id}"
-            all_matching_tickets = db.query(Ticket).filter(Ticket.source_path.like(like_pattern)).all()
+            all_matching_tickets = db.query(Ticket).filter(Ticket.source_file_path.like(like_pattern)).all()
             logger.info(f"[sync] Found {len(all_matching_tickets)} tickets matching #{task_id}")
             
             for candidate in all_matching_tickets:
-                logger.info(f"[sync] Checking candidate: {candidate.source_path}")
-                if current_project_path.replace("\\", "/") in candidate.source_path.replace("\\", "/"):
+                logger.info(f"[sync] Checking candidate: {candidate.source_file_path}")
+                if current_project_path.replace("\\", "/") in candidate.source_file_path.replace("\\", "/"):
                     ticket = candidate
                     logger.info(f"[sync] Strategy 2 SUCCESS: Found ticket by path matching")
                     break
@@ -187,11 +187,11 @@ def _sync_current_task_to_db() -> dict:
         # Strategy 3: Fallback to global search (original behavior)
         if not ticket:
             like_pattern = f"%#{task_id}"
-            logger.info(f"[sync] Strategy 3 (fallback): Global search with source_path LIKE {like_pattern!r}")
-            ticket = db.query(Ticket).filter(Ticket.source_path.like(like_pattern)).first()
+            logger.info(f"[sync] Strategy 3 (fallback): Global search with source_file_path LIKE {like_pattern!r}")
+            ticket = db.query(Ticket).filter(Ticket.source_file_path.like(like_pattern)).first()
             if ticket:
                 logger.info(f"[sync] Strategy 3: Found ticket globally (may be wrong project)")
-                logger.warning(f"[sync] Using ticket from different project: {ticket.source_path}")
+                logger.warning(f"[sync] Using ticket from different project: {ticket.source_file_path}")
 
         if not ticket:
             result["error"] = f"No ticket matched LIKE pattern {like_pattern!r}"
@@ -206,7 +206,7 @@ def _sync_current_task_to_db() -> dict:
         result["ticket_current_status"] = ticket.status.value
         logger.info(
             f"[sync] Ticket found: id={ticket.id} title={ticket.title!r} "
-            f"status={ticket.status.value!r} source_path={ticket.source_path!r}"
+            f"status={ticket.status.value!r} source_file_path={ticket.source_file_path!r}"
         )
 
         # ── Status update ───────────────────────────────────────────────────

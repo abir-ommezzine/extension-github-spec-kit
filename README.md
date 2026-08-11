@@ -136,23 +136,111 @@ vsce publish  # mode interactif
 
 ### 🧪 Guide de Test : Nouveau Projet avec l'Extension VS Code
 
-> **Objectif** : Tester l'extension AgentDocx SpecKit sur un **nouveau projet** (dossier séparé, hors du repo source).
+> **Objectif** : Démarrer un **nouveau projet enfant** avec Spec Kit. L'extension VS Code gère le backend (FastAPI) et le watcher de fichiers, tandis que le backend synchronise automatiquement l'état des tâches avec la base de données et le frontend Kanban.
+
+---
+
+#### Architecture en bref
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PROJET SOURCE (repo de l'extension)                        │
+│  new copyextension-github-spec-kit/                          │
+│  ├── backend/          → FastAPI + LangGraph + Watchers      │
+│  ├── frontend/         → Dashboard React (Kanban, KPIs)      │
+│  ├── src/              → Code de l'extension VS Code        │
+│  └── .env              → TARGET_PROJECT_PATH + LLM config    │
+│                                                              │
+│           ┌──────────────────────────────────┐              │
+│           │  PROJET ENFANT (votre app)        │              │
+│           │  mon-projet-test/                 │              │
+│           │  ├── .github/                     │              │
+│           │  │   └── copilot-instructions.md  │ ← généré auto│
+│           │  ├── .vscode/                     │              │
+│           │  │   └── settings.json            │ ← config lien │
+│           │  ├── specs/                        │              │
+│           │  │   └── tasks.md                  │ ← tâches     │
+│           │  └── .task_runtime/                │              │
+│           │       └── current-task.json        │ ← écrit par   │
+│           │           (mis à jour par Copilot) │   Copilot    │
+│           └──────────────────────────────────┘              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Flux de données** :
+1. Copilot lit `tasks.md` → implémente une tâche → écrit `.task_runtime/current-task.json`
+2. Le watcher backend détecte le changement → met à jour le ticket en BDD
+3. Le frontend Kanban se met à jour en temps réel
+
+---
 
 #### 1. Prérequis
-- Extension **installée via .vsix** (voir section ci-dessus)
-- **PostgreSQL** en cours d'exécution
-- Dépendances Python installées à la racine du **repo source** :
-  ```bash
-  pip install -r requirements.txt
-  ```
 
-#### 2. Créer le projet de test
+| Composant | Détail |
+|-----------|--------|
+| **Extension VS Code** | Installée via `.vsix` (voir section ci-dessus) |
+| **PostgreSQL** | En cours d'exécution (ou pgAdmin4 connecté) |
+| **Dépendances Python** | `pip install -r requirements.txt` dans le **repo source** |
+| **Dépendances Frontend** | `cd frontend && npm install` dans le **repo source** |
+| **LLM Provider** | Configuré dans `.env` du repo source (NVIDIA, Groq, Ollama, etc.) |
+
+---
+
+#### 2. Configuration du Repo Source (une seule fois)
+
+##### 2.1. Fichier `.env` (à la racine du repo source)
+
+Configurez le chemin du projet enfant et votre provider LLM :
+
+```dotenv
+# Base de données
+DATABASE_URL=postgresql://speckit:speckit@localhost:5432/speckit
+
+# ── PROJET ENFANT ──────────────────────────────────────────────
+# Chemin ABSOLU vers le projet sur lequel vous travaillez
+# (c'est là que le backend va watcher .task_runtime/current-task.json)
+TARGET_PROJECT_PATH=C:\Users\MSI\Bureau\mon-projet-test
+
+# ── LLM PROVIDER ───────────────────────────────────────────────
+# Choisissez UN provider et configurez ses clés ci-dessous
+LLM_PROVIDER=nvidia
+
+# NVIDIA NIM (OpenAI-compatible)
+NVIDIA_API_KEY=nvapi-votre-cle-ici
+NVIDIA_MODEL=z-ai/glm-5.2
+NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+
+# Groq (alternative rapide)
+# GROQ_API_KEY=gsk_votre-cle-ici
+# GROQ_MODEL=llama-3.3-70b-versatile
+# GROQ_BASE_URL=https://api.groq.com/openai/v1
+
+# Ollama (local, gratuit)
+# OLLAMA_BASE_URL=http://localhost:11434
+# OLLAMA_MODEL=llama3.1:8b
+```
+
+> ⚠️ **À chaque changement de projet enfant**, mettez à jour `TARGET_PROJECT_PATH` dans ce fichier `.env`.
+
+##### 2.2. Démarrage du Frontend (optionnel mais recommandé)
+
+```bash
+cd frontend
+npm start
+```
+Le dashboard sera accessible sur `http://localhost:3000`.
+
+---
+
+#### 3. Création du Projet Enfant
+
 ```bash
 mkdir mon-projet-test && cd mon-projet-test
 ```
 
-#### 3. Configuration obligatoire : `.vscode/settings.json`
-Créez ce fichier à la racine du **projet de test** (pas dans le repo source) :
+##### 3.1. Configuration : `.vscode/settings.json`
+
+Créez ce fichier à la racine du **projet enfant** pour lier l'extension au backend du repo source :
 
 ```json
 {
@@ -160,7 +248,7 @@ Créez ce fichier à la racine du **projet de test** (pas dans le repo source) :
     "projectPath": "specs",
     "projectName": "mon-projet-test",
     "apiPort": 8000,
-    "backendPath": "C:/Users/VOTRE_USER/chemin/vers/copy-extension-github-spec-kit/backend",
+    "backendPath": "C:/Users/VOTRE_USER/chemin/vers/new copyextension-github-spec-kit/backend",
     "reload": false
   }
 }
@@ -168,55 +256,114 @@ Créez ce fichier à la racine du **projet de test** (pas dans le repo source) :
 
 | Clé | Obligatoire | Description |
 |-----|-------------|-------------|
-| `projectPath` | ✅ | Dossier à surveiller (relatif à la racine du projet test) |
-| `projectName` | ✅ | Identifiant envoyé au pipeline |
-| `apiPort` | ✅ | Port FastAPI (par défaut 8000) |
-| `backendPath` | ✅ | **Chemin ABSOLU** vers le dossier `backend` du **repo source** |
-| `reload` | ❌ | `false` recommandé sur Windows pour éviter erreurs uvicorn |
+| `projectPath` | ✅ | Dossier contenant les specs (relatif à la racine du projet enfant) |
+| `projectName` | ✅ | Identifiant du projet envoyé au pipeline et stocké en BDD |
+| `apiPort` | ✅ | Port FastAPI (par défaut `8000`) |
+| `backendPath` | ✅ | **Chemin ABSOLU** vers le dossier `backend/` du **repo source** |
+| `reload` | ❌ | `false` recommandé sur Windows pour éviter les erreurs uvicorn |
 
 > ⚠️ **Important** : `backendPath` doit pointer vers le `backend` du **repo source** (celui qui contient `app/main.py`), pas vers une copie locale.
 
-#### 4. Créer le dossier specs
+##### 3.2. Dossier `specs/` et fichier `tasks.md`
+
 ```bash
 mkdir specs
 ```
 
-#### 5. Ouvrir dans VS Code
-```bash
-code .
+Créez votre fichier de tâches dans `specs/tasks.md` (format Spec Kit standard avec `## T001`, `## T002`, etc.).
+
+##### 3.3. Génération automatique de `.github/copilot-instructions.md`
+
+> ✅ **Automatique** — Aucune action manuelle requise.
+
+Lorsque vous ouvrez le projet enfant dans VS Code, l'extension **génère automatiquement** le fichier `.github/copilot-instructions.md` à partir du fichier source situé dans le repo de l'extension. Ce fichier instruit GitHub Copilot à :
+
+1. Lire `tasks.md` pour trouver la tâche à implémenter
+2. Écrire `.task_runtime/current-task.json` avec le statut `in_progress` avant de commencer
+3. Mettre à jour ce même fichier avec le statut `done` après completion
+
+**Format du fichier généré** (identique à chaque projet) :
+```json
+{
+  "task_id": "T001",
+  "file": "src/app.js",
+  "status": "in_progress",
+  "project_name": "mon-projet-test",
+  "updated_at": "2026-08-11T10:30:00.000000+00:00"
+}
 ```
-L'extension démarre automatiquement :
-- **AgentDocx Server** → FastAPI sur `http://127.0.0.1:8000`
-- **AgentDocx Watcher** → Surveille `specs/`
-
-Vérifiez les logs : `View` → `Output` → dropdown `AgentDocx Server` / `AgentDocx Watcher`
-
-#### 6. Tester le pipeline
-Créez un fichier markdown dans `specs/` :
-```bash
-echo "# Exigences\n\nLe système doit gérer les utilisateurs." > specs/requirements.md
-```
-Le watcher détecte le changement → appelle `/api/v1/pipeline/upload` → pipeline s'exécute.
-
-#### 7. Vérifier les résultats
-- **Logs Server** : progression agents (Parsing → Summary → Glossary → Diagram → DocWriter → Layout)
-- **Frontend** (si lancé) : onglet Documents → nouvelle entrée avec KPIs
-- **Outputs** : PDF générés dans `outputs/<projectName>/pdf/`
 
 ---
 
-### 📁 Structure attendue du projet de test
+#### 4. Démarrage dans VS Code
+
+```bash
+code .
+```
+
+L'extension démarre automatiquement au chargement :
+
+| Canal Output | Rôle | Ce que vous verrez |
+|--------------|------|---------------------|
+| **AgentDocx Server** | FastAPI + LangGraph | Logs du serveur, progression des agents, KPIs |
+| **AgentDocx Watcher** | Watcher de fichiers | Détection de changements dans `specs/`, file d'attente |
+
+Vérifiez les logs : `View` → `Output` → dropdown `AgentDocx Server` / `AgentDocx Watcher`
+
+---
+
+#### 5. Workflow Complet : Du Spec au Kanban
+
+##### Étape 1 — Ingérer les tâches en BDD
+Le watcher détecte `specs/tasks.md` → le backend ingère les tickets dans la base PostgreSQL.
+
+##### Étape 2 — Copilot implémente les tâches
+1. Ouvrez GitHub Copilot Chat dans le projet enfant
+2. Copilot lit `.github/copilot-instructions.md` (généré automatiquement)
+3. Copilot lit `specs/tasks.md` et commence à implémenter `T001`
+4. **Avant** de coder : Copilot écrit `.task_runtime/current-task.json` avec `status: "in_progress"`
+5. **Après** avoir fini : Copilot met à jour le fichier avec `status: "done"`
+
+##### Étape 3 — Synchronisation automatique (Backend Watcher)
+Le watcher backend (dans `app/main.py`) surveille `.task_runtime/current-task.json` :
+- Détecte le changement → lit le `task_id` et le `status`
+- Met à jour le ticket correspondant en BDD (`TicketStatus.in_progress` → `TicketStatus.done`)
+- Le frontend Kanban se met à jour en temps réel
+
+##### Étape 4 — Générer les PDFs
+Pour déclencher la génération de documents PDF à partir des specs :
+1. Palette de commandes (`Ctrl+Shift+P`) → `AgentDocx SpecKit: Trigger Pipeline`
+2. Ou : modifiez un fichier `.md` dans `specs/` → le watcher détecte le changement
+3. Le pipeline s'exécute : Parsing → Summary → Glossary → Diagram → DocWriter → Layout → PDF
+4. Les livrables sont stockés dans `outputs/<projectName>/pdf/`
+
+---
+
+#### 6. Vérification des résultats
+
+| Où | Quoi |
+|----|------|
+| **Logs Server** | Progression agents (Parsing → Summary → Glossary → Diagram → DocWriter → Layout) |
+| **Frontend** | Onglet Documents → nouvelle entrée avec KPIs ; Onglet Kanban → tickets mis à jour |
+| **Outputs** | `outputs/<projectName>/pdf/` → PDFs générés et versionnés |
+| **BDD** | Table `tickets` → statuts synchronisés avec `current-task.json` |
+
+---
+
+### 📁 Structure attendue du projet enfant
 
 ```
 mon-projet-test/
+├── .github/
+│   └── copilot-instructions.md   # ← Généré automatiquement par l'extension
 ├── .vscode/
-│   └── settings.json       # ← Configuration obligatoire
-├── specs/                  # ← Créé manuellement
-│   ├── requirements.md
-│   ├── spec.md
-│   └── ...
-├── src/                    # Votre code applicatif (optionnel)
-└── package.json            # Votre projet (optionnel)
+│   └── settings.json             # ← Configuration obligatoire (lien vers le backend)
+├── specs/
+│   └── tasks.md                  # ← Vos tâches (T001, T002, ...)
+├── .task_runtime/
+│   └── current-task.json         # ← Écrit/mis à jour par Copilot pendant l'implémentation
+├── src/                          # Votre code applicatif (optionnel)
+└── package.json                  # Votre projet (optionnel)
 ```
 
 ---
@@ -226,28 +373,37 @@ mon-projet-test/
 | Problème | Solution |
 |----------|----------|
 | Watcher ne démarre pas | Vérifiez `AgentDocx Watcher` output : erreur import `watchdog` → `pip install watchdog` |
-| Server erreur "No module named app" | `backendPath` incorrect dans settings.json → doit pointer vers `backend` du repo source |
-| Port 8000 occupé | Changez `apiPort` dans settings.json (ex: 8001) |
-| Pipeline 404/422 | Extension utilise `/upload` (multipart), pas `/run` (JSON) — déjà corrigé dans scripts installés |
-| Pas de logs dans Output | Rechargez fenêtre : `Ctrl+R` |
+| Server erreur "No module named app" | `backendPath` incorrect dans `settings.json` → doit pointer vers `backend` du repo source |
+| `NameError: name 'Enum' is not defined` | Vérifiez que `backend/app/models.py` utilise `from enum import Enum` (pas `import enum`) |
+| Port 8000 occupé | Changez `apiPort` dans `settings.json` (ex: `8001`) |
+| Tickets non synchronisés | Vérifiez `TARGET_PROJECT_PATH` dans `.env` du repo source → doit pointer vers le projet enfant |
+| `copilot-instructions.md` non généré | Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`) |
+| Pipeline 404/422 | L'extension utilise `/upload` (multipart), pas `/run` (JSON) |
+| Pas de logs dans Output | Rechargez fenêtre : `Ctrl+Shift+P` → `Developer: Reload Window` |
+| Dossier `specs/` créé dans le repo source | ✅ Corrigé — les uploads utilisent maintenant le dossier temporaire du système |
 
 ---
 
 ### 🔄 Workflow multi-projets
 
-Chaque projet de test a **sa propre config** dans son `.vscode/settings.json` :
+Chaque projet enfant a **sa propre config** dans son `.vscode/settings.json`, mais le **repo source** ne peut watcher qu'**un seul projet enfant à la fois** (via `TARGET_PROJECT_PATH` dans `.env`).
 
 ```
+# Repo source .env (UN seul projet actif à la fois)
+TARGET_PROJECT_PATH=C:\Users\MSI\Bureau\projet-A
+
 projet-A/
-  .vscode/settings.json   # projectName: "projet-A", projectPath: "specs"
-  specs/
+  .vscode/settings.json   # projectName: "projet-A"
+  specs/tasks.md
+  .task_runtime/current-task.json
 
 projet-B/
-  .vscode/settings.json   # projectName: "projet-B", projectPath: "docs/specs"
-  docs/specs/
+  .vscode/settings.json   # projectName: "projet-B"
+  specs/tasks.md
+  .task_runtime/current-task.json
 ```
 
-L'extension lit la config du **workspace actif** — pas de conflit entre projets.
+> Pour passer au projet B : modifiez `TARGET_PROJECT_PATH` dans le `.env` du repo source, puis redémarrez le serveur.
 
 ---
 
