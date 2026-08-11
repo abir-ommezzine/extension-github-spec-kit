@@ -8,9 +8,9 @@
         "macro_micro_traceability_index": 100.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
-            "Section requise absente des correspondances : acceptance criteria",
+            "Section requise absente des correspondances : security & performance constraints",
             "Section requise absente des correspondances : open questions & uncertainties",
-            "Section requise absente des correspondances : security & performance constraints"
+            "Section requise absente des correspondances : acceptance criteria"
         ]
     },
     "project_management_kpis": {
@@ -18,8 +18,8 @@
         "completeness_score": 62.5,
         "readiness_status": "READY_FOR_EXECUTION",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 31,
-            "total_edges_extracted": 32
+            "total_nodes_extracted": 34,
+            "total_edges_extracted": 35
         },
         "gaps_summary": {
             "high_severity": 0,

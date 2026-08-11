@@ -45,13 +45,52 @@ def _get_current_task_file_path() -> Path:
     return target_dir / ".task_runtime" / "current-task.json"
 
 
+def _find_ticket_for_task(db, project, project_name: str, task_id: str):
+    """
+    Locate the ticket matching task_id using a 3-strategy fallback:
+    project-scoped match -> path-similarity match -> global match.
+    """
+    from app.models import Ticket
+
+    like_pattern = f"%#{task_id}"
+
+    # Strategy 1: project-scoped
+    if project:
+        ticket = (
+            db.query(Ticket)
+            .filter(Ticket.source_file_path.like(like_pattern))
+            .filter(Ticket.project_id == project.id)
+            .first()
+        )
+        if ticket:
+            return ticket
+
+    # Strategy 2: path-similarity match against the watched project root
+    current_task_file_dir = _get_current_task_file_path().parent.parent
+    current_project_path = str(current_task_file_dir).replace("\\", "/")
+    all_matching_tickets = db.query(Ticket).filter(Ticket.source_file_path.like(like_pattern)).all()
+    for candidate in all_matching_tickets:
+        if current_project_path in candidate.source_file_path.replace("\\", "/"):
+            return candidate
+
+    # Strategy 3: global fallback (may be wrong project, but better than nothing)
+    return db.query(Ticket).filter(Ticket.source_file_path.like(like_pattern)).first()
+
+
 def _sync_current_task_to_db() -> dict:
     """
-    Read current-task.json and update the matching ticket status.
+    Read current-task.json and update ticket statuses in the DB.
+
+    Two things are synced:
+    • The single `task_id`/`status` pair (legacy / "what Copilot is doing right now").
+    • The full `tasks` map, if present — every task_id -> status entry it contains
+      is applied too. This is what lets status recover even if the backend wasn't
+      running to catch every individual in_progress/done transition live.
+
     Returns a debug dict describing every step taken.
     """
     current_task_file = _get_current_task_file_path()
-    
+
     result = {
         "file_path": str(current_task_file),
         "file_exists": current_task_file.exists(),
@@ -68,6 +107,7 @@ def _sync_current_task_to_db() -> dict:
         "ticket_current_status": None,
         "action": None,
         "error": None,
+        "bulk_sync": [],
     }
 
     logger.info("=" * 60)
@@ -150,89 +190,82 @@ def _sync_current_task_to_db() -> dict:
                 + "\n".join(f"  [{t.status.value}] {t.source_file_path}" for t in sample_tickets)
             )
 
-        # ── Improved ticket lookup strategy ──
-        # Try multiple strategies to find the correct ticket
-        ticket = None
-        
-        # Strategy 1: If we have project_name, filter by project first
-        if result["project_id"]:
-            like_pattern = f"%#{task_id}"
-            logger.info(f"[sync] Strategy 1: Querying tickets with source_path LIKE {like_pattern!r} in project {project_name}")
-            ticket = (
-                db.query(Ticket)
-                .filter(Ticket.source_file_path.like(like_pattern))
-                .filter(Ticket.project_id == project.id)
-                .first()
-            )
-            if ticket:
-                logger.info(f"[sync] Strategy 1 SUCCESS: Found ticket in project {project_name}")
-        
-        # Strategy 2: If no project or not found, try to find by file path similarity
-        if not ticket:
-            current_task_file_dir = _get_current_task_file_path().parent.parent  # Go up to project root
-            current_project_path = str(current_task_file_dir)
-            logger.info(f"[sync] Strategy 2: Looking for tickets with source_path containing {current_project_path}")
-            
-            like_pattern = f"%#{task_id}"
-            all_matching_tickets = db.query(Ticket).filter(Ticket.source_file_path.like(like_pattern)).all()
-            logger.info(f"[sync] Found {len(all_matching_tickets)} tickets matching #{task_id}")
-            
-            for candidate in all_matching_tickets:
-                logger.info(f"[sync] Checking candidate: {candidate.source_file_path}")
-                if current_project_path.replace("\\", "/") in candidate.source_file_path.replace("\\", "/"):
-                    ticket = candidate
-                    logger.info(f"[sync] Strategy 2 SUCCESS: Found ticket by path matching")
-                    break
-        
-        # Strategy 3: Fallback to global search (original behavior)
-        if not ticket:
-            like_pattern = f"%#{task_id}"
-            logger.info(f"[sync] Strategy 3 (fallback): Global search with source_file_path LIKE {like_pattern!r}")
-            ticket = db.query(Ticket).filter(Ticket.source_file_path.like(like_pattern)).first()
-            if ticket:
-                logger.info(f"[sync] Strategy 3: Found ticket globally (may be wrong project)")
-                logger.warning(f"[sync] Using ticket from different project: {ticket.source_file_path}")
+        # ── Ticket lookup (3-strategy fallback) ─────────────────────────────
+        ticket = _find_ticket_for_task(db, project if result["project_id"] else None, project_name, task_id)
 
         if not ticket:
-            result["error"] = f"No ticket matched LIKE pattern {like_pattern!r}"
+            result["error"] = f"No ticket matched task_id {task_id!r}"
             logger.error(
-                f"[sync] ABORT — no ticket found matching source_path LIKE {like_pattern!r}\n"
+                f"[sync] No ticket found matching task_id={task_id!r}\n"
                 f"        Hint: check that tasks.md was ingested for project {project_name!r}"
             )
-            return result
-
-        result["ticket_found"] = True
-        result["ticket_id"] = str(ticket.id)
-        result["ticket_current_status"] = ticket.status.value
-        logger.info(
-            f"[sync] Ticket found: id={ticket.id} title={ticket.title!r} "
-            f"status={ticket.status.value!r} source_file_path={ticket.source_file_path!r}"
-        )
-
-        # ── Status update ───────────────────────────────────────────────────
-        try:
-            target = TicketStatus(raw_status)
-        except ValueError:
-            logger.warning(
-                f"[sync] Unrecognised status {raw_status!r}, defaulting to in_progress"
-            )
-            target = TicketStatus.in_progress
-
-        result["target_status"] = target.value
-
-        if ticket.status == target:
-            result["action"] = "no_change"
-            logger.info(
-                f"[sync] Ticket {task_id} is already {target.value} — nothing to do."
-            )
         else:
+            result["ticket_found"] = True
+            result["ticket_id"] = str(ticket.id)
+            result["ticket_current_status"] = ticket.status.value
             logger.info(
-                f"[sync] Updating ticket {task_id}: "
-                f"{ticket.status.value!r} → {target.value!r}"
+                f"[sync] Ticket found: id={ticket.id} title={ticket.title!r} "
+                f"status={ticket.status.value!r} source_file_path={ticket.source_file_path!r}"
             )
-            update_ticket_status(db, str(ticket.id), target.value, AuthorType.agent)
-            result["action"] = f"{ticket.status.value} -> {target.value}"
-            logger.info(f"[sync] ✅ Ticket {task_id} updated to {target.value}")
+
+            # ── Status update ────────────────────────────────────────────────
+            try:
+                target = TicketStatus(raw_status)
+            except ValueError:
+                logger.warning(
+                    f"[sync] Unrecognised status {raw_status!r}, defaulting to in_progress"
+                )
+                target = TicketStatus.in_progress
+
+            result["target_status"] = target.value
+
+            if ticket.status == target:
+                result["action"] = "no_change"
+                logger.info(
+                    f"[sync] Ticket {task_id} is already {target.value} — nothing to do."
+                )
+            else:
+                logger.info(
+                    f"[sync] Updating ticket {task_id}: "
+                    f"{ticket.status.value!r} → {target.value!r}"
+                )
+                update_ticket_status(db, str(ticket.id), target.value, AuthorType.agent)
+                result["action"] = f"{ticket.status.value} -> {target.value}"
+                logger.info(f"[sync] ✅ Ticket {task_id} updated to {target.value}")
+
+        # ── Bulk sync from the full `tasks` status map, if present ─────────
+        # This is what lets status recover even when the backend missed live
+        # transitions (e.g. wasn't running while Copilot worked through tasks).
+        tasks_map = data.get("tasks")
+        if isinstance(tasks_map, dict):
+            logger.info(f"[sync] Bulk-syncing {len(tasks_map)} task(s) from `tasks` map…")
+            for map_task_id, map_status in tasks_map.items():
+                entry = {"task_id": map_task_id, "status": map_status}
+                try:
+                    map_target = TicketStatus(map_status)
+                except ValueError:
+                    entry["error"] = f"Unrecognised status {map_status!r}"
+                    logger.warning(f"[sync] Bulk: skipping {map_task_id} — {entry['error']}")
+                    result["bulk_sync"].append(entry)
+                    continue
+
+                map_ticket = _find_ticket_for_task(
+                    db, project if result["project_id"] else None, project_name, map_task_id
+                )
+                if not map_ticket:
+                    entry["error"] = "No matching ticket"
+                    logger.warning(f"[sync] Bulk: no ticket found for {map_task_id}")
+                    result["bulk_sync"].append(entry)
+                    continue
+
+                entry["ticket_id"] = str(map_ticket.id)
+                if map_ticket.status == map_target:
+                    entry["action"] = "no_change"
+                else:
+                    entry["action"] = f"{map_ticket.status.value} -> {map_target.value}"
+                    update_ticket_status(db, str(map_ticket.id), map_target.value, AuthorType.agent)
+                    logger.info(f"[sync] Bulk: {map_task_id} {entry['action']}")
+                result["bulk_sync"].append(entry)
 
     except Exception as e:
         result["error"] = str(e)

@@ -5,57 +5,57 @@
             "term": "Checkpoint",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-02",
-            "project_definition": "A synchronization gate ensuring specific architectural milestones are met before parallel development begins."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "A synchronization gate ensuring all blocking infrastructure is verified before parallel feature development commences."
         },
         {
             "term": "Foundational",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-02",
-            "project_definition": "The blocking infrastructure layer containing shared utilities and core logic required by all subsequent feature implementations."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The shared infrastructure layer containing core entity definitions, storage logic, and command dispatching that blocks all subsequent feature work."
         },
         {
             "term": "Goal",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-03",
+            "contextual_anchor": "PHASE-3",
             "project_definition": "The primary functional objective a user must achieve within a specific feature set."
         },
         {
             "term": "ID",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Format: `[ID] [P?] [Story] Description`",
-            "project_definition": "A unique alphanumeric token used to track individual work units or distinguish stored entities."
+            "contextual_anchor": "T010",
+            "project_definition": "A sequential alphanumeric token assigned to each entry to ensure unique reference and retrieval."
         },
         {
             "term": "JSON",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T005",
-            "project_definition": "The lightweight data-interchange format used for persistent storage and scriptable output."
+            "project_definition": "The lightweight data-interchange format used for persistent storage in ~/.todos.json and for machine-readable output."
         },
         {
             "term": "MVP",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-03",
-            "project_definition": "The minimal set of functional capabilities required to provide basic value to the end user."
+            "contextual_anchor": "PHASE-3",
+            "project_definition": "The minimum viable product consisting of the ability to create and mark entries as finished."
         },
         {
             "term": "Organization",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Tasks: CLI To-Do List Manager",
-            "project_definition": "The structural grouping of work units by user story to ensure independent implementability."
+            "project_definition": "The structural grouping of implementation units by user story to ensure independent testability."
         },
         {
             "term": "Prerequisites",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Tasks: CLI To-Do List Manager",
-            "project_definition": "The set of mandatory design documents and specifications required before implementation starts."
+            "project_definition": "The set of design documents including plan, spec, research, and data-model required before implementation."
         },
         {
             "term": "README",
@@ -68,50 +68,50 @@
             "term": "Setup",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-01",
-            "project_definition": "The initial phase focused on package skeleton creation and tooling configuration."
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The initial phase involving package skeleton creation and tooling configuration in pyproject.toml."
         },
         {
             "term": "T016",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T016",
-            "project_definition": "The specific work unit responsible for handling empty collection states with user-facing notifications."
+            "project_definition": "The specific implementation unit responsible for handling empty collection states with a user-facing message."
         },
         {
             "term": "Tests",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T002",
-            "project_definition": "The verification layer consisting of unit and integration directory structures."
+            "project_definition": "The verification suite divided into unit and integration directories."
         },
         {
             "term": "population in",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T010",
-            "project_definition": "The process of assigning a timestamp to the creation field of a new entity."
+            "project_definition": "The process of assigning a timestamp to the created_at field during entity instantiation."
         },
         {
             "term": "todo clear",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T018",
-            "project_definition": "The operation that purges all entities marked as finished from the persistent store."
+            "project_definition": "The operation that removes all entries marked as finished from the persistent store."
         },
         {
             "term": "todo list",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "T013",
-            "project_definition": "The operation that retrieves and displays all stored entities in a readable or machine-parseable format."
+            "project_definition": "The operation that retrieves and displays all entries in either human-readable or machine-parseable format."
         },
         {
             "term": "⚠️ CRITICAL",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-02",
-            "project_definition": "A high-priority constraint indicating a hard dependency that blocks all subsequent development."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "A high-priority constraint indicating that no subsequent work can begin until the current phase is fully validated."
         }
     ]
 }

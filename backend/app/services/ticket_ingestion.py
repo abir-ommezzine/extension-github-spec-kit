@@ -199,7 +199,7 @@ def ingest_task_file(
                 ticket_id=ticket.id,
                 event_type=TicketEventType.status_change,
                 author_type=AuthorType.agent,
-                payload={"from": None, "to": TicketStatus.todo.value, "source": "initial_ingestion"},
+                event_metadata={"from": None, "to": TicketStatus.todo.value, "source": "initial_ingestion"},
             ))
             db.commit()
 
@@ -304,7 +304,7 @@ def update_ticket_status(
         ticket_id=ticket.id,
         event_type=event_type,
         author_type=author_type,
-        payload={"from": old_status.value, "to": target_status.value, "source": "api_patch"},
+        event_metadata={"from": old_status.value, "to": target_status.value, "source": "api_patch"},
     ))
     db.commit()
     db.refresh(ticket)
@@ -329,7 +329,7 @@ def add_ticket_comment(
         ticket_id=ticket.id,
         event_type=TicketEventType.comment_added,
         author_type=author_type,
-        payload={"comment_id": str(comment.id)},
+        event_metadata={"comment_id": str(comment.id)},
     ))
     db.commit()
     db.refresh(comment)

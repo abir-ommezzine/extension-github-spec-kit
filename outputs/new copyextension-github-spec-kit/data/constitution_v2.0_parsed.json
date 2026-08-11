@@ -1,0 +1,151 @@
+{
+    "parsing_rationale": "The provided document is a template (placeholder file) rather than a populated constitution. It contains structural markers (e.g., [PRINCIPLE_1_NAME]) and examples in comments. I have parsed the structural intent of these placeholders into the graph to maintain the template's logic, while flagging the total absence of actual technical content as structural gaps.",
+    "project_info": {
+        "project_name": "[PROJECT_NAME]",
+        "source_type": "scratch",
+        "brief_explanation": "Template for a project constitution defining core principles, governance, and technical constraints.",
+        "source_context": "Initial template file for the Spec Kit extension."
+    },
+    "doc_type": "constitution",
+    "sections": [
+        {
+            "title": "[PROJECT_NAME] Constitution",
+            "level": 1,
+            "raw_content": "<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Core Principles",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "[PRINCIPLE_1_NAME]",
+            "level": 3,
+            "raw_content": "<!-- Example: I. Library-First -->\n[PRINCIPLE_1_DESCRIPTION]\n<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "[PRINCIPLE_2_NAME]",
+            "level": 3,
+            "raw_content": "<!-- Example: II. CLI Interface -->\n[PRINCIPLE_2_DESCRIPTION]\n<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "[PRINCIPLE_3_NAME]",
+            "level": 3,
+            "raw_content": "<!-- Example: III. Test-First (NON-NEGOTIABLE) -->\n[PRINCIPLE_3_DESCRIPTION]\n<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->",
+            "mapped_to_template_field": "Testing Discipline & Gates"
+        },
+        {
+            "title": "[PRINCIPLE_4_NAME]",
+            "level": 3,
+            "raw_content": "<!-- Example: IV. Integration Testing -->\n[PRINCIPLE_4_DESCRIPTION]\n<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->",
+            "mapped_to_template_field": "Testing Discipline & Gates"
+        },
+        {
+            "title": "[PRINCIPLE_5_NAME]",
+            "level": 3,
+            "raw_content": "<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->\n[PRINCIPLE_5_DESCRIPTION]\n<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "[SECTION_2_NAME]",
+            "level": 2,
+            "raw_content": "<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->\n\n[SECTION_2_CONTENT]\n<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "[SECTION_3_NAME]",
+            "level": 2,
+            "raw_content": "<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->\n\n[SECTION_3_CONTENT]\n<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Governance",
+            "level": 2,
+            "raw_content": "<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->\n\n[GOVERNANCE_RULES]\n<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->\n\n**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]\n<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        }
+    ],
+    "elements": [
+        {
+            "type": "requirement",
+            "identifier": "PRINCIPLE-1",
+            "content": "[PRINCIPLE_1_DESCRIPTION] (Placeholder for Core Principle 1)",
+            "source_section": "[PRINCIPLE_1_NAME]",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "PRINCIPLE-2",
+            "content": "[PRINCIPLE_2_DESCRIPTION] (Placeholder for Core Principle 2)",
+            "source_section": "[PRINCIPLE_2_NAME]",
+            "attributes": {}
+        },
+        {
+            "type": "testing_gate",
+            "identifier": "PRINCIPLE-3",
+            "content": "[PRINCIPLE_3_DESCRIPTION] (Placeholder for Test-First approach)",
+            "source_section": "[PRINCIPLE_3_NAME]",
+            "attributes": {}
+        },
+        {
+            "type": "testing_gate",
+            "identifier": "PRINCIPLE-4",
+            "content": "[PRINCIPLE_4_DESCRIPTION] (Placeholder for Integration Testing)",
+            "source_section": "[PRINCIPLE_4_NAME]",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "PRINCIPLE-5",
+            "content": "[PRINCIPLE_5_DESCRIPTION] (Placeholder for Observability/Versioning/Simplicity)",
+            "source_section": "[PRINCIPLE_5_NAME]",
+            "attributes": {}
+        },
+        {
+            "type": "rule",
+            "identifier": "GOV-01",
+            "content": "[GOVERNANCE_RULES] (Placeholder for governance and amendment rules)",
+            "source_section": "Governance",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "GOV-01",
+            "to": "PRINCIPLE-1",
+            "relation_type": "contains"
+        },
+        {
+            "source": "GOV-01",
+            "to": "PRINCIPLE-2",
+            "relation_type": "contains"
+        },
+        {
+            "source": "GOV-01",
+            "to": "PRINCIPLE-3",
+            "relation_type": "contains"
+        },
+        {
+            "source": "GOV-01",
+            "to": "PRINCIPLE-4",
+            "relation_type": "contains"
+        },
+        {
+            "source": "GOV-01",
+            "to": "PRINCIPLE-5",
+            "relation_type": "contains"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "HIGH",
+            "remediation_advice": "The document is a template and contains no actual project-specific decisions or open questions. A dedicated section for uncertainties must be created."
+        }
+    ],
+    "open_questions": []
+}

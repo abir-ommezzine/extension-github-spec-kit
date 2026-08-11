@@ -24,6 +24,14 @@ def _uuid() -> uuid.UUID:
     return uuid.uuid4()
 
 
+def _enum_values(enum_cls):
+    """SQLAlchemy sends the Python Enum member's .name to Postgres by default.
+    Our native enum types are populated from .value (see sync_native_enums), and
+    ArtifactType.data_model's name ("data_model") differs from its value
+    ("data-model") — without this, inserts fail with InvalidTextRepresentation."""
+    return [e.value for e in enum_cls]
+
+
 
 # ============================================
 # ENUMS
@@ -141,7 +149,10 @@ class Artifact(Base):
     )
     current_file_hash = Column(String(64), nullable=True)
     source_path = Column(String(500), nullable=False)
-    artifact_type = Column(SAEnum(ArtifactType, name="artifact_type_enum"), nullable=False)
+    artifact_type = Column(
+        SAEnum(ArtifactType, name="artifact_type_enum", values_callable=_enum_values),
+        nullable=False,
+    )
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     project = relationship("Project", back_populates="artifacts")
@@ -187,7 +198,7 @@ class DocVersion(Base):
     sections_summary = Column(JSONB, nullable=True)
     commit_hash = Column(String(40), nullable=True)
     generated_by = Column(
-        SAEnum(GeneratedBy, name="generated_by_enum"),
+        SAEnum(GeneratedBy, name="generated_by_enum", values_callable=_enum_values),
         nullable=False,
         default=GeneratedBy.agent,
     )
@@ -220,7 +231,7 @@ class PipelineRun(Base):
     )
 
     current_stage = Column(
-        SAEnum(PipelineStage, name="pipeline_stage_enum"),
+        SAEnum(PipelineStage, name="pipeline_stage_enum", values_callable=_enum_values),
         nullable=False,
         default=PipelineStage.parsing,
     )
@@ -281,7 +292,7 @@ class Ticket(Base):
     description = Column(Text, nullable=True)
     
     status = Column(
-        SAEnum(TicketStatus, name="ticket_status_enum"),
+        SAEnum(TicketStatus, name="ticket_status_enum", values_callable=_enum_values),
         nullable=False,
         default=TicketStatus.todo,
     )
@@ -327,19 +338,19 @@ class TicketEvent(Base):
     )
     
     event_type = Column(
-        SAEnum(TicketEventType, name="ticket_event_type_enum"),
+        SAEnum(TicketEventType, name="ticket_event_type_enum", values_callable=_enum_values),
         nullable=False,
     )
     
     author_name = Column(String(255), nullable=True)
     author_type = Column(
-        SAEnum(AuthorType, name="author_type_enum"),
+        SAEnum(AuthorType, name="author_type_enum", values_callable=_enum_values),
         nullable=False,
         default=AuthorType.human,
     )
     
-    old_status = Column(SAEnum(TicketStatus, name="ticket_status_enum"), nullable=True)
-    new_status = Column(SAEnum(TicketStatus, name="ticket_status_enum"), nullable=True)
+    old_status = Column(SAEnum(TicketStatus, name="ticket_status_enum", values_callable=_enum_values), nullable=True)
+    new_status = Column(SAEnum(TicketStatus, name="ticket_status_enum", values_callable=_enum_values), nullable=True)
     
     comment = Column(Text, nullable=True)
     event_metadata = Column(JSONB, nullable=True)  # Renommé de 'metadata' (réservé par SQLAlchemy)
@@ -365,7 +376,7 @@ class TicketComment(Base):
     
     author_name = Column(String(255), nullable=True)
     author_type = Column(
-        SAEnum(AuthorType, name="author_type_enum"),
+        SAEnum(AuthorType, name="author_type_enum", values_callable=_enum_values),
         nullable=False,
         default=AuthorType.human,
     )

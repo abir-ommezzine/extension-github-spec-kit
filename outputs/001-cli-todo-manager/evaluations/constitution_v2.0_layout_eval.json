@@ -1,0 +1,22 @@
+{
+    "project_name": "constitution",
+    "layout_publication_status": "NEEDS_REFINEMENT",
+    "page_count": 12,
+    "file_size_kb": 590.1,
+    "rendered_diagrams_count": 8,
+    "technical_evaluation": {
+        "render_success_rate": 100.0,
+        "diagram_visual_render_rate": 100.0,
+        "page_budget_adherence": 100.0,
+        "visual_overflow_rate": 62.5,
+        "styling_consistency_score": 100.0
+    },
+    "project_management_kpis": {
+        "pdf_generated_success": true,
+        "total_pdf_pages_count": 12,
+        "file_size_kb": 590.1,
+        "rendered_diagram_images_count": 8,
+        "overflow_events_detected_count": 4
+    },
+    "execution_warnings": []
+}
