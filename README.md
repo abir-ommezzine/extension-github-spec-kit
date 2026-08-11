@@ -12,7 +12,7 @@ Le projet est organisé de manière modulaire pour séparer l'orchestration IA, 
 
 - **`/backend`** : ⚙️ Pipeline d'enrichissement et d'évaluation. Propulsé par **FastAPI** et **LangGraph**, il orchestre la chaîne d'agents et gère la logique métier.
 - **`/frontend`** : 🖥️ Dashboard **React** permettant le suivi en temps réel des exécutions, la visualisation des KPIs et le téléversement de nouveaux documents.
-- **`/scripts`** : 🛠️ Watchers de fichiers et scripts d'automatisation qui font le pont entre le système de fichiers et le pipeline.
+- **`/scripts`** : 🛠️ ⚠️ *N'existe plus dans ce repo* — contenait historiquement les watchers de fichiers standalone (`spec_watcher.py`, `start_server.py`), remplacés par l'extension VS Code (voir section dédiée). Le `.vsix` packagé embarque encore sa propre copie de ces scripts.
 - **`/specs`** : 📄 Dossier source des spécifications Markdown à traiter.
   - Contient des **exemples de fichiers** (`spec.md`, `requirements.md`, etc.) prêts à être traités.
   - Le **watcher surveille ce dossier** en temps réel pour déclencher le pipeline automatiquement.
@@ -202,25 +202,56 @@ DATABASE_URL=postgresql://speckit:speckit@localhost:5432/speckit
 TARGET_PROJECT_PATH=C:\Users\MSI\Bureau\mon-projet-test
 
 # ── LLM PROVIDER ───────────────────────────────────────────────
-# Choisissez UN provider et configurez ses clés ci-dessous
-LLM_PROVIDER=nvidia
+# ⚠️ Aujourd'hui, seul Ollama est réellement lu par le code
+# (backend/app/core/llm_client.py ne consomme que OLLAMA_BASE_URL / OLLAMA_MODEL).
+# Les blocs NVIDIA / Groq ci-dessous sont commentés : ils ne sont PAS câblés dans
+# le code actuel, et servent uniquement de gabarit de syntaxe si vous ajoutez un
+# jour le support d'un autre provider (dans backend/app/core/llm_client.py et
+# backend/app/config.py, en ajoutant les champs correspondants à la classe Settings).
 
-# NVIDIA NIM (OpenAI-compatible)
-NVIDIA_API_KEY=nvapi-votre-cle-ici
-NVIDIA_MODEL=z-ai/glm-5.2
-NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+# Ollama (actif — local, gratuit)
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=gemma4:31b-cloud
 
-# Groq (alternative rapide)
+# NVIDIA NIM (OpenAI-compatible) — gabarit, non câblé
+# NVIDIA_API_KEY=nvapi-votre-cle-ici
+# NVIDIA_MODEL=z-ai/glm-5.2
+# NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+
+# Groq (alternative rapide) — gabarit, non câblé
 # GROQ_API_KEY=gsk_votre-cle-ici
 # GROQ_MODEL=llama-3.3-70b-versatile
 # GROQ_BASE_URL=https://api.groq.com/openai/v1
-
-# Ollama (local, gratuit)
-# OLLAMA_BASE_URL=http://localhost:11434
-# OLLAMA_MODEL=llama3.1:8b
 ```
 
 > ⚠️ **À chaque changement de projet enfant**, mettez à jour `TARGET_PROJECT_PATH` dans ce fichier `.env`.
+
+> ⚠️ **`TARGET_PROJECT_PATH` (.env) et `SPECKIT_WORKSPACE` (variable d'environnement injectée par l'extension) sont deux mécanismes indépendants** qui ne se synchronisent pas automatiquement :
+> - `SPECKIT_WORKSPACE` — utilisé uniquement par `start_server.py` pour localiser le dossier `backend/app` à charger.
+> - `TARGET_PROJECT_PATH` — utilisé par le backend pour savoir quel `.task_runtime/current-task.json` surveiller.
+>
+> En pratique les deux doivent pointer vers le **même** projet enfant, mais vous devez les maintenir cohérents vous-même.
+
+#### 2.0. Base de données PostgreSQL (une seule fois)
+
+Créez l'utilisateur et la base attendus par `DATABASE_URL` ci-dessus (adaptez si vous utilisez d'autres identifiants) :
+
+```sql
+-- Dans psql, connecté en superuser (ex: postgres)
+CREATE USER speckit WITH PASSWORD 'speckit';
+CREATE DATABASE speckit OWNER speckit;
+```
+
+Les tables sont créées automatiquement au démarrage du backend (`Base.metadata.create_all`), aucune migration manuelle n'est nécessaire.
+
+#### 2.0.1. Ollama (une seule fois)
+
+Le pipeline d'agents nécessite un serveur Ollama local avec le modèle configuré disponible :
+
+```bash
+ollama serve
+ollama pull gemma4:31b-cloud   # ou tout autre modèle, en cohérence avec OLLAMA_MODEL dans .env
+```
 
 ##### 2.2. Démarrage du Frontend (optionnel mais recommandé)
 
@@ -238,9 +269,35 @@ Le dashboard sera accessible sur `http://localhost:3000`.
 mkdir mon-projet-test && cd mon-projet-test
 ```
 
-##### 3.1. Configuration : `.vscode/settings.json`
+##### 3.1. Lier le projet enfant au backend du repo source
 
-Créez ce fichier à la racine du **projet enfant** pour lier l'extension au backend du repo source :
+**Étape obligatoire** : créez, **à la racine du projet enfant**, un lien symbolique/junction nommé `backend` pointant vers le `backend/` du **repo source** :
+
+**Windows (terminal PowerShell ou Invite de commandes — `mklink /J` crée une jonction, ce qui ne nécessite ni droits admin ni mode développeur, contrairement à un lien symbolique `/D`) :**
+```powershell
+cmd /c mklink /J "C:\chemin\vers\mon-projet-test\backend" "C:\chemin\vers\new copyextension-github-spec-kit\backend"
+```
+> ⚠️ Si votre terminal VS Code est **Git Bash**, le flag `/J` peut être mal interprété par la conversion de chemins MSYS — utilisez plutôt un terminal PowerShell ou Invite de commandes pour cette commande.
+
+**Linux/macOS :**
+```bash
+ln -s /chemin/vers/new-copyextension-github-spec-kit/backend /chemin/vers/mon-projet-test/backend
+```
+
+C'est ce lien, et lui seul, qui détermine quel code backend s'exécute. Vérifiez qu'il pointe vers le clone que vous éditez réellement — **si vous avez plusieurs clones du repo sur votre machine, un lien qui pointe vers le mauvais clone donnera l'impression que vos modifications n'ont aucun effet**, sans aucune erreur visible (voir 🔧 Dépannage).
+
+<details>
+<summary>Pourquoi un lien symbolique et pas un simple champ de config ?</summary>
+
+Le script `start_server.py` bundlé dans le `.vsix` cherche un dossier `backend/app` valide **dans cet ordre**, sans lire aucune configuration VS Code :
+1. `<projet enfant>/backend/app` ← c'est le lien que vous venez de créer qui est trouvé ici
+2. `<dossier de l'extension installée>/backend/app`
+3. Recherche ascendante depuis l'emplacement du script
+
+Vous verrez parfois une clé `backendPath` documentée dans `.vscode/settings.json` — **elle n'a aucun effet** : `src/extension.ts` ne contient aucun appel à `vscode.workspace.getConfiguration`, donc rien ne la lit jamais. Ignorez-la si vous la voyez ailleurs.
+</details>
+
+**Optionnel** : vous pouvez tout de même créer ce fichier à la racine du projet enfant à titre de documentation du projet (nom, port API...) — mais aucune de ces valeurs n'est lue par l'extension aujourd'hui, ce fichier n'a donc aucun effet fonctionnel. Vous pouvez l'omettre sans conséquence.
 
 ```json
 {
@@ -248,21 +305,10 @@ Créez ce fichier à la racine du **projet enfant** pour lier l'extension au bac
     "projectPath": "specs",
     "projectName": "mon-projet-test",
     "apiPort": 8000,
-    "backendPath": "C:/Users/VOTRE_USER/chemin/vers/new copyextension-github-spec-kit/backend",
     "reload": false
   }
 }
 ```
-
-| Clé | Obligatoire | Description |
-|-----|-------------|-------------|
-| `projectPath` | ✅ | Dossier contenant les specs (relatif à la racine du projet enfant) |
-| `projectName` | ✅ | Identifiant du projet envoyé au pipeline et stocké en BDD |
-| `apiPort` | ✅ | Port FastAPI (par défaut `8000`) |
-| `backendPath` | ✅ | **Chemin ABSOLU** vers le dossier `backend/` du **repo source** |
-| `reload` | ❌ | `false` recommandé sur Windows pour éviter les erreurs uvicorn |
-
-> ⚠️ **Important** : `backendPath` doit pointer vers le `backend` du **repo source** (celui qui contient `app/main.py`), pas vers une copie locale.
 
 ##### 3.2. Dossier `specs/` et fichier `tasks.md`
 
@@ -276,11 +322,11 @@ Créez votre fichier de tâches dans `specs/tasks.md` (format Spec Kit standard 
 
 > ✅ **Automatique** — Aucune action manuelle requise.
 
-Lorsque vous ouvrez le projet enfant dans VS Code, l'extension **génère automatiquement** le fichier `.github/copilot-instructions.md` à partir du fichier source situé dans le repo de l'extension. Ce fichier instruit GitHub Copilot à :
+Lorsque vous ouvrez le projet enfant dans VS Code, l'extension **génère automatiquement** (et **régénère à chaque activation**, donc à chaque rechargement de fenêtre) le fichier `.github/copilot-instructions.md` à partir du fichier source situé dans le repo de l'extension. Ce fichier instruit GitHub Copilot à :
 
 1. Lire `tasks.md` pour trouver la tâche à implémenter
-2. Écrire `.task_runtime/current-task.json` avec le statut `in_progress` avant de commencer
-3. Mettre à jour ce même fichier avec le statut `done` après completion
+2. Écrire `.task_runtime/current-task.json` **avant** de commencer, avec `status: "in_progress"` pour la tâche en cours **et un instantané complet du statut de toutes les tâches** de `tasks.md` (`tasks: {...}`)
+3. Mettre à jour ce même fichier après completion, avec `status: "done"` et le même instantané complet mis à jour
 
 **Format du fichier généré** (identique à chaque projet) :
 ```json
@@ -289,9 +335,18 @@ Lorsque vous ouvrez le projet enfant dans VS Code, l'extension **génère automa
   "file": "src/app.js",
   "status": "in_progress",
   "project_name": "mon-projet-test",
-  "updated_at": "2026-08-11T10:30:00.000000+00:00"
+  "updated_at": "2026-08-11T10:30:00.000000+00:00",
+  "tasks": {
+    "T001": "in_progress",
+    "T002": "todo",
+    "T003": "todo"
+  }
 }
 ```
+
+> ⚠️ **Le champ `tasks` (instantané complet) est ce qui permet au statut de "rattraper" son retard** si le backend n'était pas démarré pendant que Copilot travaillait sur plusieurs tâches d'affilée : à la prochaine écriture du fichier, `tasks` contient le statut réel de toutes les tâches et le backend les synchronise en une fois. Sans ce champ, seule la dernière tâche touchée serait mise à jour.
+
+> ⚠️ **`/ingest` (ou le bouton "Ingest Tasks" du frontend) ne change JAMAIS le statut d'un ticket.** Il ne fait que rafraîchir le titre, la description et l'état visuel de la case à cocher (`checkbox_state`, affichage uniquement) depuis `tasks.md`. **Seul `.task_runtime/current-task.json`**, lu par le watcher backend, peut faire passer un ticket de `todo` à `in_progress` ou `done`. Si vos tickets restent bloqués en `todo` alors que `tasks.md` montre des cases cochées, vérifiez que `current-task.json` existe et contient bien un objet `tasks` à jour — pas que vous avez ré-ingéré.
 
 ---
 
@@ -372,11 +427,14 @@ mon-projet-test/
 
 | Problème | Solution |
 |----------|----------|
-| Watcher ne démarre pas | Vérifiez `AgentDocx Watcher` output : erreur import `watchdog` → `pip install watchdog` |
-| Server erreur "No module named app" | `backendPath` incorrect dans `settings.json` → doit pointer vers `backend` du repo source |
+| `Script Watcher introuvable` / `Script Python introuvable` dans les logs | Ces commandes lancent `scripts/python/spec_watcher.py` et `start_server.py`, qui **n'existent plus dans le repo source** (supprimés, jamais remplacés dans `src/extension.ts`). Utilisez le `.vsix` packagé (qui les bundle toujours) plutôt que F5 depuis le repo source, ou démarrez le backend manuellement (`uvicorn app.main:app`). |
+| **J'ai modifié le code backend mais rien ne change** | Le plus probable : le `backend/` du projet enfant est un lien symbolique/junction qui pointe vers un **autre clone** du repo que celui que vous éditez. Vérifiez avec `Get-Item backend \| Select Target` (PowerShell) que la cible est bien le repo que vous modifiez, puis redémarrez le backend. C'est arrivé en pratique : plusieurs clones du même repo sur la machine, un seul lien, pointant vers le mauvais. |
+| Server erreur "No module named app" | Le lien `backend` du projet enfant ne pointe pas vers un dossier contenant `app/main.py` — recréez-le (voir §3.1) |
 | `NameError: name 'Enum' is not defined` | Vérifiez que `backend/app/models.py` utilise `from enum import Enum` (pas `import enum`) |
-| Port 8000 occupé | Changez `apiPort` dans `settings.json` (ex: `8001`) |
-| Tickets non synchronisés | Vérifiez `TARGET_PROJECT_PATH` dans `.env` du repo source → doit pointer vers le projet enfant |
+| `invalid input value for enum artifact_type_enum: "..."` | Un des enums Python (ex. `ArtifactType.data_model = "data-model"`) a un `.name` différent de sa `.value`. Toutes les colonnes `SAEnum(...)` dans `models.py` doivent passer `values_callable=_enum_values` pour que SQLAlchemy envoie `.value` (et non `.name`) à Postgres. |
+| `'payload' is an invalid keyword argument for TicketEvent` | Le modèle `TicketEvent` expose une colonne `event_metadata`, pas `payload`. Si vous voyez cette erreur, `backend/app/services/ticket_ingestion.py` n'est pas à jour (vérifiez que vous éditez/exécutez le bon clone — voir l'entrée ci-dessus). |
+| Port 8000 occupé | Changez `apiPort` dans `settings.json`, ou libérez le port (`Get-NetTCPConnection -LocalPort 8000` en PowerShell pour identifier le process) |
+| **Tickets restent en `todo` malgré des cases cochées dans `tasks.md`** | Normal si `.task_runtime/current-task.json` est vide/absent — `/ingest` ne change jamais le statut, seul ce fichier le fait (voir §3.3). Vérifiez aussi `TARGET_PROJECT_PATH` dans `.env` du repo source → doit pointer vers le projet enfant. |
 | `copilot-instructions.md` non généré | Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`) |
 | Pipeline 404/422 | L'extension utilise `/upload` (multipart), pas `/run` (JSON) |
 | Pas de logs dans Output | Rechargez fenêtre : `Ctrl+Shift+P` → `Developer: Reload Window` |
@@ -386,24 +444,35 @@ mon-projet-test/
 
 ### 🔄 Workflow multi-projets
 
-Chaque projet enfant a **sa propre config** dans son `.vscode/settings.json`, mais le **repo source** ne peut watcher qu'**un seul projet enfant à la fois** (via `TARGET_PROJECT_PATH` dans `.env`).
+> ⚠️ **Le lien `backend` (junction/symlink, §3.1) ne résout PAS le multi-projets.** Il détermine uniquement quel *code* backend s'exécute — pas quel projet est surveillé. La preuve : `BASE_DIR` dans `backend/app/config.py` est calculé via `Path(__file__).resolve()`, qui **traverse la jonction jusqu'au repo source physique**, quel que soit le projet enfant depuis lequel le serveur a été démarré. Concrètement : `Path("<n'importe quel projet enfant>/backend/app/config.py").resolve()` renvoie toujours `<repo source>/backend/app/config.py`. Donc **tous les projets enfants liés au même repo source partagent le même `.env`, donc le même `TARGET_PROJECT_PATH`**.
+
+Chaque projet enfant a **sa propre config** dans son `.vscode/settings.json`, mais le **repo source ne peut watcher qu'un seul projet enfant à la fois** (via `TARGET_PROJECT_PATH` dans son `.env` unique).
+
+**Option A — Séquentiel (le plus simple)** : basculez `TARGET_PROJECT_PATH` selon le projet sur lequel vous travaillez activement.
 
 ```
 # Repo source .env (UN seul projet actif à la fois)
 TARGET_PROJECT_PATH=C:\Users\MSI\Bureau\projet-A
 
-projet-A/
-  .vscode/settings.json   # projectName: "projet-A"
-  specs/tasks.md
-  .task_runtime/current-task.json
+projet-A/backend  →  (junction vers le repo source)
+projet-A/specs/tasks.md
+projet-A/.task_runtime/current-task.json
 
-projet-B/
-  .vscode/settings.json   # projectName: "projet-B"
-  specs/tasks.md
-  .task_runtime/current-task.json
+projet-B/backend  →  (junction vers le MÊME repo source)
+projet-B/specs/tasks.md
+projet-B/.task_runtime/current-task.json
 ```
 
-> Pour passer au projet B : modifiez `TARGET_PROJECT_PATH` dans le `.env` du repo source, puis redémarrez le serveur.
+> Pour passer au projet B : modifiez `TARGET_PROJECT_PATH` dans le `.env` du repo source, puis redémarrez le serveur. Les tickets du projet A restent en base et restent consultables/sélectionnables dans le frontend — ils ne reçoivent simplement plus de mises à jour de statut en temps réel tant que vous n'y revenez pas.
+
+**Option B — Surveillance simultanée réelle** : nécessite un **clone physique séparé** du backend par projet enfant (pas une simple jonction vers un clone partagé), chacun avec son propre `.env` (`TARGET_PROJECT_PATH` différent) et son propre port. Chaque projet enfant lie alors son dossier `backend` vers **son propre clone dédié** plutôt que vers un clone commun :
+
+```
+projet-A/backend  →  C:\...\clone-A\backend   (.env : TARGET_PROJECT_PATH=projet-A, port 8000)
+projet-B/backend  →  C:\...\clone-B\backend   (.env : TARGET_PROJECT_PATH=projet-B, port 8001)
+```
+
+Plus lourd à maintenir (garder N clones synchronisés), mais c'est la seule façon d'avoir deux backends qui surveillent réellement deux projets en parallèle avec le code actuel.
 
 ---
 
@@ -418,9 +487,9 @@ Avant de démarrer les services, assurez-vous impérativement que :
 
 ---
 
-### 🛠️ Méthode 1 : Scripts Standalone (Version Actuelle — 4 Terminaux)
+### 🛠️ Méthode 1 : Scripts Standalone (⚠️ Non fonctionnelle actuellement)
 
-> **Approche classique** avec scripts Python standalone. Idéale pour développement sans l'extension.
+> **⚠️ `scripts/python/spec_watcher.py` et `scripts/python/start_server.py` ont été supprimés du repo source** (le dossier `/scripts` n'existe plus). Cette méthode est documentée ci-dessous pour référence historique, mais l'Étape 3 échouera telle quelle. En attendant que ces scripts soient restaurés ou remplacés, utilisez la **Méthode 2**, ou démarrez le backend manuellement avec `uvicorn` (Étape 1 ci-dessous, qui fonctionne indépendamment du dossier `/scripts`) — il n'y a alors simplement pas de watcher de fichiers `.md` automatique tant que ce point n'est pas résolu.
 
 #### Prérequis Base de Données
 - PostgreSQL lancé (ou pgAdmin4 connecté)
@@ -458,6 +527,7 @@ npm start
 ```bash
 python scripts/python/spec_watcher.py
 ```
+> ⚠️ Ce script n'existe plus dans le repo source (voir avertissement en haut de cette section). Sans lui, les modifications de fichiers `.md` ne déclenchent pas automatiquement le pipeline de génération PDF — le reste (backend, frontend, Kanban, sync `current-task.json`) fonctionne normalement sans cette étape.
 
 **Étape 4 : Exécuter Spec Kit via Claude Code** (Terminal 4)
 ```bash
@@ -524,11 +594,10 @@ ollama launch claude
 ---
 
 ### 📚 Ressources Complémentaires
-- `configFrontEnd.pdf` — Dépannage Frontend
-- `scripts/README.md` — Documentation scripts Python
-- `agentdocx-speckit/README.md` — Doc extension (branche `extension`)
-- `configFrontEnd.pdf` — Configuration Frontend détaillée
+- `configFrontEnd.pdf` — Dépannage et configuration Frontend
+- Branche [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) — code complet et documentation de l'extension VS Code
+- `.github/copilot-instructions.md` — Source du fichier généré dans chaque projet enfant ; toute modification ici se propage à tous les projets enfants à la prochaine activation de l'extension
 
 ---
 
-*Dernière mise à jour : 2026-07-31 — Spec Kit v0.0.2 (Extension en développement)*
+*Dernière mise à jour : 2026-08-11 — Spec Kit v0.0.2 (Extension en développement)*
