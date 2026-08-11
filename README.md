@@ -10,7 +10,7 @@ While Copilot implements tasks from `tasks.md` in a child project, this subsyste
 2. **Status sync** — as Copilot works, it reports progress via a JSON file. A backend watcher picks up every change and promotes ticket status in the database.
 3. **Display** — the frontend Kanban board reads ticket status from the database and renders the columns.
 
-The critical rule to remember: **ingestion and status sync are two separate, independent paths.** Ingestion never changes a ticket's status — only the status-sync path can. This is the single most common source of confusion ("I ingested and nothing moved to Done") — see [Status rules](#status-rules) below.
+The critical rule to remember: **ingestion and status sync are two separate, independent paths.** Ingestion never changes a ticket's status — only the status-sync path can.— see [Status rules](#status-rules) below.
 
 ## Architecture / data flow
 
