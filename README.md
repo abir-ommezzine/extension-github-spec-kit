@@ -1,6 +1,6 @@
 # Jira Agent (Kanban Ticket Sync)
 
-> **Naming note**: there is no component literally named "jira agent" in the code. This document covers the ticket/Kanban sync subsystem — the automated pipeline that keeps a Jira-style board in sync with what Copilot is doing in the child project. The name comes from the project's own git history (`b680267 front and back jira board working`). If you meant something else, let me know and I'll retarget this doc.
+> **Naming note**: there is no component literally named "jira agent" in the code. This document covers the ticket/Kanban sync subsystem — the automated pipeline that keeps a Jira-style board in sync with what Copilot is doing in the child project.
 
 ## What it does
 
