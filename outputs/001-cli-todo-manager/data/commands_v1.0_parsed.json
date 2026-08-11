@@ -1,0 +1,208 @@
+{
+    "parsing_rationale": "The document is a CLI contract defining a set of commands for a To-Do manager. Each command is treated as a 'task' with its specific requirements extracted as 'sub_tasks' or 'constraints'. The Output and Error Rules are mapped to 'acceptance_criterion' and 'constraint' respectively to ensure operational compliance.",
+    "project_info": {
+        "project_name": "CLI To-Do List Manager",
+        "source_type": "refining",
+        "brief_explanation": "Implementation of a command-line interface to manage a task list stored in a JSON file.",
+        "source_context": "commands.md"
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "CLI Contract: To-Do List Manager",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Commands",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "`todo add <description>`",
+            "level": 3,
+            "raw_content": "- Adds a new task.\n- Rejects empty or whitespace-only descriptions.\n- Writes the new task to `~/.todos.json`.",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "`todo list [--json]`",
+            "level": 3,
+            "raw_content": "- Displays all tasks.\n- Default output is human-readable.\n- `--json` prints the full task collection as valid JSON.",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "`todo complete <id>`",
+            "level": 3,
+            "raw_content": "- Marks the task with the given ID as completed.\n- Fails if the ID does not exist.",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "`todo remove <id>`",
+            "level": 3,
+            "raw_content": "- Permanently deletes the task with the given ID.\n- Fails if the ID does not exist.",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "`todo clear`",
+            "level": 3,
+            "raw_content": "- Removes all completed tasks.\n- Leaves pending tasks unchanged.",
+            "mapped_to_template_field": "Checkboxes Checklist"
+        },
+        {
+            "title": "Output Rules",
+            "level": 2,
+            "raw_content": "- Human-readable output should show each task ID, description, and completion status.\n- JSON output must be parseable by standard JSON parsers and should reflect the current task list exactly.",
+            "mapped_to_template_field": "Acceptance Criteria"
+        },
+        {
+            "title": "Error Rules",
+            "level": 2,
+            "raw_content": "- Invalid task IDs must produce a clear, user-friendly error message.\n- Malformed storage files must produce a clear, user-friendly error message and a non-zero exit code.\n- Empty descriptions must be rejected before any file write occurs.",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        }
+    ],
+    "elements": [
+        {
+            "type": "task",
+            "identifier": "CMD-ADD",
+            "content": "Implement `todo add <description>` command",
+            "source_section": "`todo add <description>`",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "RULE-EMPTY-DESC",
+            "content": "Reject empty or whitespace-only descriptions before file write",
+            "source_section": "`todo add <description>`",
+            "attributes": {}
+        },
+        {
+            "type": "dependency",
+            "identifier": "STORAGE-JSON",
+            "content": "Storage file at `~/.todos.json`",
+            "source_section": "`todo add <description>`",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "CMD-LIST",
+            "content": "Implement `todo list [--json]` command",
+            "source_section": "`todo list [--json]`",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "OUT-HUMAN",
+            "content": "Human-readable output must show ID, description, and status",
+            "source_section": "Output Rules",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "OUT-JSON",
+            "content": "JSON output must be standard-compliant and reflect current list",
+            "source_section": "Output Rules",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "CMD-COMPLETE",
+            "content": "Implement `todo complete <id>` command",
+            "source_section": "`todo complete <id>`",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "CMD-REMOVE",
+            "content": "Implement `todo remove <id>` command",
+            "source_section": "`todo remove <id>`",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "CMD-CLEAR",
+            "content": "Implement `todo clear` command",
+            "source_section": "`todo clear`",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "ERR-INVALID-ID",
+            "content": "Invalid IDs must produce clear user-friendly error messages",
+            "source_section": "Error Rules",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "ERR-MALFORMED-FILE",
+            "content": "Malformed storage files must result in error message and non-zero exit code",
+            "source_section": "Error Rules",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "CMD-ADD",
+            "to": "RULE-EMPTY-DESC",
+            "relation_type": "implements"
+        },
+        {
+            "source": "CMD-ADD",
+            "to": "STORAGE-JSON",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "CMD-LIST",
+            "to": "OUT-HUMAN",
+            "relation_type": "implements"
+        },
+        {
+            "source": "CMD-LIST",
+            "to": "OUT-JSON",
+            "relation_type": "implements"
+        },
+        {
+            "source": "CMD-COMPLETE",
+            "to": "ERR-INVALID-ID",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "CMD-REMOVE",
+            "to": "ERR-INVALID-ID",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "CMD-LIST",
+            "to": "STORAGE-JSON",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Dependencies & Integration Points",
+            "priority": "LOW",
+            "remediation_advice": "Specify if external libraries (like 'clap' for Rust or 'commander' for JS) are required."
+        },
+        {
+            "missing_section": "Testing & Validation",
+            "priority": "HIGH",
+            "remediation_advice": "Define a test suite for each command, including edge cases for malformed JSON."
+        },
+        {
+            "missing_section": "Implementation Notes & References",
+            "priority": "MEDIUM",
+            "remediation_advice": "Add details on the expected JSON schema for `~/.todos.json`."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Clarify if the ID is an integer, UUID, or user-defined string."
+        }
+    ],
+    "open_questions": [
+        "What is the precise data structure of the JSON storage file?",
+        "How are Task IDs generated (auto-increment, random, etc.)?"
+    ]
+}

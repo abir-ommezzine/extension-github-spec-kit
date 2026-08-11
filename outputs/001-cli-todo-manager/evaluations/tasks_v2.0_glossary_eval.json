@@ -6,7 +6,7 @@
         "term_coverage_rate": 100.0,
         "categorization_accuracy_rate": 100.0,
         "definition_precision_score": 100.0,
-        "anti_tautology_adherence": 100.0,
+        "anti_tautology_adherence": 93.8,
         "contextual_anchor_precision": 100.0,
         "structural_noise_count": 0,
         "case_duplicates_count": 0,

@@ -1,0 +1,12 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "Feature",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "READY-FUNC",
+            "project_definition": "A functional unit of delivery that must satisfy specific measurable outcomes and associated validation criteria before transitioning to the planning stage."
+        }
+    ]
+}

@@ -109,6 +109,64 @@ async def get_pipeline_status():
     return PIPELINE_STATUS
 
 
+@router.get("/progress")
+async def get_pipeline_progress(db: Session = Depends(get_db)):
+    """
+    GET /progress - Retourne la progression actuelle du pipeline.
+    Utilisé par le frontend pour afficher l'état en temps réel.
+    """
+    # Récupérer la dernière exécution en cours ou la plus récente
+    latest_run = (
+        db.query(PipelineRun)
+        .filter(PipelineRun.current_stage != PipelineStage.completed)
+        .filter(PipelineRun.current_stage != PipelineStage.failed)
+        .order_by(PipelineRun.started_at.desc())
+        .first()
+    )
+    
+    if not latest_run:
+        # Pas de pipeline en cours, chercher le dernier complété
+        latest_run = (
+            db.query(PipelineRun)
+            .order_by(PipelineRun.started_at.desc())
+            .first()
+        )
+    
+    if not latest_run:
+        return {
+            "is_running": False,
+            "current_stage": None,
+            "progress_percent": 0,
+            "message": "No pipeline runs found"
+        }
+    
+    # Calculer le pourcentage de progression basé sur le stage
+    stage_progress = {
+        PipelineStage.parsing: 10,
+        PipelineStage.parallel_enrichment: 25,
+        PipelineStage.summary: 35,
+        PipelineStage.glossary: 45,
+        PipelineStage.diagram: 55,
+        PipelineStage.writing: 70,
+        PipelineStage.layout: 85,
+        PipelineStage.rendering: 95,
+        PipelineStage.completed: 100,
+        PipelineStage.failed: 0,
+    }
+    
+    progress = stage_progress.get(latest_run.current_stage, 0)
+    is_running = latest_run.current_stage not in [PipelineStage.completed, PipelineStage.failed]
+    
+    return {
+        "is_running": is_running,
+        "current_stage": latest_run.current_stage.value,
+        "progress_percent": progress,
+        "run_id": str(latest_run.id),
+        "started_at": latest_run.started_at.isoformat() if latest_run.started_at else None,
+        "message": f"Pipeline {latest_run.current_stage.value}"
+    }
+
+
 @router.get("/projects")
 async def list_projects(db: Session = Depends(get_db)):
     """GET /projects - Liste tous les projets avec leur nombre d'artefacts."""
@@ -373,8 +431,9 @@ async def upload_and_process_document(
     file.filename = sanitize_path_string(file.filename)
     project_clean = get_effective_project_name(Path(file.filename), projectName)
     
-    # Créer le répertoire cible sous <RACINE>/specs/<projectName>/
-    dest_dir = BASE_DIR / "specs" / project_clean
+    import tempfile
+    # Use system temporary directory instead of creating any folder in the project root
+    dest_dir = Path(tempfile.gettempdir()) / "speckit_uploads" / project_clean
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     file_path = dest_dir / file.filename
@@ -600,7 +659,8 @@ async def diagnose_path(file_path: str = "", project_name: str = ""):
         results.append({"step": "build_pipeline_paths() mkdir", "ok": False, "error": str(e)})
     
     try:
-        tmp_dir = Path("specs") / (project_name or "test_diag")
+        import tempfile
+        tmp_dir = Path(tempfile.gettempdir()) / "speckit_diag" / (project_name or "test_diag")
         tmp_dir.mkdir(parents=True, exist_ok=True)
         tmp_file = tmp_dir / "_diag_test_.tmp"
         tmp_file.write_bytes(b"test")

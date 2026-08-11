@@ -1,0 +1,96 @@
+{
+    "project_name": "CLI To-Do List Manager",
+    "items": [
+        {
+            "term": "Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: CLI To-Do List Manager",
+            "project_definition": "The specific version control pointer 001-cli-todo-manager used for this feature development."
+        },
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CONST-OFFLINE",
+            "project_definition": "The set of operational boundaries including offline-only access, single-user limitation, and zero-configuration requirements."
+        },
+        {
+            "term": "Date",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: CLI To-Do List Manager",
+            "project_definition": "The temporal marker 2026-08-04 associated with the plan creation."
+        },
+        {
+            "term": "GATE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "A mandatory validation checkpoint that must be cleared before proceeding to research or design phases."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORAGE-JSON",
+            "project_definition": "The lightweight data-interchange format used for local persistence in the home directory and as an optional output flag for scripting."
+        },
+        {
+            "term": "Performance Goals",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PERF-LATENCY",
+            "project_definition": "The requirement that all primary mutations and queries execute in under 2 seconds."
+        },
+        {
+            "term": "Primary Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DEP-STDLIB",
+            "project_definition": "The restriction to use only the built-in modules provided by the runtime environment."
+        },
+        {
+            "term": "Project Type",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "A command-line interface application."
+        },
+        {
+            "term": "Python 3.8",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "LANG-PY38",
+            "project_definition": "The minimum required runtime version for the implementation."
+        },
+        {
+            "term": "Spec",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: CLI To-Do List Manager",
+            "project_definition": "The reference document spec.md containing the detailed feature requirements."
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORAGE-JSON",
+            "project_definition": "The persistence mechanism utilizing a local file located at ~/.todos.json."
+        },
+        {
+            "term": "Target Platform",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "Cross-platform compatibility across Windows, macOS, and Linux environments."
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TEST-COVERAGE",
+            "project_definition": "The validation strategy employing the built-in unit testing framework and static analysis tools like pylint or flake8."
+        }
+    ]
+}

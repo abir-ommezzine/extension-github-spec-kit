@@ -40,14 +40,14 @@ router = APIRouter()
 class TicketResponse(BaseModel):
     id: str
     project_id: str
-    artifact_id: Optional[str] = None
-    source_path: str
+    ticket_id: Optional[str] = None
+    source_file_path: str
     title: str
     description: Optional[str] = None
     status: str
-    position: int
+    line_number: Optional[int] = None
     checkbox_state: Optional[str] = None
-    file_hash: Optional[str] = None
+    source_file_hash: Optional[str] = None
     created_at: str
     updated_at: str
 
@@ -127,20 +127,20 @@ async def list_tickets(
                 query = query.filter(Ticket.status == status_enum)
             except ValueError:
                 pass
-        tickets = query.order_by(Ticket.project_id, Ticket.position).all()
+        tickets = query.order_by(Ticket.project_id, Ticket.line_number).all()
 
     return [
         TicketResponse(
             id=str(t.id),
             project_id=str(t.project_id),
-            artifact_id=str(t.artifact_id) if t.artifact_id else None,
-            source_path=t.source_path,
+            ticket_id=t.ticket_id,
+            source_file_path=t.source_file_path,
             title=t.title,
             description=t.description,
             status=t.status.value,
-            position=t.position,
+            line_number=t.line_number,
             checkbox_state=t.checkbox_state,
-            file_hash=t.file_hash,
+            source_file_hash=t.source_file_hash,
             created_at=t.created_at.isoformat() if t.created_at else "",
             updated_at=t.updated_at.isoformat() if t.updated_at else "",
         )
@@ -162,14 +162,14 @@ async def get_ticket(
     return TicketResponse(
         id=str(ticket.id),
         project_id=str(ticket.project_id),
-        artifact_id=str(ticket.artifact_id) if ticket.artifact_id else None,
-        source_path=ticket.source_path,
+        ticket_id=ticket.ticket_id,
+        source_file_path=ticket.source_file_path,
         title=ticket.title,
         description=ticket.description,
         status=ticket.status.value,
-        position=ticket.position,
+        line_number=ticket.line_number,
         checkbox_state=ticket.checkbox_state,
-        file_hash=ticket.file_hash,
+        source_file_hash=ticket.source_file_hash,
         created_at=ticket.created_at.isoformat() if ticket.created_at else "",
         updated_at=ticket.updated_at.isoformat() if ticket.updated_at else "",
     )
@@ -200,14 +200,14 @@ async def patch_ticket_status(
     return TicketResponse(
         id=str(ticket.id),
         project_id=str(ticket.project_id),
-        artifact_id=str(ticket.artifact_id) if ticket.artifact_id else None,
-        source_path=ticket.source_path,
+        ticket_id=ticket.ticket_id,
+        source_file_path=ticket.source_file_path,
         title=ticket.title,
         description=ticket.description,
         status=ticket.status.value,
-        position=ticket.position,
+        line_number=ticket.line_number,
         checkbox_state=ticket.checkbox_state,
-        file_hash=ticket.file_hash,
+        source_file_hash=ticket.source_file_hash,
         created_at=ticket.created_at.isoformat() if ticket.created_at else "",
         updated_at=ticket.updated_at.isoformat() if ticket.updated_at else "",
     )
@@ -284,7 +284,7 @@ async def list_events(
             ticket_id=str(e.ticket_id),
             event_type=e.event_type.value,
             author_type=e.author_type.value,
-            payload=e.payload,
+            payload=e.event_metadata,
             created_at=e.created_at.isoformat() if e.created_at else "",
         )
         for e in events
@@ -333,14 +333,14 @@ async def ingest_tasks(
         TicketResponse(
             id=str(t.id),
             project_id=str(t.project_id),
-            artifact_id=str(t.artifact_id) if t.artifact_id else None,
-            source_path=t.source_path,
+            ticket_id=t.ticket_id,
+            source_file_path=t.source_file_path,
             title=t.title,
             description=t.description,
             status=t.status.value,
-            position=t.position,
+            line_number=t.line_number,
             checkbox_state=t.checkbox_state,
-            file_hash=t.file_hash,
+            source_file_hash=t.source_file_hash,
             created_at=t.created_at.isoformat() if t.created_at else "",
             updated_at=t.updated_at.isoformat() if t.updated_at else "",
         )
@@ -368,14 +368,14 @@ async def commit_refine(
         TicketResponse(
             id=str(t.id),
             project_id=str(t.project_id),
-            artifact_id=str(t.artifact_id) if t.artifact_id else None,
-            source_path=t.source_path,
+            ticket_id=t.ticket_id,
+            source_file_path=t.source_file_path,
             title=t.title,
             description=t.description,
             status=t.status.value,
-            position=t.position,
+            line_number=t.line_number,
             checkbox_state=t.checkbox_state,
-            file_hash=t.file_hash,
+            source_file_hash=t.source_file_hash,
             created_at=t.created_at.isoformat() if t.created_at else "",
             updated_at=t.updated_at.isoformat() if t.updated_at else "",
         )
@@ -414,69 +414,20 @@ async def project_progress(
 
 
 @router.post("/sync-current-task")
-async def sync_current_task(db: Session = Depends(get_db)):
+async def sync_current_task():
     """
     POST /sync-current-task
-    Reads .task_runtime/current-task.json and updates the matching ticket status
-    in the database. Useful as a manual trigger when the file watcher is not available.
+    Reads .task_runtime/current-task.json (resolved via TARGET_PROJECT_PATH, same
+    as the background watcher) and updates matching ticket statuses in the database
+    — both the single current task and, if present, the full `tasks` status map.
+    Useful as a manual trigger when the file watcher is not available.
     """
-    import json
-    from app.utils.path_builder import BASE_DIR
+    from app.main import _sync_current_task_to_db
 
-    current_task_file = BASE_DIR / ".task_runtime" / "current-task.json"
-
-    if not current_task_file.exists():
-        raise HTTPException(status_code=404, detail="current-task.json not found")
-
-    try:
-        data = json.loads(current_task_file.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError) as e:
-        raise HTTPException(status_code=500, detail=f"Failed to read current-task.json: {e}")
-
-    task_id: str = data.get("task_id", "")
-    raw_status: str = data.get("status", "in_progress")
-    project_name: str = data.get("project_name", "")
-
-    if not task_id:
-        raise HTTPException(status_code=400, detail="current-task.json missing task_id")
-
-    # Find the ticket whose source_path ends with #<task_id>
-    query = db.query(Ticket).filter(Ticket.source_path.like(f"%#{task_id}"))
-
-    if project_name:
-        from app.models import Project
-        project = db.query(Project).filter(Project.name == project_name).first()
-        if project:
-            query = query.filter(Ticket.project_id == project.id)
-
-    ticket = query.first()
-    if not ticket:
-        raise HTTPException(
-            status_code=404,
-            detail=f"No ticket found for task_id={task_id} (project: {project_name!r})"
-        )
-
-    try:
-        target_status = TicketStatus(raw_status)
-    except ValueError:
-        target_status = TicketStatus.in_progress
-
-    updated = update_ticket_status(db, str(ticket.id), target_status.value, AuthorType.agent)
-
-    return TicketResponse(
-        id=str(updated.id),
-        project_id=str(updated.project_id),
-        artifact_id=str(updated.artifact_id) if updated.artifact_id else None,
-        source_path=updated.source_path,
-        title=updated.title,
-        description=updated.description,
-        status=updated.status.value,
-        position=updated.position,
-        checkbox_state=updated.checkbox_state,
-        file_hash=updated.file_hash,
-        created_at=updated.created_at.isoformat() if updated.created_at else "",
-        updated_at=updated.updated_at.isoformat() if updated.updated_at else "",
-    )
+    result = _sync_current_task_to_db()
+    if result.get("error") and not result.get("ticket_found") and not result.get("bulk_sync"):
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
 
 
 @router.get("/tickets/{ticket_id}/doc-pdf")

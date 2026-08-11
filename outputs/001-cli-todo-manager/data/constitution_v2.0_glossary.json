@@ -1,0 +1,40 @@
+{
+    "project_name": "To-Do List Manager",
+    "items": [
+        {
+            "term": "GUI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-CLI",
+            "project_definition": "Visual window-based interaction elements strictly forbidden in this architecture."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STORAGE-JSON",
+            "project_definition": "The primary lightweight data interchange format used for local persistence in the home directory."
+        },
+        {
+            "term": "Python 3.8",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REQ-PY38",
+            "project_definition": "The minimum required runtime environment version utilizing only the built-in standard library."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-CLI",
+            "project_definition": "Any graphical or web-based presentation layer explicitly excluded from the system."
+        },
+        {
+            "term": "YAGNI",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "RULE-YAGNI",
+            "project_definition": "A development philosophy prohibiting the implementation of features until they are actually required."
+        }
+    ]
+}

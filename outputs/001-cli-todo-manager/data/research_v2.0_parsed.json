@@ -1,0 +1,183 @@
+{
+    "parsing_rationale": "The document is a set of research decisions for a CLI To-Do Manager. I have mapped these decisions to technical tasks, constraints, and dependencies. Since the document focuses on 'Decisions' rather than a full task list, many template sections are missing and have been flagged in structural_gaps. Each decision was converted into a technical element (task or constraint) with a unique identifier.",
+    "project_info": {
+        "project_name": "CLI To-Do List Manager",
+        "source_type": "refining",
+        "brief_explanation": "Technical decisions for implementing a local CLI task manager using Python standard libraries and JSON storage.",
+        "source_context": "Research notes and architectural decisions document."
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Research Notes: CLI To-Do List Manager",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Decisions",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "1. Command parsing will use `argparse`",
+            "level": 3,
+            "raw_content": "- **Decision**: Use `argparse` with subcommands for `add`, `list`, `complete`, `remove`, and `clear`.\n- **Rationale**: It is available in the Python standard library, supports clear help text, and handles flags like `--json` without extra dependencies.\n- **Alternatives considered**: `click` or `typer` were rejected because the constitution prefers minimal dependencies and the feature does not need their extra ergonomics.",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "2. Storage will be a plain JSON array of task objects",
+            "level": 3,
+            "raw_content": "- **Decision**: Store tasks as a JSON list in `~/.todos.json`.\n- **Rationale**: This is the simplest shape for a small local CLI, keeps the file human-readable, and matches the feature requirement for local JSON storage.\n- **Alternatives considered**: A database was rejected because the feature explicitly requires a local JSON file. A wrapper object with metadata was also considered, but a bare array is easier to inspect and reason about for a minimal tool.",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "3. Task IDs will be assigned sequentially from the current maximum ID",
+            "level": 3,
+            "raw_content": "- **Decision**: Generate the next task ID as `max(existing_ids) + 1`, starting at `1`.\n- **Rationale**: This keeps IDs stable after deletions and satisfies the requirement for unique sequential IDs.\n- **Alternatives considered**: Reusing deleted IDs was rejected because it makes references less predictable. Using list position as an ID was rejected because it changes when tasks are removed.",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "4. The CLI will format timestamps as ISO 8601 UTC strings",
+            "level": 3,
+            "raw_content": "- **Decision**: Store `created_at` as an ISO 8601 timestamp in UTC.\n- **Rationale**: It is unambiguous, standard, and easy to serialize and parse with the standard library.\n- **Alternatives considered**: Local-time strings were rejected because they are harder to compare and can be ambiguous across time zones.",
+            "mapped_to_template_field": "Implementation Notes & References"
+        },
+        {
+            "title": "5. File writes will use a safe replace pattern",
+            "level": 3,
+            "raw_content": "- **Decision**: Write updates to a temporary file and replace the target JSON file after a successful write.\n- **Rationale**: This reduces the chance of leaving a partially written `~/.todos.json` behind if the process is interrupted.\n- **Alternatives considered**: Writing directly to the file was rejected because it increases the risk of corruption on failure.",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        },
+        {
+            "title": "6. Tests will use `unittest`",
+            "level": 3,
+            "raw_content": "- **Decision**: Use `unittest` for unit and integration coverage.\n- **Rationale**: It is part of the standard library and keeps the project dependency-free.\n- **Alternatives considered**: `pytest` was considered, but it would introduce an external dependency that is not necessary for this feature.",
+            "mapped_to_template_field": "Testing & Validation"
+        },
+        {
+            "title": "7. Corrupted JSON will fail with a user-friendly error",
+            "level": 3,
+            "raw_content": "- **Decision**: If `~/.todos.json` cannot be parsed, the CLI will exit non-zero with a clear message explaining that the file is malformed.\n- **Rationale**: The constitution requires graceful errors, and silently discarding bad data would be unsafe.\n- **Alternatives considered**: Automatic repair or recovery was rejected because it could hide data loss and complicate the minimal design.",
+            "mapped_to_template_field": "Security & Performance Constraints"
+        }
+    ],
+    "elements": [
+        {
+            "type": "task",
+            "identifier": "CLI-PARSE",
+            "content": "Implement command parsing using argparse with subcommands: add, list, complete, remove, clear.",
+            "source_section": "1. Command parsing will use `argparse`",
+            "attributes": {
+                "library": "argparse"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "STORAGE-JSON",
+            "content": "Store tasks as a plain JSON array in ~/.todos.json",
+            "source_section": "2. Storage will be a plain JSON array of task objects",
+            "attributes": {
+                "path": "~/.todos.json",
+                "format": "JSON array"
+            }
+        },
+        {
+            "type": "sub_task",
+            "identifier": "ID-GEN",
+            "content": "Generate sequential IDs using max(existing_ids) + 1, starting at 1.",
+            "source_section": "3. Task IDs will be assigned sequentially from the current maximum ID",
+            "attributes": {
+                "logic": "max + 1"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "TIME-ISO",
+            "content": "Format created_at timestamps as ISO 8601 UTC strings.",
+            "source_section": "4. The CLI will format timestamps as ISO 8601 UTC strings",
+            "attributes": {
+                "standard": "ISO 8601",
+                "timezone": "UTC"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "WRITE-SAFE",
+            "content": "Use a safe replace pattern (write to temp file then rename) for JSON updates.",
+            "source_section": "5. File writes will use a safe replace pattern",
+            "attributes": {
+                "pattern": "atomic-replace"
+            }
+        },
+        {
+            "type": "test_case",
+            "identifier": "TEST-UNIT",
+            "content": "Implement unit and integration tests using the unittest standard library.",
+            "source_section": "6. Tests will use `unittest`",
+            "attributes": {
+                "framework": "unittest"
+            }
+        },
+        {
+            "type": "constraint",
+            "identifier": "ERR-JSON",
+            "content": "Exit non-zero with a user-friendly error message if ~/.todos.json is malformed.",
+            "source_section": "7. Corrupted JSON will fail with a user-friendly error",
+            "attributes": {
+                "exit_code": "non-zero"
+            }
+        }
+    ],
+    "relationships": [
+        {
+            "source": "CLI-PARSE",
+            "to": "STORAGE-JSON",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ID-GEN",
+            "to": "STORAGE-JSON",
+            "relation_type": "implements"
+        },
+        {
+            "source": "WRITE-SAFE",
+            "to": "STORAGE-JSON",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "ERR-JSON",
+            "to": "STORAGE-JSON",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "TEST-UNIT",
+            "to": "CLI-PARSE",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Dependencies & Integration Points",
+            "priority": "MEDIUM",
+            "remediation_advice": "Define external dependencies (though the doc suggests none) and OS integration points."
+        },
+        {
+            "missing_section": "Acceptance Criteria",
+            "priority": "HIGH",
+            "remediation_advice": "Convert the decisions into a set of verifiable acceptance criteria for the final product."
+        },
+        {
+            "missing_section": "Checkboxes Checklist",
+            "priority": "MEDIUM",
+            "remediation_advice": "Create an operational checklist based on the identified tasks (CLI-PARSE, ID-GEN, etc.)."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Identify any remaining ambiguities in the implementation of the JSON storage."
+        }
+    ],
+    "open_questions": []
+}

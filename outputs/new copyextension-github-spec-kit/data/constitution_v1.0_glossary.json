@@ -1,0 +1,61 @@
+{
+    "project_name": "[PROJECT_NAME]",
+    "items": [
+        {
+            "term": "BUILD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PRIN-05",
+            "project_definition": "The third numeric component of the versioning triplet used to track incremental compilation iterations."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PRIN-02",
+            "project_definition": "The structured data interchange format required for machine-readable output in command-line interfaces."
+        },
+        {
+            "term": "MAJOR",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PRIN-05",
+            "project_definition": "The primary numeric indicator in the versioning scheme signaling incompatible API modifications."
+        },
+        {
+            "term": "MINOR",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PRIN-05",
+            "project_definition": "The secondary numeric indicator in the versioning scheme signaling backward-compatible functionality additions."
+        },
+        {
+            "term": "NON",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PRIN-03",
+            "project_definition": "A strict qualifier indicating that a specific requirement is mandatory and cannot be bypassed."
+        },
+        {
+            "term": "Principle",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Core Principles",
+            "project_definition": "A fundamental governing rule that dictates the architectural and coding approach for all system components."
+        },
+        {
+            "term": "TDD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PRIN-03",
+            "project_definition": "A development methodology where verification scripts are authored before the actual logic implementation."
+        },
+        {
+            "term": "YAGNI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PRIN-05",
+            "project_definition": "An architectural constraint prohibiting the implementation of features until they are explicitly required."
+        }
+    ]
+}

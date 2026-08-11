@@ -12,10 +12,10 @@
         "total_generated_diagrams": 4,
         "diagram_types_breakdown": {
             "flowchart": 2,
-            "sequenceDiagram": 1,
-            "erDiagram": 1
+            "erDiagram": 1,
+            "sequenceDiagram": 1
         },
-        "total_mermaid_lines_count": 321,
-        "average_lines_per_diagram": 80.2
+        "total_mermaid_lines_count": 299,
+        "average_lines_per_diagram": 74.8
     }
 }

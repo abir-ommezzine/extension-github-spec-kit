@@ -145,7 +145,7 @@ def ingest_task_file(
             db.query(Ticket)
             .filter(
                 Ticket.project_id == project.id,
-                Ticket.source_path == task_source_path,
+                Ticket.source_file_path == task_source_path,
             )
             .first()
         )
@@ -164,14 +164,11 @@ def ingest_task_file(
             if existing_ticket.checkbox_state != parsed["checkbox_state"]:
                 existing_ticket.checkbox_state = parsed["checkbox_state"]
                 changed = True
-            if existing_ticket.file_hash != file_hash:
-                existing_ticket.file_hash = file_hash
+            if existing_ticket.source_file_hash != file_hash:
+                existing_ticket.source_file_hash = file_hash
                 changed = True
-            if existing_ticket.artifact_id != (artifact.id if artifact else None):
-                existing_ticket.artifact_id = artifact.id if artifact else None
-                changed = True
-            if existing_ticket.position != position:
-                existing_ticket.position = position
+            if existing_ticket.line_number != parsed["line_number"]:
+                existing_ticket.line_number = parsed["line_number"]
                 changed = True
 
             if changed:
@@ -185,14 +182,14 @@ def ingest_task_file(
             # Brand-new ticket → always starts as todo.
             ticket = Ticket(
                 project_id=project.id,
-                artifact_id=artifact.id if artifact else None,
-                source_path=task_source_path,
+                ticket_id=parsed.get("id"),  # Le ticket_id du fichier (ex: "T001")
+                source_file_path=task_source_path,
                 title=parsed["title"],
                 description=parsed["description"],
                 status=TicketStatus.todo,
-                position=position,
+                line_number=parsed["line_number"],
                 checkbox_state=parsed["checkbox_state"],
-                file_hash=file_hash,
+                source_file_hash=file_hash,
             )
             db.add(ticket)
             db.commit()
@@ -202,7 +199,7 @@ def ingest_task_file(
                 ticket_id=ticket.id,
                 event_type=TicketEventType.status_change,
                 author_type=AuthorType.agent,
-                payload={"from": None, "to": TicketStatus.todo.value, "source": "initial_ingestion"},
+                event_metadata={"from": None, "to": TicketStatus.todo.value, "source": "initial_ingestion"},
             ))
             db.commit()
 
@@ -270,7 +267,7 @@ def get_tickets_by_project(
             query = query.filter(Ticket.status == TicketStatus(status_filter))
         except ValueError:
             pass
-    return query.order_by(Ticket.position).all()
+    return query.order_by(Ticket.line_number).all()
 
 
 def update_ticket_status(
@@ -307,7 +304,7 @@ def update_ticket_status(
         ticket_id=ticket.id,
         event_type=event_type,
         author_type=author_type,
-        payload={"from": old_status.value, "to": target_status.value, "source": "api_patch"},
+        event_metadata={"from": old_status.value, "to": target_status.value, "source": "api_patch"},
     ))
     db.commit()
     db.refresh(ticket)
@@ -332,7 +329,7 @@ def add_ticket_comment(
         ticket_id=ticket.id,
         event_type=TicketEventType.comment_added,
         author_type=author_type,
-        payload={"comment_id": str(comment.id)},
+        event_metadata={"comment_id": str(comment.id)},
     ))
     db.commit()
     db.refresh(comment)

@@ -1,9 +1,9 @@
 {
-    "parsing_rationale": "The document is a structured task list for a CLI To-Do Manager. I have mapped the phases to 'phase' elements and the individual tasks (T001-T025) to 'task' or 'sub_task' elements. The dependencies are explicitly defined in the 'Dependencies & Execution Order' section and the 'Phase' structure, which I have translated into a graph of 'depends_on' relationships. User story goals were mapped as acceptance criteria.",
+    "parsing_rationale": "The document is a structured task list for a CLI To-Do Manager. I have mapped the phases to 'phase' elements and the individual tasks (T001-T025) to 'task' elements. The dependencies are explicitly defined in the 'Dependencies & Execution Order' section and the 'Phase' structure, which I have translated into 'depends_on' relationships. User stories are treated as phases that contain specific tasks. The 'Independent Test' descriptions in the User Story sections are mapped as 'test_case' elements.",
     "project_info": {
         "project_name": "CLI To-Do List Manager",
         "source_type": "refining",
-        "brief_explanation": "Implementation plan for a Python-based CLI tool to manage tasks with JSON storage.",
+        "brief_explanation": "Implementation plan for a command-line interface to manage a to-do list with JSON storage.",
         "source_context": "Task list derived from design documents in /specs/001-cli-todo-manager/"
     },
     "doc_type": "task",
@@ -36,42 +36,42 @@
             "title": "Phase 3: User Story 1 - Add and Manage Tasks (Priority: P1) 🎯 MVP",
             "level": 2,
             "raw_content": "**Goal**: Let a user create tasks and mark existing tasks as completed from the CLI.\n\n**Independent Test**: Run `todo add \"Task description\"` and `todo complete <id>`, then confirm the stored task list reflects the new task and its completion status.",
-            "mapped_to_template_field": "Acceptance Criteria"
+            "mapped_to_template_field": "Task Description & Objective"
         },
         {
             "title": "Implementation for User Story 1",
             "level": 3,
-            "raw_content": "- [ ] T009 [US1] Implement the `add` command flow in `src/todo_manager/cli.py` and `src/todo_manager/service.py`\n- [ ] T010 [US1] Implement task creation, sequential ID assignment, and `created_at` population in `src/todo_manager/models.py`\n- [ ] T011 [US1] Implement completion updates for existing tasks in `src/todo_manager/service.py`\n- [ ] T012 [US1] Add user-facing success and error messages for add and complete operations in `src/todo_manager/cli.py`\n\n**Checkpoint**: User Story 1 should now support adding and completing tasks independently.\n\n---",
+            "raw_content": "- [X] T009 [US1] Implement the `add` command flow in `src/todo_manager/cli.py` and `src/todo_manager/service.py`\n- [X] T010 [US1] Implement task creation, sequential ID assignment, and `created_at` population in `src/todo_manager/models.py`\n- [X] T011 [US1] Implement completion updates for existing tasks in `src/todo_manager/service.py`\n- [X] T012 [US1] Add user-facing success and error messages for add and complete operations in `src/todo_manager/cli.py`\n\n**Checkpoint**: User Story 1 should now support adding and completing tasks independently.\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 4: User Story 2 - View and Filter Tasks (Priority: P2)",
             "level": 2,
             "raw_content": "**Goal**: Let a user list tasks in readable form or as JSON for scripting.\n\n**Independent Test**: Run `todo list` and `todo list --json` and confirm the output is readable or parseable JSON while showing the full task collection.",
-            "mapped_to_template_field": "Acceptance Criteria"
+            "mapped_to_template_field": "Task Description & Objective"
         },
         {
             "title": "Implementation for User Story 2",
             "level": 3,
-            "raw_content": "- [ ] T013 [US2] Implement human-readable task listing output in `src/todo_manager/cli.py`\n- [ ] T014 [US2] Implement `--json` output formatting in `src/todo_manager/cli.py` using the task serialization helpers in `src/todo_manager/models.py`\n- [ ] T015 [US2] Add listing logic that preserves task order and status fields in `src/todo_manager/service.py`\n- [ ] T016 [US2] Handle the empty-list case with a clear message in `src/todo_manager/cli.py`\n\n**Checkpoint**: User Story 2 should now display tasks correctly in both human-readable and JSON forms.\n\n---",
+            "raw_content": "- [X] T013 [US2] Implement human-readable task listing output in `src/todo_manager/cli.py`\n- [X] T014 [US2] Implement `--json` output formatting in `src/todo_manager/cli.py` using the task serialization helpers in `src/todo_manager/models.py`\n- [X] T015 [US2] Add listing logic that preserves task order and status fields in `src/todo_manager/service.py`\n- [X] T016 [US2] Handle the empty-list case with a clear message in `src/todo_manager/cli.py`\n\n**Checkpoint**: User Story 2 should now display tasks correctly in both human-readable and JSON forms.\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 5: User Story 3 - Remove and Clear Tasks (Priority: P3)",
             "level": 2,
             "raw_content": "**Goal**: Let a user remove a single task or clear all completed tasks.\n\n**Independent Test**: Run `todo remove <id>` and `todo clear`, then confirm the targeted task or completed tasks are removed while other tasks remain intact.",
-            "mapped_to_template_field": "Acceptance Criteria"
+            "mapped_to_template_field": "Task Description & Objective"
         },
         {
             "title": "Implementation for User Story 3",
             "level": 3,
-            "raw_content": "- [ ] T017 [US3] Implement the `remove` command flow in `src/todo_manager/cli.py` and `src/todo_manager/service.py`\n- [ ] T018 [US3] Implement the `clear` command flow for removing completed tasks in `src/todo_manager/service.py`\n- [ ] T019 [US3] Add not-found handling for invalid task IDs in `src/todo_manager/cli.py`\n- [ ] T020 [US3] Ensure storage writes persist removals and clears safely in `src/todo_manager/storage.py`\n\n**Checkpoint**: All user stories should now be independently functional.\n\n---",
+            "raw_content": "- [X] T017 [US3] Implement the `remove` command flow in `src/todo_manager/cli.py` and `src/todo_manager/service.py`\n- [X] T018 [US3] Implement the `clear` command flow for removing completed tasks in `src/todo_manager/service.py`\n- [X] T019 [US3] Add not-found handling for invalid task IDs in `src/todo_manager/cli.py`\n- [X] T020 [US3] Ensure storage writes persist removals and clears safely in `src/todo_manager/storage.py`\n\n**Checkpoint**: All user stories should now be independently functional.\n\n---",
             "mapped_to_template_field": "Checkboxes Checklist"
         },
         {
             "title": "Phase 6: Polish & Cross-Cutting Concerns",
             "level": 2,
-            "raw_content": "**Purpose**: Final cleanup and validation across all stories\n\n- [ ] T021 [P] Document the CLI usage and storage behavior in `README.md`\n- [ ] T022 [P] Add quickstart verification notes and examples in `specs/001-cli-todo-manager/quickstart.md`\n- [ ] T023 Run a manual smoke test of `add`, `list`, `complete`, `remove`, and `clear` against `~/.todos.json`\n- [ ] T024 Verify linting and formatting expectations for the source files in `src/todo_manager/`\n- [ ] T025 Confirm the generated JSON output remains parseable for the `todo list --json` path\n\n---",
+            "raw_content": "**Purpose**: Final cleanup and validation across all stories\n\n- [X] T021 [P] Document the CLI usage and storage behavior in `README.md`\n- [X] T022 [P] Add quickstart verification notes and examples in `specs/001-cli-todo-manager/quickstart.md`\n- [X] T023 Run a manual smoke test of `add`, `list`, `complete`, `remove`, and `clear` against `~/.todos.json`\n- [X] T024 Verify linting and formatting expectations for the source files in `src/todo_manager/`\n- [X] T025 Confirm the generated JSON output remains parseable for the `todo list --json` path\n\n---",
             "mapped_to_template_field": "Testing & Validation"
         },
         {
@@ -148,30 +148,16 @@
         {
             "type": "task",
             "identifier": "T001",
-            "content": "Create the Python package skeleton",
+            "content": "Create the Python package skeleton in src/todo_manager/__init__.py, __main__.py, cli.py, models.py, storage.py, and service.py",
             "source_section": "Phase 1: Setup (Shared Infrastructure)",
-            "attributes": {
-                "files": [
-                    "src/todo_manager/__init__.py",
-                    "src/todo_manager/__main__.py",
-                    "src/todo_manager/cli.py",
-                    "src/todo_manager/models.py",
-                    "src/todo_manager/storage.py",
-                    "src/todo_manager/service.py"
-                ]
-            }
+            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T002",
-            "content": "Create the test directory structure",
+            "content": "Create the test directory structure in tests/unit/ and tests/integration/",
             "source_section": "Phase 1: Setup (Shared Infrastructure)",
-            "attributes": {
-                "files": [
-                    "tests/unit/",
-                    "tests/integration/"
-                ]
-            }
+            "attributes": {}
         },
         {
             "type": "task",
@@ -194,48 +180,39 @@
         {
             "type": "task",
             "identifier": "T004",
-            "content": "Implement task entity definitions and serialization helpers",
+            "content": "Implement task entity definitions and serialization helpers in src/todo_manager/models.py",
             "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
-            "attributes": {
-                "file": "src/todo_manager/models.py"
-            }
+            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T005",
-            "content": "Implement JSON storage path resolution and file I/O helpers",
+            "content": "Implement JSON storage path resolution and file I/O helpers in src/todo_manager/storage.py",
             "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
-            "attributes": {
-                "file": "src/todo_manager/storage.py"
-            }
+            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T006",
-            "content": "Implement shared command-line parsing and top-level dispatch",
+            "content": "Implement shared command-line parsing and top-level dispatch in src/todo_manager/cli.py",
             "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
             "attributes": {
-                "parallel": true,
-                "file": "src/todo_manager/cli.py"
+                "parallel": true
             }
         },
         {
             "type": "task",
             "identifier": "T007",
-            "content": "Implement shared service-layer error handling and task collection utilities",
+            "content": "Implement shared service-layer error handling and task collection utilities in src/todo_manager/service.py",
             "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
-            "attributes": {
-                "file": "src/todo_manager/service.py"
-            }
+            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T008",
-            "content": "Define module entry behavior for python -m todo_manager",
+            "content": "Define module entry behavior for python -m todo_manager in src/todo_manager/__main__.py",
             "source_section": "Phase 2: Foundational (Blocking Prerequisites)",
-            "attributes": {
-                "file": "src/todo_manager/__main__.py"
-            }
+            "attributes": {}
         },
         {
             "type": "phase",
@@ -248,18 +225,16 @@
             }
         },
         {
-            "type": "acceptance_criterion",
-            "identifier": "AC-US1",
-            "content": "User can create tasks and mark existing tasks as completed from the CLI",
+            "type": "test_case",
+            "identifier": "TEST-US1",
+            "content": "Run `todo add \"Task description\"` and `todo complete <id>`, then confirm the stored task list reflects the new task and its completion status.",
             "source_section": "Phase 3: User Story 1 - Add and Manage Tasks (Priority: P1) 🎯 MVP",
-            "attributes": {
-                "test_case": "todo add \"Task description\" and todo complete <id>"
-            }
+            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T009",
-            "content": "Implement the add command flow",
+            "content": "Implement the `add` command flow in src/todo_manager/cli.py and src/todo_manager/service.py",
             "source_section": "Implementation for User Story 1",
             "attributes": {
                 "story": "US1"
@@ -268,7 +243,7 @@
         {
             "type": "task",
             "identifier": "T010",
-            "content": "Implement task creation, sequential ID assignment, and created_at population",
+            "content": "Implement task creation, sequential ID assignment, and `created_at` population in src/todo_manager/models.py",
             "source_section": "Implementation for User Story 1",
             "attributes": {
                 "story": "US1"
@@ -277,7 +252,7 @@
         {
             "type": "task",
             "identifier": "T011",
-            "content": "Implement completion updates for existing tasks",
+            "content": "Implement completion updates for existing tasks in src/todo_manager/service.py",
             "source_section": "Implementation for User Story 1",
             "attributes": {
                 "story": "US1"
@@ -286,7 +261,7 @@
         {
             "type": "task",
             "identifier": "T012",
-            "content": "Add user-facing success and error messages for add and complete operations",
+            "content": "Add user-facing success and error messages for add and complete operations in src/todo_manager/cli.py",
             "source_section": "Implementation for User Story 1",
             "attributes": {
                 "story": "US1"
@@ -302,18 +277,16 @@
             }
         },
         {
-            "type": "acceptance_criterion",
-            "identifier": "AC-US2",
-            "content": "User can list tasks in readable form or as JSON for scripting",
+            "type": "test_case",
+            "identifier": "TEST-US2",
+            "content": "Run `todo list` and `todo list --json` and confirm the output is readable or parseable JSON while showing the full task collection.",
             "source_section": "Phase 4: User Story 2 - View and Filter Tasks (Priority: P2)",
-            "attributes": {
-                "test_case": "todo list and todo list --json"
-            }
+            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T013",
-            "content": "Implement human-readable task listing output",
+            "content": "Implement human-readable task listing output in src/todo_manager/cli.py",
             "source_section": "Implementation for User Story 2",
             "attributes": {
                 "story": "US2"
@@ -322,7 +295,7 @@
         {
             "type": "task",
             "identifier": "T014",
-            "content": "Implement --json output formatting",
+            "content": "Implement `--json` output formatting in src/todo_manager/cli.py using the task serialization helpers in src/todo_manager/models.py",
             "source_section": "Implementation for User Story 2",
             "attributes": {
                 "story": "US2"
@@ -331,7 +304,7 @@
         {
             "type": "task",
             "identifier": "T015",
-            "content": "Add listing logic that preserves task order and status fields",
+            "content": "Add listing logic that preserves task order and status fields in src/todo_manager/service.py",
             "source_section": "Implementation for User Story 2",
             "attributes": {
                 "story": "US2"
@@ -340,7 +313,7 @@
         {
             "type": "task",
             "identifier": "T016",
-            "content": "Handle the empty-list case with a clear message",
+            "content": "Handle the empty-list case with a clear message in src/todo_manager/cli.py",
             "source_section": "Implementation for User Story 2",
             "attributes": {
                 "story": "US2"
@@ -356,18 +329,16 @@
             }
         },
         {
-            "type": "acceptance_criterion",
-            "identifier": "AC-US3",
-            "content": "User can remove a single task or clear all completed tasks",
+            "type": "test_case",
+            "identifier": "TEST-US3",
+            "content": "Run `todo remove <id>` and `todo clear`, then confirm the targeted task or completed tasks are removed while other tasks remain intact.",
             "source_section": "Phase 5: User Story 3 - Remove and Clear Tasks (Priority: P3)",
-            "attributes": {
-                "test_case": "todo remove <id> and todo clear"
-            }
+            "attributes": {}
         },
         {
             "type": "task",
             "identifier": "T017",
-            "content": "Implement the remove command flow",
+            "content": "Implement the `remove` command flow in src/todo_manager/cli.py and src/todo_manager/service.py",
             "source_section": "Implementation for User Story 3",
             "attributes": {
                 "story": "US3"
@@ -376,7 +347,7 @@
         {
             "type": "task",
             "identifier": "T018",
-            "content": "Implement the clear command flow for removing completed tasks",
+            "content": "Implement the `clear` command flow for removing completed tasks in src/todo_manager/service.py",
             "source_section": "Implementation for User Story 3",
             "attributes": {
                 "story": "US3"
@@ -385,7 +356,7 @@
         {
             "type": "task",
             "identifier": "T019",
-            "content": "Add not-found handling for invalid task IDs",
+            "content": "Add not-found handling for invalid task IDs in src/todo_manager/cli.py",
             "source_section": "Implementation for User Story 3",
             "attributes": {
                 "story": "US3"
@@ -394,7 +365,7 @@
         {
             "type": "task",
             "identifier": "T020",
-            "content": "Ensure storage writes persist removals and clears safely",
+            "content": "Ensure storage writes persist removals and clears safely in src/todo_manager/storage.py",
             "source_section": "Implementation for User Story 3",
             "attributes": {
                 "story": "US3"
@@ -405,9 +376,7 @@
             "identifier": "PHASE-6",
             "content": "Polish & Cross-Cutting Concerns",
             "source_section": "Phase 6: Polish & Cross-Cutting Concerns",
-            "attributes": {
-                "purpose": "Final cleanup and validation"
-            }
+            "attributes": {}
         },
         {
             "type": "task",
@@ -421,36 +390,32 @@
         {
             "type": "task",
             "identifier": "T022",
-            "content": "Add quickstart verification notes and examples",
+            "content": "Add quickstart verification notes and examples in specs/001-cli-todo-manager/quickstart.md",
             "source_section": "Phase 6: Polish & Cross-Cutting Concerns",
             "attributes": {
                 "parallel": true
             }
         },
         {
-            "type": "test_case",
+            "type": "task",
             "identifier": "T023",
-            "content": "Manual smoke test of add, list, complete, remove, and clear",
-            "source_section": "Phase 6: Polish & Cross-Cutting Concerns",
-            "attributes": {
-                "target": "~/.todos.json"
-            }
-        },
-        {
-            "type": "test_case",
-            "identifier": "T024",
-            "content": "Verify linting and formatting expectations",
+            "content": "Run a manual smoke test of add, list, complete, remove, and clear against ~/.todos.json",
             "source_section": "Phase 6: Polish & Cross-Cutting Concerns",
             "attributes": {}
         },
         {
-            "type": "test_case",
-            "identifier": "T025",
-            "content": "Confirm the generated JSON output remains parseable",
+            "type": "task",
+            "identifier": "T024",
+            "content": "Verify linting and formatting expectations for the source files in src/todo_manager/",
             "source_section": "Phase 6: Polish & Cross-Cutting Concerns",
-            "attributes": {
-                "path": "todo list --json"
-            }
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "T025",
+            "content": "Confirm the generated JSON output remains parseable for the todo list --json path",
+            "source_section": "Phase 6: Polish & Cross-Cutting Concerns",
+            "attributes": {}
         }
     ],
     "relationships": [
@@ -526,7 +491,7 @@
         },
         {
             "source": "PHASE-3",
-            "to": "AC-US1",
+            "to": "TEST-US1",
             "relation_type": "implements"
         },
         {
@@ -556,7 +521,7 @@
         },
         {
             "source": "PHASE-4",
-            "to": "AC-US2",
+            "to": "TEST-US2",
             "relation_type": "implements"
         },
         {
@@ -586,7 +551,7 @@
         },
         {
             "source": "PHASE-5",
-            "to": "AC-US3",
+            "to": "TEST-US3",
             "relation_type": "implements"
         },
         {
@@ -632,14 +597,19 @@
     ],
     "structural_gaps": [
         {
+            "missing_section": "Acceptance Criteria",
+            "priority": "MEDIUM",
+            "remediation_advice": "While 'Independent Tests' are provided for User Stories, formal acceptance criteria for each task are missing."
+        },
+        {
             "missing_section": "Security & Performance Constraints",
             "priority": "LOW",
-            "remediation_advice": "The project is a simple CLI tool; however, adding constraints on JSON file size or input sanitization would be beneficial."
+            "remediation_advice": "No specific security or performance constraints were mentioned for this CLI tool."
         },
         {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "No open questions were listed in the source document."
+            "remediation_advice": "The document appears complete with no open questions listed."
         }
     ],
     "open_questions": []

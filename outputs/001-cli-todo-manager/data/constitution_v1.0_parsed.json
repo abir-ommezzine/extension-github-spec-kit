@@ -1,0 +1,192 @@
+{
+    "parsing_rationale": "The document was parsed by decomposing the 'Core Principles' and 'Technical Requirements' into coding standards and requirements, and the 'Development Workflow' into rules and testing gates. Sections were mapped to the reference template based on their functional purpose (e.g., Workflow -> Branching & PR Workflow).",
+    "project_info": {
+        "project_name": "To-Do List Manager",
+        "source_type": "scratch",
+        "brief_explanation": "A minimal CLI-based To-Do manager adhering to a simplicity-first philosophy with JSON local storage.",
+        "source_context": "Constitution file outlining technical constraints, architecture, and governance."
+    },
+    "doc_type": "constitution",
+    "sections": [
+        {
+            "title": "To-Do List Manager Constitution",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Core Principles",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "I. Simplicity-First",
+            "level": 3,
+            "raw_content": "The application must be minimal and focused. Every feature must justify its existence.\nStart simple and resist feature creep. YAGNI (You Aren't Gonna Need It) applies.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "II. CLI-Only Architecture",
+            "level": 3,
+            "raw_content": "The application is a command-line tool only. No web UI, no server, no GUI components.\nAll functionality must be accessible via command-line arguments and interactive prompts....",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "III. JSON Local Storage",
+            "level": 3,
+            "raw_content": "Data is stored in a local JSON file (`todos.json`) in the user's home directory.\nNo databases, no external services, no network dependencies.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "IV. Zero Configuration",
+            "level": 3,
+            "raw_content": "The application must work out of the box with no setup, no configuration files,\nno environment variables, and no installation steps beyond Python.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "V. Minimal Dependencies",
+            "level": 3,
+            "raw_content": "Use Python standard library exclusively. Third-party packages are only acceptable\nif they eliminate significant boilerplate or provide critical functionality that\ncannot be reasonably implemented in a few lines.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "Technical Requirements",
+            "level": 2,
+            "raw_content": "- Language: Python 3.8+ (standard library only)\n- Storage: JSON file at `~/.todos.json`\n- Commands: `add`, `list`, `complete`, `remove`, `clear`\n- Output: Human-readable by default, JSON format available via `--json` flag",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "Development Workflow",
+            "level": 2,
+            "raw_content": "- Code must pass linting with `pylint` or `flake8`\n- All functions must have docstrings\n- Test coverage must be 80% or higher\n- Pull requests require review and passing tests",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Governance",
+            "level": 2,
+            "raw_content": "This constitution supersedes all other practices. Amendments require:\n1. Pull request with detailed justification\n2. Review by project maintainer\n3. Update to this document with version increment\n\n**Version**: 1.0.0 | **Ratified**: 2025-01-09 | **Last Amended**: 2025-01-09",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        }
+    ],
+    "elements": [
+        {
+            "type": "coding_standard",
+            "identifier": "PRINCIPLE-YAGNI",
+            "content": "Adhere to YAGNI (You Aren't Gonna Need It) and resist feature creep.",
+            "source_section": "I. Simplicity-First",
+            "attributes": {
+                "focus": "minimalism"
+            }
+        },
+        {
+            "type": "requirement",
+            "identifier": "ARCH-CLI-ONLY",
+            "content": "Application must be CLI-only; no Web UI, Server, or GUI components.",
+            "source_section": "II. CLI-Only Architecture",
+            "attributes": {}
+        },
+        {
+            "type": "tool_configuration",
+            "identifier": "STORAGE-JSON",
+            "content": "Data must be stored in a local JSON file (~/.todos.json) with no external dependencies.",
+            "source_section": "III. JSON Local Storage",
+            "attributes": {
+                "file_path": "~/.todos.json"
+            }
+        },
+        {
+            "type": "requirement",
+            "identifier": "ZERO-CONFIG",
+            "content": "Must work out of the box with no setup, config files, or env variables.",
+            "source_section": "IV. Zero Configuration",
+            "attributes": {}
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "DEP-MINIMAL",
+            "content": "Use Python standard library exclusively; third-party packages are exceptions for critical boilerplate reduction.",
+            "source_section": "V. Minimal Dependencies",
+            "attributes": {
+                "preferred_library": "Standard Library"
+            }
+        },
+        {
+            "type": "requirement",
+            "identifier": "TECH-PY38",
+            "content": "Language: Python 3.8+.",
+            "source_section": "Technical Requirements",
+            "attributes": {}
+        },
+        {
+            "type": "rule",
+            "identifier": "RULE-LINT",
+            "content": "Code must pass linting with pylint or flake8.",
+            "source_section": "Development Workflow",
+            "attributes": {
+                "tools": [
+                    "pylint",
+                    "flake8"
+                ]
+            }
+        },
+        {
+            "type": "rule",
+            "identifier": "RULE-DOCS",
+            "content": "All functions must have docstrings.",
+            "source_section": "Development Workflow",
+            "attributes": {}
+        },
+        {
+            "type": "testing_gate",
+            "identifier": "GATE-COVERAGE",
+            "content": "Test coverage must be 80% or higher.",
+            "source_section": "Development Workflow",
+            "attributes": {
+                "threshold": "80%"
+            }
+        },
+        {
+            "type": "workflow_constraint",
+            "identifier": "WF-PR-REVIEW",
+            "content": "Pull requests require review and passing tests.",
+            "source_section": "Development Workflow",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "TECH-PY38",
+            "to": "DEP-MINIMAL",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "WF-PR-REVIEW",
+            "to": "GATE-COVERAGE",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "WF-PR-REVIEW",
+            "to": "RULE-LINT",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "STORAGE-JSON",
+            "to": "ZERO-CONFIG",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Testing Discipline & Gates",
+            "priority": "MEDIUM",
+            "remediation_advice": "While a coverage percentage is mentioned in workflow, there is no dedicated section detailing the testing strategy (Unit, Integration, E2E) or the specific test framework used (e.g., pytest)."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "The document is prescriptive; however, adding a section for known technical debts or future architectural questions would be beneficial."
+        }
+    ],
+    "open_questions": []
+}

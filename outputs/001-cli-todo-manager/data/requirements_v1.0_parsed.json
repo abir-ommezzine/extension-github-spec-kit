@@ -1,0 +1,153 @@
+{
+    "parsing_rationale": "Le document fourni est une checklist de validation de qualité de spécification (Specification Quality Checklist) et non une fiche de tâche opérationnelle. Cependant, conformément aux instructions de 'doc_type: task', j'ai traité les items de validation comme des critères d'acceptation et des tâches de vérification pour le passage en phase de planning. Le document est très lacunaire par rapport au gabarit 'task' attendu (absence de description technique, de tests ou de contraintes de performance), ce qui génère des gaps structurels importants.",
+    "project_info": {
+        "project_name": "CLI To-Do List Manager",
+        "source_type": "refining",
+        "brief_explanation": "Validation de la qualité et de la complétude des spécifications avant planification.",
+        "source_context": "Checklist de pré-requis pour le passage à la phase de planning."
+    },
+    "doc_type": "task",
+    "sections": [
+        {
+            "title": "Specification Quality Checklist: CLI To-Do List Manager",
+            "level": 1,
+            "raw_content": "**Purpose**: Validate specification completeness and quality before proceeding to planning\n**Created**: 2025-01-20\n**Feature**: [spec.md](spec.md)",
+            "mapped_to_template_field": "Task Description & Objective"
+        },
+        {
+            "title": "Content Quality",
+            "level": 2,
+            "raw_content": "- [x] No implementation details (languages, frameworks, APIs)\n- [x] Focused on user value and business needs\n- [x] Written for non-technical stakeholders\n- [x] All mandatory sections completed",
+            "mapped_to_template_field": "Acceptance Criteria"
+        },
+        {
+            "title": "Requirement Completeness",
+            "level": 2,
+            "raw_content": "- [x] No [NEEDS CLARIFICATION] markers remain\n- [x] Requirements are testable and unambiguous\n- [x] Success criteria are measurable\n- [x] Success criteria are technology-agnostic (no implementation details)\n- [x] All acceptance scenarios are defined\n- [x] Edge cases are identified\n- [x] Scope is clearly bounded\n- [x] Dependencies and assumptions identified",
+            "mapped_to_template_field": "Acceptance Criteria"
+        },
+        {
+            "title": "Feature Readiness",
+            "level": 2,
+            "raw_content": "- [x] All functional requirements have clear acceptance criteria\n- [x] User scenarios cover primary flows\n- [x] Feature meets measurable outcomes defined in Success Criteria\n- [x] No implementation details leak into specification",
+            "mapped_to_template_field": "Acceptance Criteria"
+        },
+        {
+            "title": "Notes",
+            "level": 2,
+            "raw_content": "- Items marked complete have been validated against the specification\n- All requirements are testable and technology-agnostic\n- Feature is ready for planning phase",
+            "mapped_to_template_field": "Implementation Notes & References"
+        }
+    ],
+    "elements": [
+        {
+            "type": "phase",
+            "identifier": "VALIDATION-PHASE",
+            "content": "Validation de la complétude et de la qualité des spécifications avant planification",
+            "source_section": "Specification Quality Checklist: CLI To-Do List Manager",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "QUAL-CONT",
+            "content": "Absence de détails d'implémentation (langages, frameworks, APIs)",
+            "source_section": "Content Quality",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "QUAL-USER",
+            "content": "Focus sur la valeur utilisateur et les besoins business",
+            "source_section": "Content Quality",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "COMPL-CLARITY",
+            "content": "Absence de marqueurs [NEEDS CLARIFICATION]",
+            "source_section": "Requirement Completeness",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "COMPL-TESTABLE",
+            "content": "Exigences testables et non ambiguës",
+            "source_section": "Requirement Completeness",
+            "attributes": {}
+        },
+        {
+            "type": "acceptance_criterion",
+            "identifier": "READY-FUNC",
+            "content": "Tous les besoins fonctionnels ont des critères d'acceptation clairs",
+            "source_section": "Feature Readiness",
+            "attributes": {}
+        },
+        {
+            "type": "task",
+            "identifier": "PLANNING-READY",
+            "content": "Prêt pour la phase de planification",
+            "source_section": "Notes",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "VALIDATION-PHASE",
+            "to": "QUAL-CONT",
+            "relation_type": "contains"
+        },
+        {
+            "source": "VALIDATION-PHASE",
+            "to": "QUAL-USER",
+            "relation_type": "contains"
+        },
+        {
+            "source": "VALIDATION-PHASE",
+            "to": "COMPL-CLARITY",
+            "relation_type": "contains"
+        },
+        {
+            "source": "VALIDATION-PHASE",
+            "to": "COMPL-TESTABLE",
+            "relation_type": "contains"
+        },
+        {
+            "source": "VALIDATION-PHASE",
+            "to": "READY-FUNC",
+            "relation_type": "contains"
+        },
+        {
+            "source": "PLANNING-READY",
+            "to": "VALIDATION-PHASE",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Dependencies & Integration Points",
+            "priority": "MEDIUM",
+            "remediation_advice": "Le document mentionne que les dépendances sont identifiées dans la spec, mais elles ne sont pas listées ici."
+        },
+        {
+            "missing_section": "Checkboxes Checklist",
+            "priority": "LOW",
+            "remediation_advice": "Le contenu actuel est une checklist, mais pas une checklist d'exécution technique (implémentation)."
+        },
+        {
+            "missing_section": "Testing & Validation",
+            "priority": "HIGH",
+            "remediation_advice": "Aucun cas de test technique ou plan de validation n'est défini pour la tâche elle-même."
+        },
+        {
+            "missing_section": "Security & Performance Constraints",
+            "priority": "HIGH",
+            "remediation_advice": "Absence totale de contraintes techniques de sécurité ou de performance."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Le document affirme qu'il n'y a plus de zones d'ombre."
+        }
+    ],
+    "open_questions": []
+}
