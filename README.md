@@ -10,7 +10,7 @@ Le projet est organisé de manière modulaire pour séparer l'orchestration IA, 
 
 ### 📂 Arborescence du Projet
 
-- **`/backend`** : ⚙️ Pipeline d'enrichissement et d'évaluation. Propulsé par **FastAPI** et **LangGraph**, il orchestre la chaîne d'agents et gère la logique métier.
+- **`/backend`** : ⚙️ Pipeline d'enrichissement et d'évaluation. Propulsé par **FastAPI** et **LangGraph**, il orchestre la chaîne d'agents et gère la logique métier, incluant l'**Agent JIRA** pour la gestion automatisée des tickets.
 - **`/frontend`** : 🖥️ Dashboard **React** permettant le suivi en temps réel des exécutions, la visualisation des KPIs et le téléversement de nouveaux documents.
 - **`/scripts`** : 🛠️ ⚠️ *N'existe plus dans ce repo* — contenait historiquement les watchers de fichiers standalone (`spec_watcher.py`, `start_server.py`), remplacés par l'extension VS Code (voir section dédiée). Le `.vsix` packagé embarque encore sa propre copie de ces scripts.
 - **`/specs`** : 📄 Dossier source des spécifications Markdown à traiter.
@@ -50,10 +50,102 @@ Le Frontend est une application React moderne utilisant **Material-UI** et **Dat
 Le système s'appuie sur une base de données PostgreSQL pour garantir l'immuabilité des versions et la traçabilité complète de chaque modification.
 
 ### 📊 Modèle de Données
+```mermaid
+erDiagram
+    projects {
+        UUID id "PK"
+        VARCHAR name
+        VARCHAR repo_url
+        DATETIME created_at
+    }
+    artifacts {
+        UUID id "PK"
+        UUID project_id "FK"
+        VARCHAR current_file_hash
+        VARCHAR source_path
+        VARCHAR artifact_type
+        DATETIME created_at
+    }
+    projects ||--o{ artifacts : references
+    doc_versions {
+        UUID id "PK"
+        UUID artifact_id "FK"
+        INTEGER version_no
+        VARCHAR version_label
+        VARCHAR pdf_path
+        VARCHAR source_file_hash
+        DATETIME generated_at
+        JSONB sections_summary
+        VARCHAR commit_hash
+        VARCHAR generated_by
+        UUID pipeline_run_id "FK"
+        FLOAT global_kpi_score
+    }
+    artifacts ||--o{ doc_versions : references
+    pipeline_runs ||--o{ doc_versions : references
+    pipeline_runs {
+        UUID id "PK"
+        UUID artifact_id "FK"
+        VARCHAR current_stage
+        JSONB structured_json
+        TEXT summary_output
+        JSONB diagram_output
+        JSONB glossary_output
+        TEXT written_doc
+        TEXT layout_output
+        JSONB parsing_eval
+        JSONB summary_eval
+        JSONB glossary_eval
+        JSONB diagram_eval
+        JSONB writer_eval
+        JSONB layout_eval
+        FLOAT global_kpi_score
+        TEXT error_message
+        DATETIME started_at
+        DATETIME completed_at
+    }
+    artifacts ||--o{ pipeline_runs : references
+    tickets {
+        UUID id "PK"
+        UUID project_id "FK"
+        UUID artifact_id "FK"
+        VARCHAR source_path
+        VARCHAR title
+        TEXT description
+        VARCHAR status
+        INTEGER position
+        VARCHAR checkbox_state
+        VARCHAR file_hash
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    artifacts ||--o{ tickets : references
+    projects ||--o{ tickets : references
+    ticket_events {
+        UUID id "PK"
+        UUID ticket_id "FK"
+        VARCHAR event_type
+        VARCHAR author_type
+        JSONB payload
+        DATETIME created_at
+    }
+    tickets ||--o{ ticket_events : references
+    ticket_comments {
+        UUID id "PK"
+        UUID ticket_id "FK"
+        VARCHAR author_type
+        TEXT body
+        DATETIME created_at
+    }
+    tickets ||--o{ ticket_comments : references
+```
+### 📋 Description des Tables
 - **`projects`** : L'entité parente regroupant tous les artefacts et exécutions d'un projet spécifique.
 - **`artifacts`** : Registre des fichiers sources surveillés dans `specs/`, incluant une empreinte **SHA-256** pour détecter précisément chaque modification.
 - **`pipeline_runs`** : Journalisation exhaustive de chaque exécution, stockant les métriques **JSONB** détaillées pour chacun des 6 agents du pipeline.
 - **`doc_versions`** : Registre immuable gérant le versioning dynamique des documents et le lien vers les fichiers PDF certifiés.
+- **`tickets` & `ticket_events`** : Système de traçabilité des tâches (User Stories, Tasks) synchronisé avec l'avancement du projet via l'Agent JIRA.
+
 
 ---
 
@@ -600,4 +692,9 @@ ollama launch claude
 
 ---
 
+<<<<<<< HEAD
 *Dernière mise à jour : 2026-08-11 — Spec Kit v0.0.2 (Extension en développement)*
+=======
+*Dernière mise à jour : 2026-07-31 — Spec Kit v0.0.2 (Extension en développement)*
+
+>>>>>>> 05fc91d2d3321776bfce387b46f916daa12ec7d7
