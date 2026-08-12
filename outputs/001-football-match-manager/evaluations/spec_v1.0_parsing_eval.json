@@ -2,28 +2,39 @@
     "document_type": "spec",
     "project_name": "Football Match Manager",
     "technical_evaluation": {
-        "schema_adherence_rate": 100.0,
+        "schema_adherence_rate": 40.0,
         "structural_integrity_recall": 80.0,
         "graph_relational_integrity": 100.0,
-        "macro_micro_traceability_index": 100.0,
+        "macro_micro_traceability_index": 0.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
-            "Section requise absente des correspondances : non-functional requirements"
+            "Section requise absente des correspondances : goals & objectives",
+            "Défaut d'ancrage : L'élément 'US-VIEW-LIST' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'US-FOLLOW-MATCH' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'FR1-DATA-MGMT' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'FR2-USER-TRACK' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'FR3-FILTER-SEARCH' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'NFR-PERF-LOAD' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'ENT-MATCH' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'ENT-USER' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'ENT-USERFOLLOW' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'ASSUMP-API' pointe vers une section introuvable",
+            "Défaut d'ancrage : L'élément 'CONS-MVP-SCOPE' pointe vers une section introuvable"
         ]
     },
     "project_management_kpis": {
-        "health_index": 77.0,
+        "health_index": 69.0,
         "completeness_score": 80.0,
         "readiness_status": "NEEDS_REFINEMENT",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 5,
-            "total_edges_extracted": 3
+            "total_nodes_extracted": 11,
+            "total_edges_extracted": 7
         },
         "gaps_summary": {
             "high_severity": 1,
             "medium_severity": 0,
             "low_severity": 0,
-            "unresolved_uncertainties": 1
+            "unresolved_uncertainties": 2
         }
     }
 }

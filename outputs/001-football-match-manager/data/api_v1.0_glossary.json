@@ -6,70 +6,70 @@
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "API Contract: Football Match Manager",
-            "project_definition": "The primary interface for interacting with the Football Match Manager backend, providing endpoints for various operations."
+            "project_definition": "The RESTful interface providing endpoints for match, team, and league management."
         },
         {
             "term": "CORS Standard",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
             "contextual_anchor": "Error Responses",
-            "project_definition": "A set of rules for managing cross-origin resource sharing, ensuring secure data exchange between web pages and servers."
+            "project_definition": "The browser security mechanism governing cross-origin resource sharing for the backend endpoints."
         },
         {
             "term": "ID",
-            "category": "BUSINESS_DOMAIN",
+            "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "MATCH-01",
-            "project_definition": "A unique identifier assigned to each entity within the system, used for referencing and tracking purposes."
+            "contextual_anchor": "ENT-MATCH",
+            "project_definition": "The primary unique identifier for system entities."
         },
         {
             "term": "IP",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Rate Limiting",
-            "project_definition": "A numerical label assigned to each device connected to a computer network, used for communication and identification purposes."
+            "contextual_anchor": "NFR-RATE-LIMIT",
+            "project_definition": "The network address used to track and limit authentication requests to 5 per minute."
         },
         {
             "term": "JSON",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Match",
-            "project_definition": "A lightweight data interchange format, used for exchanging data between web servers and web applications."
+            "contextual_anchor": "Data Models",
+            "project_definition": "The lightweight data-interchange format used for all request and response bodies."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Authentication",
-            "project_definition": "An open standard for securely transmitting information between parties, used for authentication and authorization purposes."
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The signed credential passed in the Authorization header to secure non-auth endpoints."
         },
         {
             "term": "UUID",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Match",
-            "project_definition": "A 128-bit label used for information in computer systems, providing a unique identifier for each entity."
+            "contextual_anchor": "ENT-USER",
+            "project_definition": "The 128-bit universally unique format used for all entity primary keys."
         },
         {
             "term": "dateFrom",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Matches",
-            "project_definition": "A parameter used for filtering matches, specifying the start date for the range of matches to be retrieved."
+            "contextual_anchor": "API-MATCH-LIST",
+            "project_definition": "The lower temporal boundary for filtering matches using an ISO string."
         },
         {
             "term": "dateTo",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Matches",
-            "project_definition": "A parameter used for filtering matches, specifying the end date for the range of matches to be retrieved."
+            "contextual_anchor": "API-MATCH-LIST",
+            "project_definition": "The upper temporal boundary for filtering matches using an ISO string."
         },
         {
             "term": "leagueId",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Matches",
-            "project_definition": "A parameter used for filtering matches, specifying the league to which the matches belong."
+            "contextual_anchor": "API-MATCH-LIST",
+            "project_definition": "The specific identifier used to filter match results by a particular competition."
         }
     ]
 }

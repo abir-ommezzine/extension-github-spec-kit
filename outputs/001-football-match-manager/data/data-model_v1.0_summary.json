@@ -1,24 +1,29 @@
 {
-    "executive_brief": "The Football Match Manager project involves designing a data model for managing football matches, teams, leagues, and user interactions. The core entities include Match, Team, League, User, and UserFollow, each with specific attributes and relationships. The project aims to provide a structured approach to storing and managing football-related data, ensuring data consistency and integrity through validation rules and indexes for performance optimization.",
+    "executive_brief": "The Football Match Manager is a data-centric system designed to manage football match lifecycles, team registries, and league structures. It implements a relational pattern to track match states (upcoming to finished), score validations, and user-match following relationships. The system focuses on strict data integrity and optimized query performance through specific indexing strategies for match filtering and user authentication.",
     "technical_stack": {
-        "languages_and_frameworks": [
-            "Python",
-            "SQL"
-        ],
+        "languages_and_frameworks": [],
         "architectural_constraints": [
-            "Unique identifier for each match, team, league, and user",
-            "Validation for match date and time to ensure it's in the future for upcoming matches",
-            "Composite unique constraint on (userId, matchId) for UserFollow",
-            "Index on (leagueId, dateTime) for filtering matches by league and date",
-            "Index on (status) for filtering upcoming/live matches"
+            "Match homeTeamId must not equal awayTeamId",
+            "Match dateTime must be in the future if status is 'upcoming'",
+            "homeScore and awayScore must be non-null when status is 'finished'",
+            "homeScore and awayScore minimum value: 0",
+            "Team name must be globally unique",
+            "User email must be unique and follow valid email format",
+            "Team foundedYear range: 1800 to current year",
+            "Team abbreviation max length: 5 characters, unique per league",
+            "Team name max length: 100 characters",
+            "User displayName max length: 50 characters",
+            "Composite unique constraint on UserFollow (userId, matchId)",
+            "Match venue max length: 200 characters"
         ]
     },
-    "maturity_assessment": "The project's structural completeness is at 100%, but there are gaps in the documentation, including missing sections for goals and objectives, scope, and open questions. The health index is 80%, indicating a need for refinement. The project is currently in the 'NEEDS_REFINEMENT' status, requiring attention to address the identified gaps and uncertainties to ensure the project's stability and quality.",
+    "maturity_assessment": "The project is currently in REFINEMENT. While the data model is structurally complete with a high completeness score, it lacks critical business context. The absence of defined Goals & Objectives and Scope boundaries creates a high-severity gap that prevents full execution readiness, as the functional purpose of the application remains implicit rather than explicit.",
     "critical_dependencies": [
-        "Unique identifiers for matches, teams, leagues, and users",
-        "Validation rules for ensuring data consistency",
-        "Indexes for optimizing query performance",
-        "Relationships between entities, such as a match belonging to a league and having two teams",
-        "UserFollow relationship between users and matches"
+        "Match entity strict foreign key dependence on Team and League entities",
+        "UserFollow entity strict foreign key dependence on User and Match entities",
+        "Index on (leagueId, dateTime) for Match filtering",
+        "Index on (status) for Match state filtering",
+        "Index on (email) for User authentication",
+        "Index on (userId) and (matchId) for UserFollow relational lookups"
     ]
 }

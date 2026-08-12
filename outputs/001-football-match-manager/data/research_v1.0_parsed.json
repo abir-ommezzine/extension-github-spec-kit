@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "The document is a technology research spec that outlines decisions regarding language, frameworks, databases, testing, authentication, API integration, state management, and styling. All substantive sections describe non‑functional constraints and choices (e.g., technology stacks, patterns), so they were mapped to the 'Non‑Functional Requirements' template field. Empty or placeholder sections were left unmapped (null). From each section, atomic technical decisions were extracted as elements of type 'non_functional_requirement' with unique uppercase identifiers. Relationships capture logical dependencies (e.g., React depends on TypeScript, Express depends on Node.js, ORM depends on PostgreSQL, etc.). Sections that correspond to functional goals, scope, or open questions are absent from the source, thus reported as structural gaps with high priority.",
+    "parsing_rationale": "The document is a technical research/decision log rather than a traditional functional specification. I have mapped the technical decisions to 'Non-Functional Requirements' as they define the architectural constraints and quality attributes (maintainability, scalability, type safety). The 'Implementation Plans' for Auth and API have been extracted as functional requirements. Since the document focuses on 'How' (Tech Stack) rather than 'What' (Business Rules), there are significant structural gaps regarding Goals, Scope, and Open Questions.",
     "project_info": {
-        "project_name": "football-match-manager",
+        "project_name": "Football Match Manager",
         "source_type": "scratch",
-        "brief_explanation": "Technology research document outlining stack decisions for a football match manager application.",
-        "source_context": "Extracted from research.md in the specs directory."
+        "brief_explanation": "Technical research and stack selection for a football match management application.",
+        "source_context": "Research document detailing language, framework, database, and integration choices."
     },
     "doc_type": "spec",
     "sections": [
@@ -35,7 +35,7 @@
         {
             "title": "4. Testing: Testing Framework and Strategy",
             "level": 2,
-            "raw_content": "**Decision**:\n- Frontend: Jest and React Testing Library\n- Backend: Jest (with Supertest for API testing)\n**Rationale**:\n- Jest: Popular, zero-configuration testing framework that works well with both Node.js and React\n- React Testing Library: Encourages testing user behavior rather than implementation details\n- Supertest: Excellent for testing HTTP APIs in Node.js\n- This combination provides comprehensive unit, integration, and API testing capabilities\n**Alternatives considered**:\n- Frontend E2E testing considered but React Testing Library: Encourages testing user behavior rather than implementation details\n- Supertest: Excellent for testing HTTP APIs in Node.js\n- This combination provides comprehensive unit, integration, and API testing capabilities\n**Alternatives considered**:\n- Frontend: Cypress or Playwright - Considered for end-to-end testing but Jest + RTL sufficient for unit/integration; E2E can be added later\n- Backend: Mocha/Chai or Ava - Rejected due to Jest's built-in mocking, coverage reporting, and popularity in Node.js ecosystem",
+            "raw_content": "**Decision**:\n- Frontend: Jest and React Testing Library\n- Backend: Jest (with Supertest for API testing)\n**Rationale**:\n- Jest: Popular, zero-configuration testing framework that works well with both Node.js and React\n- React Testing Library: Encourages testing user behavior rather than implementation details\n- Supertest: Excellent for testing HTTP APIs in Node.js\n- This combination provides comprehensive unit, integration, and end-to-end, and API testing capabilities\n**Alternatives considered**:\n- Frontend E2E testing considered but React Testing Library: Encourages testing user behavior rather than implementation details\n- Supertest: Excellent for testing HTTP APIs in Node.js\n- This combination provides comprehensive unit, integration, and API testing capabilities\n**Alternatives considered**:\n- Frontend: Cypress or Playwright - Considered for end-to-end testing but Jest + RTL sufficient for unit/integration; E2E can be added later\n- Backend: Mocha/Chai or Ava - Rejected due to Jest's built-in mocking, coverage reporting, and popularity in Node.js ecosystem",
             "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
@@ -48,13 +48,13 @@
             "title": "Authentication Integration (Third-party Login)",
             "level": 3,
             "raw_content": "**Pattern**: OAuth 2.0 / OpenID Connect\n**Implementation Plan**:\n- Use libraries like `passport.js` with strategies for Google, Facebook, and Apple\n- Implement secure session management with JWT or encrypted cookies\n- Store minimal user data (ID, email, name) and link to followed matches\n- Follow security best practices: HTTPS, secure cookies, CSRF protection",
-            "mapped_to_template_field": "Non-Functional Requirements"
+            "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "Football Data API Integration",
             "level": 3,
             "raw_content": "**Pattern**: RESTful API client with caching and rate limiting\n**Implementation Plan**:\n- Create a service layer to abstract API calls\n- Implement caching (e.g., Redis or in-memory) to reduce API calls and improve performance\n- Handle rate queues and retry mechanisms for failed requests\n- Normalize API responses to internal data models\n- Consider using a service like Football-Data.org or API-FOOTBALL (evaluate based on cost, reliability, and coverage)",
-            "mapped_to_template_field": "Non-Functional Requirements"
+            "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "State Management (Frontend)",
@@ -72,218 +72,124 @@
             "title": "Conclusion",
             "level": 2,
             "raw_content": "The selected technology stack (TypeScript, React/Node.js-Express, PostgreSQL, Jest) provides a solid foundation for building a scalable, maintainable, and testable football match manager application. The choices prioritize developer productivity, community support, and alignment with project requirements for user-centric design, data reliability, and performance.",
-            "mapped_to_template_field": "Non-Functional Requirements"
+            "mapped_to_template_field": null
         }
     ],
     "elements": [
         {
             "type": "non_functional_requirement",
-            "identifier": "TS-VER",
-            "content": "Use TypeScript 4.9 (or latest stable version) for static type checking.",
+            "identifier": "TECH-TS",
+            "content": "Use TypeScript 4.9+ for static type checking and maintainability.",
             "source_section": "1. Language/Version: JavaScript vs TypeScript",
-            "attributes": {}
+            "attributes": {
+                "rationale": "Catch errors early, improve readability"
+            }
         },
         {
             "type": "non_functional_requirement",
-            "identifier": "REACT-FE",
-            "content": "Frontend: React 18 with TypeScript.",
+            "identifier": "TECH-STACK",
+            "content": "Frontend: React 18 with TypeScript; Backend: Node.js 18 with Express.js.",
             "source_section": "2. Primary Dependencies: Frontend and Backend Stack",
             "attributes": {}
         },
         {
             "type": "non_functional_requirement",
-            "identifier": "NODE-BE",
-            "content": "Backend: Node.js 18.",
-            "source_section": "2. Primary Dependencies: Frontend and Backend Stack",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "EXPRESS-BE",
-            "content": "Backend: Express.js web framework.",
-            "source_section": "2. Primary Dependencies: Frontend and Backend Stack",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "POSTGRES-DB",
-            "content": "PostgreSQL 14 as the relational database.",
+            "identifier": "TECH-DB",
+            "content": "Use PostgreSQL 14 with Sequelize or TypeORM for ACID compliance and relational data.",
             "source_section": "3. Storage: Database Choice",
-            "attributes": {}
+            "attributes": {
+                "feature": "JSONB support"
+            }
         },
         {
             "type": "non_functional_requirement",
-            "identifier": "SEQUEL-ORM",
-            "content": "Sequelize ORM (or TypeORM) for ORM abstraction.",
-            "source_section": "3. Storage: Database Choice",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "JEST-TEST",
-            "content": "Jest as the testing framework for both frontend and backend.",
+            "identifier": "TECH-TEST",
+            "content": "Testing strategy using Jest, React Testing Library (Frontend), and Supertest (Backend).",
             "source_section": "4. Testing: Testing Framework and Strategy",
             "attributes": {}
         },
         {
-            "type": "non_functional_requirement",
-            "identifier": "RTL-TEST",
-            "content": "React Testing Library for frontend unit/integration tests.",
-            "source_section": "4. Testing: Testing Framework and Strategy",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "SUPERTEST",
-            "content": "Supertest for backend API testing.",
-            "source_section": "4. Testing: Testing Framework and Strategy",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "OAUTH-AUTH",
-            "content": "OAuth 2.0 / OpenID Connect for third‑party login.",
+            "type": "functional_requirement",
+            "identifier": "FEAT-AUTH",
+            "content": "Implement Third-party Login using OAuth 2.0 / OpenID Connect via passport.js (Google, Facebook, Apple).",
             "source_section": "Authentication Integration (Third-party Login)",
-            "attributes": {}
+            "attributes": {
+                "security": [
+                    "JWT",
+                    "HTTPS",
+                    "CSRF protection"
+                ]
+            }
         },
         {
-            "type": "non_functional_requirement",
-            "identifier": "PASSPORT-JS",
-            "content": "Passport.js library with strategies for Google, Facebook, and Apple.",
-            "source_section": "Authentication Integration (Third-party Login)",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "JWT-SESSION",
-            "content": "JWT (or encrypted cookies) for secure session management after authentication.",
-            "source_section": "Authentication Integration (Third-party Login)",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "FOOTBALL-API",
-            "content": "RESTful API client for football data with a service‑layer abstraction.",
+            "type": "functional_requirement",
+            "identifier": "FEAT-API",
+            "content": "Integrate Football Data API via a RESTful client with a service layer, caching (Redis), and rate limiting.",
             "source_section": "Football Data API Integration",
-            "attributes": {}
+            "attributes": {
+                "potential_providers": [
+                    "Football-Data.org",
+                    "API-FOOTBALL"
+                ]
+            }
         },
         {
             "type": "non_functional_requirement",
-            "identifier": "REDIS-CACHE",
-            "content": "Caching layer (Redis or in‑memory) to reduce API calls and improve performance.",
-            "source_section": "Football Data API Integration",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "REACT-CTX",
-            "content": "React Context API for managing user authentication state and followed matches.",
+            "identifier": "TECH-STATE",
+            "content": "Use React Context API for frontend state management.",
             "source_section": "State Management (Frontend)",
             "attributes": {}
         },
         {
             "type": "non_functional_requirement",
-            "identifier": "TAILWIND-UI",
-            "content": "Tailwind CSS utility‑first styling approach.",
-            "source_section": "Styling and UI Framework",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "MUI-UI",
-            "content": "Material‑UI (MUI) pre‑built components following Material Design guidelines.",
+            "identifier": "TECH-UI",
+            "content": "Use Tailwind CSS or Material-UI (MUI) for styling.",
             "source_section": "Styling and UI Framework",
             "attributes": {}
         }
     ],
     "relationships": [
         {
-            "source": "REACT-FE",
-            "to": "TS-VER",
+            "source": "TECH-STACK",
+            "to": "TECH-TS",
             "relation_type": "depends_on"
         },
         {
-            "source": "NODE-BE",
-            "to": "TS-VER",
-            "relation_type": "depends_on"
+            "source": "FEAT-AUTH",
+            "to": "TECH-STACK",
+            "relation_type": "implements"
         },
         {
-            "source": "EXPRESS-BE",
-            "to": "NODE-BE",
-            "relation_type": "depends_on"
+            "source": "FEAT-API",
+            "to": "TECH-DB",
+            "relation_type": "relates_to"
         },
         {
-            "source": "SEQUEL-ORM",
-            "to": "POSTGRES-DB",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "JEST-TEST",
-            "to": "TS-VER",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "RTL-TEST",
-            "to": "REACT-FE",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "SUPERTEST",
-            "to": "NODE-BE",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "PASSPORT-JS",
-            "to": "OAUTH-AUTH",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "JWT-SESSION",
-            "to": "PASSPORT-JS",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "REDIS-CACHE",
-            "to": "FOOTBALL-API",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "REACT-CTX",
-            "to": "REACT-FE",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "TAILWIND-UI",
-            "to": "REACT-FE",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "MUI-UI",
-            "to": "REACT-FE",
-            "relation_type": "depends_on"
+            "source": "TECH-TEST",
+            "to": "TECH-STACK",
+            "relation_type": "relates_to"
         }
     ],
     "structural_gaps": [
         {
             "missing_section": "Goals & Objectives",
             "priority": "HIGH",
-            "remediation_advice": "Add a section that outlines the business goals, user outcomes, and success metrics for the football match manager."
-        },
-        {
-            "missing_section": "Functional Requirements",
-            "priority": "HIGH",
-            "remediation_advice": "Detail the specific features the system must provide (e.g., match creation, following teams, notifications, user profiles)."
+            "remediation_advice": "Define the business goals and the 'Why' behind the Football Match Manager."
         },
         {
             "missing_section": "Scope & Out-of-Scope",
-            "priority": "MEDIUM",
-            "remediation_advice": "Define what is included in the MVP and what features are deferred to later releases."
+            "priority": "HIGH",
+            "remediation_advice": "Explicitly list which features are included (e.g., match tracking) and which are not."
         },
         {
             "missing_section": "Open Questions & Uncertainties",
-            "priority": "LOW",
-            "remediation_advice": "Capture any unresolved technical or product decisions that need further investigation."
+            "priority": "MEDIUM",
+            "remediation_advice": "Document unresolved decisions, such as the final choice between Tailwind and MUI or the specific API provider."
         }
     ],
-    "open_questions": []
+    "open_questions": [
+        "Which specific Football Data API provider will be chosen (Football-Data.org vs API-FOOTBALL)?",
+        "Will the project use Sequelize or TypeORM?",
+        "Will the final UI framework be Tailwind CSS or MUI?"
+    ]
 }

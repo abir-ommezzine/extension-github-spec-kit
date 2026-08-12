@@ -5,71 +5,78 @@
             "term": "API",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "API Documentation",
-            "project_definition": "The application programming interface used for data exchange between the frontend and backend."
+            "contextual_anchor": "API-DOCS",
+            "project_definition": "The interface providing endpoints for external data retrieval and system interaction, documented via Swagger/OpenAPI."
+        },
+        {
+            "term": "Authorization",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The security layer verifying identity via a specific header to grant access to protected resources."
+        },
+        {
+            "term": "Bearer <token>",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The specific credential format required within the request header for identity verification."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "API-DOCS",
+            "project_definition": "The lightweight data-interchange format used for communication between the frontend and backend."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "JWT secret for authentication (use a strong, random string in production)",
-            "project_definition": "A token-based authentication mechanism used to securely transmit information between the client and server."
+            "contextual_anchor": "AUTH-JWT",
+            "project_definition": "The compact, URL-safe means of representing claims to be transferred between two parties, secured by a strong secret key."
+        },
+        {
+            "term": "ORM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ORM-SEQUELIZE",
+            "project_definition": "The abstraction layer provided by Sequelize to manage relational data without writing raw queries."
+        },
+        {
+            "term": "Sql",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "3. Set Up the Database",
+            "project_definition": "The standard language used to define and manipulate the relational schema in PostgreSQL."
         },
         {
             "term": "USER",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "ENT-002",
-            "project_definition": "An entity that interacts with the application, having specific roles and permissions."
-        },
-        {
-            "term": "DATABASE",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "ENT-001",
-            "project_definition": "A storage system used to manage and retrieve data for the application."
-        },
-        {
-            "term": "AUTHORIZATION",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "Common Issues",
-            "project_definition": "The process of determining what actions a user can perform on a resource."
-        },
-        {
-            "term": "CORS Standard",
-            "category": "TECHNICAL_STACK",
-            "discovery": "IMPLICIT",
-            "contextual_anchor": "From the backend directory",
-            "project_definition": "A security feature implemented in web browsers to prevent web pages from making requests to a different origin than the one the web page was loaded from."
-        },
-        {
-            "term": "CREATE",
-            "category": "BUSINESS_DOMAIN",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "FUNC-001",
-            "project_definition": "The action of adding new data or resources to the application."
-        },
-        {
-            "term": "Cryptographic Hashing",
-            "category": "TECHNICAL_STACK",
-            "discovery": "IMPLICIT",
-            "contextual_anchor": "NON-FUNC-001",
-            "project_definition": "A one-way mathematical function used to securely store and verify passwords."
+            "contextual_anchor": "3. Set Up the Database",
+            "project_definition": "The system actor granted specific privileges to interact with the persistent storage."
         },
         {
             "term": "npm install",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Backend",
-            "project_definition": "A command used to install dependencies required by the application."
+            "contextual_anchor": "2. Install Dependencies",
+            "project_definition": "The command used to resolve and download project dependencies for both the client and server."
         },
         {
             "term": "npm start",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "From the backend directory",
-            "project_definition": "A command used to start the development server for the application."
+            "contextual_anchor": "7. Start the Development Servers",
+            "project_definition": "The execution script used to launch the application in production or development mode."
+        },
+        {
+            "term": "npm test",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Running Tests",
+            "project_definition": "The command used to trigger the automated validation suite for both the frontend and backend."
         }
     ]
 }

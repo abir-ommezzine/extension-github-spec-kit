@@ -1,19 +1,21 @@
 {
     "agent_evaluated": "Diagram Agent",
     "project_name": "Football Match Manager",
-    "diagram_rendering_status": "READY_FOR_RENDERING",
+    "diagram_rendering_status": "NEEDS_REFINEMENT",
     "technical_evaluation": {
-        "syntax_validity_rate": 100.0,
+        "syntax_validity_rate": 87.5,
         "diagram_coverage_rate": 100.0,
         "relational_completeness_rate": 100.0,
-        "structural_rule_adherence": 100.0
+        "structural_rule_adherence": 75.0
     },
     "project_management_kpis": {
-        "total_generated_diagrams": 1,
+        "total_generated_diagrams": 4,
         "diagram_types_breakdown": {
-            "flowchart": 1
+            "erDiagram": 1,
+            "flowchart": 2,
+            "sequenceDiagram": 1
         },
-        "total_mermaid_lines_count": 13,
-        "average_lines_per_diagram": 13.0
+        "total_mermaid_lines_count": 249,
+        "average_lines_per_diagram": 62.2
     }
 }

@@ -3,111 +3,219 @@
 ## 1. Executive Summary & Architecture Overview
 
 ### 1.1 Executive Brief
-Football Match Manager is a full-stack sports management application enabling users to browse football matches and manage a personalized list of interests. The system utilizes a Node.js/Express backend with a PostgreSQL database and a React/TypeScript frontend, implementing a standard REST API pattern with JWT-based authentication and a service-layer architecture.
+The Football Match Manager is a full-stack tracking system designed to allow users to view, filter, and follow football matches. Hosted on a Node.js/React architecture with a PostgreSQL backend, the system implements a relational data pattern to manage matches, teams, leagues, and user-specific interests via a following mechanism.
 
 ### 1.2 Maturity Assessment
-The project is currently in the REFINEMENT stage. While the execution roadmap is comprehensive and the structural completeness score is high, there is a critical lack of defined Acceptance Criteria for User Stories, which poses a risk of scope creep. The presence of high-severity gaps regarding 'done' definitions and the absence of a consolidated test plan necessitate further specification before full-scale implementation can be considered stable.
+The project structure is logically sequenced with a clear MVP path, but it is currently in REFINEMENT. While the task mapping is complete, there are critical architectural voids regarding formalized Acceptance Criteria and detailed Security & Performance constraints (e.g., rate limiting, password hashing) that must be addressed to ensure production-grade stability.
 
 ### 1.3 Technical Stack
-* **Languages & Frameworks**: Node.js, Express, TypeScript, React
+* **Backend**: Node.js 18, Express.js, TypeScript 4.9
+* **Frontend**: React 18, TypeScript, Vite
 * **Database**: PostgreSQL
-* **ORM**: Sequelize
-* **Testing**: Jest
-* **API Client**: Axios
-* **Routing**: React Router
-* **Tooling**: ESLint, Prettier
+* **Authentication**: JWT
+* **Tooling**: ESLint, Prettier, Docker, docker-compose
 
 ### 1.4 Architectural Constraints
-* Mobile-first responsive design for all frontend components.
-* JWT verification required for all protected endpoints via authentication middleware.
-* Backend API must support filtering, sorting, and pagination for match listing.
-* CORS and security headers must be explicitly configured on the server.
-* Optimistic UI updates required for match follow/unfollow actions.
-* Client-side caching for static data including leagues and teams.
-* Mandatory security audit encompassing dependency scanning and penetration checks.
+* **Source Isolation**: Strict separation of concerns with backend source in `backend/src/` and frontend source in `frontend/src/`.
+* **Sequential Execution**: Phase 2 (Foundational) must be 100% complete before any User Story implementation begins.
+* **Testing Policy**: Tests are OPTIONAL unless explicitly requested in feature specifications.
+* **Security**: Mandatory JWT-based authentication middleware for all protected routes.
+* **UI/UX**: Responsive design requirement for mobile devices.
+* **Deployment**: Containerization via Dockerfile and docker-compose.
 
 ### 1.5 Critical Dependencies
-* PostgreSQL database connection and schema migration integrity.
-* JWT for session management and identity verification.
-* Strict foreign key dependence between User and Match entities via the UserFollow model.
-* Environment variables configuration (.env) for database and server credentials.
-* Sequelize ORM for data mapping and connection pooling.
-* Integration between the Match service layer and the REST controllers.
+* PostgreSQL database schema and migrations framework.
+* JWT for session management and authentication.
+* Environment variables defined in `.env` for backend configuration.
+* Referential integrity between `User`, `Match`, and `UserFollow` entities.
+* Strict dependency chain: Models $\rightarrow$ Services $\rightarrow$ API Endpoints.
+* Seed data for Teams, Leagues, and Matches required for initial validation.
 
-## 2. Architecture Workflows & Visual Diagrams
+## 2. Architecture Workflows
 
-### 2.1 Project Execution Roadmap & Traceability
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1A365D',
+    'primaryTextColor': '#1A202C',
+    'primaryBorderColor': '#2B6CB0',
+    'lineColor': '#2B6CB0',
+    'secondaryColor': '#EBF8FF',
+    'tertiaryColor': '#EBF8FF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#EBF8FF',
+    'tertiaryBkg': '#F7FAFC',
+    'secondaryTextColor': '#4A5568',
+    'fontSize': '16px',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'nodePadding': '15px',
+    'borderRadius': '8px',
+    'edgeLabelBackground': '#EBF8FF',
+    'clusterBkg': '#F7FAFC',
+    'clusterBorder': '#2B6CB0',
+    'defaultLinkColor': '#2B6CB0',
+    'titleColor': '#1A365D',
+    'actorBorder': '#2B6CB0',
+    'actorBkg': '#EBF8FF',
+    'actorTextColor': '#1A365D',
+    'actorLineColor': '#2B6CB0',
+    'signalColor': '#2B6CB0',
+    'signalTextColor': '#1A202C',
+    'labelBoxBorderColor': '#2B6CB0',
+    'labelBoxBkgColor': '#EBF8FF',
+    'labelTextColor': '#1A202C',
+    'loopTextColor': '#1A202C',
+    'arrowHeadColor': '#2B6CB0',
+    'sequenceNumberColor': '#1A365D',
+    'sequenceActorBorder': '#2B6CB0',
+    'sequenceActorBkg': '#EBF8FF',
+    'sequenceArrowColor': '#2B6CB0',
+    'noteBkgColor': '#FFF5EB',
+    'noteBorderColor': '#DD6B20',
+    'noteTextColor': '#1A202C'
+  }
+}}%%
 flowchart TD
-    subgraph Setup_Phase ["Phase 1: Setup"]
-        PHASE-1["PHASE-1: Setup (Project Initialization)"]
-        T001["T001: Initialize backend project structure"]
-        PHASE-1 --> T001
+    subgraph PHASE-1["PHASE-1: Setup"]
+        T001["T001: Create project structure"]
+        T010["T010: Create README.md"]
     end
-
-    subgraph Foundational_Phase ["Phase 2: Foundational"]
-        PHASE-2["PHASE-2: Foundational (Blocking Prerequisites)"]
-        T011["T011: Define database models"]
-        T014["T014: Implement authentication middleware"]
-        PHASE-2 --> T011
-        PHASE-2 --> T014
+    subgraph PHASE-2["PHASE-2: Foundational"]
+        T020["T020: Create initial seed data"]
     end
-
-    subgraph US1_Phase ["Phase 3: User Story 1"]
-        PHASE-3["PHASE-3: Viewing Match List"]
-        T022["T022: Create Match service layer"]
-        T021["T021: Implement GET /matches endpoint"]
-        T030["T030: Write unit tests for Match service"]
-        PHASE-3 --> T022
-        T022 --> T021
-        T021 --> T030
+    subgraph PHASE-3["PHASE-3: US1 - Viewing Match List"]
+        T030["T030: Add filter UI"]
     end
-
-    subgraph US2_Phase ["Phase 4: User Story 2"]
-        PHASE-4["PHASE-4: Adding Match to Interests"]
-        T033["T033: Implement POST /follows endpoint"]
-        PHASE-4 --> T033
+    subgraph PHASE-4["PHASE-4: US2 - Adding Interests"]
+        T039["T039: Following state management"]
     end
-
-    subgraph US3_Phase ["Phase 5: User Story 3"]
-        PHASE-5["PHASE-5: Removing Match from Interests"]
-        T042["T042: Implement DELETE /follows/:matchId endpoint"]
-        PHASE-5 --> T042
+    subgraph PHASE-5["PHASE-5: US3 - Removing Interests"]
+        T044["T044: Add confirmation dialog"]
     end
-
-    subgraph US4_Phase ["Phase 6: User Story 4"]
-        PHASE-6["PHASE-6: Viewing Match Details"]
-        T050["T050: Implement GET /matches/:id endpoint"]
-        PHASE-6 --> T050
+    subgraph PHASE-6["PHASE-6: US4 - Match Details"]
+        T050["T050: Show match status and scores"]
     end
-
-    subgraph US5_Phase ["Phase 7: User Story 5"]
-        PHASE-7["PHASE-7: Viewing Followed Matches"]
-        T061["T061: Implement GET /follows endpoint"]
-        PHASE-7 --> T061
+    subgraph PHASE-7["PHASE-7: US5 - Followed Matches"]
+        T056["T056: Add navigation to followed page"]
     end
-
-    subgraph Polish_Phase ["Phase 8: Polish"]
-        PHASE-8["PHASE-8: Polish & Cross-Cutting Concerns"]
-        T081["T081: Security audit"]
-        PHASE-8 --> T081
+    subgraph PHASE-8["PHASE-8: Polish"]
+        T070["T070: Create deployment config"]
     end
-
-    PHASE-1 --> PHASE-2
-    PHASE-2 --> PHASE-3
-    PHASE-3 --> PHASE-4
-    PHASE-4 --> PHASE-5
-    PHASE-5 --> PHASE-6
-    PHASE-6 --> PHASE-7
-    PHASE-7 --> PHASE-8
-    T011 --> T022
+    T001 --> T010
+    T010 --> T020
+    T020 --> T030
+    T030 --> T039
+    T039 --> T044
+    T044 --> T050
+    T050 --> T056
+    T056 --> T070
 ```
 
-### 2.2 Match Management Data Model
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1A365D',
+    'primaryTextColor': '#1A202C',
+    'primaryBorderColor': '#2B6CB0',
+    'lineColor': '#2B6CB0',
+    'secondaryColor': '#EBF8FF',
+    'tertiaryColor': '#EBF8FF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#EBF8FF',
+    'tertiaryBkg': '#F7FAFC',
+    'secondaryTextColor': '#4A5568',
+    'fontSize': '16px',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'nodePadding': '15px',
+    'borderRadius': '8px',
+    'edgeLabelBackground': '#EBF8FF',
+    'clusterBkg': '#F7FAFC',
+    'clusterBorder': '#2B6CB0',
+    'defaultLinkColor': '#2B6CB0',
+    'titleColor': '#1A365D',
+    'actorBorder': '#2B6CB0',
+    'actorBkg': '#EBF8FF',
+    'actorTextColor': '#1A365D',
+    'actorLineColor': '#2B6CB0',
+    'signalColor': '#2B6CB0',
+    'signalTextColor': '#1A202C',
+    'labelBoxBorderColor': '#2B6CB0',
+    'labelBoxBkgColor': '#EBF8FF',
+    'labelTextColor': '#1A202C',
+    'loopTextColor': '#1A202C',
+    'arrowHeadColor': '#2B6CB0',
+    'sequenceNumberColor': '#1A365D',
+    'sequenceActorBorder': '#2B6CB0',
+    'sequenceActorBkg': '#EBF8FF',
+    'sequenceArrowColor': '#2B6CB0',
+    'noteBkgColor': '#FFF5EB',
+    'noteBorderColor': '#DD6B20',
+    'noteTextColor': '#1A202C'
+  }
+}}%%
+flowchart TD
+    START["Start User Story Implementation"] --> DEV["Develop Backend & Frontend Tasks"]
+    DEV --> TEST{"Does it pass Independent Test?"}
+    TEST -- "No" --> FIX["Debug and Refactor"]
+    FIX --> DEV
+    TEST -- "Yes" --> CHECKPOINT["Mark Phase Checkpoint Complete"]
+    CHECKPOINT --> NEXT{"More Stories?"}
+    NEXT -- "Yes" --> DEV
+    NEXT -- "No" --> POLISH["Phase 8: Polish & Cross-Cutting"]
+    POLISH --> END["Project Deployment"]
+```
+
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1A365D',
+    'primaryTextColor': '#1A202C',
+    'primaryBorderColor': '#2B6CB0',
+    'lineColor': '#2B6CB0',
+    'secondaryColor': '#EBF8FF',
+    'tertiaryColor': '#EBF8FF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#EBF8FF',
+    'tertiaryBkg': '#F7FAFC',
+    'secondaryTextColor': '#4A5568',
+    'fontSize': '16px',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'nodePadding': '15px',
+    'borderRadius': '8px',
+    'edgeLabelBackground': '#EBF8FF',
+    'clusterBkg': '#F7FAFC',
+    'clusterBorder': '#2B6CB0',
+    'defaultLinkColor': '#2B6CB0',
+    'titleColor': '#1A365D',
+    'actorBorder': '#2B6CB0',
+    'actorBkg': '#EBF8FF',
+    'actorTextColor': '#1A365D',
+    'actorLineColor': '#2B6CB0',
+    'signalColor': '#2B6CB0',
+    'signalTextColor': '#1A202C',
+    'labelBoxBorderColor': '#2B6CB0',
+    'labelBoxBkgColor': '#EBF8FF',
+    'labelTextColor': '#1A202C',
+    'loopTextColor': '#1A202C',
+    'arrowHeadColor': '#2B6CB0',
+    'sequenceNumberColor': '#1A365D',
+    'sequenceActorBorder': '#2B6CB0',
+    'sequenceActorBkg': '#EBF8FF',
+    'sequenceArrowColor': '#2B6CB0',
+    'noteBkgColor': '#FFF5EB',
+    'noteBorderColor': '#DD6B20',
+    'noteTextColor': '#1A202C'
+  }
+}}%%
 erDiagram
-    USER ||--o{ USERFOLLOW : "creates"
-    MATCH ||--o{ USERFOLLOW : "is followed by"
+    USER ||--o{ USERFOLLOW : "tracks"
+    MATCH ||--o{ USERFOLLOW : "is tracked by"
     LEAGUE ||--o{ MATCH : "contains"
     TEAM ||--o{ MATCH : "participates"
     USER {
@@ -117,17 +225,21 @@ erDiagram
     }
     MATCH {
         int id PK
-        string match_name
-        datetime match_date
         int league_id FK
+        int home_team_id FK
+        int away_team_id FK
+        datetime match_date
+        string status
     }
     TEAM {
         int id PK
-        string team_name
+        string name
+        string crest_url
     }
     LEAGUE {
         int id PK
-        string league_name
+        string name
+        string country
     }
     USERFOLLOW {
         int id PK
@@ -137,193 +249,486 @@ erDiagram
     }
 ```
 
-### 2.3 Match Interest Workflow
 ```mermaid
-flowchart TD
-    START[Start: User views MatchItem] --> AUTH_CHECK{"Is User Authenticated?"}
-    
-    AUTH_CHECK -- "No" --> PROMPT_LOGIN["Show Login Prompt"]
-    PROMPT_LOGIN --> END[End]
-    
-    AUTH_CHECK -- "Yes" --> ACTION_TYPE{"Action Type?"}
-    
-    ACTION_TYPE -- "Follow" --> T033["T033: POST /follows"]
-    T033 --> SUCCESS_F{"Request Successful?"}
-    SUCCESS_F -- "Yes" --> UI_UPDATE_F["Update UI to Followed State"]
-    SUCCESS_F -- "No" --> ERR_F["Show Error Message"]
-    
-    ACTION_TYPE -- "Unfollow" --> T042["T042: DELETE /follows/:matchId"]
-    T042 --> SUCCESS_U{"Request Successful?"}
-    SUCCESS_U -- "Yes" --> UI_UPDATE_U["Update UI to Unfollowed State"]
-    SUCCESS_U -- "No" --> ERR_U["Show Error Message"]
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1A365D',
+    'primaryTextColor': '#1A202C',
+    'primaryBorderColor': '#2B6CB0',
+    'lineColor': '#2B6CB0',
+    'secondaryColor': '#EBF8FF',
+    'tertiaryColor': '#EBF8FF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#EBF8FF',
+    'tertiaryBkg': '#F7FAFC',
+    'secondaryTextColor': '#4A5568',
+    'fontSize': '16px',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'nodePadding': '15px',
+    'borderRadius': '8px',
+    'edgeLabelBackground': '#EBF8FF',
+    'clusterBkg': '#F7FAFC',
+    'clusterBorder': '#2B6CB0',
+    'defaultLinkColor': '#2B6CB0',
+    'titleColor': '#1A365D',
+    'actorBorder': '#2B6CB0',
+    'actorBkg': '#EBF8FF',
+    'actorTextColor': '#1A365D',
+    'actorLineColor': '#2B6CB0',
+    'signalColor': '#2B6CB0',
+    'signalTextColor': '#1A202C',
+    'labelBoxBorderColor': '#2B6CB0',
+    'labelBoxBkgColor': '#EBF8FF',
+    'labelTextColor': '#1A202C',
+    'loopTextColor': '#1A202C',
+    'arrowHeadColor': '#2B6CB0',
+    'sequenceNumberColor': '#1A365D',
+    'sequenceActorBorder': '#2B6CB0',
+    'sequenceActorBkg': '#EBF8FF',
+    'sequenceArrowColor': '#2B6CB0',
+    'noteBkgColor': '#FFF5EB',
+    'noteBorderColor': '#DD6B20',
+    'noteTextColor': '#1A202C'
+  }
+}}%%
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant Backend
+    participant DB
+    User->>Frontend: Click Follow Button
+    Frontend->>Backend: POST /follows (JWT Token, matchId)
+    Backend->>Backend: Validate JWT
+    Backend->>DB: Insert into UserFollow
+    DB-->>Backend: Success
+    Backend-->>Frontend: 201 Created
+    Frontend-->>User: Update UI to "Following"
+    User->>Frontend: Click Unfollow Button
+    Frontend->>Backend: DELETE /follows/:matchId (JWT Token)
+    Backend->>DB: Delete from UserFollow
+    DB-->>Backend: Success
+    Backend-->>Frontend: 204 No Content
+    Frontend-->>User: Update UI to "Follow"
+``` & Visual Diagrams
 
-    UI_UPDATE_F --> END
-    UI_UPDATE_U --> END
-    ERR_F --> END
-    ERR_U --> END
+### 2.1 Project Implementation Roadmap & Traceability
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1A365D',
+    'primaryTextColor': '#1A202C',
+    'primaryBorderColor': '#2B6CB0',
+    'lineColor': '#2B6CB0',
+    'secondaryColor': '#EBF8FF',
+    'tertiaryColor': '#EBF8FF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#EBF8FF',
+    'tertiaryBkg': '#F7FAFC',
+    'secondaryTextColor': '#4A5568',
+    'fontSize': '16px',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'nodePadding': '15px',
+    'borderRadius': '8px',
+    'edgeLabelBackground': '#EBF8FF',
+    'clusterBkg': '#F7FAFC',
+    'clusterBorder': '#2B6CB0',
+    'defaultLinkColor': '#2B6CB0',
+    'titleColor': '#1A365D',
+    'actorBorder': '#2B6CB0',
+    'actorBkg': '#EBF8FF',
+    'actorTextColor': '#1A365D',
+    'actorLineColor': '#2B6CB0',
+    'signalColor': '#2B6CB0',
+    'signalTextColor': '#1A202C',
+    'labelBoxBorderColor': '#2B6CB0',
+    'labelBoxBkgColor': '#EBF8FF',
+    'labelTextColor': '#1A202C',
+    'loopTextColor': '#1A202C',
+    'arrowHeadColor': '#2B6CB0',
+    'sequenceNumberColor': '#1A365D',
+    'sequenceActorBorder': '#2B6CB0',
+    'sequenceActorBkg': '#EBF8FF',
+    'sequenceArrowColor': '#2B6CB0',
+    'noteBkgColor': '#FFF5EB',
+    'noteBorderColor': '#DD6B20',
+    'noteTextColor': '#1A202C'
+  }
+}}%%
+flowchart TD
+    subgraph PHASE-1["PHASE-1: Setup"]
+        T001["T001: Create project structure"]
+        T010["T010: Create README.md"]
+    end
+    subgraph PHASE-2["PHASE-2: Foundational"]
+        T020["T020: Create initial seed data"]
+    end
+    subgraph PHASE-3["PHASE-3: US1 - Viewing Match List"]
+        T030["T030: Add filter UI"]
+    end
+    subgraph PHASE-4["PHASE-4: US2 - Adding Interests"]
+        T039["T039: Following state management"]
+    end
+    subgraph PHASE-5["PHASE-5: US3 - Removing Interests"]
+        T044["T044: Add confirmation dialog"]
+    end
+    subgraph PHASE-6["PHASE-6: US4 - Match Details"]
+        T050["T050: Show match status and scores"]
+    end
+    subgraph PHASE-7["PHASE-7: US5 - Followed Matches"]
+        T056["T056: Add navigation to followed page"]
+    end
+    subgraph PHASE-8["PHASE-8: Polish"]
+        T070["T070: Create deployment config"]
+    end
+    T001 --> T010
+    T010 --> T020
+    T020 --> T030
+    T030 --> T039
+    T039 --> T044
+    T044 --> T050
+    T050 --> T056
+    T056 --> T070
 ```
 
-### 2.4 Match Detail Retrieval Sequence
+### 2.2 Development Workflow
 ```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend as React App
-    participant API as Express Server
-    participant Service as Match Service
-    participant DB as PostgreSQL
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1A365D',
+    'primaryTextColor': '#1A202C',
+    'primaryBorderColor': '#2B6CB0',
+    'lineColor': '#2B6CB0',
+    'secondaryColor': '#EBF8FF',
+    'tertiaryColor': '#EBF8FF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#EBF8FF',
+    'tertiaryBkg': '#F7FAFC',
+    'secondaryTextColor': '#4A5568',
+    'fontSize': '16px',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'nodePadding': '15px',
+    'borderRadius': '8px',
+    'edgeLabelBackground': '#EBF8FF',
+    'clusterBkg': '#F7FAFC',
+    'clusterBorder': '#2B6CB0',
+    'defaultLinkColor': '#2B6CB0',
+    'titleColor': '#1A365D',
+    'actorBorder': '#2B6CB0',
+    'actorBkg': '#EBF8FF',
+    'actorTextColor': '#1A365D',
+    'actorLineColor': '#2B6CB0',
+    'signalColor': '#2B6CB0',
+    'signalTextColor': '#1A202C',
+    'labelBoxBorderColor': '#2B6CB0',
+    'labelBoxBkgColor': '#EBF8FF',
+    'labelTextColor': '#1A202C',
+    'loopTextColor': '#1A202C',
+    'arrowHeadColor': '#2B6CB0',
+    'sequenceNumberColor': '#1A365D',
+    'sequenceActorBorder': '#2B6CB0',
+    'sequenceActorBkg': '#EBF8FF',
+    'sequenceArrowColor': '#2B6CB0',
+    'noteBkgColor': '#FFF5EB',
+    'noteBorderColor': '#DD6B20',
+    'noteTextColor': '#1A202C'
+  }
+}}%%
+flowchart TD
+    START["Start User Story Implementation"] --> DEV["Develop Backend & Frontend Tasks"]
+    DEV --> TEST{"Does it pass Independent Test?"}
+    TEST -- "No" --> FIX["Debug and Refactor"]
+    FIX --> DEV
+    TEST -- "Yes" --> CHECKPOINT["Mark Phase Checkpoint Complete"]
+    CHECKPOINT --> NEXT{"More Stories?"}
+    NEXT -- "Yes" --> DEV
+    NEXT -- "No" --> POLISH["Phase 8: Polish & Cross-Cutting"]
+    POLISH --> END["Project Deployment"]
+```
 
-    User ->> Frontend: Clicks on Match
-    Frontend ->> API: GET /matches/:id
-    API ->> Service: fetchMatchDetails(id)
-    Service ->> DB: SELECT * FROM matches WHERE id = :id
-    DB -->> Service: Match Data
-    Service -->> API: Formatted Match Object
-    API -->> Frontend: 200 OK (JSON)
-    Frontend -->> User: Display MatchDetail Component
+### 2.3 Data Model Entity Relationship Diagram
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1A365D',
+    'primaryTextColor': '#1A202C',
+    'primaryBorderColor': '#2B6CB0',
+    'lineColor': '#2B6CB0',
+    'secondaryColor': '#EBF8FF',
+    'tertiaryColor': '#EBF8FF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#EBF8FF',
+    'tertiaryBkg': '#F7FAFC',
+    'secondaryTextColor': '#4A5568',
+    'fontSize': '16px',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'nodePadding': '15px',
+    'borderRadius': '8px',
+    'edgeLabelBackground': '#EBF8FF',
+    'clusterBkg': '#F7FAFC',
+    'clusterBorder': '#2B6CB0',
+    'defaultLinkColor': '#2B6CB0',
+    'titleColor': '#1A365D',
+    'actorBorder': '#2B6CB0',
+    'actorBkg': '#EBF8FF',
+    'actorTextColor': '#1A365D',
+    'actorLineColor': '#2B6CB0',
+    'signalColor': '#2B6CB0',
+    'signalTextColor': '#1A202C',
+    'labelBoxBorderColor': '#2B6CB0',
+    'labelBoxBkgColor': '#EBF8FF',
+    'labelTextColor': '#1A202C',
+    'loopTextColor': '#1A202C',
+    'arrowHeadColor': '#2B6CB0',
+    'sequenceNumberColor': '#1A365D',
+    'sequenceActorBorder': '#2B6CB0',
+    'sequenceActorBkg': '#EBF8FF',
+    'sequenceArrowColor': '#2B6CB0',
+    'noteBkgColor': '#FFF5EB',
+    'noteBorderColor': '#DD6B20',
+    'noteTextColor': '#1A202C'
+  }
+}}%%
+erDiagram
+    USER ||--o{ USERFOLLOW : "tracks"
+    MATCH ||--o{ USERFOLLOW : "is tracked by"
+    LEAGUE ||--o{ MATCH : "contains"
+    TEAM ||--o{ MATCH : "participates"
+    USER {
+        int id PK
+        string username
+        string email
+    }
+    MATCH {
+        int id PK
+        int league_id FK
+        int home_team_id FK
+        int away_team_id FK
+        datetime match_date
+        string status
+    }
+    TEAM {
+        int id PK
+        string name
+        string crest_url
+    }
+    LEAGUE {
+        int id PK
+        string name
+        string country
+    }
+    USERFOLLOW {
+        int id PK
+        int user_id FK
+        int match_id FK
+        datetime created_at
+    }
+```
+
+### 2.4 Match Interest Management Sequence
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#1A365D',
+    'primaryTextColor': '#1A202C',
+    'primaryBorderColor': '#2B6CB0',
+    'lineColor': '#2B6CB0',
+    'secondaryColor': '#EBF8FF',
+    'tertiaryColor': '#EBF8FF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#EBF8FF',
+    'tertiaryBkg': '#F7FAFC',
+    'secondaryTextColor': '#4A5568',
+    'fontSize': '16px',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'nodePadding': '15px',
+    'borderRadius': '8px',
+    'edgeLabelBackground': '#EBF8FF',
+    'clusterBkg': '#F7FAFC',
+    'clusterBorder': '#2B6CB0',
+    'defaultLinkColor': '#2B6CB0',
+    'titleColor': '#1A365D',
+    'actorBorder': '#2B6CB0',
+    'actorBkg': '#EBF8FF',
+    'actorTextColor': '#1A365D',
+    'actorLineColor': '#2B6CB0',
+    'signalColor': '#2B6CB0',
+    'signalTextColor': '#1A202C',
+    'labelBoxBorderColor': '#2B6CB0',
+    'labelBoxBkgColor': '#EBF8FF',
+    'labelTextColor': '#1A202C',
+    'loopTextColor': '#1A202C',
+    'arrowHeadColor': '#2B6CB0',
+    'sequenceNumberColor': '#1A365D',
+    'sequenceActorBorder': '#2B6CB0',
+    'sequenceActorBkg': '#EBF8FF',
+    'sequenceArrowColor': '#2B6CB0',
+    'noteBkgColor': '#FFF5EB',
+    'noteBorderColor': '#DD6B20',
+    'noteTextColor': '#1A202C'
+  }
+}}%%
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant Backend
+    participant DB
+    User->>Frontend: Click Follow Button
+    Frontend->>Backend: POST /follows (JWT Token, matchId)
+    Backend->>Backend: Validate JWT
+    Backend->>DB: Insert into UserFollow
+    DB-->>Backend: Success
+    Backend-->>Frontend: 201 Created
+    Frontend-->>User: Update UI to "Following"
+    User->>Frontend: Click Unfollow Button
+    Frontend->>Backend: DELETE /follows/:matchId (JWT Token)
+    Backend->>DB: Delete from UserFollow
+    DB-->>Backend: Success
+    Backend-->>Frontend: 204 No Content
+    Frontend-->>User: Update UI to "Follow"
 ```
 
 ## 3. Detailed Technical Specifications & Business Rules
 
 ### 3.1 Requirements Traceability
-| ID | Requirement / Task Description | Phase | Type |
+| ID | Requirement / Task Description | Phase | Story |
 | :--- | :--- | :--- | :--- |
-| T001 | Initialize backend project structure with Node.js, Express, TypeScript | PHASE-1 | Task |
-| T002 | Initialize frontend project structure with React, TypeScript | PHASE-1 | Task |
-| T003 | Set up PostgreSQL database and configure connection | PHASE-1 | Task |
-| T004 | Configure development tools (ESLint, Prettier, Jest) | PHASE-1 | Task |
-| T005 | Create initial README with project overview and setup instructions | PHASE-1 | Task |
-| T006 | Set up version control (git) and initial commit | PHASE-1 | Task |
-| T007 | Configure environment variables template (.env.example) | PHASE-1 | Task |
-| T008 | Set up basic backend server with health check endpoint | PHASE-1 | Task |
-| T009 | Set up basic frontend app with routing (React Router) | PHASE-1 | Task |
-| T010 | Configure CORS and basic security headers | PHASE-1 | Task |
-| T011 | Define database models based on data-model.md (Match, Team, League, User, UserFollow) | PHASE-2 | Task |
-| T012 | Implement database migrations for initial schema | PHASE-2 | Task |
-| T013 | Set up Sequelize ORM configuration and connection pooling | PHASE-2 | Task |
-| T014 | Implement authentication middleware for JWT verification | PHASE-2 | Task |
-| T015 | Create base API controller structure with error handling | PHASE-2 | Task |
-| T016 | Set up API documentation structure (Swagger/OpenAPI) | PHASE-2 | Task |
-| T017 | Create frontend layout components (header, footer, layout) | PHASE-2 | Task |
-| T018 | Implement global state management context (AuthContext) | PHASE-2 | Task |
-| T019 | Set up HTTP service layer for API requests (Axios instance) | PHASE-2 | Task |
-| T020 | Implement basic error boundary and loading components | PHASE-2 | Task |
-| T021 | Implement GET /matches endpoint with filtering, sorting, and pagination | PHASE-3 | Task |
-| T022 | Create Match service layer for data access and business logic | PHASE-3 | Task |
-| T023 | Design and implement MatchList page route | PHASE-3 | Task |
-| T024 | Create MatchList component to display list of matches | PHASE-3 | Task |
-| T025 | Create MatchItem component for individual match display | PHASE-3 | Task |
-| T026 | Implement FilterPanel component for league and date filters | PHASE-3 | Task |
-| T027 | Implement SearchBar component for team name search | PHASE-3 | Task |
-| T028 | Add loading and error states for match list | PHASE-3 | Task |
-| T029 | Style match list with responsive design (mobile-first) | PHASE-3 | Task |
-| T030 | Write unit tests for Match service and API controller | PHASE-3 | Test Case |
-| T031 | Write integration tests for match listing endpoint | PHASE-3 | Task |
-| T032 | Write frontend unit tests for MatchList and MatchItem components | PHASE-3 | Task |
-| T033 | Implement POST /follows endpoint to follow a match | PHASE-4 | Task |
-| T034 | Create UserFollow service layer for follow operations | PHASE-4 | Task |
-| T035 | Add follow/unfollow button to MatchItem component | PHASE-4 | Task |
-| T036 | Add follow/unfollow button to MatchDetail component | PHASE-4 | Task |
-| T037 | Implement optimistic UI updates for follow actions | PHASE-4 | Task |
-| T038 | Handle authentication state for follow button visibility | PHASE-4 | Task |
-| T039 | Write unit tests for UserFollow service | PHASE-4 | Task |
-| T040 | Write integration tests for follow/unfollow endpoints | PHASE-4 | Task |
-| T041 | Write frontend tests for follow button interactions | PHASE-4 | Task |
-| T042 | Implement DELETE /follows/:matchId endpoint to unfollow a match | PHASE-5 | Task |
-| T043 | Extend UserFollow service to handle unfollow operations | PHASE-5 | Task |
-| T044 | Update follow button to toggle between follow/unfollow states | PHASE-5 | Task |
-| T045 | Add visual feedback for follow/unsuccessful unfollow operations | PHASE-5 | Task |
-| T046 | Ensure followed state persists across page refreshes | PHASE-5 | Task |
-| T047 | Write unit tests for unfollow functionality | PHASE-5 | Task |
-| T048 | Write integration tests for unfollow endpoint | PHASE-5 | Task |
-| T049 | Test follow/unfollow race conditions and edge cases | PHASE-5 | Task |
-| T050 | Implement GET /matches/:id endpoint to retrieve single match | PHASE-6 | Task |
-| T051 | Enhance Match service to fetch detailed match data | PHASE-6 | Task |
-| T052 | Design and implement MatchDetails page route | PHASE-6 | Task |
-| T053 | Create MatchDetail component with comprehensive match information | PHASE-6 | Task |
-| T054 | Display venue, league info, timestamps, and scores | PHASE-6 | Task |
-| T055 | Add follow/unfollow button to match detail view | PHASE-6 | Task |
-| T056 | Implement loading and error states for match details | PHASE-6 | Task |
-| T057 | Style match detail page with responsive design | PHASE-6 | Task |
-| T058 | Write unit tests for match detail service and controller | PHASE-6 | Task |
-| T059 | Write integration tests for match detail endpoint | PHASE-6 | Task |
-| T060 | Write frontend tests for MatchDetail component | PHASE-6 | Task |
-| T061 | Implement GET /follows endpoint to get user's followed matches | PHASE-7 | Task |
-| T062 | Extend UserFollow service to retrieve followed matches with details | PHASE-7 | Task |
-| T063 | Design and implement FollowedMatches page route | PHASE-7 | Task |
-| T064 | Create FollowedMatches list component (similar to MatchList) | PHASE-7 | Task |
-| T065 | Show follow status and ability to unfollow from this list | PHASE-7 | Task |
-| T066 | Add empty state message when no matches are followed | PHASE-7 | Task |
-| T067 | Implement sorting and filtering for followed matches | PHASE-7 | Task |
-| T068 | Write unit tests for followed matches service | PHASE-7 | Task |
-| T069 | Write integration tests for followed matches endpoint | PHASE-7 | Task |
-| T070 | Write frontend tests for FollowedMatches page | PHASE-7 | Task |
-| T071 | Implement global error handling boundary (frontend) | PHASE-8 | Task |
-| T072 | Add loading skeletons and placeholder UI for better UX | PHASE-8 | Task |
-| T073 | Optimize API responses with selective field inclusion | PHASE-8 | Task |
-| T074 | Implement client-side caching for frequently accessed data (leagues, teams) | PHASE-8 | Task |
-| T075 | Add form validation and error display for any future forms | PHASE-8 | Task |
-| T076 | Ensure responsive design works across mobile, tablet, desktop | PHASE-8 | Task |
-| T077 | Implement basic accessibility (ARIA labels, keyboard navigation) | PHASE-8 | Task |
-| T078 | Add meta tags and basic SEO for public pages | PHASE-8 | Task |
-| T079 | Write comprehensive end-to-end tests for critical user flows | PHASE-8 | Task |
-| T080 | Performance audit and optimization (bundle size, lazy loading) | PHASE-8 | Task |
-| T081 | Security audit (dependency scanning, basic penetration checks) | PHASE-8 | Constraint |
-| T082 | Prepare production build scripts and deployment documentation | PHASE-8 | Task |
-| T083 | Create final README with API documentation and contribution guidelines | PHASE-8 | Task |
-| T084 | Conduct code review and address all linting issues | PHASE-8 | Task |
-| T085 | Prepare release notes and version tagging | PHASE-8 | Task |
+| T001 | Create project structure per implementation plan | PHASE-1 | N/A |
+| T002 | Initialize backend project with Node.js 18, Express.js, TypeScript 4.9 | PHASE-1 | N/A |
+| T003 | Initialize frontend project with React 18, TypeScript | PHASE-1 | N/A |
+| T004 | Configure ESLint and Prettier for code quality | PHASE-1 | N/A |
+| T005 | Setup TypeScript configuration for backend (tsconfig.json) | PHASE-1 | N/A |
+| T006 | Setup TypeScript configuration for frontend (tsconfig.json) | PHASE-1 | N/A |
+| T007 | Configure Vite for frontend development | PHASE-1 | N/A |
+| T008 | Create .env file for backend environment variables | PHASE-1 | N/A |
+| T009 | Setup package.json scripts for dev, build, test | PHASE-1 | N/A |
+| T010 | Create README.md with setup instructions | PHASE-1 | N/A |
+| T011 | Setup PostgreSQL database schema and migrations framework | PHASE-2 | N/A |
+| T012 | Create database models for Match, Team, League, User, UserFollow | PHASE-2 | N/A |
+| T013 | Implement database connection and configuration | PHASE-2 | N/A |
+| T014 | Setup Express.js middleware (cors, morgan, json) | PHASE-2 | N/A |
+| T015 | Create base Express app structure in backend/src/app.ts | PHASE-2 | N/A |
+| T016 | Create server entry point in backend/src/server.ts | PHASE-2 | N/A |
+| T017 | Setup JWT authentication middleware | PHASE-2 | N/A |
+| T018 | Create error handling middleware | PHASE-2 | N/A |
+| T019 | Setup API routes structure (auth, matches, follows, teams, leagues) | PHASE-2 | N/A |
+| T020 | Create initial seed data for teams, leagues, and matches | PHASE-2 | N/A |
+| T021 | Create Match model in backend/src/models/Match.ts | PHASE-3 | US1 |
+| T022 | Create Team model in backend/src/models/Team.ts | PHASE-3 | US1 |
+| T023 | Create League model in backend/src/models/League.ts | PHASE-3 | US1 |
+| T024 | Implement MatchService in backend/src/services/MatchService.ts | PHASE-3 | US1 |
+| T025 | Create GET /matches endpoint in backend/src/routes/matches.ts | PHASE-3 | US1 |
+| T026 | Implement match filtering logic (by league, date, search) | PHASE-3 | US1 |
+| T027 | Create MatchList component in frontend/src/components/MatchList.tsx | PHASE-3 | US1 |
+| T028 | Create MatchCard component in frontend/src/components/MatchCard.tsx | PHASE-3 | US1 |
+| T029 | Implement match listing in frontend/src/App.tsx | PHASE-3 | US1 |
+| T030 | Add filter UI for league and date in frontend/src/App.tsx | PHASE-3 | US1 |
+| T031 | Create User model in backend/src/models/User.ts | PHASE-4 | US2 |
+| T032 | Create UserFollow model in backend/src/models/UserFollow.ts | PHASE-4 | US2 |
+| T033 | Implement AuthService in backend/src/services/AuthService.ts | PHASE-4 | US2 |
+| T034 | Implement FollowService in backend/src/services/FollowService.ts | PHASE-4 | US2 |
+| T035 | Create POST /follows endpoint in backend/src/routes/follows.ts | PHASE-4 | US2 |
+| T036 | Create FollowButton component in frontend/src/components/FollowButton.tsx | PHASE-4 | US2 |
+| T037 | Add follow functionality to MatchCard component | PHASE-4 | US2 |
+| T038 | Implement JWT authentication in frontend | PHASE-4 | US2 |
+| T039 | Add "Following" state management in frontend | PHASE-4 | US2 |
+| T040 | Create DELETE /follows/:matchId endpoint in backend/src/routes/follows.ts | PHASE-5 | US3 |
+| T041 | Implement unfollow logic in FollowService | PHASE-5 | US3 |
+| T042 | Add unfollow functionality to FollowButton component | PHASE-5 | US3 |
+| T043 | Update match status in UI after unfollowing | PHASE-5 | US3 |
+| T044 | Add confirmation dialog for unfollow action | PHASE-5 | US3 |
+| T045 | Create GET /matches/:id endpoint in backend/src/routes/matches.ts | PHASE-6 | US4 |
+| T046 | Implement match detail retrieval in MatchService | PHASE-6 | US4 |
+| T047 | Create MatchDetail component in frontend/src/components/MatchDetail.tsx | PHASE-6 | US4 |
+| T048 | Create match detail page/route in frontend/src/App.tsx | PHASE-6 | US4 |
+| T049 | Display team crests, venue, league info in MatchDetail | PHASE-6 | US4 |
+| T050 | Show match status and scores (if finished) | PHASE-6 | US4 |
+| T051 | Create GET /follows endpoint in backend/src/routes/follows.ts | PHASE-7 | US5 |
+| T052 | Implement get followed matches in FollowService | PHASE-7 | US5 |
+| T053 | Create FollowedMatches component in frontend/src/components/FollowedMatches.tsx | PHASE-7 | US5 |
+| T054 | Create "My Matches" page in frontend/src/App.tsx | PHASE-7 | US5 |
+| T055 | Display followed matches with status indicators | PHASE-7 | US5 |
+| T056 | Add navigation to followed matches page | PHASE-7 | US5 |
+| T057 | Add unit tests for MatchService | PHASE-8 | N/A |
+| T058 | Add unit tests for FollowService | PHASE-8 | N/A |
+| T059 | Add integration tests for API endpoints | PHASE-8 | N/A |
+| T060 | Add frontend unit tests for components | PHASE-8 | N/A |
+| T061 | Implement error handling and user feedback | PHASE-8 | N/A |
+| T062 | Add loading states and spinners | PHASE-8 | N/A |
+| T063 | Implement responsive design for mobile | PHASE-8 | N/A |
+| T064 | Add accessibility attributes (ARIA labels) | PHASE-8 | N/A |
+| T065 | Create API documentation (Swagger/OpenAPI) | PHASE-8 | N/A |
+| T066 | Update README with API usage examples | PHASE-8 | N/A |
+| T067 | Add .gitignore for node_modules, .env, etc. | PHASE-8 | N/A |
+| T068 | Setup ESLint and Prettier configurations | PHASE-8 | N/A |
+| T069 | Run final code quality checks | PHASE-8 | N/A |
+| T070 | Create deployment configuration (Dockerfile, docker-compose) | PHASE-8 | N/A |
 
 ### 3.2 Security Rules
-* **Authentication**: All protected endpoints must be guarded by JWT verification middleware (T014).
-* **Access Control**: Follow/Unfollow actions (T033, T042) require a valid authenticated session.
-* **Infrastructure**: CORS and security headers must be explicitly configured to prevent unauthorized cross-origin requests (T010).
-* **Audit**: A mandatory security audit including dependency scanning and penetration checks must be performed before release (T081).
+* **Authentication**: All endpoints related to user interests (`/follows`) must be protected by JWT validation middleware.
+* **Authorization**: Users can only create or delete follow records associated with their own `user_id`.
+* **Data Integrity**: Referential integrity must be enforced at the database level between `User`, `Match`, and `UserFollow`.
 
 ### 3.3 Data Models
-* **User**: Core identity entity (id, username, email).
-* **Match**: Core event entity (id, match_name, match_date, league_id).
-* **Team**: Participating entity (id, team_name).
-* **League**: Organizing entity (id, league_name).
-* **UserFollow**: Junction table linking Users to Matches (id, user_id, match_id, created_at).
+* **User**: `id (PK)`, `username`, `email`.
+* **Match**: `id (PK)`, `league_id (FK)`, `home_team_id (FK)`, `away_team_id (FK)`, `match_date`, `status`.
+* **Team**: `id (PK)`, `name`, `crest_url`.
+* **League**: `id (PK)`, `name`, `country`.
+* **UserFollow**: `id (PK)`, `user_id (FK)`, `match_id (FK)`, `created_at`.
 
 ## 4. Project Governance & Structural Gaps
 
 ### 4.1 Structural Gaps
 | Gap | Priority | Remediation Advice |
 | :--- | :--- | :--- |
-| Acceptance Criteria | HIGH | Define specific 'done' criteria for each User Story phase to avoid scope creep. |
-| Testing & Validation | MEDIUM | Create a consolidated test plan beyond the per-task unit test requirements. |
-| Security & Performance Constraints | MEDIUM | Specify minimum performance benchmarks and detailed security standards. |
-| Dependencies & Integration Points | MEDIUM | Identify external API dependencies or library requirements explicitly. |
-| Implementation Notes & References | LOW | Link to design documents or data model specs (e.g., data-model.md). |
-| Open Questions & Uncertainties | LOW | Log unknown requirements for the polish phase. |
-| Checkboxes Checklist | LOW | Create a separate final validation checklist. |
+| Acceptance Criteria | HIGH | Formalize "Independent Tests" into dedicated Acceptance Criteria for each task. |
+| Security & Performance Constraints | MEDIUM | Detail specific constraints such as password hashing and rate limiting. |
+| Open Questions & Uncertainties | LOW | Establish a log for unresolved technical or business questions. |
 
 ### 4.2 Remediation & Workflow
-The project will move from the Refinement stage to Implementation once the High-priority gaps (Acceptance Criteria) are addressed. The workflow follows a strict sequential dependency: Setup $\rightarrow$ Foundational $\rightarrow$ User Stories (1-5) $\rightarrow$ Polish.
+The project follows an **Incremental Delivery** strategy. The MVP scope consists of Phase 1, Phase 2, and Phase 3. Subsequent user stories are added incrementally, concluding with a "Polish" phase (Phase 8) to ensure quality and accessibility.
 
 ## 5. Technical & Domain Glossary (Terminology Reference)
 
 | Term | Category | Context Anchor | Project Definition |
 | :--- | :--- | :--- | :--- |
-| API | TECHNICAL_STACK | T015 | The structural interface for server-side controllers handling requests and responses. |
-| ARIA | TECHNICAL_STACK | PHASE-8 | Attributes used to improve the accessibility of the user interface for assistive technologies. |
-| AuthContext | TECHNICAL_STACK | PHASE-2 | The global state provider managing session-related information across the frontend. |
-| CORS | TECHNICAL_STACK | PHASE-1 | The security mechanism regulating cross-origin resource sharing between the client and server. |
-| CORS Standard | TECHNICAL_STACK | PHASE-1 | The industry-standard protocol for managing cross-domain request permissions. |
-| FilterPanel | TECHNICAL_STACK | PHASE-3 | A frontend component facilitating the refinement of the match list by league or date. |
-| FollowedMatches | BUSINESS_DOMAIN | PHASE-7 | A curated collection of sports events a user has marked as interests. |
-| JWT | TECHNICAL_STACK | T014 | The signed token used for stateless authentication and verification of identities. |
-| MatchDetail | TECHNICAL_STACK | T053 | The frontend component rendering exhaustive information for a single specific game. |
-| MatchDetails | BUSINESS_DOMAIN | T052 | The granular data view containing venue, timestamps, and scoring information. |
-| MatchItem | TECHNICAL_STACK | T025 | The atomic frontend unit representing a single entry within a listing of games. |
-| MatchList | TECHNICAL_STACK | T024 | The frontend component responsible for iterating and displaying a collection of sports events. |
-| Middleware | TECHNICAL_STACK | T014 | The interceptor layer used for authentication verification before reaching the final request handler. |
-| ORM | TECHNICAL_STACK | PHASE-2 | The abstraction layer used for mapping relational database tables to software objects via Sequelize. |
-| README | TECHNICAL_STACK | PHASE-1 | The primary documentation file containing setup instructions and architectural overviews. |
-| SEO | TECHNICAL_STACK | PHASE-8 | The application of meta tags and indexing optimizations to increase search engine visibility. |
-| SearchBar | TECHNICAL_STACK | T027 | The frontend input field used for filtering games by team names. |
-| TypeScript | TECHNICAL_STACK | T001 | The strongly-typed superset of JavaScript used across both frontend and backend layers. |
-| UI | TECHNICAL_STACK | T037 | The visual layer of the application, including the implementation of optimistic updates. |
-| UX | TECHNICAL_STACK | T072 | The overall user interaction quality, enhanced by loading skeletons and placeholders. |
-| UserFollow | BUSINESS_DOMAIN | T011 | The relational entity linking a person to a specific sports event of interest. |
+| ANY | TECHNICAL_STACK | PHASE-2 | The most permissive type assignment within the static analysis system, used when a value can be of any possible type. |
+| API | TECHNICAL_STACK | T065 | The set of endpoints and contracts defining how the frontend communicates with the backend services. |
+| ARIA | TECHNICAL_STACK | PHASE-8 | Standardized attributes applied to elements to improve accessibility for assistive technologies. |
+| AuthService | TECHNICAL_STACK | Implementation for User Story 2 | The backend logic layer responsible for managing user identity and session validation. |
+| CORS | TECHNICAL_STACK | PHASE-2 | The security mechanism regulating cross-origin resource sharing between the client and server. |
+| Checkpoint | TECHNICAL_STACK | PHASE-2 | A synchronization milestone that must be verified before subsequent development phases commence. |
+| FollowButton | TECHNICAL_STACK | Implementation for User Story 2 | The frontend interactive element allowing users to toggle their interest in a specific sporting event. |
+| FollowService | TECHNICAL_STACK | Implementation for User Story 2 | The backend business logic handling the creation and removal of user-to-match interest associations. |
+| FollowedMatches | TECHNICAL_STACK | Implementation for User Story 5 | The frontend component displaying a filtered list of events the current user has marked as interesting. |
+| Goal | BUSINESS_DOMAIN | PHASE-3 | The primary objective and intended outcome of a specific user story implementation. |
+| ID | TECHNICAL_STACK | Format: `[ID] [P?] [Story] Description` | The unique alphanumeric token used to track tasks and entities across the system. |
+| Incremental Delivery | TECHNICAL_STACK | Implementation Strategy | The phased deployment approach where features are released in sequential, functional blocks. |
+| JSON | TECHNICAL_STACK | PHASE-2 | The lightweight data-interchange format used for all request and response payloads. |
+| JWT | TECHNICAL_STACK | PHASE-2 | The signed token standard used for stateless authentication and authorization. |
+| MVP | TECHNICAL_STACK | PHASE-3 | The minimum set of features required to provide a functional version of the application to early users. |
+| MVP Scope | TECHNICAL_STACK | Implementation Strategy | The specific boundary of tasks and phases that constitute the first viable release. |
+| MatchCard | TECHNICAL_STACK | Implementation for User Story 1 | The frontend UI element representing a summary of a single sporting event. |
+| MatchDetail | TECHNICAL_STACK | Implementation for User Story 4 | The frontend component displaying comprehensive information about a specific sporting event. |
+| MatchList | TECHNICAL_STACK | Implementation for User Story 1 | The frontend component responsible for rendering a collection of sporting events. |
+| MatchService | TECHNICAL_STACK | Implementation for User Story 1 | The backend logic layer managing the retrieval and filtering of sporting event data. |
+| Middleware | TECHNICAL_STACK | PHASE-2 | The intermediate software layers that process requests before they reach the final route handler. |
+| Organization | TECHNICAL_STACK | Tasks: Football Match Manager | The structural grouping of tasks by user story to facilitate independent development. |
+| Prerequisites | TECHNICAL_STACK | Tasks: Football Match Manager | The mandatory documentation and configuration files required before implementation begins. |
+| README | TECHNICAL_STACK | T010 | The primary documentation file containing setup and usage instructions for the project. |
+| React | TECHNICAL_STACK | PHASE-1 | The frontend library used for building the user interface components. |
+| Tests | TECHNICAL_STACK | Tasks: Football Match Manager | The optional verification suites used to ensure the correctness of features. |
+| TypeScript | TECHNICAL_STACK | PHASE-1 | The strongly typed superset of JavaScript used for both frontend and backend development. |
+| UI | TECHNICAL_STACK | Implementation for User Story 1 | The visual layer of the application that interacts with the end user. |
+| UserFollow | BUSINESS_DOMAIN | PHASE-2 | The entity representing the relationship between a person and a sporting event they wish to track. |
+| Web app | TECHNICAL_STACK | Path Conventions | The combined frontend and backend software system accessible via a browser. |
+| ⚠️ CRITICAL | TECHNICAL_STACK | PHASE-2 | A high-priority constraint indicating that no subsequent work can proceed until the current phase is finalized. |

@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "Analyse du document pour extraire les spécifications fonctionnelles et techniques du projet Football Match Manager.",
+    "parsing_rationale": "The provided document is a 'Quick Start Guide' (technical setup) rather than a functional specification. However, as the target doc_type is 'spec', I have extracted the technical constraints, environment requirements, and architectural entities (DB, API, JWT) as requirements and constraints. Since the document focuses on 'How' (installation) rather than 'What' (business rules), there is a significant gap in functional requirements and goals.",
     "project_info": {
         "project_name": "Football Match Manager",
         "source_type": "scratch",
-        "brief_explanation": "Projet de gestion de matchs de football avec backend et frontend.",
-        "source_context": "Document de démarrage rapide pour le projet Football Match Manager."
+        "brief_explanation": "Technical setup guide for a football match management application featuring a Node.js backend and a React-based frontend.",
+        "source_context": "Local development and testing setup instructions."
     },
     "doc_type": "spec",
     "sections": [
@@ -18,7 +18,7 @@
             "title": "Prerequisites",
             "level": 2,
             "raw_content": "Before you begin, ensure you have the following installed on your machine:\n\n- [Node.js](https://nodejs.org/) (v18 or later)\n- [npm](https://www.npmjs.com/) (comes with Node.js) or [Yarn](https://yarnpkg.com/)\n- [PostgreSQL](https://www.postgresql.org/) (v14 or later)\n- [Git](https://git-scm.com/)",
-            "mapped_to_template_field": "Prerequisites"
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "Getting Started",
@@ -54,37 +54,37 @@
             "title": "3. Set Up the Database",
             "level": 3,
             "raw_content": "1. Start your PostgreSQL server.\n2. Create a new database for the application:\n   ```sql\n   CREATE DATABASE football_match_manager;\n   ```\n3. Create a user and grant privileges (optional but recommended):\n   ```sql\n   CREATE USER fm_user WITH PASSWORD 'your_password';\n   GRANT ALL PRIVILEGES ON DATABASE football_match_manager TO fm_user;\n   ```",
-            "mapped_to_template_field": "Database Setup"
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "4. Configure Environment Variables",
             "level": 3,
             "raw_content": "Create a `.env` file in the `backend` directory based on the provided `.env.example`:\n\n```bash\ncd backend\ncp .env.example .env\n```\n\nEdit the `.env` file to match your database configuration:\n\n```\nDB_HOST=localhost\nDB_PORT=5432\nDB_NAME=football_match_manager\nDB_USER=your_username\nDB_PASSWORD=your_password",
-            "mapped_to_template_field": "Environment Variables"
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "JWT secret for authentication (use a strong, random string in production)",
             "level": 1,
             "raw_content": "JWT_SECRET=your_super_secret_jwt_key_change_in_production",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "Port for the backend server",
             "level": 1,
             "raw_content": "PORT=5000",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "Optional: Third-party football API key (if required by the chosen API)",
             "level": 1,
-            "raw_content": "FOOTBALL_API_KEY=your_api_key_here",
-            "mapped_to_template_field": null
+            "raw_content": "FOOTBALL_API_KEY=your_api_key_here\n```",
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "5. Run Database Migrations",
             "level": 3,
             "raw_content": "We use Sequelize for ORM and migrations. Run the following to set up the database schema:\n\n```bash\nnpx sequelize-cli db:migrate\n```",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "6. Seed Initial Data (Optional)",
@@ -126,7 +126,7 @@
             "title": "8. Verify the Setup",
             "level": 3,
             "raw_content": "Open your browser and navigate to `http://localhost:3000`. You should see the Football Match Manager home page.",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Success Criterion"
         },
         {
             "title": "Available Scripts",
@@ -186,7 +186,7 @@
             "title": "API Documentation",
             "level": 3,
             "raw_content": "Once the backend is running, you can view the API documentation at:\n`http://localhost:5000/api-docs` (if Swagger/OpenAPI documentation is enabled)",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "Troubleshooting",
@@ -198,7 +198,7 @@
             "title": "Common Issues",
             "level": 3,
             "raw_content": "1. **Database Connection Errors**\n   - Verify that PostgreSQL is running\n   - Check your `.env` file for correct database credentials\n   - Ensure the database exists and the user has sufficient privileges\n\n2. **Port Already in Use**\n   - Another process is using the port specified in your `.env` file\n   - Either change the port or stop the conflicting process\n\n3. **Module Not Found Errors**\n   - Ensure you have run `npm install` in both `backend` and `frontend` directories\n   - Try deleting `node_modules` and `package-lock.json` (or `yarn.lock`) and reinstalling\n\n4. **Authentication Issues**\n   - Verify that the JWT secret is set correctly in the `.env` file\n   - Ensure you are sending the token in the `Authorization` header as `Bearer <token>`",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "Next Steps",
@@ -215,176 +215,105 @@
     ],
     "elements": [
         {
-            "type": "requirement",
-            "identifier": "REQ-001",
-            "content": "Node.js (v18 or later) must be installed.",
+            "type": "constraint",
+            "identifier": "ENV-NODE",
+            "content": "Node.js v18 or later is required.",
             "source_section": "Prerequisites",
-            "attributes": {}
+            "attributes": {
+                "version": ">=18"
+            }
         },
         {
-            "type": "requirement",
-            "identifier": "REQ-002",
-            "content": "npm (comes with Node.js) or Yarn must be installed.",
+            "type": "constraint",
+            "identifier": "ENV-POSTGRES",
+            "content": "PostgreSQL v14 or later is required.",
             "source_section": "Prerequisites",
-            "attributes": {}
+            "attributes": {
+                "version": ">=14"
+            }
         },
         {
-            "type": "requirement",
-            "identifier": "REQ-003",
-            "content": "PostgreSQL (v14 or later) must be installed.",
-            "source_section": "Prerequisites",
-            "attributes": {}
-        },
-        {
-            "type": "requirement",
-            "identifier": "REQ-004",
-            "content": "Git must be installed.",
-            "source_section": "Prerequisites",
-            "attributes": {}
-        },
-        {
-            "type": "functional_requirement",
-            "identifier": "FUNC-001",
-            "content": "The application must allow users to clone the repository.",
-            "source_section": "1. Clone the Repository",
-            "attributes": {}
-        },
-        {
-            "type": "functional_requirement",
-            "identifier": "FUNC-002",
-            "content": "The application must allow users to install dependencies.",
-            "source_section": "2. Install Dependencies",
-            "attributes": {}
-        },
-        {
-            "type": "functional_requirement",
-            "identifier": "FUNC-003",
-            "content": "The application must allow users to set up the database.",
+            "type": "entity",
+            "identifier": "DB-FOOTBALL",
+            "content": "Database named 'football_match_manager' for application data storage.",
             "source_section": "3. Set Up the Database",
-            "attributes": {}
+            "attributes": {
+                "engine": "PostgreSQL"
+            }
         },
         {
-            "type": "functional_requirement",
-            "identifier": "FUNC-004",
-            "content": "The application must allow users to configure environment variables.",
-            "source_section": "4. Configure Environment Variables",
+            "type": "non_functional_requirement",
+            "identifier": "AUTH-JWT",
+            "content": "Authentication must be handled via JWT using a strong secret key and Bearer token in the Authorization header.",
+            "source_section": "Common Issues",
+            "attributes": {
+                "mechanism": "JWT",
+                "header": "Authorization: Bearer <token>"
+            }
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "ORM-SEQUELIZE",
+            "content": "The application must use Sequelize for ORM and database migrations.",
+            "source_section": "5. Run Database Migrations",
+            "attributes": {
+                "tool": "Sequelize"
+            }
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-LOCAL-RUN",
+            "content": "The application is successfully running when the home page is accessible at http://localhost:3000.",
+            "source_section": "8. Verify the Setup",
             "attributes": {}
         },
         {
             "type": "non_functional_requirement",
-            "identifier": "NON-FUNC-001",
-            "content": "The application must use a strong, random string for the JWT secret.",
-            "source_section": "JWT secret for authentication (use a strong, random string in production)",
-            "attributes": {}
-        },
-        {
-            "type": "non_functional_requirement",
-            "identifier": "NON-FUNC-002",
-            "content": "The application must use a port for the backend server.",
-            "source_section": "Port for the backend server",
-            "attributes": {}
-        },
-        {
-            "type": "entity",
-            "identifier": "ENT-001",
-            "content": "Database",
-            "source_section": "3. Set Up the Database",
-            "attributes": {}
-        },
-        {
-            "type": "entity",
-            "identifier": "ENT-002",
-            "content": "User",
-            "source_section": "4. Configure Environment Variables",
-            "attributes": {}
-        },
-        {
-            "type": "success_criterion",
-            "identifier": "SC-001",
-            "content": "The application must start on `http://localhost:5000` (or the port specified in the .env file).",
-            "source_section": "From the backend directory",
-            "attributes": {}
-        },
-        {
-            "type": "success_criterion",
-            "identifier": "SC-002",
-            "content": "The application must start on `http://localhost:3000`.",
-            "source_section": "From the frontend directory (in a new terminal)",
-            "attributes": {}
+            "identifier": "API-DOCS",
+            "content": "API documentation should be available via Swagger/OpenAPI at /api-docs.",
+            "source_section": "API Documentation",
+            "attributes": {
+                "endpoint": "/api-docs"
+            }
         }
     ],
     "relationships": [
         {
-            "source": "REQ-001",
-            "to": "FUNC-001",
+            "source": "DB-FOOTBALL",
+            "to": "ORM-SEQUELIZE",
             "relation_type": "depends_on"
         },
         {
-            "source": "REQ-002",
-            "to": "FUNC-001",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "REQ-003",
-            "to": "FUNC-003",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "REQ-004",
-            "to": "FUNC-001",
-            "relation_type": "depends_on"
-        },
-        {
-            "source": "FUNC-001",
-            "to": "FUNC-002",
-            "relation_type": "contains"
-        },
-        {
-            "source": "FUNC-002",
-            "to": "FUNC-003",
-            "relation_type": "contains"
-        },
-        {
-            "source": "FUNC-003",
-            "to": "FUNC-004",
-            "relation_type": "contains"
-        },
-        {
-            "source": "ENT-001",
-            "to": "FUNC-003",
+            "source": "AUTH-JWT",
+            "to": "SC-LOCAL-RUN",
             "relation_type": "relates_to"
         },
         {
-            "source": "ENT-002",
-            "to": "FUNC-004",
-            "relation_type": "relates_to"
-        },
-        {
-            "source": "SC-001",
-            "to": "FUNC-003",
-            "relation_type": "implements"
-        },
-        {
-            "source": "SC-002",
-            "to": "FUNC-004",
-            "relation_type": "implements"
+            "source": "ENV-POSTGRES",
+            "to": "DB-FOOTBALL",
+            "relation_type": "depends_on"
         }
     ],
     "structural_gaps": [
         {
             "missing_section": "Goals & Objectives",
             "priority": "HIGH",
-            "remediation_advice": "Add a section to describe the goals and objectives of the project."
+            "remediation_advice": "The document is a setup guide. A business-oriented document defining the purpose and goals of the Football Match Manager is needed."
+        },
+        {
+            "missing_section": "Functional Requirements",
+            "priority": "HIGH",
+            "remediation_advice": "No business rules or user features (e.g., match creation, team management) are defined. A functional spec is required."
         },
         {
             "missing_section": "Scope & Out-of-Scope",
             "priority": "MEDIUM",
-            "remediation_advice": "Add a section to describe the scope and out-of-scope items for the project."
+            "remediation_advice": "Define the boundaries of the application to avoid scope creep."
         },
         {
             "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "Add a section to describe any open questions or uncertainties related to the project."
+            "remediation_advice": "Identify technical or business unknowns."
         }
     ],
     "open_questions": []

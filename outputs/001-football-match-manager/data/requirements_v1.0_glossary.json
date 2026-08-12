@@ -1,0 +1,12 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "Feature",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Readiness",
+            "project_definition": "A distinct unit of functionality that must satisfy measurable outcomes and associated acceptance criteria to be considered ready for planning."
+        }
+    ]
+}

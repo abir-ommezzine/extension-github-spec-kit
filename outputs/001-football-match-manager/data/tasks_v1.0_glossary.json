@@ -2,151 +2,221 @@
     "project_name": "Football Match Manager",
     "items": [
         {
+            "term": "ANY",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The most permissive type assignment within the static analysis system, used when a value can be of any possible type."
+        },
+        {
             "term": "API",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T015",
-            "project_definition": "The structural interface for server-side controllers handling requests and responses."
+            "contextual_anchor": "T065",
+            "project_definition": "The set of endpoints and contracts defining how the frontend communicates with the backend services."
         },
         {
             "term": "ARIA",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "PHASE-8",
-            "project_definition": "Attributes used to improve the accessibility of the user interface for assistive technologies."
+            "project_definition": "Standardized attributes applied to elements to improve accessibility for assistive technologies."
         },
         {
-            "term": "AuthContext",
+            "term": "AuthService",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-2",
-            "project_definition": "The global state provider managing session-related information across the frontend."
+            "contextual_anchor": "Implementation for User Story 2",
+            "project_definition": "The backend logic layer responsible for managing user identity and session validation."
         },
         {
             "term": "CORS",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-1",
+            "contextual_anchor": "PHASE-2",
             "project_definition": "The security mechanism regulating cross-origin resource sharing between the client and server."
         },
         {
-            "term": "CORS Standard",
-            "category": "TECHNICAL_STACK",
-            "discovery": "IMPLICIT",
-            "contextual_anchor": "PHASE-1",
-            "project_definition": "The industry-standard protocol for managing cross-domain request permissions."
-        },
-        {
-            "term": "FilterPanel",
+            "term": "Checkpoint",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-3",
-            "project_definition": "A frontend component facilitating the refinement of the match list by league or date."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "A synchronization milestone that must be verified before subsequent development phases commence."
+        },
+        {
+            "term": "FollowButton",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation for User Story 2",
+            "project_definition": "The frontend interactive element allowing users to toggle their interest in a specific sporting event."
+        },
+        {
+            "term": "FollowService",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation for User Story 2",
+            "project_definition": "The backend business logic handling the creation and removal of user-to-match interest associations."
         },
         {
             "term": "FollowedMatches",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation for User Story 5",
+            "project_definition": "The frontend component displaying a filtered list of events the current user has marked as interesting."
+        },
+        {
+            "term": "Goal",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-7",
-            "project_definition": "A curated collection of sports events a user has marked as interests."
+            "contextual_anchor": "PHASE-3",
+            "project_definition": "The primary objective and intended outcome of a specific user story implementation."
+        },
+        {
+            "term": "ID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Format: `[ID] [P?] [Story] Description`",
+            "project_definition": "The unique alphanumeric token used to track tasks and entities across the system."
+        },
+        {
+            "term": "Incremental Delivery",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Strategy",
+            "project_definition": "The phased deployment approach where features are released in sequential, functional blocks."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The lightweight data-interchange format used for all request and response payloads."
         },
         {
             "term": "JWT",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T014",
-            "project_definition": "The signed token used for stateless authentication and verification of identities."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The signed token standard used for stateless authentication and authorization."
+        },
+        {
+            "term": "MVP",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-3",
+            "project_definition": "The minimum set of features required to provide a functional version of the application to early users."
+        },
+        {
+            "term": "MVP Scope",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Strategy",
+            "project_definition": "The specific boundary of tasks and phases that constitute the first viable release."
+        },
+        {
+            "term": "MatchCard",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation for User Story 1",
+            "project_definition": "The frontend UI element representing a summary of a single sporting event."
         },
         {
             "term": "MatchDetail",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T053",
-            "project_definition": "The frontend component rendering exhaustive information for a single specific game."
-        },
-        {
-            "term": "MatchDetails",
-            "category": "BUSINESS_DOMAIN",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "T052",
-            "project_definition": "The granular data view containing venue, timestamps, and scoring information."
-        },
-        {
-            "term": "MatchItem",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "T025",
-            "project_definition": "The atomic frontend unit representing a single entry within a listing of games."
+            "contextual_anchor": "Implementation for User Story 4",
+            "project_definition": "The frontend component displaying comprehensive information about a specific sporting event."
         },
         {
             "term": "MatchList",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T024",
-            "project_definition": "The frontend component responsible for iterating and displaying a collection of sports events."
+            "contextual_anchor": "Implementation for User Story 1",
+            "project_definition": "The frontend component responsible for rendering a collection of sporting events."
+        },
+        {
+            "term": "MatchService",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation for User Story 1",
+            "project_definition": "The backend logic layer managing the retrieval and filtering of sporting event data."
         },
         {
             "term": "Middleware",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T014",
-            "project_definition": "The interceptor layer used for authentication verification before reaching the final request handler."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The intermediate software layers that process requests before they reach the final route handler."
         },
         {
-            "term": "ORM",
+            "term": "Organization",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-2",
-            "project_definition": "The abstraction layer used for mapping relational database tables to software objects via Sequelize."
+            "contextual_anchor": "Tasks: Football Match Manager",
+            "project_definition": "The structural grouping of tasks by user story to facilitate independent development."
+        },
+        {
+            "term": "Prerequisites",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Tasks: Football Match Manager",
+            "project_definition": "The mandatory documentation and configuration files required before implementation begins."
         },
         {
             "term": "README",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
+            "contextual_anchor": "T010",
+            "project_definition": "The primary documentation file containing setup and usage instructions for the project."
+        },
+        {
+            "term": "React",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
             "contextual_anchor": "PHASE-1",
-            "project_definition": "The primary documentation file containing setup instructions and architectural overviews."
+            "project_definition": "The frontend library used for building the user interface components."
         },
         {
-            "term": "SEO",
+            "term": "Tests",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "PHASE-8",
-            "project_definition": "The application of meta tags and indexing optimizations to increase search engine visibility."
-        },
-        {
-            "term": "SearchBar",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "T027",
-            "project_definition": "The frontend input field used for filtering games by team names."
+            "contextual_anchor": "Tasks: Football Match Manager",
+            "project_definition": "The optional verification suites used to ensure the correctness of features."
         },
         {
             "term": "TypeScript",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T001",
-            "project_definition": "The strongly-typed superset of JavaScript used across both frontend and backend layers."
+            "contextual_anchor": "PHASE-1",
+            "project_definition": "The strongly typed superset of JavaScript used for both frontend and backend development."
         },
         {
             "term": "UI",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T037",
-            "project_definition": "The visual layer of the application, including the implementation of optimistic updates."
-        },
-        {
-            "term": "UX",
-            "category": "TECHNICAL_STACK",
-            "discovery": "EXPLICIT",
-            "contextual_anchor": "T072",
-            "project_definition": "The overall user interaction quality, enhanced by loading skeletons and placeholders."
+            "contextual_anchor": "Implementation for User Story 1",
+            "project_definition": "The visual layer of the application that interacts with the end user."
         },
         {
             "term": "UserFollow",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "T011",
-            "project_definition": "The relational entity linking a person to a specific sports event of interest."
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "The entity representing the relationship between a person and a sporting event they wish to track."
+        },
+        {
+            "term": "Web app",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Path Conventions",
+            "project_definition": "The combined frontend and backend software system accessible via a browser."
+        },
+        {
+            "term": "⚠️ CRITICAL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PHASE-2",
+            "project_definition": "A high-priority constraint indicating that no subsequent work can proceed until the current phase is finalized."
         }
     ]
 }

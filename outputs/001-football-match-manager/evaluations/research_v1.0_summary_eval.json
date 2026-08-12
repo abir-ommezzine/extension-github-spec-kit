@@ -1,17 +1,17 @@
 {
     "agent_evaluated": "Summary Agent",
-    "project_name": "football-match-manager",
+    "project_name": "Football Match Manager",
     "technical_evaluation": {
-        "maturity_alignment_score": 0.0,
+        "maturity_alignment_score": 100.0,
         "conciseness_precision_score": 100.0,
-        "extraction_completeness_rate": 0.0,
-        "brief_word_count": 78,
-        "hallucinations_detected_count": 10
+        "extraction_completeness_rate": 100.0,
+        "brief_word_count": 67,
+        "hallucinations_detected_count": 0
     },
     "project_management_kpis": {
-        "extracted_technologies_count": 16,
-        "architectural_constraints_count": 18,
-        "external_dependencies_count": 24,
+        "extracted_technologies_count": 15,
+        "architectural_constraints_count": 7,
+        "external_dependencies_count": 6,
         "external_risk_exposure": "ÉLEVÉ"
     }
 }

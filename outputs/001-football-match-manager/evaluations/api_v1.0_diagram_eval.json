@@ -15,7 +15,7 @@
             "sequenceDiagram": 1,
             "flowchart": 2
         },
-        "total_mermaid_lines_count": 94,
-        "average_lines_per_diagram": 23.5
+        "total_mermaid_lines_count": 260,
+        "average_lines_per_diagram": 65.0
     }
 }

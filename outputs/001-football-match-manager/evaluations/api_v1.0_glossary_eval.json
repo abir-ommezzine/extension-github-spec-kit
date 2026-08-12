@@ -15,8 +15,8 @@
     },
     "project_management_kpis": {
         "total_extracted_terms": 10,
-        "business_domain_terms_count": 4,
-        "technical_stack_terms_count": 6,
+        "business_domain_terms_count": 3,
+        "technical_stack_terms_count": 7,
         "explicit_terms_count": 9,
         "implicit_terms_inferred_count": 1
     }

@@ -8,25 +8,25 @@
         "macro_micro_traceability_index": 100.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
-            "Section requise absente des correspondances : security & identity",
             "Section requise absente des correspondances : data models & schemas",
-            "Section requise absente des correspondances : open questions & uncertainties",
-            "Section requise absente des correspondances : api contracts & flow"
+            "Section requise absente des correspondances : security & identity",
+            "Section requise absente des correspondances : api contracts & flow",
+            "Section requise absente des correspondances : open questions & uncertainties"
         ]
     },
     "project_management_kpis": {
-        "health_index": 80.0,
+        "health_index": 33.0,
         "completeness_score": 33.3,
-        "readiness_status": "NEEDS_REFINEMENT",
+        "readiness_status": "BLOCKED",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 9,
-            "total_edges_extracted": 5
+            "total_nodes_extracted": 2,
+            "total_edges_extracted": 0
         },
         "gaps_summary": {
-            "high_severity": 1,
+            "high_severity": 2,
             "medium_severity": 1,
             "low_severity": 1,
-            "unresolved_uncertainties": 0
+            "unresolved_uncertainties": 4
         }
     }
 }

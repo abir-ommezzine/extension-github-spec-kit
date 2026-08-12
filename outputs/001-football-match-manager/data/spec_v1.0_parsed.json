@@ -1,148 +1,175 @@
 {
-    "parsing_rationale": "Cette analyse découpe le document en sections et sous-sections pour identifier les éléments clés tels que les histoires utilisateur, les exigences fonctionnelles et non fonctionnelles, les entités, les critères de succès, les hypothèses et les questions ouvertes. Chaque élément est ensuite associé à son type, un identifiant unique et la section d'où il provient.",
+    "parsing_rationale": "The document is a functional specification for a 'Football Match Manager'. I have extracted the user scenarios as user_stories, the detailed FR sections as functional_requirements, the success criteria as success_criteria, and the key entities as entities. I have mapped the physical sections to the template fields based on their content. I identified a gap in 'Goals & Objectives' as the document starts directly with scenarios and requirements without a high-level objective section.",
     "project_info": {
         "project_name": "Football Match Manager",
         "source_type": "scratch",
-        "brief_explanation": "Application de gestion de matches de football pour les fans",
-        "source_context": "Spécification fonctionnelle"
+        "brief_explanation": "A web application allowing football fans to browse upcoming matches, follow specific games of interest, and view real-time updates and details.",
+        "source_context": "Functional specification document containing user scenarios, detailed requirements, entity models, and open questions."
     },
     "doc_type": "spec",
     "sections": [
         {
-            "title": "Feature Specification: Football Match Manager",
-            "level": 1,
-            "raw_content": "",
-            "mapped_to_template_field": null
-        },
-        {
             "title": "User Scenarios & Testing",
             "level": 2,
-            "raw_content": "",
-            "mapped_to_template_field": null
-        },
-        {
-            "title": "Scenario 1: Viewing Match List",
-            "level": 3,
-            "raw_content": "As a football fan, I want to see a list of upcoming football matches so that I can decide which matches to follow.\n- Given I open the application\n- When I navigate to the matches page\n- Then I see a list of upcoming matches with details (teams, date, time, league)\n- And I can filter matches by league, date range, or search by team name",
-            "mapped_to_template_field": "Goals & Objectives"
-        },
-        {
-            "title": "Scenario 2: Adding Match to Interests",
-            "level": 3,
-            "raw_content": "As a football fan, I want to mark a match as interesting so that I can easily track it later.\n- Given I am viewing a match in the list\n- When I click the \"Follow\" button on that match\n- Then the match is added to my followed matches list\n- And I see a confirmation indicator (e.g., button changes to \"Following\")",
+            "raw_content": "As a football fan, I want to see a list of upcoming football matches... [truncated for brevity]",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "Functional Requirements",
             "level": 2,
-            "raw_content": "",
-            "mapped_to_template_field": "Functional Requirements"
-        },
-        {
-            "title": "FR1: Match Data Management",
-            "level": 3,
-            "raw_content": "The system shall provide functionality to manage football match data including:\n- FR1.1: Store match information (teams, date/time, venue, league, status)\n- FR1.2: Retrieve match data from a reliable sports data source (assumed to be via API)\n- FR1.3: Update match status and scores in real-time or near real-time for live matches\n- FR1.4: Archive historical match data for completed matches",
+            "raw_content": "FR1: Match Data Management... FR2: User Interest Tracking... [truncated for brevity]",
             "mapped_to_template_field": "Functional Requirements"
         },
         {
             "title": "Success Criteria",
             "level": 2,
-            "raw_content": "",
-            "mapped_to_template_field": "Success Criteria"
-        },
-        {
-            "title": "SC1: User Adoption",
-            "level": 3,
-            "raw_content": "- At least 70% of users who visit the site follow at least one match within their first session\n- Users who follow matches return to the site at least twice per week on average",
-            "mapped_to_template_field": "Success Criteria"
+            "raw_content": "SC1: User Adoption... SC2: Performance... [truncated for brevity]",
+            "mapped_to_template_field": "Non-Functional Requirements"
         },
         {
             "title": "Key Entities",
             "level": 2,
-            "raw_content": "",
-            "mapped_to_template_field": "Scope & Out-of-Scope"
-        },
-        {
-            "title": "Match",
-            "level": 3,
-            "raw_content": "- Attributes: matchId (unique identifier), homeTeam, awayTeam, dateTime, venue, league, status (upcoming, live, finished), homeScore, awayScore\n- Relationships: Belongs to a league, has two teams",
-            "mapped_to_template_field": "Scope & Out-of-Scope"
+            "raw_content": "Match, Team, League, User, UserFollow... [truncated for brevity]",
+            "mapped_to_template_field": null
         },
         {
             "title": "Assumptions",
             "level": 2,
-            "raw_content": "",
-            "mapped_to_template_field": "Open Questions & Uncertainties"
+            "raw_content": "A1: Data Source... A2: User Authentication... [truncated for brevity]",
+            "mapped_to_template_field": "Scope & Out-of-Scope"
         },
         {
-            "title": "A1: Data Source",
-            "level": 3,
-            "raw_content": "We assume access to a reliable football match data API that provides:\n- Upcoming match schedules\n- Live scores and match status\n- Historical match data\n- Team and league information\nIf such an API is not available, we may need to consider alternative data sources or manual data entry (which would significantly change scope).",
+            "title": "Open Questions",
+            "level": 2,
+            "raw_content": "Q1: Authentication Method... Q2: Data Source Selection... [truncated for brevity]",
             "mapped_to_template_field": "Open Questions & Uncertainties"
         }
     ],
     "elements": [
         {
             "type": "user_story",
-            "identifier": "MATCH-01",
+            "identifier": "US-VIEW-LIST",
             "content": "As a football fan, I want to see a list of upcoming football matches so that I can decide which matches to follow.",
-            "source_section": "Scenario 1: Viewing Match List",
+            "source_section": null,
             "attributes": {}
         },
         {
-            "type": "requirement",
-            "identifier": "FR1.1",
-            "content": "Store match information (teams, date/time, venue, league, status)",
-            "source_section": "FR1: Match Data Management",
+            "type": "user_story",
+            "identifier": "US-FOLLOW-MATCH",
+            "content": "As a football fan, I want to mark a match as interesting so that I can easily track it later.",
+            "source_section": null,
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR1-DATA-MGMT",
+            "content": "The system shall provide functionality to manage football match data including storage, retrieval via API, real-time updates, and archiving.",
+            "source_section": null,
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR2-USER-TRACK",
+            "content": "The system shall allow authenticated users to follow/unfollow matches and persist these relationships across sessions.",
+            "source_section": null,
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR3-FILTER-SEARCH",
+            "content": "The system shall enable users to filter matches by league, date range, and search by team name.",
+            "source_section": null,
+            "attributes": {}
+        },
+        {
+            "type": "non_functional_requirement",
+            "identifier": "NFR-PERF-LOAD",
+            "content": "Match list loads in under 2 seconds for 95% of requests (with cached data).",
+            "source_section": null,
             "attributes": {}
         },
         {
             "type": "entity",
-            "identifier": "MATCH",
-            "content": "Attributes: matchId (unique identifier), homeTeam, awayTeam, dateTime, venue, league, status (upcoming, live, finished), homeScore, awayScore",
-            "source_section": "Match",
+            "identifier": "ENT-MATCH",
+            "content": "Match: Attributes include matchId, homeTeam, awayTeam, dateTime, venue, league, status, homeScore, awayScore.",
+            "source_section": null,
             "attributes": {}
         },
         {
-            "type": "success_criterion",
-            "identifier": "SC1",
-            "content": "At least 70% of users who visit the site follow at least one match within their first session",
-            "source_section": "SC1: User Adoption",
+            "type": "entity",
+            "identifier": "ENT-USER",
+            "content": "User: Attributes include userId, username, email.",
+            "source_section": null,
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-USERFOLLOW",
+            "content": "UserFollow: Join entity linking userId to matchId with a timestamp.",
+            "source_section": null,
             "attributes": {}
         },
         {
             "type": "assumption",
-            "identifier": "A1",
-            "content": "We assume access to a reliable football match data API",
-            "source_section": "A1: Data Source",
+            "identifier": "ASSUMP-API",
+            "content": "Assume access to a reliable football match data API for schedules, scores, and team info.",
+            "source_section": null,
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONS-MVP-SCOPE",
+            "content": "Social features, predictive analytics, and push notifications are out of scope for MVP.",
+            "source_section": null,
             "attributes": {}
         }
     ],
     "relationships": [
         {
-            "source": "MATCH-01",
-            "to": "FR1.1",
+            "source": "US-VIEW-LIST",
+            "to": "FR3-FILTER-SEARCH",
             "relation_type": "implements"
         },
         {
-            "source": "FR1.1",
-            "to": "MATCH",
+            "source": "US-FOLLOW-MATCH",
+            "to": "FR2-USER-TRACK",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FR1-DATA-MGMT",
+            "to": "ENT-MATCH",
             "relation_type": "contains"
         },
         {
-            "source": "MATCH",
-            "to": "SC1",
-            "relation_type": "relates_to"
+            "source": "FR2-USER-TRACK",
+            "to": "ENT-USERFOLLOW",
+            "relation_type": "contains"
+        },
+        {
+            "source": "ENT-USERFOLLOW",
+            "to": "ENT-USER",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "ENT-USERFOLLOW",
+            "to": "ENT-MATCH",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR1-DATA-MGMT",
+            "to": "ASSUMP-API",
+            "relation_type": "depends_on"
         }
     ],
     "structural_gaps": [
         {
-            "missing_section": "Non-Functional Requirements",
+            "missing_section": "Goals & Objectives",
             "priority": "HIGH",
-            "remediation_advice": "Ajouter une section pour les exigences non fonctionnelles"
+            "remediation_advice": "Add a section defining the primary business goal and the 'Why' behind the Football Match Manager to align stakeholders."
         }
     ],
     "open_questions": [
-        "Q1: User Authentication Approach"
+        "What authentication method should be implemented for the MVP?",
+        "Which football data API should be used?"
     ]
 }

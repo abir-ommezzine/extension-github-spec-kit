@@ -9,9 +9,9 @@
         "glossary_format_and_placement": 100.0
     },
     "project_management_kpis": {
-        "total_markdown_word_count": 2141,
-        "total_source_identifiers_count": 12,
-        "retained_identifiers_count": 12,
+        "total_markdown_word_count": 2352,
+        "total_source_identifiers_count": 10,
+        "retained_identifiers_count": 10,
         "embedded_diagrams_count": 4,
         "glossary_terms_count": 5
     }

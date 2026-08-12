@@ -1,28 +1,16 @@
 {
     "diagrams": [
         {
-            "title": "Entity Relationship Diagram",
-            "type": "erDiagram",
-            "description": "Entity relationship diagram for the Football Match Manager project",
-            "mermaid_code": "erDiagram\n  ENTITY-01 ||--o{ ARCH-CHOICE-01 : \"implements\"\n  ENTITY-01 {\n    int id PK\n    string name\n  }"
-        },
-        {
-            "title": "Sequence Diagram for API Endpoint",
-            "type": "sequenceDiagram",
-            "description": "Sequence diagram for the API endpoint ENDPOINT-01",
-            "mermaid_code": "sequenceDiagram\n  participant Client\n  participant ENDPOINT-01\n  Client->>ENDPOINT-01: Request\n  ENDPOINT-01->>Client: Response"
-        },
-        {
-            "title": "Flowchart for Project Phases",
+            "title": "Football Match Manager Implementation Workflow",
             "type": "flowchart",
-            "description": "Flowchart for the project phases",
-            "mermaid_code": "flowchart\n  START[Start]\n  PHASE-0[PHASE-0: Recherche]\n  PHASE-1[PHASE-1: Conception]\n  START --> PHASE-0\n  PHASE-0 --> PHASE-1\n  PHASE-1 --> END[End]"
+            "description": "Models the execution workflow of the implementation plan, including the mandatory Constitution Check gate and the structural decision process.",
+            "mermaid_code": "%%{init: {\n  'theme': 'base',\n  'themeVariables': {\n    'primaryColor': '#1A365D',\n    'primaryTextColor': '#1A202C',\n    'primaryBorderColor': '#2B6CB0',\n    'lineColor': '#2B6CB0',\n    'secondaryColor': '#EBF8FF',\n    'tertiaryColor': '#EBF8FF',\n    'background': '#FFFFFF',\n    'mainBkg': '#FFFFFF',\n    'secondBkg': '#EBF8FF',\n    'tertiaryBkg': '#F7FAFC',\n    'secondaryTextColor': '#4A5568',\n    'fontSize': '16px',\n    'fontFamily': 'Inter, system-ui, sans-serif',\n    'nodePadding': '15px',\n    'borderRadius': '8px',\n    'edgeLabelBackground': '#EBF8FF',\n    'clusterBkg': '#F7FAFC',\n    'clusterBorder': '#2B6CB0',\n    'defaultLinkColor': '#2B6CB0',\n    'titleColor': '#1A365D',\n    'actorBorder': '#2B6CB0',\n    'actorBkg': '#EBF8FF',\n    'actorTextColor': '#1A365D',\n    'actorLineColor': '#2B6CB0',\n    'signalColor': '#2B6CB0',\n    'signalTextColor': '#1A202C',\n    'labelBoxBorderColor': '#2B6CB0',\n    'labelBoxBkgColor': '#EBF8FF',\n    'labelTextColor': '#1A202C',\n    'loopTextColor': '#1A202C',\n    'arrowHeadColor': '#2B6CB0',\n    'sequenceNumberColor': '#1A365D',\n    'sequenceActorBorder': '#2B6CB0',\n    'sequenceActorBkg': '#EBF8FF',\n    'sequenceArrowColor': '#2B6CB0',\n    'noteBkgColor': '#FFF5EB',\n    'noteBorderColor': '#DD6B20',\n    'noteTextColor': '#1A202C'\n  }\n}}%%\nflowchart TD\n    START[\"Start Implementation\"] --> GATE-CONST{\"GATE-CONST: Constitution Check\"}\n    GATE-CONST -- \"Pass\" --> PHASE0[\"Phase 0: Research\"]\n    GATE-CONST -- \"Fail\" --> FIX_CONST[\"Resolve Constitution Violations\"]\n    FIX_CONST --> GATE-CONST\n    PHASE0 --> PHASE1[\"Phase 1: Design & Data Modeling\"]\n    PHASE1 --> STRUC-DECISION{\"STRUC-DECISION: Select Project Structure\"}\n    STRUC-DECISION -- \"Single Project\" --> OPT1[\"Apply Option 1: src/models/services\"]\n    STRUC-DECISION -- \"Web App\" --> OPT2[\"Apply Option 2: backend/frontend\"]\n    STRUC-DECISION -- \"Mobile + API\" --> OPT3[\"Apply Option 3: api/ios/android\"]\n    OPT1 --> PHASE2[\"Phase 2: Task Generation\"]\n    OPT2 --> PHASE2\n    OPT3 --> PHASE2\n    PHASE2 --> END[\"End Plan Definition\"]"
         },
         {
-            "title": "Flowchart for Task and Decision",
+            "title": "Project Documentation Traceability",
             "type": "flowchart",
-            "description": "Flowchart for the task and decision",
-            "mermaid_code": "flowchart\n  TASK-01[TASK-01: Créer la structure de projet]\n  DECISION-01{DECISION-01: Choisir la technologie de stockage}\n  TASK-01 --> DECISION-01\n  DECISION-01 -->|Oui| ENDPOINT-01[ENDPOINT-01: API de gestion de matchs]\n  DECISION-01 -->|Non| TASK-01"
+            "description": "Maps the relationship between the implementation plan and the required documentation artifacts.",
+            "mermaid_code": "%%{init: {\n  'theme': 'base',\n  'themeVariables': {\n    'primaryColor': '#1A365D',\n    'primaryTextColor': '#1A202C',\n    'primaryBorderColor': '#2B6CB0',\n    'lineColor': '#2B6CB0',\n    'secondaryColor': '#EBF8FF',\n    'tertiaryColor': '#EBF8FF',\n    'background': '#FFFFFF',\n    'mainBkg': '#FFFFFF',\n    'secondBkg': '#EBF8FF',\n    'tertiaryBkg': '#F7FAFC',\n    'secondaryTextColor': '#4A5568',\n    'fontSize': '16px',\n    'fontFamily': 'Inter, system-ui, sans-serif',\n    'nodePadding': '15px',\n    'borderRadius': '8px',\n    'edgeLabelBackground': '#EBF8FF',\n    'clusterBkg': '#F7FAFC',\n    'clusterBorder': '#2B6CB0',\n    'defaultLinkColor': '#2B6CB0',\n    'titleColor': '#1A365D',\n    'actorBorder': '#2B6CB0',\n    'actorBkg': '#EBF8FF',\n    'actorTextColor': '#1A365D',\n    'actorLineColor': '#2B6CB0',\n    'signalColor': '#2B6CB0',\n    'signalTextColor': '#1A202C',\n    'labelBoxBorderColor': '#2B6CB0',\n    'labelBoxBkgColor': '#EBF8FF',\n    'labelTextColor': '#1A202C',\n    'loopTextColor': '#1A202C',\n    'arrowHeadColor': '#2B6CB0',\n    'sequenceNumberColor': '#1A365D',\n    'sequenceActorBorder': '#2B6CB0',\n    'sequenceActorBkg': '#EBF8FF',\n    'sequenceArrowColor': '#2B6CB0',\n    'noteBkgColor': '#FFF5EB',\n    'noteBorderColor': '#DD6B20',\n    'noteTextColor': '#1A202C'\n  }\n}}%%\nflowchart LR\n    subgraph \"Feature Documentation Folder\"\n        PLAN[\"plan.md: Implementation Plan\"]\n        RES[\"research.md: Phase 0 Output\"]\n        DM[\"data-model.md: Phase 1 Output\"]\n        QS[\"quickstart.md: Phase 1 Output\"]\n        CON[\"contracts/: Phase 1 Output\"]\n        TSK[\"tasks.md: Phase 2 Output\"]\n    end\n    PLAN -->|\"triggers\"| RES\n    RES -->|\"informs\"| DM\n    RES -->|\"informs\"| QS\n    DM -->|\"defines\"| CON\n    CON -->|\"breaks down into\"| TSK"
         }
     ]
 }

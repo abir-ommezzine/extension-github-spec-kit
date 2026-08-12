@@ -5,85 +5,85 @@
             "term": "Constraints",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "RULE-FOLLOW-UNIQ",
-            "project_definition": "Persistence layer rules enforcing data integrity, specifically including multi-column uniqueness requirements."
+            "contextual_anchor": "ENT-USERFOLLOW",
+            "project_definition": "The set of structural limitations, such as composite uniqueness on user and match identifiers, ensuring data integrity."
         },
         {
             "term": "Cryptographic Hashing",
             "category": "TECHNICAL_STACK",
             "discovery": "IMPLICIT",
-            "contextual_anchor": "RULE-USER-EMAIL-UNIQ",
-            "project_definition": "One-way transformation process required for securing stored credentials as implied by the password complexity mandate."
+            "contextual_anchor": "RULE-USER-EMAIL",
+            "project_definition": "The required security mechanism for storing sensitive authentication credentials to meet complexity and safety standards."
         },
         {
             "term": "DateTime",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-MATCH",
-            "project_definition": "Temporal data primitive used for scheduling events and recording system-generated timestamps."
+            "project_definition": "The temporal data type used for scheduling events and recording audit timestamps."
         },
         {
             "term": "MUN",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-TEAM",
-            "project_definition": "An example of a short-form identifier for a sports club used to demonstrate the five-character limit."
+            "project_definition": "An example of a short-form identifier for a sports club, limited to five characters."
         },
         {
             "term": "Match Validation",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "Validation Rules",
-            "project_definition": "Logical checks ensuring no team plays itself, dates are chronologically correct for upcoming states, and scores are provided upon completion."
+            "project_definition": "The logic ensuring that opposing teams are distinct, dates are future-dated for upcoming events, and scores are non-negative."
         },
         {
             "term": "Relationships",
-            "category": "BUSINESS_DOMAIN",
+            "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-MATCH",
-            "project_definition": "Structural associations between entities such as leagues, teams, and users."
+            "project_definition": "The associative links between entities, such as the connection between a game and its participating clubs or league."
         },
         {
             "term": "Team Validation",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "RULE-TEAM-NAME-UNIQ",
-            "project_definition": "Enforcement of a globally distinct identifier for every registered sports organization."
+            "contextual_anchor": "RULE-TEAM-UNIQUE",
+            "project_definition": "The requirement that a club's name must be globally unique across the system."
         },
         {
             "term": "UTC",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-MATCH",
-            "project_definition": "The standardized time reference used to synchronize match schedules across different geographic zones."
+            "project_definition": "The standardized time zone used for all temporal records to ensure global synchronization."
         },
         {
             "term": "UUID",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-MATCH",
-            "project_definition": "128-bit unique identifier used as the primary key for all main entities to ensure global uniqueness."
+            "project_definition": "The 128-bit universally unique identifier used as the primary key for all major entities."
         },
         {
             "term": "User Validation",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "RULE-USER-EMAIL-UNIQ",
-            "project_definition": "Verification of distinct electronic mail addresses and strict adherence to credential complexity standards."
+            "contextual_anchor": "RULE-USER-EMAIL",
+            "project_definition": "The set of rules enforcing unique email addresses and minimum character lengths for security credentials."
         },
         {
             "term": "UserFollow",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "ENT-USERFOLLOW",
-            "project_definition": "An association entity that maps the interest of an account holder toward a specific athletic event."
+            "project_definition": "The associative entity linking a person to a specific game they wish to monitor."
         },
         {
             "term": "UserFollow Validation",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "RULE-FOLLOW-UNIQ",
-            "project_definition": "The restriction preventing a single account from creating duplicate interest records for the same event."
+            "contextual_anchor": "RULE-FOLLOW-UNIQUE",
+            "project_definition": "The restriction preventing a single person from monitoring the same game multiple times."
         }
     ]
 }

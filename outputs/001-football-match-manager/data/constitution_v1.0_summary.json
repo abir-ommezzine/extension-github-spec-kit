@@ -1,0 +1,18 @@
+{
+    "executive_brief": "Football Match Manager is a sports data application focused on delivering high-reliability match information to football fans. The system is governed by a strict TDD-driven development lifecycle and a commitment to open standards to ensure extensibility and performance. It operates as a lightweight platform prioritizing intuitive user experience and data accuracy from external providers.",
+    "technical_stack": {
+        "languages_and_frameworks": [],
+        "architectural_constraints": [
+            "Mandatory TDD cycle: Tests written → User approved → Tests fail → Implementation",
+            "Strict enforcement of Red-Green-Refactor cycle",
+            "Minimum of 1 peer review required for all code changes prior to merging",
+            "Adherence to open standards for technology selection"
+        ]
+    },
+    "maturity_assessment": "The project is currently in a REFINEMENT state. While the core development philosophy and testing gates are well-defined, there is a critical structural gap regarding Coding Standards & Style, which prevents a consistent implementation baseline. The absence of a defined style guide and linting rules represents a high-severity omission that must be addressed to ensure maintainability.",
+    "critical_dependencies": [
+        "Reliable external match data providers for data accuracy",
+        "Sequential dependency: TDD gate completion must precede the Code Review workflow",
+        "Documentation and migration plan requirement for any constitution amendments affecting existing data"
+    ]
+}

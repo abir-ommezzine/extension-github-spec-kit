@@ -1,0 +1,12 @@
+{
+    "project_name": "Football Match Manager",
+    "items": [
+        {
+            "term": "TDD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "GATE-TDD",
+            "project_definition": "A mandatory engineering discipline requiring verification scripts to be authored and validated by the end-user before any functional logic is produced, following a strict Red-Green-Refactor sequence."
+        }
+    ]
+}

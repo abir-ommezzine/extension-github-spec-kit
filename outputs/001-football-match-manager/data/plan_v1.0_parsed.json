@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "Analyse du document plan pour extraire les sections, les éléments techniques et les relations entre eux.",
+    "parsing_rationale": "The provided document is a template for an implementation plan rather than a completed technical plan. It contains placeholders and advisory structures. I have extracted the structural intent and the metadata provided, but since the technical details (Language, Dependencies, Storage) are marked as 'NEEDS CLARIFICATION' or are placeholders, the resulting graph is sparse. I have mapped the existing sections to the template and identified all missing technical specifications as structural gaps.",
     "project_info": {
         "project_name": "Football Match Manager",
         "source_type": "scratch",
-        "brief_explanation": "Plan d'implémentation pour la gestion de matchs de football",
-        "source_context": "Document plan généré par la commande /speckit.plan"
+        "brief_explanation": "Implementation plan template for a Football Match Manager system.",
+        "source_context": "Initial plan.md file containing structural placeholders and project metadata."
     },
     "doc_type": "plan",
     "sections": [
@@ -12,7 +12,7 @@
             "title": "Implementation Plan: Football Match Manager",
             "level": 1,
             "raw_content": "**Branch**: `001-football-match-manager` | **Date**: 2026-07-30 | **Spec**: [spec.md](./spec.md)\n\n**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`\n\n**Note**: This template is filled in by the `/speckit.plan` command; its definition describes the execution workflow",
-            "mapped_to_template_field": "System Architecture & Topology"
+            "mapped_to_template_field": null
         },
         {
             "title": "Summary",
@@ -36,7 +36,7 @@
             "title": "Project Structure",
             "level": 2,
             "raw_content": "",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "System Architecture & Topology"
         },
         {
             "title": "Documentation (this feature)",
@@ -48,25 +48,25 @@
             "title": "Source Code (repository root)",
             "level": 3,
             "raw_content": "<!--\n  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout\n  for this feature. Delete unused options and expand the chosen structure with\n  real paths (e.g., apps/admin, packages/something). The delivered plan must\n  not include Option labels.\n-->\n\n```text",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "System Architecture & Topology"
         },
         {
             "title": "[REMOVE IF UNUSED] Option 1: Single project (DEFAULT)",
             "level": 1,
             "raw_content": "src/\n├── models/\n├── services/\n├── cli/\n└── lib/\n\ntests/\n├── contract/\n├── integration/\n└── unit/",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "System Architecture & Topology"
         },
         {
             "title": "[REMOVE IF UNUSED] Option 2: Web application (when \"frontend\" + \"backend\" detected)",
             "level": 1,
             "raw_content": "backend/\n├── src/\n│   ├── models/\n│   ├── services/\n│   └── api/\n└── tests/\n\nfrontend/\n├── src/\n│   ├── components/\n│   ├── pages/\n│   └── services/\n└── tests/",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "System Architecture & Topology"
         },
         {
             "title": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
             "level": 1,
             "raw_content": "api/\n└── [same as backend above]\n\nios/ or android/\n└── [platform-specific structure: feature modules, UI flows, platform tests]\n```\n\n**Structure Decision**: [Document the selected structure and reference the real\ndirectories captured above]",
-            "mapped_to_template_field": null
+            "mapped_to_template_field": "System Architecture & Topology"
         },
         {
             "title": "Complexity Tracking",
@@ -77,112 +77,51 @@
     ],
     "elements": [
         {
-            "type": "phase",
-            "identifier": "PHASE-0",
-            "content": "Phase 0 : Recherche",
-            "source_section": "Implementation Plan: Football Match Manager",
-            "attributes": {}
-        },
-        {
-            "type": "phase",
-            "identifier": "PHASE-1",
-            "content": "Phase 1 : Conception",
-            "source_section": "Implementation Plan: Football Match Manager",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "TASK-01",
-            "content": "Tâche 1 : Définition des exigences",
-            "source_section": "Summary",
-            "attributes": {}
-        },
-        {
-            "type": "task",
-            "identifier": "TASK-02",
-            "content": "Tâche 2 : Définition de l'approche technique",
-            "source_section": "Summary",
-            "attributes": {}
-        },
-        {
-            "type": "decision",
-            "identifier": "DECISION-01",
-            "content": "Décision 1 : Choix de la technologie",
-            "source_section": "Technical Context",
-            "attributes": {}
+            "type": "architecture_choice",
+            "identifier": "STRUC-DECISION",
+            "content": "Selection of project structure (Single project, Web app, or Mobile+API)",
+            "source_section": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
+            "attributes": {
+                "status": "pending"
+            }
         },
         {
             "type": "milestone",
-            "identifier": "MILESTONE-01",
-            "content": "Jalon 1 : Fin de la phase 0",
+            "identifier": "GATE-CONST",
+            "content": "Constitution Check Gate: Must pass before Phase 0 research",
             "source_section": "Constitution Check",
-            "attributes": {}
-        },
-        {
-            "type": "endpoint",
-            "identifier": "ENDPOINT-01",
-            "content": "Point de terminaison 1 : API de gestion de matchs",
-            "source_section": "Source Code (repository root)",
-            "attributes": {}
-        },
-        {
-            "type": "entity",
-            "identifier": "ENTITY-01",
-            "content": "Entité 1 : Équipe de football",
-            "source_section": "Documentation (this feature)",
-            "attributes": {}
-        },
-        {
-            "type": "architecture_choice",
-            "identifier": "ARCH-CHOICE-01",
-            "content": "Choix d'architecture 1 : Utilisation d'un modèle de données relationnel",
-            "source_section": "Technical Context",
-            "attributes": {}
+            "attributes": {
+                "criticality": "high"
+            }
         }
     ],
-    "relationships": [
-        {
-            "source": "PHASE-0",
-            "to": "TASK-01",
-            "relation_type": "contains"
-        },
-        {
-            "source": "PHASE-1",
-            "to": "TASK-02",
-            "relation_type": "contains"
-        },
-        {
-            "source": "DECISION-01",
-            "to": "ARCH-CHOICE-01",
-            "relation_type": "implements"
-        },
-        {
-            "source": "MILESTONE-01",
-            "to": "PHASE-0",
-            "relation_type": "relates_to"
-        },
-        {
-            "source": "ENDPOINT-01",
-            "to": "ENTITY-01",
-            "relation_type": "depends_on"
-        }
-    ],
+    "relationships": [],
     "structural_gaps": [
         {
             "missing_section": "Data Models & Schemas",
             "priority": "HIGH",
-            "remediation_advice": "Ajouter une section pour décrire les modèles de données et les schémas de données"
+            "remediation_advice": "Define the entities and database schema for the Football Match Manager."
         },
         {
             "missing_section": "API Contracts & Flow",
-            "priority": "MEDIUM",
-            "remediation_advice": "Ajouter une section pour décrire les contrats et les flux d'API"
+            "priority": "HIGH",
+            "remediation_advice": "Define the endpoints and integration flows between components."
         },
         {
             "missing_section": "Security & Identity",
+            "priority": "MEDIUM",
+            "remediation_advice": "Specify authentication and authorization mechanisms."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
             "priority": "LOW",
-            "remediation_advice": "Ajouter une section pour décrire les mesures de sécurité et d'identité"
+            "remediation_advice": "List technical unknowns to be resolved during research phase."
         }
     ],
-    "open_questions": []
+    "open_questions": [
+        "What is the target language and version?",
+        "What are the primary dependencies?",
+        "What is the storage mechanism?",
+        "What is the target platform?"
+    ]
 }

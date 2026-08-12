@@ -6,14 +6,14 @@
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
             "contextual_anchor": "FIELD-ID",
-            "project_definition": "A positive, sequential, and unique integer used to distinguish each entry, calculated as the maximum existing value plus one."
+            "project_definition": "A positive, sequential, and unique integer used as the primary key for each entry, calculated by incrementing the maximum existing value by one."
         },
         {
             "term": "JSON",
             "category": "TECHNICAL_STACK",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "Storage Model",
-            "project_definition": "The structured text format used for the persistent storage file located at ~/.todos.json, containing an array of objects."
+            "contextual_anchor": "RULE-STORAGE-CORRUPT",
+            "project_definition": "The lightweight data-interchange format used for the persistent storage file located at ~/.todos.json."
         },
         {
             "term": "UTC",
@@ -26,15 +26,15 @@
             "term": "complete <id>",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "STATE-TRANSITION",
-            "project_definition": "The operational command that triggers a state change from pending to a finished status for a specific record."
+            "contextual_anchor": "TRANS-COMPLETE",
+            "project_definition": "The operational command that triggers a state transition from pending to a finished status for a specific record."
         },
         {
             "term": "remove <id>",
             "category": "BUSINESS_DOMAIN",
             "discovery": "EXPLICIT",
-            "contextual_anchor": "STATE-TRANSITION",
-            "project_definition": "The operational command that transitions a record from either pending or finished status to a deleted state."
+            "contextual_anchor": "TRANS-REMOVE",
+            "project_definition": "The operational command that triggers a state transition from any active status to a deleted state for a specific record."
         }
     ]
 }

@@ -3,28 +3,27 @@
     "project_name": "Football Match Manager",
     "technical_evaluation": {
         "schema_adherence_rate": 90.0,
-        "structural_integrity_recall": 0.0,
+        "structural_integrity_recall": 20.0,
         "graph_relational_integrity": 100.0,
         "macro_micro_traceability_index": 100.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
-            "Section requise absente des correspondances : open questions & uncertainties",
             "Section requise absente des correspondances : goals & objectives",
-            "Section requise absente des correspondances : functional requirements",
-            "Section requise absente des correspondances : non-functional requirements",
-            "Section requise absente des correspondances : scope & out-of-scope"
+            "Section requise absente des correspondances : open questions & uncertainties",
+            "Section requise absente des correspondances : scope & out-of-scope",
+            "Section requise absente des correspondances : functional requirements"
         ]
     },
     "project_management_kpis": {
-        "health_index": 80.0,
-        "completeness_score": 0.0,
+        "health_index": 65.0,
+        "completeness_score": 20.0,
         "readiness_status": "NEEDS_REFINEMENT",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 14,
-            "total_edges_extracted": 11
+            "total_nodes_extracted": 7,
+            "total_edges_extracted": 3
         },
         "gaps_summary": {
-            "high_severity": 1,
+            "high_severity": 2,
             "medium_severity": 1,
             "low_severity": 1,
             "unresolved_uncertainties": 0

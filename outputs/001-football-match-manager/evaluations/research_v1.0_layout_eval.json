@@ -1,22 +1,22 @@
 {
     "project_name": "research",
-    "layout_publication_status": "READY_FOR_PUBLICATION",
-    "page_count": 8,
-    "file_size_kb": 976.8,
-    "rendered_diagrams_count": 3,
+    "layout_publication_status": "NEEDS_REFINEMENT",
+    "page_count": 15,
+    "file_size_kb": 641.2,
+    "rendered_diagrams_count": 8,
     "technical_evaluation": {
         "render_success_rate": 100.0,
         "diagram_visual_render_rate": 100.0,
         "page_budget_adherence": 100.0,
-        "visual_overflow_rate": 100.0,
+        "visual_overflow_rate": 62.5,
         "styling_consistency_score": 100.0
     },
     "project_management_kpis": {
         "pdf_generated_success": true,
-        "total_pdf_pages_count": 8,
-        "file_size_kb": 976.8,
-        "rendered_diagram_images_count": 3,
-        "overflow_events_detected_count": 0
+        "total_pdf_pages_count": 15,
+        "file_size_kb": 641.2,
+        "rendered_diagram_images_count": 8,
+        "overflow_events_detected_count": 4
     },
     "execution_warnings": []
 }

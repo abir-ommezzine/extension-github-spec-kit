@@ -1,0 +1,140 @@
+{
+    "parsing_rationale": "The document was analyzed by separating the actual project content (Football Match Manager) from the template placeholders (e.g., [PRINCIPLE_1_NAME]). I extracted the core principles as requirements and the development workflow as rules and testing gates. The mapping follows the strict template fields provided, and structural gaps were identified for missing coding standards and open questions.",
+    "project_info": {
+        "project_name": "Football Match Manager",
+        "source_type": "refining",
+        "brief_explanation": "Technical constitution defining core principles and development workflow for a football match management application.",
+        "source_context": "Extracted from constitution.md"
+    },
+    "doc_type": "constitution",
+    "sections": [
+        {
+            "title": "I. User-Centric Design",
+            "level": 3,
+            "raw_content": "Every feature must prioritize the user's experience and needs, ensuring that the app is intuitive and valuable for football fans.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "II. Data Reliability",
+            "level": 3,
+            "raw_content": "Match data must be accurate and up-to-date, sourced from reliable providers.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "III. Simplicity and Performance",
+            "level": 3,
+            "raw_content": "The application should be fast and lightweight, avoiding unnecessary complexity.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "IV. Extensibility",
+            "level": 3,
+            "raw_content": "The system should be designed to allow for easy addition of new features and leagues.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "V. Open Standards",
+            "level": 3,
+            "raw_content": "Use open standards and technologies where possible to ensure longevity and flexibility.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "VI. Test-First Development",
+            "level": 3,
+            "raw_content": "TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced.",
+            "mapped_to_template_field": "Testing Discipline & Gates"
+        },
+        {
+            "title": "VII. Code Review",
+            "level": 3,
+            "raw_content": "All code changes must be reviewed by at least one other team member before merging.",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Governance",
+            "level": 2,
+            "raw_content": "This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan if affecting existing data.\n\n**Version**: 0.1.0 | **Ratified**: 2026-07-30 | **Last Amended**: 2026-07-30",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "requirement",
+            "identifier": "REQ-USER-CENTRIC",
+            "content": "Every feature must prioritize the user's experience and needs, ensuring that the app is intuitive and valuable for football fans.",
+            "source_section": "I. User-Centric Design",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "REQ-DATA-RELIABILITY",
+            "content": "Match data must be accurate and up-to-date, sourced from reliable providers.",
+            "source_section": "II. Data Reliability",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "REQ-PERFORMANCE",
+            "content": "The application should be fast and lightweight, avoiding unnecessary complexity.",
+            "source_section": "III. Simplicity and Performance",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "REQ-EXTENSIBILITY",
+            "content": "The system should be designed to allow for easy addition of new features and leagues.",
+            "source_section": "IV. Extensibility",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "REQ-OPEN-STANDARDS",
+            "content": "Use open standards and technologies where possible to ensure longevity and flexibility.",
+            "source_section": "V. Open Standards",
+            "attributes": {}
+        },
+        {
+            "type": "testing_gate",
+            "identifier": "GATE-TDD",
+            "content": "TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced.",
+            "source_section": "VI. Test-First Development",
+            "attributes": {
+                "cycle": "Red-Green-Refactor"
+            }
+        },
+        {
+            "type": "workflow_constraint",
+            "identifier": "RULE-CODE-REVIEW",
+            "content": "All code changes must be reviewed by at least one other team member before merging.",
+            "source_section": "VII. Code Review",
+            "attributes": {
+                "min_reviewers": 1
+            }
+        }
+    ],
+    "relationships": [
+        {
+            "source": "GATE-TDD",
+            "to": "RULE-CODE-REVIEW",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "REQ-PERFORMANCE",
+            "to": "GATE-TDD",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Coding Standards & Style",
+            "priority": "HIGH",
+            "remediation_advice": "Define a style guide (e.g., Airbnb, Google) and linting rules to ensure code consistency."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "Create a section to track technical debts or undecided architectural choices."
+        }
+    ],
+    "open_questions": []
+}

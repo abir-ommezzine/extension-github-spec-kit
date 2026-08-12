@@ -2,17 +2,17 @@
     "document_type": "task",
     "project_name": "CLI To-Do List Manager",
     "technical_evaluation": {
-        "schema_adherence_rate": 90.0,
+        "schema_adherence_rate": 100.0,
         "structural_integrity_recall": 37.5,
         "graph_relational_integrity": 100.0,
         "macro_micro_traceability_index": 100.0,
         "model_template_conformity": 100.0,
         "quality_alerts": [
-            "Section requise absente des correspondances : open questions & uncertainties",
             "Section requise absente des correspondances : dependencies & integration points",
+            "Section requise absente des correspondances : acceptance criteria",
             "Section requise absente des correspondances : checkboxes checklist",
-            "Section requise absente des correspondances : testing & validation",
-            "Section requise absente des correspondances : acceptance criteria"
+            "Section requise absente des correspondances : open questions & uncertainties",
+            "Section requise absente des correspondances : testing & validation"
         ]
     },
     "project_management_kpis": {
@@ -20,7 +20,7 @@
         "completeness_score": 37.5,
         "readiness_status": "NEEDS_REFINEMENT",
         "extracted_metrics_summary": {
-            "total_nodes_extracted": 12,
+            "total_nodes_extracted": 10,
             "total_edges_extracted": 9
         },
         "gaps_summary": {
