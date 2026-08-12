@@ -20,7 +20,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 import time
 import logging
-from openai import OpenAI, RateLimitError
+from openai import OpenAI, RateLimitError, APITimeoutError
 from anthropic import Anthropic, RateLimitError as AnthropicRateLimitError
 from pydantic import BaseModel
 
@@ -28,38 +28,39 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Rate limit retry configuration
+# Rate limit / timeout retry configuration
 MAX_RETRIES = 3
 BASE_DELAY = 5  # seconds
 MAX_DELAY = 60  # seconds
 
 
 def retry_on_rate_limit(func):
-    """Decorator to retry on rate limit errors with exponential backoff."""
+    """Decorator to retry on rate limit errors and slow/cold-start timeouts,
+    with exponential backoff."""
     def wrapper(*args, **kwargs):
         last_exception = None
         for attempt in range(MAX_RETRIES):
             try:
                 return func(*args, **kwargs)
-            except (RateLimitError, AnthropicRateLimitError) as e:
+            except (RateLimitError, AnthropicRateLimitError, APITimeoutError) as e:
                 last_exception = e
                 if attempt < MAX_RETRIES - 1:
                     delay = min(BASE_DELAY * (2 ** attempt), MAX_DELAY)
-                    logger.warning(f"Rate limit hit (attempt {attempt + 1}/{MAX_RETRIES}), waiting {delay}s: {e}")
+                    logger.warning(f"Rate limit/timeout hit (attempt {attempt + 1}/{MAX_RETRIES}), waiting {delay}s: {e}")
                     time.sleep(delay)
                 else:
-                    logger.error(f"Max retries ({MAX_RETRIES}) exceeded for rate limit")
+                    logger.error(f"Max retries ({MAX_RETRIES}) exceeded for rate limit/timeout")
                     raise
             except Exception as e:
                 error_str = str(e).lower()
-                if "rate limit" in error_str or "429" in error_str:
+                if "rate limit" in error_str or "429" in error_str or "timeout" in error_str or "timed out" in error_str:
                     last_exception = e
                     if attempt < MAX_RETRIES - 1:
                         delay = min(BASE_DELAY * (2 ** attempt), MAX_DELAY)
-                        logger.warning(f"Rate limit detected (attempt {attempt + 1}/{MAX_RETRIES}), waiting {delay}s: {e}")
+                        logger.warning(f"Rate limit/timeout detected (attempt {attempt + 1}/{MAX_RETRIES}), waiting {delay}s: {e}")
                         time.sleep(delay)
                     else:
-                        logger.error(f"Max retries ({MAX_RETRIES}) exceeded for rate limit")
+                        logger.error(f"Max retries ({MAX_RETRIES}) exceeded for rate limit/timeout")
                         raise
                 else:
                     raise
@@ -277,7 +278,7 @@ def get_provider() -> LLMProvider:
             api_key=settings.NVIDIA_API_KEY,
             default_model=settings.NVIDIA_MODEL,
             supports_structured_output=False,  # NVIDIA NIM doesn't support json_schema
-            timeout=180.0  # Longer timeout for NVIDIA NIM cold starts
+            timeout=420.0  # Longer timeout for NVIDIA NIM cold starts + larger agent payloads (summary/glossary/diagram)
         )
     elif provider_type == "huggingface":
         return OpenAICompatibleProvider(
