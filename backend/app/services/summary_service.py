@@ -6,7 +6,7 @@ from app.utils.summary_pruner import SummaryPrunerService
 from app.services.evaluation_service import ParsingEvaluatorService
 from app.core.prompts import get_summary_agent_prompt
 
-from app.core.llm_client import ollama_openai_client, get_ollama_model
+from app.core.llm_client import chat_completion, get_default_model
 from app.core.llm_utils import parse_and_validate_json
 
 class SummaryAgentService:
@@ -41,8 +41,8 @@ class SummaryAgentService:
         user_prompt = json.dumps(pruned_payload, ensure_ascii=False)
 
         # 6. Appel déterministe au LLM Ollama/Gemma
-        response = ollama_openai_client.chat.completions.create(
-            model=get_ollama_model(),
+        response = chat_completion(
+            model=get_default_model(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}

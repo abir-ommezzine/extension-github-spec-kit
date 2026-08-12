@@ -9,7 +9,7 @@ from app.schemas.parsing_agent_schema import ParsingAgentOutput
 
 # Importations des composants d'infrastructure
 from app.core.prompts import get_diagram_agent_prompt
-from app.core.llm_client import ollama_openai_client, get_ollama_model
+from app.core.llm_client import chat_completion, get_default_model
 from app.core.llm_utils import parse_and_validate_json
 
 
@@ -198,8 +198,8 @@ class DiagramAgentService:
         user_prompt = json.dumps(parsed_json_dict, ensure_ascii=False)
 
         # 4. Inférence LLM via le client centralisé
-        response = ollama_openai_client.chat.completions.create(
-            model=get_ollama_model(),
+        response = chat_completion(
+            model=get_default_model(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
