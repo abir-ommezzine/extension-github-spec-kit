@@ -103,8 +103,12 @@ const MetricTable = ({ title, data, colors }) => {
 
   if (!data || Object.keys(data).length === 0) return null;
 
-  const grey100 = colors?.grey?.['100'] || theme.palette.text.primary;
-  const grey300 = colors?.grey?.['300'] || theme.palette.text.secondary;
+  const grey100 = theme.palette.mode === "dark"
+    ? (colors?.grey?.['100'] || theme.palette.text.primary)
+    : theme.palette.text.primary;
+  const grey300 = theme.palette.mode === "dark"
+    ? (colors?.grey?.['300'] || theme.palette.text.secondary)
+    : theme.palette.text.secondary;
   const green600 = colors?.greenAccent?.['600'] || "#1da177";
   const red500 = colors?.redAccent?.['500'] || "#f44336";
   const blue700 = colors?.blueAccent?.['700'] || "#1976d2";

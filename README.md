@@ -12,7 +12,6 @@ Le projet est organisé de manière modulaire pour séparer l'orchestration IA, 
 
 - **`/backend`** : ⚙️ Pipeline d'enrichissement et d'évaluation. Propulsé par **FastAPI** et **LangGraph**, il orchestre la chaîne d'agents et gère la logique métier, incluant l'**Agent JIRA** pour la gestion automatisée des tickets.
 - **`/frontend`** : 🖥️ Dashboard **React** permettant le suivi en temps réel des exécutions, la visualisation des KPIs et le téléversement de nouveaux documents.
-- **`/scripts`** : 🛠️ ⚠️ *N'existe plus dans ce repo* — contenait historiquement les watchers de fichiers standalone (`spec_watcher.py`, `start_server.py`), remplacés par l'extension VS Code (voir section dédiée). Le `.vsix` packagé embarque encore sa propre copie de ces scripts.
 - **`/specs`** : 📄 Dossier source des spécifications Markdown à traiter.
   - Contient des **exemples de fichiers** (`spec.md`, `requirements.md`, etc.) prêts à être traités.
   - Le **watcher surveille ce dossier** en temps réel pour déclencher le pipeline automatiquement.
@@ -42,6 +41,39 @@ Le Frontend est une application React moderne utilisant **Material-UI** et **Dat
 | *Suivi des exécutions, status et viewer PDF* | *Formulaire d'upload et zone Drag & Drop (.md)* |
 
 > 📖 Pour une documentation technique complète sur le frontend, consultez le fichier [`frontend/README.md`](frontend/README.md).
+
+---
+
+## 📋 Agent JIRA (Kanban Ticket Sync)
+
+L'**Agent JIRA** assure une synchronisation bidirectionnelle et automatique entre l'état d'avancement technique du projet (via Copilot) et un tableau Kanban de suivi (To Do / In Progress / Done).
+
+### 🔄 Flux de Synchronisation
+
+#### 1. Ingestion des Tâches (`POST /api/v1/ingest`)
+L'ingestion permet d'initialiser ou de rafraîchir la liste des tickets en base de données à partir du fichier de spécifications.
+- **Déclenchement** : Via le bouton **"Ingest Tasks"** du Dashboard React après avoir sélectionné le projet, ou automatiquement lors de la sélection.
+- **Processus** : Le backend analyse `specs/tasks.md` $\rightarrow$ crée les tickets (`T001`, `T002`, ...) avec le statut initial `todo`.
+
+![Dashboard Ingestion](DashboardVide.png)
+*Utilisation du bouton "Ingest Tasks" pour synchroniser les tâches de `tasks.md` vers le Kanban.*
+
+- **⚠️ Règle d'Or (Ingestion)** : L'ingestion met à jour les titres, descriptions et l'état des cases à cocher, mais **ne modifie JAMAIS** le statut d'un ticket existant vers `in_progress` ou `done`.
+
+#### 2. Synchronisation de Statut en Temps Réel
+Le passage d'un ticket à l'état "en cours" ou "terminé" est strictement piloté par l'activité de Copilot.
+- **Mécanisme** : Un watcher backend (`_watch_current_task_file`) surveille en continu le fichier `.task_runtime/current-task.json` dans le projet enfant.
+- **Mise à jour** : Seule la détection d'un changement dans ce fichier peut faire évoluer le statut d'un ticket vers `in_progress` ou `done`.
+
+![Dashboard Synchronisation](DashboardRempli.png)
+*Visualisation du tableau Kanban synchronisé en temps réel avec l'activité de Copilot.*
+
+
+### 🤖 Contrat Copilot (`.github/copilot-instructions.md`)
+Pour garantir cette synchronisation, GitHub Copilot suit un protocole strict défini dans les instructions du projet enfant :
+- **Avant chaque tâche** : Copilot écrit un instantané JSON complet dans `.task_runtime/current-task.json` avec `status: "in_progress"`.
+- **Après chaque tâche** : Copilot met à jour le fichier avec `status: "done"`.
+- **État Global** : Chaque écriture inclut un objet `tasks: { "T001": "done", ... }` permettant de synchroniser l'intégralité du tableau même après une déconnexion.
 
 ---
 
@@ -144,7 +176,7 @@ erDiagram
 - **`artifacts`** : Registre des fichiers sources surveillés dans `specs/`, incluant une empreinte **SHA-256** pour détecter précisément chaque modification.
 - **`pipeline_runs`** : Journalisation exhaustive de chaque exécution, stockant les métriques **JSONB** détaillées pour chacun des 6 agents du pipeline.
 - **`doc_versions`** : Registre immuable gérant le versioning dynamique des documents et le lien vers les fichiers PDF certifiés.
-- **`tickets` & `ticket_events`** : Système de traçabilité des tâches (User Stories, Tasks) synchronisé avec l'avancement du projet via l'Agent JIRA.
+- **`tickets`, `ticket_events` & `ticket_comments`** : Système de traçabilité complète des tâches (User Stories, Tasks), incluant l'historique des événements et les commentaires, synchronisé avec l'avancement du projet via l'Agent JIRA.
 
 
 ---
@@ -280,78 +312,56 @@ vsce publish  # mode interactif
 
 #### 2. Configuration du Repo Source (une seule fois)
 
-##### 2.1. Fichier `.env` (à la racine du repo source)
+#### 2. Configuration du Repo Source (une seule fois)
 
-Configurez le chemin du projet enfant et votre provider LLM :
+Cette étape prépare l'infrastructure nécessaire au fonctionnement du backend et des agents.
 
-```dotenv
-# Base de données
-DATABASE_URL=postgresql://speckit:speckit@localhost:5432/speckit
-
-# ── PROJET ENFANT ──────────────────────────────────────────────
-# Chemin ABSOLU vers le projet sur lequel vous travaillez
-# (c'est là que le backend va watcher .task_runtime/current-task.json)
-TARGET_PROJECT_PATH=C:\Users\MSI\Bureau\mon-projet-test
-
-# ── LLM PROVIDER ───────────────────────────────────────────────
-# ⚠️ Aujourd'hui, seul Ollama est réellement lu par le code
-# (backend/app/core/llm_client.py ne consomme que OLLAMA_BASE_URL / OLLAMA_MODEL).
-# Les blocs NVIDIA / Groq ci-dessous sont commentés : ils ne sont PAS câblés dans
-# le code actuel, et servent uniquement de gabarit de syntaxe si vous ajoutez un
-# jour le support d'un autre provider (dans backend/app/core/llm_client.py et
-# backend/app/config.py, en ajoutant les champs correspondants à la classe Settings).
-
-# Ollama (actif — local, gratuit)
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=gemma4:31b-cloud
-
-# NVIDIA NIM (OpenAI-compatible) — gabarit, non câblé
-# NVIDIA_API_KEY=nvapi-votre-cle-ici
-# NVIDIA_MODEL=z-ai/glm-5.2
-# NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
-
-# Groq (alternative rapide) — gabarit, non câblé
-# GROQ_API_KEY=gsk_votre-cle-ici
-# GROQ_MODEL=llama-3.3-70b-versatile
-# GROQ_BASE_URL=https://api.groq.com/openai/v1
-```
-
-> ⚠️ **À chaque changement de projet enfant**, mettez à jour `TARGET_PROJECT_PATH` dans ce fichier `.env`.
-
-> ⚠️ **`TARGET_PROJECT_PATH` (.env) et `SPECKIT_WORKSPACE` (variable d'environnement injectée par l'extension) sont deux mécanismes indépendants** qui ne se synchronisent pas automatiquement :
-> - `SPECKIT_WORKSPACE` — utilisé uniquement par `start_server.py` pour localiser le dossier `backend/app` à charger.
-> - `TARGET_PROJECT_PATH` — utilisé par le backend pour savoir quel `.task_runtime/current-task.json` surveiller.
->
-> En pratique les deux doivent pointer vers le **même** projet enfant, mais vous devez les maintenir cohérents vous-même.
-
-#### 2.0. Base de données PostgreSQL (une seule fois)
-
-Créez l'utilisateur et la base attendus par `DATABASE_URL` ci-dessus (adaptez si vous utilisez d'autres identifiants) :
+##### 2.1. 🐘 Base de Données PostgreSQL
+Créez l'utilisateur et la base de données attendus. Connectez-vous à votre instance PostgreSQL (via `psql` ou pgAdmin4) et exécutez :
 
 ```sql
--- Dans psql, connecté en superuser (ex: postgres)
+-- Connexion en superuser (ex: postgres)
 CREATE USER speckit WITH PASSWORD 'speckit';
 CREATE DATABASE speckit OWNER speckit;
 ```
+*Les tables sont créées automatiquement au démarrage du backend, aucune migration manuelle n'est requise.*
 
-Les tables sont créées automatiquement au démarrage du backend (`Base.metadata.create_all`), aucune migration manuelle n'est nécessaire.
-
-#### 2.0.1. Ollama (une seule fois)
-
-Le pipeline d'agents nécessite un serveur Ollama local avec le modèle configuré disponible :
+##### 2.2. 🦙 LLM Local (Ollama)
+Le pipeline d'agents s'appuie sur Ollama. Assurez-vous que le serveur est lancé et que le modèle est téléchargé :
 
 ```bash
 ollama serve
-ollama pull gemma4:31b-cloud   # ou tout autre modèle, en cohérence avec OLLAMA_MODEL dans .env
+ollama pull gemma4:31b-cloud
 ```
 
-##### 2.2. Démarrage du Frontend (optionnel mais recommandé)
+##### 2.3. ⚙️ Fichier de Configuration `.env`
+Créez un fichier `.env` à la racine du repo source pour lier le backend au projet enfant et configurer le LLM :
+
+```dotenv
+# 🗄️ Base de données
+DATABASE_URL=postgresql://speckit:speckit@localhost:5432/speckit
+
+# 🎯 PROJET ENFANT
+# Chemin ABSOLU vers le projet surveillé (ex: C:\Users\Nom\Documents\mon-app)
+TARGET_PROJECT_PATH=C:\Users\MSI\Bureau\mon-projet-test
+
+# 🧠 LLM PROVIDER (Ollama)
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=gemma4:31b-cloud
+```
+
+> [!IMPORTANT]
+> **TARGET_PROJECT_PATH** : C'est la variable la plus critique. Elle indique au backend quel dossier surveiller pour détecter les changements dans `.task_runtime/current-task.json`. À chaque changement de projet, mettez à jour ce chemin.
+
+##### 2.4. 🖥️ Démarrage du Frontend (Optionnel)
+Pour suivre l'avancement en temps réel via le Dashboard :
 
 ```bash
 cd frontend
+npm install
 npm start
 ```
-Le dashboard sera accessible sur `http://localhost:3000`.
+L'interface sera accessible sur `http://localhost:3000`.
 
 ---
 
@@ -497,42 +507,7 @@ Pour déclencher la génération de documents PDF à partir des specs :
 
 ---
 
-### 📁 Structure attendue du projet enfant
 
-```
-mon-projet-test/
-├── .github/
-│   └── copilot-instructions.md   # ← Généré automatiquement par l'extension
-├── .vscode/
-│   └── settings.json             # ← Configuration obligatoire (lien vers le backend)
-├── specs/
-│   └── tasks.md                  # ← Vos tâches (T001, T002, ...)
-├── .task_runtime/
-│   └── current-task.json         # ← Écrit/mis à jour par Copilot pendant l'implémentation
-├── src/                          # Votre code applicatif (optionnel)
-└── package.json                  # Votre projet (optionnel)
-```
-
----
-
-### 🔧 Dépannage courant
-
-| Problème | Solution |
-|----------|----------|
-| `Script Watcher introuvable` / `Script Python introuvable` dans les logs | Ces commandes lancent `scripts/python/spec_watcher.py` et `start_server.py`, qui **n'existent plus dans le repo source** (supprimés, jamais remplacés dans `src/extension.ts`). Utilisez le `.vsix` packagé (qui les bundle toujours) plutôt que F5 depuis le repo source, ou démarrez le backend manuellement (`uvicorn app.main:app`). |
-| **J'ai modifié le code backend mais rien ne change** | Le plus probable : le `backend/` du projet enfant est un lien symbolique/junction qui pointe vers un **autre clone** du repo que celui que vous éditez. Vérifiez avec `Get-Item backend \| Select Target` (PowerShell) que la cible est bien le repo que vous modifiez, puis redémarrez le backend. C'est arrivé en pratique : plusieurs clones du même repo sur la machine, un seul lien, pointant vers le mauvais. |
-| Server erreur "No module named app" | Le lien `backend` du projet enfant ne pointe pas vers un dossier contenant `app/main.py` — recréez-le (voir §3.1) |
-| `NameError: name 'Enum' is not defined` | Vérifiez que `backend/app/models.py` utilise `from enum import Enum` (pas `import enum`) |
-| `invalid input value for enum artifact_type_enum: "..."` | Un des enums Python (ex. `ArtifactType.data_model = "data-model"`) a un `.name` différent de sa `.value`. Toutes les colonnes `SAEnum(...)` dans `models.py` doivent passer `values_callable=_enum_values` pour que SQLAlchemy envoie `.value` (et non `.name`) à Postgres. |
-| `'payload' is an invalid keyword argument for TicketEvent` | Le modèle `TicketEvent` expose une colonne `event_metadata`, pas `payload`. Si vous voyez cette erreur, `backend/app/services/ticket_ingestion.py` n'est pas à jour (vérifiez que vous éditez/exécutez le bon clone — voir l'entrée ci-dessus). |
-| Port 8000 occupé | Changez `apiPort` dans `settings.json`, ou libérez le port (`Get-NetTCPConnection -LocalPort 8000` en PowerShell pour identifier le process) |
-| **Tickets restent en `todo` malgré des cases cochées dans `tasks.md`** | Normal si `.task_runtime/current-task.json` est vide/absent — `/ingest` ne change jamais le statut, seul ce fichier le fait (voir §3.3). Vérifiez aussi `TARGET_PROJECT_PATH` dans `.env` du repo source → doit pointer vers le projet enfant. |
-| `copilot-instructions.md` non généré | Rechargez la fenêtre VS Code (`Ctrl+Shift+P` → `Developer: Reload Window`) |
-| Pipeline 404/422 | L'extension utilise `/upload` (multipart), pas `/run` (JSON) |
-| Pas de logs dans Output | Rechargez fenêtre : `Ctrl+Shift+P` → `Developer: Reload Window` |
-| Dossier `specs/` créé dans le repo source | ✅ Corrigé — les uploads utilisent maintenant le dossier temporaire du système |
-
----
 
 ### 🔄 Workflow multi-projets
 
@@ -579,55 +554,6 @@ Avant de démarrer les services, assurez-vous impérativement que :
 
 ---
 
-### 🛠️ Méthode 1 : Scripts Standalone (⚠️ Non fonctionnelle actuellement)
-
-> **⚠️ `scripts/python/spec_watcher.py` et `scripts/python/start_server.py` ont été supprimés du repo source** (le dossier `/scripts` n'existe plus). Cette méthode est documentée ci-dessous pour référence historique, mais l'Étape 3 échouera telle quelle. En attendant que ces scripts soient restaurés ou remplacés, utilisez la **Méthode 2**, ou démarrez le backend manuellement avec `uvicorn` (Étape 1 ci-dessous, qui fonctionne indépendamment du dossier `/scripts`) — il n'y a alors simplement pas de watcher de fichiers `.md` automatique tant que ce point n'est pas résolu.
-
-#### Prérequis Base de Données
-- PostgreSQL lancé (ou pgAdmin4 connecté)
-
-#### Procédure de Lancement
-
-**Étape 0 : Environnement Virtuel Python & Dépendances**
-```bash
-# Créer l'environnement virtuel
-python -m venv env
-
-# Activer l'environnement
-# Sur Windows : env\Scripts\activate
-# Sur Linux/Mac : source env/bin/activate
-
-# Installer les dépendances
-pip install -r requirements.txt
-```
-
-**Étape 1 : Démarrer le Backend FastAPI** (Terminal 1)
-```bash
-cd backend
-uvicorn app.main:app --reload --port 8000
-```
-
-**Étape 2 : Démarrer l'interface Frontend React** (Terminal 2)
-```bash
-cd frontend
-npm install
-npm start
-```
-> 💡 Si erreurs (dépendances, Node.js, `cross-env`, ports) → voir `configFrontEnd.pdf` à la racine.
-
-**Étape 3 : Lancer le Watcher Temps Réel** (Terminal 3)
-```bash
-python scripts/python/spec_watcher.py
-```
-> ⚠️ Ce script n'existe plus dans le repo source (voir avertissement en haut de cette section). Sans lui, les modifications de fichiers `.md` ne déclenchent pas automatiquement le pipeline de génération PDF — le reste (backend, frontend, Kanban, sync `current-task.json`) fonctionne normalement sans cette étape.
-
-**Étape 4 : Exécuter Spec Kit via Claude Code** (Terminal 4)
-```bash
-ollama launch claude
-```
-*Utilisez les commandes Spec Kit (ex: `/speckit-specify`, `/doc-pipeline`) pour générer vos spécifications.*
-
----
 
 ### 🛠️ Méthode 2 : Extension VS Code (Installation .vsix — Recommandé)
 
@@ -671,20 +597,6 @@ ollama launch claude
 
 ---
 
-## 🔄 Résumé : Quelle méthode choisir ?
-
-| Critère | Méthode 1 (Scripts) | Méthode 2 (Extension .vsix) |
-|---------|---------------------|---------------------------|
-| **Statut** | Production | Recommandé (via .vsix) |
-| **Terminaux** | 4 | 2 (Frontend + Claude) + Extension |
-| **Logs** | Unifiés dans terminaux | Séparés : `AgentDocx Watcher` / `AgentDocx Server` |
-| **Progression v2+** | Visible seulement à la fin | Temps réel (DocVersion `pending` → `completed`) |
-| **Installation** | Standard (Python) | VSIX + Root requirements |
-
-> Pour les détails complets sur l'extension : voir branche [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) et documentation dans `agentdocx-speckit/README.md`.
-
----
-
 ### 📚 Ressources Complémentaires
 - `configFrontEnd.pdf` — Dépannage et configuration Frontend
 - Branche [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) — code complet et documentation de l'extension VS Code
@@ -692,9 +604,4 @@ ollama launch claude
 
 ---
 
-<<<<<<< HEAD
-*Dernière mise à jour : 2026-08-11 — Spec Kit v0.0.2 (Extension en développement)*
-=======
-*Dernière mise à jour : 2026-07-31 — Spec Kit v0.0.2 (Extension en développement)*
 
->>>>>>> 05fc91d2d3321776bfce387b46f916daa12ec7d7

@@ -1,55 +1,126 @@
 Traceback (most recent call last):
-  File "c:\Users\MSI\Bureau\new copyextension-github-spec-kit\backend\app\api\v1\endpoints\pipeline.py", line 487, in upload_and_process_document
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_transports\default.py", line 69, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_transports\default.py", line 233, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    response = self._send_request(
+        request,
+        stream=stream or self._should_stream_response_body(request=request),
+        **kwargs,
+    )
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\openai\_client.py", line 478, in _send_request
+    response = self._send_with_auth_retry(request, stream=stream, **kwargs)
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\openai\_client.py", line 456, in _send_with_auth_retry
+    response = super()._send_request(request, stream=stream, **kwargs)
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\openai\_base_client.py", line 964, in _send_request
+    return self._client.send(request, stream=stream, **kwargs)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 1015, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_transports\default.py", line 232, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_transports\default.py", line 86, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\Ahmed Aziz\Desktop\Be\extension-github-spec-kit\backend\app\api\v1\endpoints\pipeline.py", line 487, in upload_and_process_document
     final_state = await app_graph.ainvoke(initial_state)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\main.py", line 4090, in ainvoke
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\langgraph\pregel\main.py", line 4090, in ainvoke
     async for chunk in self.astream(
     ...<30 lines>...
             chunks.append(chunk)
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\main.py", line 3440, in astream
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\langgraph\pregel\main.py", line 3440, in astream
     async for _ in runner.atick(
     ...<16 lines>...
             yield o
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\_runner.py", line 396, in atick
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\langgraph\pregel\_runner.py", line 396, in atick
     await arun_with_retry(
     ...<15 lines>...
     )
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\_retry.py", line 744, in arun_with_retry
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\langgraph\pregel\_retry.py", line 744, in arun_with_retry
     return await task.proc.ainvoke(task.input, config)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\_internal\_runnable.py", line 733, in ainvoke
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\langgraph\_internal\_runnable.py", line 733, in ainvoke
     input = await asyncio.create_task(
             ^^^^^^^^^^^^^^^^^^^^^^^^^^
         step.ainvoke(input, config, **kwargs), context=context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\_internal\_runnable.py", line 501, in ainvoke
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\langgraph\_internal\_runnable.py", line 501, in ainvoke
     ret = await self.afunc(*args, **kwargs)
           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langchain_core\runnables\config.py", line 707, in run_in_executor
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\langchain_core\runnables\config.py", line 707, in run_in_executor
     return await asyncio.get_running_loop().run_in_executor(
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     ...<2 lines>...
     )
     ^
-  File "C:\Python314\Lib\concurrent\futures\thread.py", line 86, in run
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\thread.py", line 86, in run
     result = ctx.run(self.task)
-  File "C:\Python314\Lib\concurrent\futures\thread.py", line 73, in run
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\thread.py", line 73, in run
     return fn(*args, **kwargs)
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langchain_core\runnables\config.py", line 698, in wrapper
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\langchain_core\runnables\config.py", line 698, in wrapper
     return func(*args, **kwargs)
-  File "c:\Users\MSI\Bureau\new copyextension-github-spec-kit\backend\app\graph\nodes.py", line 115, in parsing_node
+  File "c:\Users\Ahmed Aziz\Desktop\Be\extension-github-spec-kit\backend\app\graph\nodes.py", line 115, in parsing_node
     parsed_doc = run_parsing_agent(file_name=file_name, file_content=file_content)
-  File "c:\Users\MSI\Bureau\new copyextension-github-spec-kit\backend\app\services\parser_service.py", line 77, in run_parsing_agent
+  File "c:\Users\Ahmed Aziz\Desktop\Be\extension-github-spec-kit\backend\app\services\parser_service.py", line 77, in run_parsing_agent
     response = ollama_openai_client.chat.completions.create(
         model=get_ollama_model(),
     ...<5 lines>...
         temperature=0.0
     )
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\openai\_utils\_utils.py", line 298, in wrapper
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\openai\_utils\_utils.py", line 298, in wrapper
     return func(*args, **kwargs)
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\openai\resources\chat\completions\completions.py", line 1281, in create
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1281, in create
     return self._post(
            ~~~~~~~~~~^
         "/chat/completions",
@@ -59,10 +130,10 @@ Traceback (most recent call last):
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\openai\_base_client.py", line 1332, in post
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\openai\_base_client.py", line 1332, in post
     return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\openai\_base_client.py", line 1105, in request
-    raise self._make_status_error_from_response(err.response) from None
-openai.RateLimitError: Error code: 429 - {'error': {'message': 'you (abirommezzine) have reached your session usage limit, upgrade for higher limits: https://ollama.com/upgrade (ref: 45a1d6b1-507c-4128-b559-a6fc4c9d9b65)', 'type': 'api_error', 'param': None, 'code': None}}
-During task with name 'parsing_agent' and id '245e5b95-4e2d-929f-e55f-9164903b3cea'
+  File "C:\Users\Ahmed Aziz\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\openai\_base_client.py", line 1072, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+During task with name 'parsing_agent' and id 'fe81bd50-c24f-87d2-4bc9-3be884e6e707'
