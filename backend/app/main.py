@@ -45,6 +45,42 @@ def _get_current_task_file_path() -> Path:
     return target_dir / ".task_runtime" / "current-task.json"
 
 
+def _sync_copilot_instructions() -> None:
+    """
+    Write the canonical .github/copilot-instructions.md (source of truth lives
+    at the repo root, next to this backend) into the watched child project
+    (TARGET_PROJECT_PATH), every time the backend starts.
+
+    This exists independently of the VS Code extension's own copy-on-activate
+    logic: the extension only copies from *its own installed package*, which
+    may be a stale/prebuilt .vsix that never bundled .github/. The backend,
+    by contrast, always runs from this exact source tree, so it can guarantee
+    the child project gets the current instructions on every restart —
+    regardless of what .vsix happens to be installed.
+    """
+    from app.utils.path_builder import BASE_DIR
+
+    if not settings.TARGET_PROJECT_PATH:
+        logger.info("[copilot-instructions] TARGET_PROJECT_PATH not set — skipping sync.")
+        return
+
+    source = BASE_DIR / ".github" / "copilot-instructions.md"
+    if not source.exists():
+        logger.warning(f"[copilot-instructions] Source file not found: {source}")
+        return
+
+    target_dir = Path(settings.TARGET_PROJECT_PATH) / ".github"
+    target = target_dir / "copilot-instructions.md"
+
+    try:
+        target_dir.mkdir(parents=True, exist_ok=True)
+        content = source.read_text(encoding="utf-8")
+        target.write_text(content, encoding="utf-8")
+        logger.info(f"[copilot-instructions] Synced {source} -> {target}")
+    except OSError as e:
+        logger.error(f"[copilot-instructions] Failed to sync: {e}")
+
+
 def _find_ticket_for_task(db, project, project_name: str, task_id: str):
     """
     Locate the ticket matching task_id using a 3-strategy fallback:
@@ -313,6 +349,8 @@ async def _watch_current_task_file():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("[lifespan] Server starting — syncing copilot-instructions.md…")
+    _sync_copilot_instructions()
     logger.info("[lifespan] Server starting — launching file watcher…")
     watcher_task = asyncio.create_task(_watch_current_task_file())
     yield
