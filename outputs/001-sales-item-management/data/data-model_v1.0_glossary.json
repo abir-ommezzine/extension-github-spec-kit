@@ -1,0 +1,68 @@
+{
+    "project_name": "Sales Item Management System",
+    "items": [
+        {
+            "term": "Availability Toggle",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REQ_ITEM_TOGGLE",
+            "project_definition": "A binary state switch alternating between true and false to indicate stock presence."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "CONSTR_ITEM_PRICE",
+            "project_definition": "A validation rule ensuring the monetary value remains a positive decimal."
+        },
+        {
+            "term": "Item",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENTITY_ITEM",
+            "project_definition": "The primary saleable product entity containing identity, pricing, and categorization data."
+        },
+        {
+            "term": "Item Creation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REQ_ITEM_CREATE",
+            "project_definition": "The transition from a null state to a persisted record via a management interface."
+        },
+        {
+            "term": "Item Deletion",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REQ_ITEM_DELETE",
+            "project_definition": "The removal of a persisted record, returning the state to null."
+        },
+        {
+            "term": "Item Update",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REQ_ITEM_UPDATE",
+            "project_definition": "The modification of an existing record from version one to version two via an edit interface."
+        },
+        {
+            "term": "Max",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CONSTR_ITEM_NAME",
+            "project_definition": "An upper boundary limit for character length in string fields."
+        },
+        {
+            "term": "UUID",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENTITY_ITEM",
+            "project_definition": "A 128-bit universally unique identifier used as the primary key."
+        },
+        {
+            "term": "imageURL",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENTITY_ITEM",
+            "project_definition": "A string containing a valid network path or locator for a visual asset."
+        }
+    ]
+}

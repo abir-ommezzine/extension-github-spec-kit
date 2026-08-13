@@ -1,0 +1,215 @@
+{
+    "project_name": "Sales Item Management System",
+    "items": [
+        {
+            "term": "BEM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-CSS-BEM",
+            "project_definition": "A strict naming convention combining block, element, and modifier paradigms utilized alongside custom properties to architect a highly maintainable and decoupled styling layer for the user interface."
+        },
+        {
+            "term": "Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Sales Item Management System",
+            "project_definition": "The isolated version control workspace identified as 001-sales-item-management, serving as the dedicated environment to develop the current feature without interfering with the main codebase."
+        },
+        {
+            "term": "CRUD",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-SPA",
+            "project_definition": "The four foundational persistent storage mutation primitives exposed via an administrative interface to manipulate the item catalog directly from the client browser."
+        },
+        {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-CSS-BEM",
+            "project_definition": "The third iteration of the styling language utilized to construct the visual layout, relying on custom properties for design tokens and a strict naming methodology for class definitions."
+        },
+        {
+            "term": "Constraints",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "Architectural boundaries dictating a fully offline-capable operation relying strictly on client persistence mechanisms, explicitly prohibiting any remote server or external backend dependencies."
+        },
+        {
+            "term": "DB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "ARCH-LOCALSTORAGE",
+            "project_definition": "The logical persistence layer role fulfilled entirely by the browser embedded key-value store, acting as the sole system of record for the catalog without requiring a remote relational or document server."
+        },
+        {
+            "term": "DOM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "MOD-UI",
+            "project_definition": "The live document object tree targeted by the user interface module to dynamically inject, update, or remove visual elements and manage modal dialog lifecycles."
+        },
+        {
+            "term": "Date",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Sales Item Management System",
+            "project_definition": "A chronological marker set to 2026-08-12, establishing the temporal context for the current implementation planning document."
+        },
+        {
+            "term": "GATE",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "A mandatory compliance verification barrier that must be successfully cleared prior to initiating Phase 0 research and re-evaluated following the completion of Phase 1 design."
+        },
+        {
+            "term": "HTML",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-HTML5",
+            "project_definition": "The fifth iteration of the standard markup language, mandated to employ structural semantic tags to enhance accessibility and search engine optimization across the application entry point."
+        },
+        {
+            "term": "JS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-JS-ES6",
+            "project_definition": "The client-side scripting environment utilized without external frameworks, relying strictly on native module separation and modern syntax standards to orchestrate event binding and application logic."
+        },
+        {
+            "term": "JavaScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-JS-ES6",
+            "project_definition": "The core programming language driving the client-side logic, explicitly constrained to modern ECMAScript specifications and a modular file architecture to ensure strict separation of concerns."
+        },
+        {
+            "term": "Modern JS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-JS-ES6",
+            "project_definition": "The mandated standard requiring the utilization of contemporary ECMAScript syntax alongside native module structures to enforce strict file separation and eliminate inline event handlers."
+        },
+        {
+            "term": "Modular CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-CSS-BEM",
+            "project_definition": "An architectural styling approach combining a specific block-element-modifier naming convention with custom properties to ensure maintainable and scoped visual definitions."
+        },
+        {
+            "term": "ONLY",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Complexity Tracking",
+            "project_definition": "A strict directive indicating that the complexity tracking matrix must be populated exclusively when constitutional violations exist and require formal justification."
+        },
+        {
+            "term": "PASSED",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "The definitive validation status confirming that all architectural checks regarding semantics, modularity, responsiveness, and separation of concerns have been successfully fulfilled."
+        },
+        {
+            "term": "Performance Goals",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "MILE-PERF",
+            "project_definition": "Strict operational thresholds demanding visual interface updates for filtering and sorting to execute in under 100 milliseconds, while modal animations must maintain a steady 60 frames per second."
+        },
+        {
+            "term": "Primary Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "A declared void category confirming the absolute absence of external runtime libraries or frameworks, relying entirely on native browser APIs and vanilla scripting capabilities."
+        },
+        {
+            "term": "Project Type",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The classification of the system as a strictly frontend web application, operating entirely within the client environment without any server-side execution layer."
+        },
+        {
+            "term": "Responsive-First",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-RESPONSIVE",
+            "project_definition": "A mobile-first design paradigm utilizing flexible box and grid layout models as the default configuration to ensure optimal rendering across varying viewport dimensions."
+        },
+        {
+            "term": "SEO",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-HTML5",
+            "project_definition": "Search engine optimization practices achieved through the implementation of semantic structural tags to ensure proper content indexing and accessibility compliance."
+        },
+        {
+            "term": "SPA",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-SPA",
+            "project_definition": "A single-page interaction paradigm providing a continuous user experience without full document reloads, heavily relying on dynamic client-side rendering and local persistence."
+        },
+        {
+            "term": "Semantic HTML",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TASK-HTML5",
+            "project_definition": "The practice of utilizing meaningful structural tags to define the document outline, explicitly mandated to enhance accessibility metrics and search engine visibility."
+        },
+        {
+            "term": "Spec",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: Sales Item Management System",
+            "project_definition": "The foundational feature specification document located in the designated feature folder, serving as the primary input and requirement source for the current implementation plan."
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-LOCALSTORAGE",
+            "project_definition": "The browser-embedded persistence mechanism utilized to maintain the item catalog state locally, ensuring a serverless, portable, and offline-capable operational environment."
+        },
+        {
+            "term": "Structure Decision",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Source Code (repository root)",
+            "project_definition": "The architectural choice to maintain a single unified project directory, encapsulating all execution logic within isolated script modules to guarantee maintainability and strict concern separation."
+        },
+        {
+            "term": "Target Platform",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The execution environment defined as modern web browsers spanning both desktop and mobile devices, dictating the compatibility and testing matrix for the client-side interface."
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The validation strategy consisting of manual execution across multiple major browser engines and strict markup validation against W3C standards to ensure structural compliance."
+        },
+        {
+            "term": "UI",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "MOD-UI",
+            "project_definition": "The visual interaction layer managed by a dedicated script module responsible for dynamic document tree manipulation and modal dialog lifecycle administration."
+        },
+        {
+            "term": "localStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "MOD-STORAGE",
+            "project_definition": "The browser-native key-value persistence mechanism wrapped by a dedicated module to handle data serialization and retrieval for the offline-capable catalog."
+        }
+    ]
+}

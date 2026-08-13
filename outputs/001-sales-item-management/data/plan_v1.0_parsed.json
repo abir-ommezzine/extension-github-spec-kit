@@ -1,0 +1,163 @@
+{
+    "parsing_rationale": "The provided document is a template for an implementation plan rather than a filled-out technical plan. It contains placeholders and instructions. I have extracted the structural elements of the template as the current 'state' of the plan, identifying the intended technical categories and the gaps where actual project data is missing.",
+    "project_info": {
+        "project_name": "sales-item-management",
+        "source_type": "scratch",
+        "brief_explanation": "Template for a feature implementation plan including technical context, project structure, and complexity tracking.",
+        "source_context": "Initial plan template for the sales-item-management feature."
+    },
+    "doc_type": "plan",
+    "sections": [
+        {
+            "title": "Implementation Plan: [FEATURE]",
+            "level": 1,
+            "raw_content": "**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]\n\n**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`\n\n**Note**: This template is filled in by the `/speckit.plan` command; its definition describes the execution workflow.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Summary",
+            "level": 2,
+            "raw_content": "[Extract from feature spec: primary requirement + technical approach from research]",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Technical Context",
+            "level": 2,
+            "raw_content": "<!--\n  ACTION REQUIRED: Replace the content in this section with the technical details\n  for the project. The structure here is presented in advisory capacity to guide\n  the iteration process.\n-->\n\n**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]\n\n**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]\n\n**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]\n\n**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]\n\n**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]\n\n**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]\n\n**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]\n\n**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]\n\n**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]",
+            "mapped_to_template_field": "Tech Stack & Tooling"
+        },
+        {
+            "title": "Constitution Check",
+            "level": 2,
+            "raw_content": "*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*\n\n[Gates determined based on constitution file]",
+            "mapped_to_template_field": "Security & Identity"
+        },
+        {
+            "title": "Project Structure",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "System Architecture & Topology"
+        },
+        {
+            "title": "Documentation (this feature)",
+            "level": 3,
+            "raw_content": "```text\nspecs/[###-feature]/\n├── plan.md              # This file (/speckit.plan command output)\n├── research.md          # Phase 0 output (/speckit.plan command)\n├── data-model.md        # Phase 1 output (/speckit.plan command)\n├── quickstart.md        # Phase 1 output (/speckit.plan command)\n├── contracts/           # Phase 1 output (/speckit.plan command)\n└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)\n```",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Source Code (repository root)",
+            "level": 3,
+            "raw_content": "<!--\n  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout\n  for this feature. Delete unused options and expand the chosen structure with\n  real paths (e.g., apps/admin, packages/something). The delivered plan must\n  not include Option labels.\n-->\n\n```text",
+            "mapped_to_template_field": "System Architecture & Topology"
+        },
+        {
+            "title": "[REMOVE IF UNUSED] Option 1: Single project (DEFAULT)",
+            "level": 1,
+            "raw_content": "src/\n├── models/\n├── services/\n├── cli/\n└── lib/\n\ntests/\n├── contract/\n├── integration/\n└── unit/",
+            "mapped_to_template_field": "System Architecture & Topology"
+        },
+        {
+            "title": "[REMOVE IF UNUSED] Option 2: Web application (when \"frontend\" + \"backend\" detected)",
+            "level": 1,
+            "raw_content": "backend/\n├── src/\n│   ├── models/\n│   ├── services/\n│   └── api/\n└── tests/\n\nfrontend/\n├── src/\n│   ├── components/\n│   ├── pages/\n│   └── services/\n└── tests/",
+            "mapped_to_template_field": "System Architecture & Topology"
+        },
+        {
+            "title": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
+            "level": 1,
+            "raw_content": "api/\n└── [same as backend above]\n\nios/ or android/\n└── [platform-specific structure: feature modules, UI flows, platform tests]\n```\n\n**Structure Decision**: [Document the selected structure and reference the real\ndirectories captured above]",
+            "mapped_to_template_field": "System Architecture & Topology"
+        },
+        {
+            "title": "Complexity Tracking",
+            "level": 2,
+            "raw_content": "> **Fill ONLY if Constitution Check has violations that must be justified**\n\n| Violation | Why Needed | Simpler Alternative Rejected Because |\n|-----------|------------|-------------------------------------|\n| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |\n| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |",
+            "mapped_to_template_field": "Open Questions & Uncertainties"
+        }
+    ],
+    "elements": [
+        {
+            "type": "architecture_choice",
+            "identifier": "STRUC-DECISION",
+            "content": "Selection of project structure (Single project, Web app, or Mobile+API)",
+            "source_section": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
+            "attributes": {
+                "status": "pending"
+            }
+        },
+        {
+            "type": "milestone",
+            "identifier": "GATE-CONSTITUTION",
+            "content": "Constitution Check: Must pass before Phase 0 research",
+            "source_section": "Constitution Check",
+            "attributes": {
+                "criticality": "high"
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "DOC-GEN-PHASE0",
+            "content": "Generate research.md",
+            "source_section": "Documentation (this feature)",
+            "attributes": {
+                "phase": 0
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "DOC-GEN-PHASE1",
+            "content": "Generate data-model.md, quickstart.md, and contracts/",
+            "source_section": "Documentation (this feature)",
+            "attributes": {
+                "phase": 1
+            }
+        },
+        {
+            "type": "task",
+            "identifier": "DOC-GEN-PHASE2",
+            "content": "Generate tasks.md",
+            "source_section": "Documentation (this feature)",
+            "attributes": {
+                "phase": 2
+            }
+        }
+    ],
+    "relationships": [
+        {
+            "source": "GATE-CONSTITUTION",
+            "to": "DOC-GEN-PHASE0",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "DOC-GEN-PHASE0",
+            "to": "DOC-GEN-PHASE1",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "DOC-GEN-PHASE1",
+            "to": "DOC-GEN-PHASE2",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "STRUC-DECISION",
+            "to": "DOC-GEN-PHASE1",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Data Models & Schemas",
+            "priority": "HIGH",
+            "remediation_advice": "The template mentions data-model.md as a Phase 1 output, but no actual schema is defined in this document."
+        },
+        {
+            "missing_section": "API Contracts & Flow",
+            "priority": "HIGH",
+            "remediation_advice": "The template mentions a contracts/ folder as a Phase 1 output, but no endpoints or flows are defined."
+        }
+    ],
+    "open_questions": [
+        "Which project structure option (1, 2, or 3) is selected?",
+        "What are the specific language, dependencies, and storage requirements for this feature?"
+    ]
+}

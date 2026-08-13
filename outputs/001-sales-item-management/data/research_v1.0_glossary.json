@@ -1,0 +1,124 @@
+{
+    "project_name": "Sales Item Management System",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PERSIST-LS",
+            "project_definition": "A synchronous interface used to interact with browser-based key-value storage."
+        },
+        {
+            "term": "Accessibility",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "A11Y-LABELS",
+            "project_definition": "The implementation of semantic labels and live regions to support assistive technologies."
+        },
+        {
+            "term": "Alternatives considered",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Technical Decisions",
+            "project_definition": "The evaluation of rejected architectural paths such as IndexedDB or external frameworks."
+        },
+        {
+            "term": "BEM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "UI-BEM",
+            "project_definition": "A naming convention for stylesheets that prevents specificity conflicts and style leakage."
+        },
+        {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "UI-BEM",
+            "project_definition": "The styling language used with variables for theme management."
+        },
+        {
+            "term": "DOM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PERF-DEBOUNCE",
+            "project_definition": "The browser document tree that is updated via re-renders during search operations."
+        },
+        {
+            "term": "Decision",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Technical Decisions",
+            "project_definition": "The final architectural selection made for persistence, state, or styling."
+        },
+        {
+            "term": "Implementation Detail",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FUNC-SEARCH",
+            "project_definition": "The specific logic using case-insensitive matching for string comparison."
+        },
+        {
+            "term": "JS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ARCH-VANILLA",
+            "project_definition": "The core programming language used in its plain form without external libraries."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PERSIST-LS",
+            "project_definition": "The data interchange format used to serialize the item catalog for storage."
+        },
+        {
+            "term": "LocalStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PERSIST-LS",
+            "project_definition": "The browser mechanism for persisting data across sessions without a server."
+        },
+        {
+            "term": "Maintainability",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Best Practices Applied",
+            "project_definition": "The structural separation of data, logic, and view files."
+        },
+        {
+            "term": "Performance",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PERF-DEBOUNCE",
+            "project_definition": "The optimization of input handling to limit the frequency of interface updates."
+        },
+        {
+            "term": "Rationale",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Technical Decisions",
+            "project_definition": "The logical justification for choosing a specific technical path over others."
+        },
+        {
+            "term": "Store",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STATE-STORE",
+            "project_definition": "A centralized module acting as the single source of truth for the item array."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STATE-STORE",
+            "project_definition": "The visual layer that is notified when the underlying data changes."
+        },
+        {
+            "term": "window.localStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "PERSIST-LS",
+            "project_definition": "The global browser object used for synchronous data persistence."
+        }
+    ]
+}

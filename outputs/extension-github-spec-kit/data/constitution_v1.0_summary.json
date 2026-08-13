@@ -1,0 +1,20 @@
+{
+    "executive_brief": "The extension-github-spec-kit is a foundational governance framework designed as a project constitution. It establishes a library-first architectural pattern where every feature is encapsulated as a self-contained library exposing a CLI interface via a strict text-in/text-out protocol. The project enforces a non-negotiable TDD workflow and rigorous integration testing for contract changes and inter-service communication to ensure systemic stability.",
+    "technical_stack": {
+        "languages_and_frameworks": [],
+        "architectural_constraints": [
+            "Library-First: All features must be standalone, self-contained, and independently testable",
+            "CLI Interface: Mandatory stdin/args to stdout protocol with JSON and human-readable support",
+            "Error Handling: Strict separation of stdout for data and stderr for errors",
+            "TDD Cycle: Mandatory Red-Green-Refactor sequence (Tests written -> User approved -> Tests fail -> Implementation)",
+            "Integration Scope: Mandatory testing for library contracts, contract modifications, inter-service communication, and shared schemas",
+            "Governance: PR-level verification of constitution compliance is mandatory"
+        ]
+    },
+    "maturity_assessment": "The project is currently in a template state, serving as a structural blueprint rather than a populated specification. While the core principles are logically mapped, the absence of a mechanism to track technical uncertainties and the presence of high-severity structural gaps indicate that the documentation is not yet actionable for implementation. Status: REFINEMENT.",
+    "critical_dependencies": [
+        "GOV-COMPLIANCE depends on TDD-MANDATORY for PR verification",
+        "CLI-INTERFACE implements the LIB-FIRST architectural pattern",
+        "INT-TEST-FOCUS relates to TDD-MANDATORY for validation of contract changes"
+    ]
+}

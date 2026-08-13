@@ -1,0 +1,82 @@
+{
+    "project_name": "Sales Item Management",
+    "items": [
+        {
+            "term": "BEM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CSS-MODULAR",
+            "project_definition": "A modular naming convention used to prevent specificity conflicts and improve maintainability."
+        },
+        {
+            "term": "Behavior",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DEV-SEQUENCE",
+            "project_definition": "The third phase of the development sequence focusing on implementing functional logic."
+        },
+        {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CSS-MODULAR",
+            "project_definition": "The presentation layer governed by modularity, variables, and responsive layout engines."
+        },
+        {
+            "term": "HTML",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "HTML-SEMANTIC",
+            "project_definition": "The structural layer required to be semantic and compliant with W3C standards for accessibility."
+        },
+        {
+            "term": "JS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "JS-MODERN",
+            "project_definition": "The logic layer utilizing ES6+ syntax and asynchronous patterns."
+        },
+        {
+            "term": "JavaScript",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "JS-MODERN",
+            "project_definition": "The logic layer utilizing ES6+ syntax and asynchronous patterns."
+        },
+        {
+            "term": "PR",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "GOV-PR-APPROVAL",
+            "project_definition": "The mechanism where deviations from the constitution must be justified and approved by the lead developer."
+        },
+        {
+            "term": "Planning",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DEV-SEQUENCE",
+            "project_definition": "The initial phase of the development sequence dedicated to defining the structural markup."
+        },
+        {
+            "term": "SEO",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "HTML-SEMANTIC",
+            "project_definition": "The optimization goal achieved through the use of semantic tags and valid markup."
+        },
+        {
+            "term": "Styling",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DEV-SEQUENCE",
+            "project_definition": "The second phase of the development sequence where design requirements are applied to the markup."
+        },
+        {
+            "term": "Validation",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "DEV-SEQUENCE",
+            "project_definition": "The final phase of the development sequence involving official checkers and cross-browser testing."
+        }
+    ]
+}

@@ -1,0 +1,54 @@
+{
+    "project_name": "Sales Item Management System",
+    "items": [
+        {
+            "term": "Action",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "1. Catalog Display & Interaction",
+            "project_definition": "A manual interaction step executed by a human operator within the browser interface to trigger a specific system behavior or state transition during the verification phase."
+        },
+        {
+            "term": "CORS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CONST-02",
+            "project_definition": "A cross-origin resource sharing security mechanism enforced by web browsers that necessitates serving project files through a local development host to prevent module loading failures."
+        },
+        {
+            "term": "CRUD",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "4. Item Management (CRUD)",
+            "project_definition": "The four foundational persistent storage mutation primitives applied to catalog entries, encompassing insertion, retrieval, modification, and removal operations within the management area."
+        },
+        {
+            "term": "Expected Outcome",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "1. Catalog Display & Interaction",
+            "project_definition": "The anticipated observable result or interface state transition that must occur immediately following a manual verification step, serving as the pass or fail criteria for the scenario."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-CRUD-02",
+            "project_definition": "A data typing rule dictating that monetary values assigned to catalog entries must be processed as non-floating decimal structures to prevent rounding errors during dynamic sorting operations."
+        },
+        {
+            "term": "JS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CONST-02",
+            "project_definition": "The core client-side scripting language utilized without external frameworks, relying on native browser module systems to handle all dynamic rendering and local storage logic."
+        },
+        {
+            "term": "VS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CONST-02",
+            "project_definition": "The designated integrated development environment extension providing a local live hosting server required to bypass browser cross-origin restrictions during the manual testing phase."
+        }
+    ]
+}

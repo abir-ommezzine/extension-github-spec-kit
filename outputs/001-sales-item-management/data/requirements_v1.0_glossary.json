@@ -1,0 +1,12 @@
+{
+    "project_name": "Sales Item Management System",
+    "items": [
+        {
+            "term": "Feature",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Feature Readiness",
+            "project_definition": "A functional unit that must satisfy measurable outcomes and possess verified acceptance criteria and primary user flows."
+        }
+    ]
+}

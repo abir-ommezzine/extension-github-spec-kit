@@ -1,0 +1,198 @@
+{
+    "parsing_rationale": "The document was analyzed as a technical constitution for a front-end project. I mapped the 'Core Principles' and 'Project Structure' to 'Coding Standards & Style', and the 'Development Workflow' to 'Branching & PR Workflow'. The 'Governance' section provides high-level rules. I extracted atomic technical requirements (HTML, CSS, JS, Structure) as elements and linked them to show the dependency of the workflow on these standards.",
+    "project_info": {
+        "project_name": "Sales Item Management",
+        "source_type": "scratch",
+        "brief_explanation": "Technical governance document defining front-end standards (HTML/CSS/JS), project structure, and development workflow.",
+        "source_context": "Constitution file for the Sales Item Management repository."
+    },
+    "doc_type": "constitution",
+    "sections": [
+        {
+            "title": "Header du document",
+            "level": 1,
+            "raw_content": "<!-- \nSync Impact Report:\n- Version change: N/A -> 1.0.0\n- Added sections: Core Principles (HTML/CSS/JS Best Practices), Project Structure, Development Workflow, Governance\n- Modified principles: N/A\n- Follow-up TODOs: None\n-->",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Sales Item Management Constitution",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Core Principles",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "I. Semantic & Valid HTML",
+            "level": 3,
+            "raw_content": "HTML MUST be semantic and valid according to W3C standards. Use appropriate tags (`<main>`, `<section>`, `<article>`, `<nav>`, etc.) to ensure accessibility (a11y) and SEO. All images MUST have `alt` attributes, and forms MUST have associated `<label>` elements.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "II. Modular & Maintainable CSS",
+            "level": 3,
+            "raw_content": "CSS MUST follow a modular approach (e.g., BEM naming convention) to avoid specificity wars and ensure maintainability. Use CSS Variables for colors, spacing, and typography to maintain consistency. Layouts SHOULD prioritize Flexbox and Grid for responsiveness.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "III. Clean & Modern JavaScript (ES6+)",
+            "level": 3,
+            "raw_content": "JavaScript MUST use modern ES6+ syntax (const/let, arrow functions, destructuring, template literals). Code MUST be modular, avoiding global scope pollution. Asynchronous operations MUST be handled using `async/await` with proper `try/catch` error handling.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "IV. Separation of Concerns",
+            "level": 3,
+            "raw_content": "Strict separation between structure (HTML), presentation (CSS), and behavior (JS) MUST be maintained. No inline styles or inline event handlers (e.g., `onclick`) are permitted.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "V. Responsive-First Design",
+            "level": 3,
+            "raw_content": "The application MUST be fully responsive. Use a mobile-first approach with media queries to ensure a seamless experience across all device sizes.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "Project Structure",
+            "level": 2,
+            "raw_content": "The project MUST follow a clear and consistent directory structure:\n- `/index.html`: Main entry point.\n- `/css/`: All stylesheets (e.g., `style.css`, `variables.css`).\n- `/js/`: All JavaScript logic, further divided into `/modules` for reusable components and `main.js` for orchestration.\n- `/assets/`: Static assets such as images, icons, and fonts.",
+            "mapped_to_template_field": "Coding Standards & Style"
+        },
+        {
+            "title": "Development Workflow",
+            "level": 2,
+            "raw_content": "1. **Planning**: Define the HTML structure first.\n2. **Styling**: Apply CSS based on the design requirements.\n3. **Behavior**: Implement JS functionality.\n4. **Validation**: Validate HTML/CSS using official validators and test JS across multiple browsers.",
+            "mapped_to_template_field": "Branching & PR Workflow"
+        },
+        {
+            "title": "Governance",
+            "level": 2,
+            "raw_content": "This constitution serves as the primary authority for code quality and structure in the Sales Item Management project. Any deviation MUST be justified in the PR and approved by the lead developer. Amendments to this document require a version bump and a documented rationale.\n\n**Version**: 1.0.0 | **Ratified**: 2026-08-12 | **Last Amended**: 2026-08-12",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "coding_standard",
+            "identifier": "HTML-SEMANTIC",
+            "content": "HTML must be semantic, W3C valid, with mandatory alt attributes for images and labels for forms.",
+            "source_section": "I. Semantic & Valid HTML",
+            "attributes": {
+                "standard": "W3C",
+                "focus": [
+                    "a11y",
+                    "SEO"
+                ]
+            }
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "CSS-MODULAR",
+            "content": "CSS must use a modular approach (BEM), CSS Variables for consistency, and Flexbox/Grid for layouts.",
+            "source_section": "II. Modular & Maintainable CSS",
+            "attributes": {
+                "naming_convention": "BEM"
+            }
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "JS-MODERN",
+            "content": "JavaScript must use ES6+ syntax, be modular, and handle async operations via async/await with try/catch.",
+            "source_section": "III. Clean & Modern JavaScript (ES6+)",
+            "attributes": {
+                "version": "ES6+"
+            }
+        },
+        {
+            "type": "rule",
+            "identifier": "SOC-STRICT",
+            "content": "Strict separation of HTML, CSS, and JS; no inline styles or inline event handlers permitted.",
+            "source_section": "IV. Separation of Concerns",
+            "attributes": {}
+        },
+        {
+            "type": "requirement",
+            "identifier": "RESPONSIVE-FIRST",
+            "content": "Application must be fully responsive using a mobile-first approach with media queries.",
+            "source_section": "V. Responsive-First Design",
+            "attributes": {
+                "strategy": "mobile-first"
+            }
+        },
+        {
+            "type": "tool_configuration",
+            "identifier": "DIR-STRUCTURE",
+            "content": "Directory structure: /index.html, /css/, /js/ (with /modules), and /assets/.",
+            "source_section": "Project Structure",
+            "attributes": {}
+        },
+        {
+            "type": "workflow_constraint",
+            "identifier": "DEV-SEQUENCE",
+            "content": "Development sequence: Planning (HTML) -> Styling (CSS) -> Behavior (JS) -> Validation.",
+            "source_section": "Development Workflow",
+            "attributes": {}
+        },
+        {
+            "type": "rule",
+            "identifier": "GOV-PR-APPROVAL",
+            "content": "Any deviation from the constitution must be justified in the PR and approved by the lead developer.",
+            "source_section": "Governance",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "DEV-SEQUENCE",
+            "to": "HTML-SEMANTIC",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "DEV-SEQUENCE",
+            "to": "CSS-MODULAR",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "DEV-SEQUENCE",
+            "to": "JS-MODERN",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "SOC-STRICT",
+            "to": "HTML-SEMANTIC",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "SOC-STRICT",
+            "to": "CSS-MODULAR",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "SOC-STRICT",
+            "to": "JS-MODERN",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "DIR-STRUCTURE",
+            "to": "SOC-STRICT",
+            "relation_type": "implements"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Testing Discipline & Gates",
+            "priority": "HIGH",
+            "remediation_advice": "The document mentions 'Validation' in the workflow but lacks specific testing gates (e.g., Unit tests, Integration tests, CI/CD pipeline requirements)."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "No known uncertainties are listed; consider adding a section for future technical debt or architectural questions."
+        }
+    ],
+    "open_questions": []
+}

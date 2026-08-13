@@ -1,0 +1,54 @@
+{
+    "project_name": "extension-github-spec-kit",
+    "items": [
+        {
+            "term": "BUILD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[PRINCIPLE_5_NAME]",
+            "project_definition": "The third segment of the versioning triplet used to track incremental compilation iterations."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "CLI-INTERFACE",
+            "project_definition": "A structured data interchange format supported for machine-readable output in the command line interface."
+        },
+        {
+            "term": "MAJOR",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[PRINCIPLE_5_NAME]",
+            "project_definition": "The primary versioning digit indicating incompatible API changes."
+        },
+        {
+            "term": "MINOR",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[PRINCIPLE_5_NAME]",
+            "project_definition": "The secondary versioning digit indicating backward-compatible functionality additions."
+        },
+        {
+            "term": "NON",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TDD-MANDATORY",
+            "project_definition": "A strict qualifier indicating that a specific requirement is mandatory and cannot be bypassed."
+        },
+        {
+            "term": "TDD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "TDD-MANDATORY",
+            "project_definition": "A development methodology where verification scripts are authored before the actual logic implementation."
+        },
+        {
+            "term": "YAGNI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[PRINCIPLE_5_NAME]",
+            "project_definition": "An architectural constraint prohibiting the implementation of features until they are actually required."
+        }
+    ]
+}

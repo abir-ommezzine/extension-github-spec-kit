@@ -1,0 +1,170 @@
+{
+    "parsing_rationale": "The document is a technical data model specification. I have extracted the 'Item' entity and its attributes as the primary technical atoms. The relationships and state transitions were mapped to functional requirements and constraints to maintain the graph's integrity. Since the document focuses exclusively on the data model, most of the high-level specification template fields (Goals, Scope, etc.) are missing and have been flagged in structural_gaps.",
+    "project_info": {
+        "project_name": "Sales Item Management System",
+        "source_type": "refining",
+        "brief_explanation": "Data model definition for managing saleable items, including entity attributes and state transitions.",
+        "source_context": "Extraction from data-model.md"
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "Data Model: Sales Item Management System",
+            "level": 1,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Entities",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Item",
+            "level": 3,
+            "raw_content": "The core entity representing a product for sale.\n\n| Field | Type | Description | Validation |\n|-------|------|-------------|------------|\n| `id` | String (UUID) | Unique identifier for the item | Required, Unique |\n| `name` | String | Display name of the product | Required, Max 100 chars |\n| `description` | String | Detailed product information | Optional, Max 500 chars |\n| `price` | Number | Sale price of the item | Required, Positive Number |\n| `category` | String | Product category (e.g., Electronics, Clothing) | Required |\n| `availability` | Boolean | Whether the item is currently in stock | Required, Default: true |\n| `imageURL` | String | Path or URL to the product image | Required, Valid URL/Path |",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Relationships",
+            "level": 2,
+            "raw_content": "- **Catalog $\\rightarrow$ Item**: One-to-Many. The catalog is a collection of `Item` entities.",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "State Transitions",
+            "level": 2,
+            "raw_content": "- **Item Creation**: `null` $\\rightarrow$ `Item` (via Management Form)\n- **Item Update**: `Item (v1)` $\\rightarrow$ `Item (v2)` (via Edit Form)\n- **Item Deletion**: `Item` $\\rightarrow$ `null` (via Delete Action)\n- **Availability Toggle**: `available: true` $\\leftrightarrow$ `available: false`",
+            "mapped_to_template_field": "Functional Requirements"
+        }
+    ],
+    "elements": [
+        {
+            "type": "entity",
+            "identifier": "ENTITY_ITEM",
+            "content": "The core entity representing a product for sale, containing id, name, description, price, category, availability, and imageURL.",
+            "source_section": "Item",
+            "attributes": {
+                "fields": [
+                    "id (UUID)",
+                    "name (String)",
+                    "description (String)",
+                    "price (Number)",
+                    "category (String)",
+                    "availability (Boolean)",
+                    "imageURL (String)"
+                ]
+            }
+        },
+        {
+            "type": "entity",
+            "identifier": "ENTITY_CATALOG",
+            "content": "A collection of Item entities.",
+            "source_section": "Relationships",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "REQ_ITEM_CREATE",
+            "content": "Ability to create an Item via a Management Form.",
+            "source_section": "State Transitions",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "REQ_ITEM_UPDATE",
+            "content": "Ability to update an existing Item via an Edit Form.",
+            "source_section": "State Transitions",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "REQ_ITEM_DELETE",
+            "content": "Ability to delete an Item via a Delete Action.",
+            "source_section": "State Transitions",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "REQ_ITEM_TOGGLE",
+            "content": "Ability to toggle the availability status of an item.",
+            "source_section": "State Transitions",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONSTR_ITEM_PRICE",
+            "content": "Price must be a positive number.",
+            "source_section": "Item",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONSTR_ITEM_NAME",
+            "content": "Name must be maximum 100 characters.",
+            "source_section": "Item",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "ENTITY_CATALOG",
+            "to": "ENTITY_ITEM",
+            "relation_type": "contains"
+        },
+        {
+            "source": "REQ_ITEM_CREATE",
+            "to": "ENTITY_ITEM",
+            "relation_type": "implements"
+        },
+        {
+            "source": "REQ_ITEM_UPDATE",
+            "to": "ENTITY_ITEM",
+            "relation_type": "implements"
+        },
+        {
+            "source": "REQ_ITEM_DELETE",
+            "to": "ENTITY_ITEM",
+            "relation_type": "implements"
+        },
+        {
+            "source": "REQ_ITEM_TOGGLE",
+            "to": "ENTITY_ITEM",
+            "relation_type": "implements"
+        },
+        {
+            "source": "CONSTR_ITEM_PRICE",
+            "to": "ENTITY_ITEM",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "CONSTR_ITEM_NAME",
+            "to": "ENTITY_ITEM",
+            "relation_type": "relates_to"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Goals & Objectives",
+            "priority": "HIGH",
+            "remediation_advice": "Define the business purpose of the Sales Item Management System."
+        },
+        {
+            "missing_section": "Non-Functional Requirements",
+            "priority": "MEDIUM",
+            "remediation_advice": "Specify performance, security, or scalability requirements for the data model."
+        },
+        {
+            "missing_section": "Scope & Out-of-Scope",
+            "priority": "HIGH",
+            "remediation_advice": "Clarify what the system will and will not manage beyond the Item entity."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "LOW",
+            "remediation_advice": "List any pending decisions regarding the data model."
+        }
+    ],
+    "open_questions": []
+}

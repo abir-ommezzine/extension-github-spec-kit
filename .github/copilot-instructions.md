@@ -4,6 +4,15 @@
 
 YOU MUST follow this rule EXACTLY:
 
+### ⚠️ NEVER check a task's checkbox before it is 100% finished
+
+A task's checkbox in tasks.md (`[x]`) is the **only** signal this system trusts to mark a task `"done"` on the Kanban board — a human will see `"done"` and believe it, without re-checking your work.
+
+- **Moving on to the next task does NOT mean the previous one is done.** Do not check task N's box just because you're about to start task N+1.
+- Only check a box once the task's code is written, saved, and — if the task itself calls for it — actually verified (ran, tested, or manually confirmed working).
+- If a task is partially done, blocked, or you're setting it aside to work on something else, **leave its checkbox unchecked**. It will correctly show as `"todo"` in the snapshot below — that's the accurate state, not a bug.
+- When in doubt, leave it unchecked. A task incorrectly stuck on `"todo"` is a minor inconvenience; a task incorrectly marked `"done"` is a false report that hides real unfinished work.
+
 ### Before implementing ANY task:
 
 1. Read tasks.md to find the task you will implement.
@@ -49,7 +58,7 @@ Example:
 
 ### After completing the task:
 
-1. Mark the task's checkbox as `[x]` in tasks.md.
+1. Mark the task's checkbox as `[x]` in tasks.md — **only do this now, when the task is genuinely finished. Never earlier.**
 2. Rebuild the full status snapshot the same way as above — this task now reports `"done"` instead of `"in_progress"`.
 3. WRITE this file at `.task_runtime/current-task.json`:
 

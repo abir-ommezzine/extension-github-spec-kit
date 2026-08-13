@@ -1,0 +1,246 @@
+{
+    "parsing_rationale": "The document is a Quickstart Validation Guide for a Sales Item Management System. It describes manual validation scenarios for catalog display, search, sorting, CRUD operations, and persistence. I mapped these scenarios to functional requirements and success criteria, identified technical constraints from prerequisites, and declared missing standard spec sections as structural gaps.",
+    "project_info": {
+        "project_name": "Sales Item Management System",
+        "source_type": "scratch",
+        "brief_explanation": "A vanilla JS web application for managing a sales item catalog with search, filtering, sorting, CRUD operations, and local persistence.",
+        "source_context": "Quickstart Validation Guide extracted from a markdown file."
+    },
+    "doc_type": "spec",
+    "sections": [
+        {
+            "title": "Quickstart Validation Guide: Sales Item Management System",
+            "level": 1,
+            "raw_content": "This guide describes how to verify that the feature is implemented correctly.",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "Prerequisites",
+            "level": 2,
+            "raw_content": "- Modern Web Browser (Chrome, Firefox, Edge, or Safari).\n- Project files served via a local server (e.g., VS Code Live Server) to avoid CORS issues with JS modules.",
+            "mapped_to_template_field": "Non-Functional Requirements"
+        },
+        {
+            "title": "Validation Scenarios",
+            "level": 2,
+            "raw_content": "",
+            "mapped_to_template_field": null
+        },
+        {
+            "title": "1. Catalog Display & Interaction",
+            "level": 3,
+            "raw_content": "- **Action**: Load `index.html`.\n- **Expected Outcome**: \n    - A gallery of items is displayed.\n    - Clicking an item opens a modal with full details and a larger image.\n    - Closing the modal returns the user to the gallery.",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "2. Search & Filtering",
+            "level": 3,
+            "raw_content": "- **Action**: Enter a keyword in the search bar.\n- **Expected Outcome**: The gallery updates in real-time to show only matching items.\n- **Action**: Select a category from the filter dropdown.\n- **Expected Outcome**: Only items of that category are displayed.\n- **Action**: Toggle \"Available Only\".\n- **Expected Outcome**: Items marked as `availability: false` disappear from the list.",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "3. Dynamic Sorting",
+            "level": 3,
+            "raw_content": "- **Action**: Change sort order to \"Price: Low to High\".\n- **Expected Outcome**: Items are reordered instantly without page reload.",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "4. Item Management (CRUD)",
+            "level": 3,
+            "raw_content": "- **Action**: Open the management area $\\rightarrow$ Add a new item $\\rightarrow$ Submit.\n- **Expected Outcome**: The item appears in the gallery immediately.\n- **Action**: Edit an existing item's price $\\rightarrow$ Save.\n- **Expected Outcome**: The updated price is reflected in the gallery.\n- **Action**: Delete an item.\n- **Expected Outcome**: The item is removed from the gallery.",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "5. Persistence Check",
+            "level": 3,
+            "raw_content": "- **Action**: Add an item $\\rightarrow$ Refresh the page.\n- **Expected Outcome**: The added item is still present in the gallery.",
+            "mapped_to_template_field": "Functional Requirements"
+        },
+        {
+            "title": "Validation Commands",
+            "level": 2,
+            "raw_content": "Since this is a vanilla JS project, validation is performed manually in the browser.\n1. Start Live Server on `index.html`.\n2. Open Browser $\\rightarrow$ `http://127.0.0.1:5500/index.html`.\n3. Execute the scenarios above.",
+            "mapped_to_template_field": null
+        }
+    ],
+    "elements": [
+        {
+            "type": "constraint",
+            "identifier": "CONST-01",
+            "content": "Must be compatible with modern web browsers (Chrome, Firefox, Edge, or Safari).",
+            "source_section": "Prerequisites",
+            "attributes": {}
+        },
+        {
+            "type": "constraint",
+            "identifier": "CONST-02",
+            "content": "Project files must be served via a local server to avoid CORS issues with JS modules.",
+            "source_section": "Prerequisites",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-CAT-01",
+            "content": "System shall display a gallery of items when loading index.html.",
+            "source_section": "1. Catalog Display & Interaction",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-CAT-01",
+            "content": "Clicking an item opens a modal with full details and a larger image.",
+            "source_section": "1. Catalog Display & Interaction",
+            "attributes": {}
+        },
+        {
+            "type": "success_criterion",
+            "identifier": "SC-CAT-02",
+            "content": "Closing the modal returns the user to the gallery.",
+            "source_section": "1. Catalog Display & Interaction",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-SRCH-01",
+            "content": "System shall update the gallery in real-time to show only items matching a keyword entered in the search bar.",
+            "source_section": "2. Search & Filtering",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-FILT-01",
+            "content": "System shall filter items by category when selected from the filter dropdown.",
+            "source_section": "2. Search & Filtering",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-FILT-02",
+            "content": "System shall hide items marked as availability: false when 'Available Only' is toggled.",
+            "source_section": "2. Search & Filtering",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-SORT-01",
+            "content": "System shall dynamically reorder items instantly without page reload when sort order is changed.",
+            "source_section": "3. Dynamic Sorting",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-CRUD-01",
+            "content": "System shall allow adding a new item via the management area, which appears in the gallery immediately.",
+            "source_section": "4. Item Management (CRUD)",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-CRUD-02",
+            "content": "System shall allow editing an existing item's price, with updates reflected in the gallery.",
+            "source_section": "4. Item Management (CRUD)",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-CRUD-03",
+            "content": "System shall allow deleting an item, removing it from the gallery.",
+            "source_section": "4. Item Management (CRUD)",
+            "attributes": {}
+        },
+        {
+            "type": "functional_requirement",
+            "identifier": "FR-PERS-01",
+            "content": "System shall persist added items such that they remain present after a page refresh.",
+            "source_section": "5. Persistence Check",
+            "attributes": {}
+        },
+        {
+            "type": "entity",
+            "identifier": "ENT-ITEM-01",
+            "content": "Item entity contains attributes: image, details, category, availability, and price.",
+            "source_section": "1. Catalog Display & Interaction",
+            "attributes": {}
+        }
+    ],
+    "relationships": [
+        {
+            "source": "FR-CAT-01",
+            "to": "ENT-ITEM-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "SC-CAT-01",
+            "to": "FR-CAT-01",
+            "relation_type": "implements"
+        },
+        {
+            "source": "SC-CAT-02",
+            "to": "FR-CAT-01",
+            "relation_type": "implements"
+        },
+        {
+            "source": "FR-SRCH-01",
+            "to": "ENT-ITEM-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-FILT-01",
+            "to": "ENT-ITEM-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-FILT-02",
+            "to": "ENT-ITEM-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-SORT-01",
+            "to": "ENT-ITEM-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-CRUD-01",
+            "to": "ENT-ITEM-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-CRUD-02",
+            "to": "ENT-ITEM-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-CRUD-03",
+            "to": "ENT-ITEM-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-PERS-01",
+            "to": "FR-CRUD-01",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "FR-CAT-01",
+            "to": "CONST-02",
+            "relation_type": "depends_on"
+        }
+    ],
+    "structural_gaps": [
+        {
+            "missing_section": "Goals & Objectives",
+            "priority": "HIGH",
+            "remediation_advice": "Add a section defining the overarching business goals and objectives of the Sales Item Management System."
+        },
+        {
+            "missing_section": "Scope & Out-of-Scope",
+            "priority": "HIGH",
+            "remediation_advice": "Explicitly define what features are in scope and out of scope for this project release."
+        },
+        {
+            "missing_section": "Open Questions & Uncertainties",
+            "priority": "MEDIUM",
+            "remediation_advice": "Document any pending decisions, technical uncertainties, or open questions regarding the system."
+        }
+    ],
+    "open_questions": []
+}

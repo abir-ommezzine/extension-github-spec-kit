@@ -1,17 +1,10 @@
 [
-  "DATA-MODEL-CORE",
-  "Data Model: CLI To-Do List Manager",
-  "FIELD-COMPL",
-  "FIELD-DATE",
-  "FIELD-DESC",
-  "FIELD-ID",
-  "Operational Rules",
-  "RULE-ID-GEN",
-  "RULE-STORAGE-CORRUPT",
-  "RULE-STORAGE-MISSING",
-  "State Transitions",
-  "Storage Model",
-  "TRANS-COMPLETE",
-  "TRANS-REMOVE",
-  "Validation Rules"
+  "Data Format (JSON)",
+  "ENT-ITEM",
+  "Interface Contract: Item Storage API",
+  "STOR-DEL",
+  "STOR-ERR",
+  "STOR-GET",
+  "STOR-SAVE",
+  "Storage Methods"
 ]

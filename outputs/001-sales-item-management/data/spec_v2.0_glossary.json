@@ -1,0 +1,124 @@
+{
+    "project_name": "Sales Item Management System",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-011",
+            "project_definition": "A potential external interface for data exchange and remote storage of the catalog."
+        },
+        {
+            "term": "CRUD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Success Criteria",
+            "project_definition": "The four foundational persistent storage mutation primitives used for catalog maintenance."
+        },
+        {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASSUMP-CLIENT",
+            "project_definition": "The styling language used to implement a clean, minimalist, and responsive visual layout."
+        },
+        {
+            "term": "Empty Catalog",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Edge Cases",
+            "project_definition": "A state where no products are available, triggering a specific notification message to the visitor."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-010",
+            "project_definition": "A validation rule ensuring that monetary values are positive numbers."
+        },
+        {
+            "term": "HTML",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASSUMP-CLIENT",
+            "project_definition": "The structural markup language used to define the web application pages."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-ITEM",
+            "project_definition": "A unique alphanumeric token assigned to each product for precise identification."
+        },
+        {
+            "term": "Invalid Input",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Edge Cases",
+            "project_definition": "Data entries that violate system rules, such as negative pricing or missing names, which must be blocked."
+        },
+        {
+            "term": "Item",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-ITEM",
+            "project_definition": "The core entity containing a name, description, price, category, availability status, and image link."
+        },
+        {
+            "term": "JS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASSUMP-CLIENT",
+            "project_definition": "The scripting language used to enable real-time filtering, sorting, and interactive modals."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-011",
+            "project_definition": "A lightweight data-interchange format used for potential mock data storage."
+        },
+        {
+            "term": "LocalStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Edge Cases",
+            "project_definition": "A browser-based key-value storage mechanism used to maintain data across page reloads."
+        },
+        {
+            "term": "Measurable",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Success Criteria",
+            "project_definition": "A quality metric requiring that a new product be added in under 30 seconds."
+        },
+        {
+            "term": "Persistence",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-011",
+            "project_definition": "The capability to save catalog state so it remains available after the session ends."
+        },
+        {
+            "term": "Technology-Agnostic",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Success Criteria",
+            "project_definition": "A design requirement ensuring the interface remains usable regardless of the device or screen size."
+        },
+        {
+            "term": "User-Focused",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Success Criteria",
+            "project_definition": "A requirement ensuring 100% of the catalog follows a consistent visual layout."
+        },
+        {
+            "term": "Verifiable",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Success Criteria",
+            "project_definition": "A state where all data mutation operations are tested and confirmed as functional."
+        }
+    ]
+}

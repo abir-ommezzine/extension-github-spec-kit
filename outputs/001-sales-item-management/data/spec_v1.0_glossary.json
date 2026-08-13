@@ -1,0 +1,124 @@
+{
+    "project_name": "Sales Item Management System",
+    "items": [
+        {
+            "term": "API",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-008",
+            "project_definition": "A potential external interface for data exchange and remote storage retrieval."
+        },
+        {
+            "term": "CRUD",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "US-MANAGE",
+            "project_definition": "The four foundational persistent storage mutation primitives."
+        },
+        {
+            "term": "CSS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASSUM-CLIENT",
+            "project_definition": "The styling language used to implement the minimalist and responsive visual layout."
+        },
+        {
+            "term": "Empty Catalog",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "REQ-EMPTY",
+            "project_definition": "A state where no available products exist, triggering a specific notification message."
+        },
+        {
+            "term": "Fixed-Point Numeric Constraint",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-007",
+            "project_definition": "A validation rule ensuring monetary values are positive and formatted correctly."
+        },
+        {
+            "term": "HTML",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASSUM-CLIENT",
+            "project_definition": "The structural markup used to define the page content and gallery layout."
+        },
+        {
+            "term": "ID",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-ITEM",
+            "project_definition": "A unique alphanumeric token assigned to each product for precise tracking."
+        },
+        {
+            "term": "Invalid Input",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Edge Cases",
+            "project_definition": "Data entries that violate system rules, such as negative pricing or missing names."
+        },
+        {
+            "term": "Item",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ENT-ITEM",
+            "project_definition": "The primary entity containing a name, description, price, category, and image reference."
+        },
+        {
+            "term": "JS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "ASSUM-CLIENT",
+            "project_definition": "The scripting language enabling dynamic updates and interactive modal behavior."
+        },
+        {
+            "term": "JSON",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "FR-008",
+            "project_definition": "A lightweight data-interchange format used for mock data or storage serialization."
+        },
+        {
+            "term": "LocalStorage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-008",
+            "project_definition": "The browser-based key-value storage mechanism for maintaining data across sessions."
+        },
+        {
+            "term": "Measurable",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Success Criteria",
+            "project_definition": "A quality metric defined by a specific time threshold for completing a task."
+        },
+        {
+            "term": "Persistence",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "FR-008",
+            "project_definition": "The capability to retain state and data after a browser refresh."
+        },
+        {
+            "term": "Technology-Agnostic",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "NFR-RESPONSIVE",
+            "project_definition": "A design approach ensuring accessibility across various device types and screen sizes."
+        },
+        {
+            "term": "User-Focused",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Success Criteria",
+            "project_definition": "A requirement for visual consistency across all displayed product cards."
+        },
+        {
+            "term": "Verifiable",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Success Criteria",
+            "project_definition": "The state where all core data mutation operations are confirmed as functional."
+        }
+    ]
+}

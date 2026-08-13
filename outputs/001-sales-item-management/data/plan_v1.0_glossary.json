@@ -1,0 +1,138 @@
+{
+    "project_name": "sales-item-management",
+    "items": [
+        {
+            "term": "Branch",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: [FEATURE]",
+            "project_definition": "The specific version control pointer associated with the feature implementation."
+        },
+        {
+            "term": "CoreData",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The object-graph management framework used for local persistence."
+        },
+        {
+            "term": "DATE",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: [FEATURE]",
+            "project_definition": "The temporal marker indicating when the plan was established."
+        },
+        {
+            "term": "DB",
+            "category": "TECHNICAL_STACK",
+            "discovery": "IMPLICIT",
+            "contextual_anchor": "Complexity Tracking",
+            "project_definition": "The persistent relational or non-relational data store."
+        },
+        {
+            "term": "GATE",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Constitution Check",
+            "project_definition": "A mandatory validation milestone that must be cleared before proceeding to subsequent phases."
+        },
+        {
+            "term": "LLVM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The compiler infrastructure used for low-level code optimization and generation."
+        },
+        {
+            "term": "LOC",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The quantitative measure of source code volume."
+        },
+        {
+            "term": "Performance Goals",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The target quantitative metrics for system efficiency and responsiveness."
+        },
+        {
+            "term": "Primary Dependencies",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The essential external libraries or frameworks required for the system to function."
+        },
+        {
+            "term": "Project Type",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The architectural classification of the software, such as a web-service or mobile-app."
+        },
+        {
+            "term": "Python 3.11",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The specific version of the high-level interpreted language used for implementation."
+        },
+        {
+            "term": "Spec",
+            "category": "BUSINESS_DOMAIN",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Implementation Plan: [FEATURE]",
+            "project_definition": "The formal documentation defining the requirements and expected behavior of a feature."
+        },
+        {
+            "term": "Storage",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The mechanism and technology used for long-term data retention."
+        },
+        {
+            "term": "Structure Decision",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "STRUC-DECISION",
+            "project_definition": "The final selection of the directory layout and modular organization."
+        },
+        {
+            "term": "Target Platform",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The intended operating environment where the software will be deployed."
+        },
+        {
+            "term": "Testing",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The framework and methodology used to verify the correctness of the implementation."
+        },
+        {
+            "term": "UI",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "[REMOVE IF UNUSED] Option 3: Mobile + API (when \"iOS/Android\" detected)",
+            "project_definition": "The visual layer and interaction components presented to the end user."
+        },
+        {
+            "term": "WASM",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The binary instruction format for a stack-based virtual machine."
+        },
+        {
+            "term": "iOS",
+            "category": "TECHNICAL_STACK",
+            "discovery": "EXPLICIT",
+            "contextual_anchor": "Technical Context",
+            "project_definition": "The mobile operating system provided by Apple."
+        }
+    ]
+}
