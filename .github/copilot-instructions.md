@@ -4,6 +4,14 @@
 
 YOU MUST follow this rule EXACTLY:
 
+### ⚠️ There are always TWO writes per task — never skip the first one
+
+For **every single task**, no matter how small or fast: write `.task_runtime/current-task.json` **twice** —
+1. Once with `"in_progress"`, immediately **before** you touch any code for that task.
+2. Once with `"done"`, immediately **after** you finish it.
+
+Do not skip step 1 "because the task is quick" or do both writes back-to-back at the end. The board is meant to visibly show a task moving from To Do → In Progress → Done — going straight from To Do to Done means step 1 never happened, and that's a bug in your process, not a shortcut.
+
 ### ⚠️ NEVER check a task's checkbox before it is 100% finished
 
 A task's checkbox in tasks.md (`[x]`) is the **only** signal this system trusts to mark a task `"done"` on the Kanban board — a human will see `"done"` and believe it, without re-checking your work.
