@@ -2,8 +2,12 @@
   "name": "agentdocx-speckit",
   "displayName": "AgentDocx SpecKit",
   "description": "Spec-driven development with AI agents - watch, generate, and evaluate specifications",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "agentdocx",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abir-ommezzine/extension-github-spec-kit.git"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -35,6 +39,14 @@
       {
         "command": "agentdocx-speckit.triggerPipeline",
         "title": "Trigger Pipeline"
+      },
+      {
+        "command": "agentdocx-speckit.startFrontend",
+        "title": "Start React Frontend"
+      },
+      {
+        "command": "agentdocx-speckit.stopFrontend",
+        "title": "Stop React Frontend"
       }
     ],
     "configuration": {

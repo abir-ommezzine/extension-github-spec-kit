@@ -196,26 +196,28 @@ erDiagram
 > **⚠️ En cours de développement** — Non publiée sur le Marketplace pour le moment.  
 > **Branche dédiée** : [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) pour le code complet, tests et documentation détaillée.
 
-> ## 🚨 Le bouton "Start FastAPI Server" de l'extension ne sait PAS servir le Kanban/tickets
+> ## ✅ Corrigé en v0.0.3 — le bouton "Start FastAPI Server" sert maintenant le Kanban/tickets
 >
-> Le script `start_server.py` bundlé dans le `.vsix` **ne fait pas** `from app.main import app`. Il construit sa propre application FastAPI minimaliste en dur, qui n'inclut que `pipeline.router` — jamais `tickets.router`. Résultat : `GET /api/v1/tickets` (et `/ingest`, `/progress`, `/sync-current-task`, ...) renvoient **404**, peu importe combien de fois vous redémarrez le serveur via l'extension, peu importe si le code backend est à jour. Ce script date d'avant l'existence du tableau Kanban et n'a jamais été mis à jour pour l'inclure.
+> Jusqu'à la v0.0.2, le script `start_server.py` bundlé dans le `.vsix` construisait sa propre application FastAPI minimaliste en dur (uniquement `pipeline.router`, jamais `tickets.router`), ce qui faisait renvoyer des **404** sur `/api/v1/tickets` (et `/ingest`, `/progress`, `/sync-current-task`, ...) quel que soit l'état réel du backend.
 >
-> **Solution : ne pas utiliser cette commande pour le backend.** Lancez le vrai serveur manuellement, depuis un terminal, à la racine du dossier `backend/` du **repo source** (celui vers lequel pointe la jonction `backend` du projet enfant — voir §3.1) :
+> **Depuis la v0.0.3**, `start_server.py` importe directement `app.main:app` (le vrai module d'application, celui-là même que vous lanceriez avec `python -m uvicorn app.main:app`) au lieu de reconstruire sa propre instance. Toutes les routes — tickets, ingestion, sync `current-task.json`, providers LLM — sont donc servies normalement via le bouton "Start FastAPI Server" de l'extension. Vous pouvez vérifier à tout moment les routes chargées via `http://127.0.0.1:8000/openapi.json`.
+>
+> La v0.0.3 ajoute aussi une commande **"Start React Frontend"**, lancée automatiquement à l'activation en même temps que le serveur et le watcher : elle démarre `npm start` dans le dossier `frontend/`, et si ça échoue (dépendances cassées, bug `ajv`, `'PORT' n'est pas reconnu` sous Windows...), elle applique automatiquement la séquence de réparation décrite dans `configFrontEnd.pdf` avant de réessayer.
+>
+> Si vous utilisez encore une extension packagée en v0.0.2 ou antérieure, mettez à jour votre `.vsix` (voir §Installation ci-dessous) — ou, en attendant, lancez le serveur manuellement :
 > ```bash
 > cd backend
 > python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 > ```
-> Cela lance votre `app/main.py` réel, avec absolument toutes les fonctionnalités (tickets, ingestion, sync `current-task.json`, providers LLM...). Vous pouvez vérifier à tout moment que les bonnes routes sont chargées via `http://127.0.0.1:8000/openapi.json`.
->
-> La commande **"Start Spec Watcher"** de l'extension, elle, fonctionne correctement (elle ne touche pas au Kanban) — vous pouvez continuer à l'utiliser pour le déclenchement automatique du pipeline PDF sur changement de fichier `.md`.
 
 L'extension VS Code **AgentDocx SpecKit** remplace le dossier `scripts/` et offre une expérience intégrée **dans une seule fenêtre VS Code** :
-- **Deux canaux de logs dans la vue Output** (menu `View` → `Output` → dropdown pour basculer) :  
+- **Trois canaux de logs dans la vue Output** (menu `View` → `Output` → dropdown pour basculer) :  
   - **AgentDocx Server** — logs FastAPI, progression agents (Parsing → Summary → Glossary → Diagram → DocWriter → Layout), KPIs  
   - **AgentDocx Watcher** — logs watchdog, détection fichiers, file d'attente
-- **Démarrage automatique** au chargement de l'extension (F5 ou installation .vsix)
+  - **AgentDocx Frontend** — logs `npm start` du dashboard React, et de la réparation automatique des dépendances si besoin
+- **Démarrage automatique** au chargement de l'extension (F5 ou installation .vsix) : serveur FastAPI, watcher **et** frontend React
 - **Progression temps réel** visible dans le frontend (DocVersion créée dès le début, statut `pending` → `completed`)
-- **Commandes palette** (`Ctrl+Shift+P`) : `start_server`, `stopServer`, `startWatcher`, `stopWatcher`, `triggerPipeline`
+- **Commandes palette** (`Ctrl+Shift+P`) : `start_server`, `stopServer`, `startWatcher`, `stopWatcher`, `triggerPipeline`, `startFrontend`, `stopFrontend`
 
 > 📸 **Captures de l'extension** :  
 > 1. **AgentDocx Watcher** — logs watchdog, détection fichiers, file d'attente  
@@ -227,7 +229,7 @@ L'extension VS Code **AgentDocx SpecKit** remplace le dossier `scripts/` et offr
 
 > L'extension n'est pas encore publiée sur le Marketplace VS Code. Installez-la manuellement via le fichier `.vsix` :
 
-1. Téléchargez le fichier `agentdocx-speckit-0.0.2.vsix` depuis la section **Releases** du dépôt ou depuis le dossier racine du repo (branche `extension`).
+1. Téléchargez le fichier `agentdocx-speckit-0.0.3.vsix` (ou plus récent) depuis la section **Releases** du dépôt.
 2. Dans VS Code : `Ctrl+Shift+P` → **Extensions: Install from VSIX...**
 3. Sélectionnez le fichier `.vsix` téléchargé.
 4. Redémarrez VS Code si nécessaire.
