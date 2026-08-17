@@ -1,6 +1,6 @@
 # 🚀 Spec Kit
 
-**Spec Kit** est un pipeline multi-agents avancé conçu pour la génération, l'enrichissement et la validation automatisée de spécifications d'architecture logicielle. Il transforme des documents techniques bruts en livrables structurés et certifiés.
+**Spec Kit** Full-stack multi-agent specification pipeline with VS Code extension control, automated Kanban/Jira sync, and React monitoring dashboard.
 
 ---
 
