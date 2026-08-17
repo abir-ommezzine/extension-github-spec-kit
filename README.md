@@ -402,7 +402,7 @@ cd frontend
 npm install
 npm start
 ```
-L'interface sera accessible sur `http://localhost:3000`.
+L'interface sera accessible sur `http://localhost:5000`.
 
 ---
 
