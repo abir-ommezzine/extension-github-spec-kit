@@ -1,20 +1,30 @@
 {
-    "executive_brief": "The extension-github-spec-kit is a foundational governance framework designed as a project constitution. It establishes a library-first architectural pattern where every feature is encapsulated as a self-contained library exposing a CLI interface via a strict text-in/text-out protocol. The project enforces a non-negotiable TDD workflow and rigorous integration testing for contract changes and inter-service communication to ensure systemic stability.",
+    "executive_brief": "This document establishes a foundational technical constitution for a library-first software architecture. The core value relies on enforcing strict Test-Driven Development and CLI-first interfaces to guarantee independently testable, self-contained components. Data patterns follow a strict text I/O protocol (stdin/stdout) with structured logging for observability. Governance mandates that all pull requests verify compliance against these non-negotiable principles, ensuring architectural integrity over organizational convenience.",
     "technical_stack": {
-        "languages_and_frameworks": [],
+        "languages_and_frameworks": [
+            "CLI",
+            "JSON"
+        ],
         "architectural_constraints": [
-            "Library-First: All features must be standalone, self-contained, and independently testable",
-            "CLI Interface: Mandatory stdin/args to stdout protocol with JSON and human-readable support",
-            "Error Handling: Strict separation of stdout for data and stderr for errors",
-            "TDD Cycle: Mandatory Red-Green-Refactor sequence (Tests written -> User approved -> Tests fail -> Implementation)",
-            "Integration Scope: Mandatory testing for library contracts, contract modifications, inter-service communication, and shared schemas",
-            "Governance: PR-level verification of constitution compliance is mandatory"
+            "Every feature must start as a standalone, self-contained library with a clear purpose; organizational-only libraries are prohibited.",
+            "Every library must expose functionality via CLI using a strict text in/out protocol: stdin/args to stdout, errors to stderr.",
+            "TDD is mandatory and non-negotiable: tests must be written, user-approved, and fail before implementation begins; the Red-Green-Refactor cycle is strictly enforced.",
+            "Integration tests are mandatory for new library contract tests, contract changes, inter-service communication, and shared schemas.",
+            "Structured logging is required for observability and debuggability.",
+            "Versioning must strictly follow the MAJOR.MINOR.BUILD format.",
+            "Design must adhere to YAGNI principles and start simple.",
+            "All pull requests and code reviews must explicitly verify compliance with the constitution; any complexity must be justified.",
+            "Constitution amendments require formal documentation, approval, and a migration plan; the constitution supersedes all other practices."
         ]
     },
-    "maturity_assessment": "The project is currently in a template state, serving as a structural blueprint rather than a populated specification. While the core principles are logically mapped, the absence of a mechanism to track technical uncertainties and the presence of high-severity structural gaps indicate that the documentation is not yet actionable for implementation. Status: REFINEMENT.",
+    "maturity_assessment": "The specification exhibits a highly stable and enforceable architectural baseline, successfully mapping all core principles, testing gates, and governance rules into a coherent dependency graph. The structural completeness is optimal, with only a single low-severity gap regarding the absence of an 'Open Questions & Uncertainties' section, which is expected for a foundational template. The project is fully READY for execution, providing a non-negotiable framework for library-first development and TDD enforcement.",
     "critical_dependencies": [
-        "GOV-COMPLIANCE depends on TDD-MANDATORY for PR verification",
-        "CLI-INTERFACE implements the LIB-FIRST architectural pattern",
-        "INT-TEST-FOCUS relates to TDD-MANDATORY for validation of contract changes"
+        "CLI interface exposure depends directly on the Library-First architecture.",
+        "Mandatory TDD enforcement depends directly on the Library-First architecture to ensure independent testability.",
+        "Integration testing protocols relate directly to the mandatory TDD workflow.",
+        "Observability via structured logging relates directly to the CLI text I/O protocol.",
+        "Pull request compliance verification implements both the Library-First and TDD mandates.",
+        "Pull request compliance enforcement depends directly on the constitution amendment governance rules.",
+        "Runtime development guidance depends on the external [GUIDANCE_FILE] reference."
     ]
 }

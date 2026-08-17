@@ -1,10 +1,10 @@
 {
-    "parsing_rationale": "The provided document is a template (placeholder file) rather than a populated constitution. I have extracted the structural placeholders as sections and identified the critical missing technical content required by the target template. Since the content consists of examples and brackets, the elements extracted are based on the 'Example' comments provided in the raw content to maintain the graph structure, while marking the actual sections as gaps.",
+    "parsing_rationale": "Le document fourni est un gabarit de constitution (template) contenant des placeholders et des exemples en commentaires HTML. L'analyse a extrait les principes structurels et les règles de gouvernance à partir de ces exemples pour construire le graphe de conformité. Les sections vides ou purement placeholder sans exemples ont été traitées comme des gaps structurels.",
     "project_info": {
-        "project_name": "extension-github-spec-kit",
+        "project_name": "[PROJECT_NAME]",
         "source_type": "scratch",
-        "brief_explanation": "Template for a project constitution defining core principles and governance.",
-        "source_context": "Initial template file containing placeholders for principles, constraints, and workflow."
+        "brief_explanation": "Gabarit de constitution technique définissant les principes fondamentaux de développement (Library-First, CLI, TDD), les contraintes supplémentaires et les règles de gouvernance.",
+        "source_context": "Fichier markdown template (constitution.md) contenant des placeholders et des exemples en commentaires HTML pour guider la rédaction."
     },
     "doc_type": "constitution",
     "sections": [
@@ -72,72 +72,128 @@
     "elements": [
         {
             "type": "coding_standard",
-            "identifier": "LIB-FIRST",
-            "content": "Every feature starts as a standalone library; Libraries must be self-contained, independently testable, and documented.",
+            "identifier": "PRIN-LIB-FIRST",
+            "content": "Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries.",
             "source_section": "[PRINCIPLE_1_NAME]",
             "attributes": {
-                "scope": "architecture"
+                "category": "Architecture"
             }
         },
         {
             "type": "coding_standard",
-            "identifier": "CLI-INTERFACE",
-            "content": "Every library exposes functionality via CLI using text in/out protocol (stdin/args -> stdout, errors -> stderr) supporting JSON and human-readable formats.",
+            "identifier": "PRIN-CLI-IFACE",
+            "content": "Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats.",
             "source_section": "[PRINCIPLE_2_NAME]",
             "attributes": {
-                "protocol": "text-io"
+                "category": "Interface"
             }
         },
         {
             "type": "testing_gate",
-            "identifier": "TDD-MANDATORY",
-            "content": "TDD mandatory: Tests written -> User approved -> Tests fail -> Then implement; Red-Green-Refactor cycle strictly enforced.",
+            "identifier": "PRIN-TDD-MAND",
+            "content": "TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced.",
             "source_section": "[PRINCIPLE_3_NAME]",
             "attributes": {
-                "strictness": "non-negotiable"
+                "enforcement": "non-negotiable"
             }
         },
         {
             "type": "testing_gate",
-            "identifier": "INT-TEST-FOCUS",
-            "content": "Integration tests required for: New library contract tests, Contract changes, Inter-service communication, and Shared schemas.",
+            "identifier": "PRIN-INTEG-TEST",
+            "content": "Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas.",
             "source_section": "[PRINCIPLE_4_NAME]",
             "attributes": {
-                "scope": "integration"
+                "category": "Integration"
+            }
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "PRIN-OBSERVABILITY",
+            "content": "Text I/O ensures debuggability; Structured logging required.",
+            "source_section": "[PRINCIPLE_5_NAME]",
+            "attributes": {
+                "category": "Observability"
             }
         },
         {
             "type": "rule",
-            "identifier": "GOV-COMPLIANCE",
-            "content": "All PRs and reviews must verify compliance with the constitution.",
+            "identifier": "PRIN-VERSIONING",
+            "content": "MAJOR.MINOR.BUILD format for versioning.",
+            "source_section": "[PRINCIPLE_5_NAME]",
+            "attributes": {
+                "category": "Versioning"
+            }
+        },
+        {
+            "type": "coding_standard",
+            "identifier": "PRIN-SIMPLICITY",
+            "content": "Start simple, YAGNI principles.",
+            "source_section": "[PRINCIPLE_5_NAME]",
+            "attributes": {
+                "category": "Design"
+            }
+        },
+        {
+            "type": "workflow_constraint",
+            "identifier": "GOV-AMENDMENT",
+            "content": "Constitution supersedes all other practices; Amendments require documentation, approval, migration plan.",
             "source_section": "Governance",
             "attributes": {
-                "enforcement": "PR-level"
+                "category": "Governance"
+            }
+        },
+        {
+            "type": "workflow_constraint",
+            "identifier": "GOV-PR-COMPLIANCE",
+            "content": "All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance.",
+            "source_section": "Governance",
+            "attributes": {
+                "category": "Review"
             }
         }
     ],
     "relationships": [
         {
-            "source": "TDD-MANDATORY",
-            "to": "INT-TEST-FOCUS",
-            "relation_type": "relates_to"
-        },
-        {
-            "source": "GOV-COMPLIANCE",
-            "to": "TDD-MANDATORY",
+            "source": "PRIN-CLI-IFACE",
+            "to": "PRIN-LIB-FIRST",
             "relation_type": "depends_on"
         },
         {
-            "source": "LIB-FIRST",
-            "to": "CLI-INTERFACE",
+            "source": "PRIN-TDD-MAND",
+            "to": "PRIN-LIB-FIRST",
+            "relation_type": "depends_on"
+        },
+        {
+            "source": "PRIN-INTEG-TEST",
+            "to": "PRIN-TDD-MAND",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "PRIN-OBSERVABILITY",
+            "to": "PRIN-CLI-IFACE",
+            "relation_type": "relates_to"
+        },
+        {
+            "source": "GOV-PR-COMPLIANCE",
+            "to": "PRIN-LIB-FIRST",
             "relation_type": "implements"
+        },
+        {
+            "source": "GOV-PR-COMPLIANCE",
+            "to": "PRIN-TDD-MAND",
+            "relation_type": "implements"
+        },
+        {
+            "source": "GOV-PR-COMPLIANCE",
+            "to": "GOV-AMENDMENT",
+            "relation_type": "depends_on"
         }
     ],
     "structural_gaps": [
         {
             "missing_section": "Open Questions & Uncertainties",
-            "priority": "HIGH",
-            "remediation_advice": "The document is a template and contains no section for tracking open technical questions or uncertainties."
+            "priority": "BASSE",
+            "remediation_advice": "Le document est un template et ne contient pas de section dédiée aux questions ouvertes ou incertitudes. Ajouter une section pour tracer les décisions en attente."
         }
     ],
     "open_questions": []

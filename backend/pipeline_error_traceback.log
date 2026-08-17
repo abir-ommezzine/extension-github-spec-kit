@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "c:\Users\MSI\Bureau\sales-item-management\backend\app\api\v1\endpoints\pipeline.py", line 487, in upload_and_process_document
+  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\api\v1\endpoints\pipeline.py", line 487, in upload_and_process_document
     final_state = await app_graph.ainvoke(initial_state)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\main.py", line 4090, in ainvoke
@@ -39,20 +39,20 @@ Traceback (most recent call last):
     return fn(*args, **kwargs)
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langchain_core\runnables\config.py", line 698, in wrapper
     return func(*args, **kwargs)
-  File "c:\Users\MSI\Bureau\sales-item-management\backend\app\graph\nodes.py", line 115, in parsing_node
+  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\graph\nodes.py", line 115, in parsing_node
     parsed_doc = run_parsing_agent(file_name=file_name, file_content=file_content)
-  File "c:\Users\MSI\Bureau\sales-item-management\backend\app\services\parser_service.py", line 77, in run_parsing_agent
+  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\services\parser_service.py", line 77, in run_parsing_agent
     response = chat_completion(
         model=get_default_model(),
     ...<5 lines>...
         temperature=0.0
     )
-  File "c:\Users\MSI\Bureau\sales-item-management\backend\app\core\llm_client.py", line 324, in chat_completion
+  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\core\llm_client.py", line 324, in chat_completion
     return provider.chat_completion(messages, model, **kwargs)
            ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "c:\Users\MSI\Bureau\sales-item-management\backend\app\core\llm_client.py", line 44, in wrapper
+  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\core\llm_client.py", line 44, in wrapper
     return func(*args, **kwargs)
-  File "c:\Users\MSI\Bureau\sales-item-management\backend\app\core\llm_client.py", line 211, in chat_completion
+  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\core\llm_client.py", line 211, in chat_completion
     return self.client.chat.completions.create(model=model, messages=messages, **kwargs)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\openai\_utils\_utils.py", line 298, in wrapper
@@ -73,4 +73,4 @@ Traceback (most recent call last):
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\openai\_base_client.py", line 1105, in request
     raise self._make_status_error_from_response(err.response) from None
 openai.RateLimitError: Error code: 429 - {'status': 429, 'title': 'Too Many Requests'}
-During task with name 'parsing_agent' and id 'b7344b2a-aff4-0aab-6e97-f3de3ab52cd5'
+During task with name 'parsing_agent' and id '54a03a0d-95c5-825e-0a93-4cdb9c2de130'

@@ -1,10 +1,18 @@
 [
-  "Data Format (JSON)",
-  "ENT-ITEM",
-  "Interface Contract: Item Storage API",
-  "STOR-DEL",
-  "STOR-ERR",
-  "STOR-GET",
-  "STOR-SAVE",
-  "Storage Methods"
+  "Core Principles",
+  "GOV-01",
+  "GOV-02",
+  "PRIN-01",
+  "PRIN-02",
+  "PRIN-03",
+  "PRIN-04",
+  "PRIN-05",
+  "[PRINCIPLE_1_NAME]",
+  "[PRINCIPLE_2_NAME]",
+  "[PRINCIPLE_3_NAME]",
+  "[PRINCIPLE_4_NAME]",
+  "[PRINCIPLE_5_NAME]",
+  "[PROJECT_NAME] Constitution",
+  "[SECTION_2_NAME]",
+  "[SECTION_3_NAME]"
 ]
