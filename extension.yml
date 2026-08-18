@@ -8,7 +8,14 @@ extension:
   repository: "https://github.com/abir-ommezzine/extension-github-spec-kit"
   license: "MIT"
   homepage: "https://github.com/abir-ommezzine/extension-github-spec-kit"
-  requires:
-    speckit_version: ">=0.1.0"
   category: "integration"
-  effect: "Read+Write"
+  effect: "read-write"
+requires:
+  speckit_version: ">=0.1.0"
+provides:
+  scripts:
+    - name: "agentdocx-doc-pipeline"
+      file: "scripts/bash/create-doc-pipeline.sh"
+      description: "Runs the AgentDocx multi-agent documentation pipeline"
+      runtimes:
+        - "bash"
