@@ -491,6 +491,23 @@ Lorsque vous ouvrez le projet enfant dans VS Code, l'extension **génère automa
 
 > ⚠️ **`/ingest` (ou le bouton "Ingest Tasks" du frontend) ne change JAMAIS le statut d'un ticket.** Il ne fait que rafraîchir le titre, la description et l'état visuel de la case à cocher (`checkbox_state`, affichage uniquement) depuis `tasks.md`. **Seul `.task_runtime/current-task.json`**, lu par le watcher backend, peut faire passer un ticket de `todo` à `in_progress` ou `done`. Si vos tickets restent bloqués en `todo` alors que `tasks.md` montre des cases cochées, vérifiez que `current-task.json` existe et contient bien un objet `tasks` à jour — pas que vous avez ré-ingéré.
 
+##### 3.4. 🔀 Tester avec un autre agent (Claude, Gemini, etc.)
+
+> ⚠️ **Non automatique.** La génération décrite en 3.3 ne cible que `.github/copilot-instructions.md`, le fichier que **GitHub Copilot** lit automatiquement. Aucun fichier équivalent n'est généré pour un autre agent — si vous ouvrez le projet enfant avec Claude Code, Gemini CLI, etc., le contrat de synchronisation ne leur est tout simplement jamais transmis, et les tickets resteront bloqués en `todo`.
+
+Le backend et le watcher (`_watch_current_task_file`) sont eux agnostiques : ils surveillent uniquement `.task_runtime/current-task.json` et ne savent pas quel agent l'a écrit. Pour faire fonctionner la synchronisation Kanban avec un autre agent, transmettez-lui vous-même le même contrat :
+
+1. Ouvrez le fichier `.github/copilot-instructions.md` généré à la racine du projet enfant (identique à celui du repo source).
+2. Copiez-collez son contenu dans le fichier d'instructions que votre agent charge réellement, à la racine du projet enfant :
+   - Claude Code → `CLAUDE.md`
+   - Gemini CLI → `GEMINI.md`
+   - Autre agent → référez-vous à sa documentation pour connaître le nom du fichier d'instructions qu'il lit automatiquement (ex. `AGENTS.md` pour certains outils)
+3. Modifications à apporter au texte collé :
+   - Remplacez les mentions de « Copilot » / « GitHub Copilot » par le nom de l'agent utilisé — c'est purement cosmétique.
+   - Ne touchez **pas** au contrat JSON (`task_id`, `status`, `tasks`, la structure de `.task_runtime/current-task.json`) : c'est exactement ce que le watcher backend attend, quel que soit l'agent qui écrit le fichier.
+
+Tant que l'agent suit fidèlement ce contrat copié, la synchronisation Kanban se comporte comme avec Copilot.
+
 ---
 
 #### 4. Démarrage dans VS Code
