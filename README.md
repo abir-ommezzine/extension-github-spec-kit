@@ -1,5 +1,9 @@
 # 🚀 Spec Kit
 
+<img src="talan-logo.png" alt="Talan Tunisie" width="220" />
+
+> 🎓 Projet réalisé dans le cadre d'un **stage d'été chez Talan Tunisie**.
+
 **Spec Kit** Full-stack multi-agent specification pipeline with VS Code extension control, automated Kanban/Jira sync, and React monitoring dashboard.
 
 ---

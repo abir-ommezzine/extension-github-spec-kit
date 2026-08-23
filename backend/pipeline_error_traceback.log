@@ -10,18 +10,10 @@ Traceback (most recent call last):
     async for _ in runner.atick(
     ...<16 lines>...
             yield o
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\_runner.py", line 557, in atick
-    _panic_or_proceed(
-    ~~~~~~~~~~~~~~~~~^
-        futures.done.union(f for f, t in futures.items() if t is not None),
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<3 lines>...
-        handled_futures=handled_futures,
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\_runner.py", line 396, in atick
+    await arun_with_retry(
+    ...<15 lines>...
     )
-    ^
-  File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\_runner.py", line 687, in _panic_or_proceed
-    raise exc
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langgraph\pregel\_retry.py", line 744, in arun_with_retry
     return await task.proc.ainvoke(task.input, config)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -47,13 +39,9 @@ Traceback (most recent call last):
     return fn(*args, **kwargs)
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\langchain_core\runnables\config.py", line 698, in wrapper
     return func(*args, **kwargs)
-  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\graph\nodes.py", line 219, in glossary_node
-    glossary_doc = agent_service.generate_glossary(
-        parsed_json_dict=parsed_json_dict,
-        glossary_spec_dict=glossary_spec_dict,
-        valid_anchors=valid_anchors
-    )
-  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\services\glossary_service.py", line 60, in generate_glossary
+  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\graph\nodes.py", line 115, in parsing_node
+    parsed_doc = run_parsing_agent(file_name=file_name, file_content=file_content)
+  File "c:\Users\MSI\Bureau\extension-github-spec-kit\backend\app\services\parser_service.py", line 77, in run_parsing_agent
     response = chat_completion(
         model=get_default_model(),
     ...<5 lines>...
@@ -84,5 +72,5 @@ Traceback (most recent call last):
                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\MSI\AppData\Roaming\Python\Python314\site-packages\openai\_base_client.py", line 1105, in request
     raise self._make_status_error_from_response(err.response) from None
-openai.RateLimitError: Error code: 429 - {'status': 429, 'title': 'Too Many Requests'}
-During task with name 'glossary_agent' and id 'd0706ab4-e45b-40ff-f2f8-845f84239722'
+openai.APIStatusError: Error code: 410 - {'type': 'about:blank', 'title': 'Gone', 'status': 410, 'detail': "The model 'z-ai/glm-5.2' has reached its end of life on 2026-08-21T09:00:00Z and is no longer available."}
+During task with name 'parsing_agent' and id 'cff6cd5e-3edb-0bb5-8ce2-5740cd325088'
