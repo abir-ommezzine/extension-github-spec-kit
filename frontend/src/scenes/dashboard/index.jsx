@@ -75,7 +75,11 @@ import {
   updateTicketInState,
   fetchProjects,
   fetchTaskState,
+  fetchProjectMetrics,
+  fetchTicketMetrics,
+  writeCurrentTask,
 } from "./kanbanSlice";
+import { useWebSocket } from "../../hooks/useWebSocket";
 
 const GlassCard = ({ children, ...props }) => {
   const theme = useTheme();
@@ -166,18 +170,25 @@ const CheckboxIcon = React.forwardRef(({ state, ...props }, ref) => {
   }
 });
 
-const TicketCard = ({ ticket, onClick, index }) => {
+const TicketCard = ({ ticket, onClick, index, onCheckboxClick }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode) || {};
-  
+
   const statusColors = {
     todo: { border: colors.blueAccent?.['500'] || '#2196f3', bg: colors.blueAccent?.['50'] || '#e3f2fd' },
     in_progress: { border: colors.orangeAccent?.['500'] || '#ff9800', bg: colors.orangeAccent?.['50'] || '#fff3e0' },
     done: { border: colors.greenAccent?.['500'] || '#4cceac', bg: colors.greenAccent?.['50'] || '#e0f2f1' },
   };
-  
+
   const statusStyle = statusColors[ticket.status] || statusColors.todo;
-  
+
+  const handleCheckboxClick = (e) => {
+    e.stopPropagation();
+    if (onCheckboxClick) {
+      onCheckboxClick(ticket);
+    }
+  };
+
   return (
     <Draggable draggableId={ticket.id} index={index}>
       {(provided, snapshot) => (
@@ -190,12 +201,19 @@ const TicketCard = ({ ticket, onClick, index }) => {
             borderLeft: `4px solid ${statusStyle.border}`,
             backgroundColor: snapshot.isDragging ? statusStyle.bg : "inherit",
             cursor: "pointer",
-            transition: "all 0.2s ease",
+            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
             "&:hover": {
               boxShadow: theme.palette.mode === "dark"
                 ? "0 4px 20px rgba(0, 0, 0, 0.4)"
                 : "0 4px 20px rgba(0, 0, 0, 0.12)",
               transform: snapshot.isDragging ? "none" : "translateY(-2px)",
+            },
+            // Animation for automatic status transitions
+            animation: snapshot.isDragging ? "none" : "status-glow 0.5s ease-in-out",
+            "@keyframes status-glow": {
+              "0%": { boxShadow: `0 0 0px ${statusStyle.border}` },
+              "50%": { boxShadow: `0 0 15px ${statusStyle.border}` },
+              "100%": { boxShadow: `0 0 0px ${statusStyle.border}` },
             },
           }}
           onClick={onClick}
@@ -203,7 +221,12 @@ const TicketCard = ({ ticket, onClick, index }) => {
           <Box p={2}>
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
               <Tooltip title={`Checkbox: ${ticket.checkbox_state || "unchecked"}`}>
-                <CheckboxIcon state={ticket.checkbox_state} />
+                <Box 
+                  onClick={handleCheckboxClick}
+                  sx={{ cursor: 'pointer', p: 0.5, borderRadius: 1, '&:hover': { backgroundColor: 'action.hover' } }}
+                >
+                  <CheckboxIcon state={ticket.checkbox_state} />
+                </Box>
               </Tooltip>
               <StatusChip status={ticket.status} />
             </Box>
@@ -241,9 +264,10 @@ const TicketCard = ({ ticket, onClick, index }) => {
   );
 };
 
-const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
+const Column = ({ title, status, tickets, placeholder, projectName, ...droppableProps }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const dispatch = useDispatch();
   const { taskState } = useSelector((state) => state.kanban);
   
   const statusColors = {
@@ -257,6 +281,24 @@ const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
   // Check if this column has the current in-progress task
   const isCurrentInProgress = status === "in_progress" && taskState.current_task > 0;
   const currentTaskStatus = taskState.task_status[taskState.current_task];
+  
+  const handleCheckboxClick = (ticket) => {
+    // Build tasks map with updated status
+    const newStatus = ticket.status === 'done' ? 'todo' : 
+                     ticket.status === 'in_progress' ? 'done' : 'in_progress';
+    const tasksMap = tickets.reduce((acc, t) => {
+      acc[t.ticket_id] = t.status;
+      return acc;
+    }, {});
+    tasksMap[ticket.ticket_id] = newStatus;
+    
+    dispatch(writeCurrentTask({
+      taskId: ticket.ticket_id,
+      status: newStatus,
+      projectName: projectName,
+      tasksMap
+    }));
+  };
   
   return (
     <Droppable droppableId={status} {...droppableProps}>
@@ -335,7 +377,13 @@ const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
               </Box>
             ) : (
               tickets.map((ticket, index) => (
-                <TicketCard key={ticket.id} ticket={ticket} index={index} onClick={() => droppableProps.onTicketClick(ticket)} />
+                <TicketCard 
+                  key={ticket.id} 
+                  ticket={ticket} 
+                  index={index} 
+                  onClick={() => droppableProps.onTicketClick(ticket)}
+                  onCheckboxClick={handleCheckboxClick}
+                />
               ))
             )}
             {/* provided.placeholder is already correctly rendered here as a JSX element */}
@@ -346,10 +394,14 @@ const Column = ({ title, status, tickets, placeholder, ...droppableProps }) => {
     </Droppable>
   );
 };
-const CommentItem = ({ comment }) => {
+const CommentItem = ({ comment, isLightMode = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode) || {};
   const isAgent = comment.author_type === "agent";
+  
+  const textPrimary = isLightMode ? theme.palette.text.primary : (colors.grey?.['100'] || '#f5f5f5');
+  const textSecondary = isLightMode ? theme.palette.text.secondary : (colors.grey?.['300'] || '#e0e0e0');
+  const textMuted = isLightMode ? theme.palette.text.disabled : (colors.grey?.['500'] || '#9e9e9e');
   
   return (
     <ListItem sx={{ py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
@@ -361,12 +413,12 @@ const CommentItem = ({ comment }) => {
           mr: 2,
         }}
       >
-        {isAgent ? "🤖" : "👤"}
+        {isAgent ? "����" : "����"}
       </Avatar>
       <ListItemText
         primary={
           <Box display="flex" alignItems="center" gap={1}>
-            <Typography variant="body2" fontWeight={600} color={colors.grey?.['100'] || '#f5f5f5'}>
+            <Typography variant="body2" fontWeight={600} color={textPrimary}>
               {isAgent ? "Agent" : "User"}
             </Typography>
             <Chip label={isAgent ? "AI" : "Human"} size="small" variant="outlined" sx={{ fontSize: 10 }} />
@@ -374,8 +426,8 @@ const CommentItem = ({ comment }) => {
         }
         secondary={
           <Box>
-            <Typography variant="body2" color={colors.grey?.['300'] || '#e0e0e0'}>{comment.body}</Typography>
-            <Typography variant="caption" color={colors.grey?.['500'] || '#9e9e9e'}>
+            <Typography variant="body2" color={textSecondary}>{comment.body}</Typography>
+            <Typography variant="caption" color={textMuted}>
               {new Date(comment.created_at).toLocaleString()}
             </Typography>
           </Box>
@@ -385,18 +437,22 @@ const CommentItem = ({ comment }) => {
   );
 };
 
-const EventItem = ({ event }) => {
+const EventItem = ({ event, isLightMode = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode) || {};
   
+  const textPrimary = isLightMode ? theme.palette.text.primary : (colors.grey?.['100'] || '#f5f5f5');
+  const textSecondary = isLightMode ? theme.palette.text.secondary : (colors.grey?.['300'] || '#e0e0e0');
+  const textMuted = isLightMode ? theme.palette.text.disabled : (colors.grey?.['500'] || '#9e9e9e');
+  
   const eventIcons = {
-    status_change: "🔄",
-    status_override: "⚠️",
-    comment_added: "💬",
-    doc_regenerated: "📄",
+    status_change: "����",
+    status_override: "������",
+    comment_added: "����",
+    doc_regenerated: "����",
   };
   
-  const icon = eventIcons[event.event_type] || "📋";
+  const icon = eventIcons[event.event_type] || "����";
   
   return (
     <ListItem sx={{ py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
@@ -412,17 +468,17 @@ const EventItem = ({ event }) => {
       </Avatar>
       <ListItemText
         primary={
-          <Typography variant="body2" fontWeight={600} color={colors.grey?.['100'] || '#f5f5f5'}>
+          <Typography variant="body2" fontWeight={600} color={textPrimary}>
             {event.event_type.replace("_", " ")}
           </Typography>
         }
         secondary={
           <Box>
-            <Typography variant="body2" color={colors.grey?.['300'] || '#e0e0e0'}>
+            <Typography variant="body2" color={textSecondary}>
               {event.payload ? JSON.stringify(event.payload) : "No payload"}
             </Typography>
-            <Typography variant="caption" color={colors.grey?.['500'] || '#9e9e9e'}>
-              {new Date(event.created_at).toLocaleString()} • {event.author_type === "agent" ? "🤖 Agent" : "👤 User"}
+            <Typography variant="caption" color={textMuted}>
+              {new Date(event.created_at).toLocaleString()} • {event.author_type === "agent" ? "���� Agent" : "���� User"}
             </Typography>
           </Box>
         }
@@ -434,14 +490,23 @@ const EventItem = ({ event }) => {
 const TicketDetailDialog = ({ ticket, open, onClose, onAddComment, onRefreshPdf }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const isLightMode = theme.palette.mode === 'light';
   const [commentText, setCommentText] = useState("");
   const [activeTab, setActiveTab] = useState(0);
   const [comments, setComments] = useState([]);
-  const [events, setEvents] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
+  const [events, setEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
+  const [ticketMetrics, setTicketMetrics] = useState(null);
+  const [loadingMetrics, setLoadingMetrics] = useState(false);
   const [pdfUrl, setPdfUrl] = useState(null);
   const [loadingPdf, setLoadingPdf] = useState(false);
+  
+  // Couleurs adaptées au mode (light = plus sombre, dark = existant)
+  const textPrimary = isLightMode ? theme.palette.text.primary : (colors.grey[100] || '#f5f5f5');
+  const textSecondary = isLightMode ? theme.palette.text.secondary : (colors.grey[300] || '#e0e0e0');
+  const textMuted = isLightMode ? theme.palette.text.disabled : (colors.grey[400] || '#bdbdbd');
+  const textDisabled = isLightMode ? theme.palette.text.disabled : (colors.grey[500] || '#9e9e9e');
   
   const dispatch = useDispatch();
   
@@ -454,18 +519,22 @@ const TicketDetailDialog = ({ ticket, open, onClose, onAddComment, onRefreshPdf 
   const loadData = async () => {
     setLoadingComments(true);
     setLoadingEvents(true);
+    setLoadingMetrics(true);
     try {
-      const [commentsRes, eventsRes] = await Promise.all([
+      const [commentsRes, eventsRes, metricsRes] = await Promise.all([
         dispatch(fetchTicketComments(ticket.id)).unwrap(),
         dispatch(fetchTicketEvents(ticket.id)).unwrap(),
+        dispatch(fetchTicketMetrics(ticket.id)).unwrap(),
       ]);
       setComments(commentsRes);
       setEvents(eventsRes);
+      setTicketMetrics(metricsRes);
     } catch (err) {
       console.error("Failed to load ticket details:", err);
     } finally {
       setLoadingComments(false);
       setLoadingEvents(false);
+      setLoadingMetrics(false);
     }
   };
   
@@ -502,7 +571,7 @@ const TicketDetailDialog = ({ ticket, open, onClose, onAddComment, onRefreshPdf 
         <Box display="flex" alignItems="center" gap={2}>
           <CheckboxIcon state={ticket.checkbox_state} />
           <Box>
-            <Typography variant="h6" fontWeight={600} sx={{ color: colors.grey[100] }}>
+            <Typography variant="h6" fontWeight={600} sx={{ color: textPrimary }}>
               {ticket.title}
             </Typography>
             <StatusChip status={ticket.status} />
@@ -515,12 +584,13 @@ const TicketDetailDialog = ({ ticket, open, onClose, onAddComment, onRefreshPdf 
           <Tab label="Description" icon={<DescriptionIcon />} />
           <Tab label="Comments" icon={<CommentIcon />} />
           <Tab label="Events" icon={<HistoryIcon />} />
+          <Tab label="Metrics" icon={"📊"} />
           <Tab label="Document" icon={<PictureAsPdfIcon />} />
         </Tabs>
         
         {activeTab === 0 && (
           <Box>
-            <Typography variant="body1" color={colors.grey[300]} sx={{ whiteSpace: "pre-wrap" }}>
+            <Typography variant="body1" color={textSecondary} sx={{ whiteSpace: "pre-wrap" }}>
               {ticket.description || "No description available"}
             </Typography>
           </Box>
@@ -535,11 +605,11 @@ const TicketDetailDialog = ({ ticket, open, onClose, onAddComment, onRefreshPdf 
                   <CircularProgress size={24} />
                 </Box>
               ) : comments.length === 0 ? (
-                <Typography variant="body2" color={colors.grey[400]} align="center" sx={{ py: 4 }}>
+                <Typography variant="body2" color={textMuted} align="center" sx={{ py: 4 }}>
                   No comments yet
                 </Typography>
               ) : (
-                comments.map((comment) => <CommentItem key={comment.id} comment={comment} />)
+                comments.map((comment) => <CommentItem key={comment.id} comment={comment} isLightMode={isLightMode} />)
               )}
             </List>
             <Divider sx={{ my: 2 }} />
@@ -569,11 +639,11 @@ const TicketDetailDialog = ({ ticket, open, onClose, onAddComment, onRefreshPdf 
                   <CircularProgress size={24} />
                 </Box>
               ) : events.length === 0 ? (
-                <Typography variant="body2" color={colors.grey[400]} align="center" sx={{ py: 4 }}>
+                <Typography variant="body2" color={textMuted} align="center" sx={{ py: 4 }}>
                   No events yet
                 </Typography>
               ) : (
-                events.map((event) => <EventItem key={event.id} event={event} />)
+                events.map((event) => <EventItem key={event.id} event={event} isLightMode={isLightMode} />)
               )}
             </List>
           </Box>
@@ -581,12 +651,60 @@ const TicketDetailDialog = ({ ticket, open, onClose, onAddComment, onRefreshPdf 
         
         {activeTab === 3 && (
           <Box>
+            <Typography variant="h6" sx={{ sx: { mt: 2, textAlign: "center" } }}>
+              Metrics
+            </Typography>
+            {loadingMetrics ? (
+              <Box display="flex" justifyContent="center" py={4}>
+                <CircularProgress size={24} />
+              </Box>
+            ) : ticketMetrics ? (
+              <Box sx={{ p: 2 }}>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Conformity Score: {ticketMetrics.conformity_score !== null ? ticketMetrics.conformity_score : "N/A"}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Verdict: {ticketMetrics.verdict || "N/A"}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Requirement Coverage: {ticketMetrics.requirement_coverage !== null ? ticketMetrics.requirement_coverage : "N/A"}%
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Code Quality: {ticketMetrics.code_quality !== null ? ticketMetrics.code_quality : "N/A"}%
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Architecture: {ticketMetrics.architecture !== null ? ticketMetrics.architecture : "N/A"}%
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Traceability: {ticketMetrics.traceability !== null ? ticketMetrics.traceability : "N/A"}%
+                </Typography>
+                {ticketMetrics.last_audit_at && (
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    Last Audit: {new Date(ticketMetrics.last_audit_at).toLocaleDateString()}
+                  </Typography>
+                )}
+                {ticketMetrics.agent_metrics && (
+                  <Typography variant="body2" sx={{ mb: 1, color: "secondary" }}>
+                    Agent Metrics: Requirement {ticketMetrics.agent_metrics.requirement_coverage !== null ? ticketMetrics.agent_metrics.requirement_coverage : "N/A"}%, Code Quality {ticketMetrics.agent_metrics.code_quality !== null ? ticketMetrics.agent_metrics.code_quality : "N/A"}%
+                  </Typography>
+                )}
+              </Box>
+            ) : (
+              <Typography variant="body2" color={textMuted} sx={{ py: 4, textAlign: "center" }}>
+                No metrics available
+              </Typography>
+            )}
+          </Box>
+        )}
+        
+        {activeTab === 4 && (
+          <Box>
             <Divider sx={{ mb: 2 }} />
             <Box display="flex" flexDirection="column" alignItems="center" py={4}>
-              <Typography variant="h6" color={colors.grey[300]} gutterBottom>
+              <Typography variant="h6" color={textSecondary} gutterBottom>
                 Linked Document (PDF)
               </Typography>
-              <Typography variant="body2" color={colors.grey[500]} sx={{ mb: 3, textAlign: "center" }}>
+              <Typography variant="body2" color={textMuted} sx={{ mb: 3, textAlign: "center" }}>
                 This ticket is linked to an artifact from Feature 1. The latest generated PDF will be shown here.
               </Typography>
               <Button
@@ -696,9 +814,31 @@ const KanbanBoard = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { tickets, todoTickets, inProgressTickets, doneTickets, selectedTicket, progress, loading, projectName, projects, taskState } = useSelector((state) => state.kanban);
+  const { tickets, todoTickets, inProgressTickets, doneTickets, selectedTicket, progress, loading, projectName, projects, taskState, projectMetrics } = useSelector((state) => state.kanban);
   
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
+  
+  // WebSocket for real-time updates
+  const wsUrl = process.env.REACT_APP_WS_URL || "ws://localhost:8000/ws";
+  const { isConnected: wsConnected, lastMessage: wsMessage } = useWebSocket(
+    `${wsUrl}/tickets/${projectName}`,
+    {
+      enabled: !!projectName,
+      onMessage: (data) => {
+        // Handle real-time ticket updates from WebSocket
+        if (data.type === 'ticket_update') {
+          dispatch(updateTicketInState(data.payload));
+          dispatch(fetchProgress(projectName));
+        } else if (data.type === 'progress_update') {
+          dispatch(fetchProgress(projectName));
+        } else if (data.type === 'task_state_update') {
+          dispatch(fetchTaskState(projectName));
+        }
+      },
+      reconnect: true,
+      reconnectInterval: 5000,
+    }
+  );
   
   useEffect(() => {
     dispatch(fetchProjects());
@@ -712,7 +852,7 @@ const KanbanBoard = () => {
     }
   }, [dispatch, projectName]);
   
-  // Auto-refresh tickets, progress, and task state when project is selected
+  // Auto-refresh tickets, progress, task state, and metrics when project is selected
   useEffect(() => {
     if (!projectName) return;
     
@@ -720,17 +860,19 @@ const KanbanBoard = () => {
       dispatch(fetchTickets({ projectName }));
       dispatch(fetchProgress(projectName));
       dispatch(fetchTaskState(projectName));
+      dispatch(fetchProjectMetrics(projectName));
     };
     
     refresh(); // Initial load
     
-    // Poll every 10 seconds for updates
-    const interval = setInterval(refresh, 10000);
+    // Poll every 15 seconds (reduced from 5s to reduce server load)
+    // WebSocket handles real-time updates, polling is fallback
+    const interval = setInterval(refresh, 15000);
     
     return () => clearInterval(interval);
   }, [dispatch, projectName]);
   
-  // Auto-ingest tasks for the selected project (once + every 30s)
+  // Auto-ingest tasks for the selected project (once + every 60s)
   useEffect(() => {
     if (!projectName) return;
     
@@ -749,7 +891,7 @@ const KanbanBoard = () => {
     
     ingestAndRefresh(); // Initial load
     
-    const interval = setInterval(ingestAndRefresh, 30000);
+    const interval = setInterval(ingestAndRefresh, 60000);
     
     return () => clearInterval(interval);
   }, [dispatch, projectName]);
@@ -774,7 +916,20 @@ const KanbanBoard = () => {
     
     const ticket = tickets.find(t => t.id === draggableId);
     if (ticket && source.droppableId !== destination.droppableId) {
-      dispatch(updateTicketStatus({ ticketId: ticket.id, status: destination.droppableId }))
+      // Build tasks map with updated status
+      const tasksMap = tickets.reduce((acc, t) => {
+        acc[t.ticket_id] = t.status;
+        return acc;
+      }, {});
+      tasksMap[ticket.ticket_id] = destination.droppableId;
+      
+      // Write to current-task.json (watcher will sync to DB)
+      dispatch(writeCurrentTask({
+        taskId: ticket.ticket_id,
+        status: destination.droppableId,
+        projectName: projectName,
+        tasksMap
+      }))
         .then(() => {
           setSnackbar({ open: true, message: `Moved to ${destination.droppableId.replace("_", " ")}`, severity: "success" });
           dispatch(fetchProgress(projectName));
@@ -831,14 +986,14 @@ const KanbanBoard = () => {
       Task {taskState.current_task || 1} / {taskState.total_tasks}
     </Typography>
     <Chip
-      label={taskState.task_status[taskState.current_task] === "in_progress" ? "In Progress" : taskState.task_status[taskState.current_task] === "done" ? "Done" : "Pending"}
+      label={taskState.task_status[taskState.current_task] === "in_progress" ? "In Progress" : taskState.task_status[taskState.current_task] === "done" ? "Done" : "To Do"}
       size="small"
       sx={{
         backgroundColor: taskState.task_status[taskState.current_task] === "in_progress"
           ? `${colors.greenAccent?.['500'] || '#4cceac'}33`
           : taskState.task_status[taskState.current_task] === "done"
           ? `${colors.greenAccent?.['500'] || '#4cceac'}33`
-          : `${colors.orangeAccent?.['500'] || '#ff9800'}33`,
+          : `${colors.blueAccent?.['500'] || '#2196f3'}33`,
       }}
     />
   </Box>
@@ -877,7 +1032,7 @@ const KanbanBoard = () => {
               <Button variant="outlined" startIcon={<RefreshIcon />} onClick={handleIngest} disabled={!projectName}>
                 Ingest Tasks
               </Button>
-              <Button variant="contained" startIcon={<AnalyticsIcon />} onClick={() => dispatch(fetchProgress(projectName))} disabled={!projectName}>
+              <Button variant="contained" startIcon={<AnalyticsIcon />} onClick={() => { dispatch(fetchProgress(projectName)); dispatch(fetchTickets({ projectName })); dispatch(fetchTaskState(projectName)); }} disabled={!projectName}>
                 Refresh Progress
               </Button>
 </Box>

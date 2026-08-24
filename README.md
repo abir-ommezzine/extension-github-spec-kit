@@ -10,9 +10,8 @@ Le projet est organisé de manière modulaire pour séparer l'orchestration IA, 
 
 ### 📂 Arborescence du Projet
 
-- **`/backend`** : ⚙️ Pipeline d'enrichissement et d'évaluation. Propulsé par **FastAPI** et **LangGraph**, il orchestre la chaîne d'agents et gère la logique métier.
+- **`/backend`** : ⚙️ Pipeline d'enrichissement et d'évaluation. Propulsé par **FastAPI** et **LangGraph**, il orchestre la chaîne d'agents et gère la logique métier, incluant l'**Agent JIRA** pour la gestion automatisée des tickets.
 - **`/frontend`** : 🖥️ Dashboard **React** permettant le suivi en temps réel des exécutions, la visualisation des KPIs et le téléversement de nouveaux documents.
-- **`/scripts`** : 🛠️ Watchers de fichiers et scripts d'automatisation qui font le pont entre le système de fichiers et le pipeline.
 - **`/specs`** : 📄 Dossier source des spécifications Markdown à traiter.
   - Contient des **exemples de fichiers** (`spec.md`, `requirements.md`, etc.) prêts à être traités.
   - Le **watcher surveille ce dossier** en temps réel pour déclencher le pipeline automatiquement.
@@ -45,15 +44,140 @@ Le Frontend est une application React moderne utilisant **Material-UI** et **Dat
 
 ---
 
+## 📋 Agent JIRA (Kanban Ticket Sync)
+
+L'**Agent JIRA** assure une synchronisation bidirectionnelle et automatique entre l'état d'avancement technique du projet (via Copilot) et un tableau Kanban de suivi (To Do / In Progress / Done).
+
+### 🔄 Flux de Synchronisation
+
+#### 1. Ingestion des Tâches (`POST /api/v1/ingest`)
+L'ingestion permet d'initialiser ou de rafraîchir la liste des tickets en base de données à partir du fichier de spécifications.
+- **Déclenchement** : Via le bouton **"Ingest Tasks"** du Dashboard React après avoir sélectionné le projet, ou automatiquement lors de la sélection.
+- **Processus** : Le backend analyse `specs/tasks.md` $\rightarrow$ crée les tickets (`T001`, `T002`, ...) avec le statut initial `todo`.
+
+![Dashboard Ingestion](DashboardVide.png)
+*Utilisation du bouton "Ingest Tasks" pour synchroniser les tâches de `tasks.md` vers le Kanban.*
+
+- **⚠️ Règle d'Or (Ingestion)** : L'ingestion met à jour les titres, descriptions et l'état des cases à cocher, mais **ne modifie JAMAIS** le statut d'un ticket existant vers `in_progress` ou `done`.
+
+#### 2. Synchronisation de Statut en Temps Réel
+Le passage d'un ticket à l'état "en cours" ou "terminé" est strictement piloté par l'activité de Copilot.
+- **Mécanisme** : Un watcher backend (`_watch_current_task_file`) surveille en continu le fichier `.task_runtime/current-task.json` dans le projet enfant.
+- **Mise à jour** : Seule la détection d'un changement dans ce fichier peut faire évoluer le statut d'un ticket vers `in_progress` ou `done`.
+
+![Dashboard Synchronisation](DashboardRempli.png)
+*Visualisation du tableau Kanban synchronisé en temps réel avec l'activité de Copilot.*
+
+
+### 🤖 Contrat Copilot (`.github/copilot-instructions.md`)
+Pour garantir cette synchronisation, GitHub Copilot suit un protocole strict défini dans les instructions du projet enfant :
+- **Avant chaque tâche** : Copilot écrit un instantané JSON complet dans `.task_runtime/current-task.json` avec `status: "in_progress"`.
+- **Après chaque tâche** : Copilot met à jour le fichier avec `status: "done"`.
+- **État Global** : Chaque écriture inclut un objet `tasks: { "T001": "done", ... }` permettant de synchroniser l'intégralité du tableau même après une déconnexion.
+
+---
+
 ## 🗄️ Traçabilité & Versioning BDD (PostgreSQL)
 
 Le système s'appuie sur une base de données PostgreSQL pour garantir l'immuabilité des versions et la traçabilité complète de chaque modification.
 
 ### 📊 Modèle de Données
+```mermaid
+erDiagram
+    projects {
+        UUID id "PK"
+        VARCHAR name
+        VARCHAR repo_url
+        DATETIME created_at
+    }
+    artifacts {
+        UUID id "PK"
+        UUID project_id "FK"
+        VARCHAR current_file_hash
+        VARCHAR source_path
+        VARCHAR artifact_type
+        DATETIME created_at
+    }
+    projects ||--o{ artifacts : references
+    doc_versions {
+        UUID id "PK"
+        UUID artifact_id "FK"
+        INTEGER version_no
+        VARCHAR version_label
+        VARCHAR pdf_path
+        VARCHAR source_file_hash
+        DATETIME generated_at
+        JSONB sections_summary
+        VARCHAR commit_hash
+        VARCHAR generated_by
+        UUID pipeline_run_id "FK"
+        FLOAT global_kpi_score
+    }
+    artifacts ||--o{ doc_versions : references
+    pipeline_runs ||--o{ doc_versions : references
+    pipeline_runs {
+        UUID id "PK"
+        UUID artifact_id "FK"
+        VARCHAR current_stage
+        JSONB structured_json
+        TEXT summary_output
+        JSONB diagram_output
+        JSONB glossary_output
+        TEXT written_doc
+        TEXT layout_output
+        JSONB parsing_eval
+        JSONB summary_eval
+        JSONB glossary_eval
+        JSONB diagram_eval
+        JSONB writer_eval
+        JSONB layout_eval
+        FLOAT global_kpi_score
+        TEXT error_message
+        DATETIME started_at
+        DATETIME completed_at
+    }
+    artifacts ||--o{ pipeline_runs : references
+    tickets {
+        UUID id "PK"
+        UUID project_id "FK"
+        UUID artifact_id "FK"
+        VARCHAR source_path
+        VARCHAR title
+        TEXT description
+        VARCHAR status
+        INTEGER position
+        VARCHAR checkbox_state
+        VARCHAR file_hash
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    artifacts ||--o{ tickets : references
+    projects ||--o{ tickets : references
+    ticket_events {
+        UUID id "PK"
+        UUID ticket_id "FK"
+        VARCHAR event_type
+        VARCHAR author_type
+        JSONB payload
+        DATETIME created_at
+    }
+    tickets ||--o{ ticket_events : references
+    ticket_comments {
+        UUID id "PK"
+        UUID ticket_id "FK"
+        VARCHAR author_type
+        TEXT body
+        DATETIME created_at
+    }
+    tickets ||--o{ ticket_comments : references
+```
+### 📋 Description des Tables
 - **`projects`** : L'entité parente regroupant tous les artefacts et exécutions d'un projet spécifique.
 - **`artifacts`** : Registre des fichiers sources surveillés dans `specs/`, incluant une empreinte **SHA-256** pour détecter précisément chaque modification.
 - **`pipeline_runs`** : Journalisation exhaustive de chaque exécution, stockant les métriques **JSONB** détaillées pour chacun des 6 agents du pipeline.
 - **`doc_versions`** : Registre immuable gérant le versioning dynamique des documents et le lien vers les fichiers PDF certifiés.
+- **`tickets`, `ticket_events` & `ticket_comments`** : Système de traçabilité complète des tâches (User Stories, Tasks), incluant l'historique des événements et les commentaires, synchronisé avec l'avancement du projet via l'Agent JIRA.
+
 
 ---
 
@@ -134,6 +258,322 @@ vsce publish  # mode interactif
 
 ---
 
+### 🧪 Guide de Test : Nouveau Projet avec l'Extension VS Code
+
+> **Objectif** : Démarrer un **nouveau projet enfant** avec Spec Kit. L'extension VS Code gère le backend (FastAPI) et le watcher de fichiers, tandis que le backend synchronise automatiquement l'état des tâches avec la base de données et le frontend Kanban.
+
+---
+
+#### Architecture en bref
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PROJET SOURCE (repo de l'extension)                        │
+│  new copyextension-github-spec-kit/                          │
+│  ├── backend/          → FastAPI + LangGraph + Watchers      │
+│  ├── frontend/         → Dashboard React (Kanban, KPIs)      │
+│  ├── src/              → Code de l'extension VS Code        │
+│  └── .env              → TARGET_PROJECT_PATH + LLM config    │
+│                                                              │
+│           ┌──────────────────────────────────┐              │
+│           │  PROJET ENFANT (votre app)        │              │
+│           │  mon-projet-test/                 │              │
+│           │  ├── .github/                     │              │
+│           │  │   └── copilot-instructions.md  │ ← généré auto│
+│           │  ├── .vscode/                     │              │
+│           │  │   └── settings.json            │ ← config lien │
+│           │  ├── specs/                        │              │
+│           │  │   └── tasks.md                  │ ← tâches     │
+│           │  └── .task_runtime/                │              │
+│           │       └── current-task.json        │ ← écrit par   │
+│           │           (mis à jour par Copilot) │   Copilot    │
+│           └──────────────────────────────────┘              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Flux de données** :
+1. Copilot lit `tasks.md` → implémente une tâche → écrit `.task_runtime/current-task.json`
+2. Le watcher backend détecte le changement → met à jour le ticket en BDD
+3. Le frontend Kanban se met à jour en temps réel
+
+---
+
+#### 1. Prérequis
+
+| Composant | Détail |
+|-----------|--------|
+| **Extension VS Code** | Installée via `.vsix` (voir section ci-dessus) |
+| **PostgreSQL** | En cours d'exécution (ou pgAdmin4 connecté) |
+| **Dépendances Python** | `pip install -r requirements.txt` dans le **repo source** |
+| **Dépendances Frontend** | `cd frontend && npm install` dans le **repo source** |
+| **LLM Provider** | Configuré dans `.env` du repo source (NVIDIA, Groq, Ollama, etc.) |
+
+---
+
+#### 2. Configuration du Repo Source (une seule fois)
+
+#### 2. Configuration du Repo Source (une seule fois)
+
+Cette étape prépare l'infrastructure nécessaire au fonctionnement du backend et des agents.
+
+##### 2.1. 🐘 Base de Données PostgreSQL
+Créez l'utilisateur et la base de données attendus. Connectez-vous à votre instance PostgreSQL (via `psql` ou pgAdmin4) et exécutez :
+
+```sql
+-- Connexion en superuser (ex: postgres)
+CREATE USER speckit WITH PASSWORD 'speckit';
+CREATE DATABASE speckit OWNER speckit;
+```
+*Les tables sont créées automatiquement au démarrage du backend, aucune migration manuelle n'est requise.*
+
+##### 2.2. 🧠 Configuration du LLM (Ollama, NVIDIA, Gemini, etc.)
+Le pipeline d'agents est flexible et supporte plusieurs providers (configurés dans le `.env`). 
+
+**Option A : LLM Local (Ollama)**
+Assurez-vous que le serveur est lancé et que le modèle est téléchargé :
+```bash
+ollama serve
+ollama pull gemma4:31b-cloud
+```
+
+**Option B : LLM Cloud (NVIDIA NIM, Google Gemini, etc.)**
+Configurez simplement vos clés API et les modèles correspondants dans le fichier `.env`.
+
+**🧪 Test de Connexion**
+Pour vérifier que la connexion avec le provider sélectionné est opérationnelle, lancez le script de diagnostic suivant :
+```bash
+cd backend && python -m app.core.test_llm
+```
+
+##### 2.3. ⚙️ Fichier de Configuration `.env`
+Créez un fichier `.env` à la racine du repo source pour lier le backend au projet enfant et configurer le LLM :
+
+```dotenv
+# 🗄️ Base de données
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+
+# 🎯 PROJET ENFANT
+# Chemin ABSOLU vers le projet surveillé
+TARGET_PROJECT_PATH=C:\chemin\vers\votre-projet-enfant
+
+# 🧠 LLM PROVIDER
+# Options : "ollama", "nvidia", "gemini", "openai", "groq", "huggingface"
+LLM_PROVIDER=ollama
+
+# --- Configuration selon le Provider choisi ---
+
+# Option 1: Ollama (Local)
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=gemma4:31b-cloud
+
+# Option 2: Google Gemini (Cloud)
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-3.1-flash-lite
+GEMINI_TEMPERATURE=1.0
+GEMINI_MAX_OUTPUT_TOKENS=8192
+
+# Option 3: NVIDIA NIM (Cloud)
+NVIDIA_API_KEY=your_nvidia_api_key
+NVIDIA_MODEL=mistralai/mistral-nemotron
+NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+
+# Option 4: Autres (OpenAI, Groq, HuggingFace)
+# Suivre la même logique : PROVIDER_API_KEY et PROVIDER_MODEL
+```
+
+> [!IMPORTANT]
+> **TARGET_PROJECT_PATH** : C'est la variable la plus critique. Elle indique au backend quel dossier surveiller pour détecter les changements dans `.task_runtime/current-task.json`. À chaque changement de projet, mettez à jour ce chemin.
+
+##### 2.4. 🖥️ Démarrage du Frontend (Optionnel)
+Pour suivre l'avancement en temps réel via le Dashboard :
+
+```bash
+cd frontend
+npm install
+npm start
+```
+L'interface sera accessible sur `http://localhost:3000`.
+
+---
+
+#### 3. Création du Projet Enfant
+
+```bash
+mkdir mon-projet-test && cd mon-projet-test
+```
+
+##### 3.1. Lier le projet enfant au backend du repo source
+
+**Étape obligatoire** : créez, **à la racine du projet enfant**, un lien symbolique/junction nommé `backend` pointant vers le `backend/` du **repo source** :
+
+**Windows (terminal PowerShell ou Invite de commandes — `mklink /J` crée une jonction, ce qui ne nécessite ni droits admin ni mode développeur, contrairement à un lien symbolique `/D`) :**
+```powershell
+cmd /c mklink /J "C:\chemin\vers\mon-projet-test\backend" "C:\chemin\vers\new copyextension-github-spec-kit\backend"
+```
+> ⚠️ Si votre terminal VS Code est **Git Bash**, le flag `/J` peut être mal interprété par la conversion de chemins MSYS — utilisez plutôt un terminal PowerShell ou Invite de commandes pour cette commande.
+
+**Linux/macOS :**
+```bash
+ln -s /chemin/vers/new-copyextension-github-spec-kit/backend /chemin/vers/mon-projet-test/backend
+```
+
+C'est ce lien, et lui seul, qui détermine quel code backend s'exécute. Vérifiez qu'il pointe vers le clone que vous éditez réellement — **si vous avez plusieurs clones du repo sur votre machine, un lien qui pointe vers le mauvais clone donnera l'impression que vos modifications n'ont aucun effet**, sans aucune erreur visible (voir 🔧 Dépannage).
+
+<details>
+<summary>Pourquoi un lien symbolique et pas un simple champ de config ?</summary>
+
+Le script `start_server.py` bundlé dans le `.vsix` cherche un dossier `backend/app` valide **dans cet ordre**, sans lire aucune configuration VS Code :
+1. `<projet enfant>/backend/app` ← c'est le lien que vous venez de créer qui est trouvé ici
+2. `<dossier de l'extension installée>/backend/app`
+3. Recherche ascendante depuis l'emplacement du script
+
+Vous verrez parfois une clé `backendPath` documentée dans `.vscode/settings.json` — **elle n'a aucun effet** : `src/extension.ts` ne contient aucun appel à `vscode.workspace.getConfiguration`, donc rien ne la lit jamais. Ignorez-la si vous la voyez ailleurs.
+</details>
+
+**Optionnel** : vous pouvez tout de même créer ce fichier à la racine du projet enfant à titre de documentation du projet (nom, port API...) — mais aucune de ces valeurs n'est lue par l'extension aujourd'hui, ce fichier n'a donc aucun effet fonctionnel. Vous pouvez l'omettre sans conséquence.
+
+```json
+{
+  "agentdocx-speckit": {
+    "projectPath": "specs",
+    "projectName": "mon-projet-test",
+    "apiPort": 8000,
+    "reload": false
+  }
+}
+```
+
+##### 3.2. Dossier `specs/` et fichier `tasks.md`
+
+```bash
+mkdir specs
+```
+
+Créez votre fichier de tâches dans `specs/tasks.md` (format Spec Kit standard avec `## T001`, `## T002`, etc.).
+
+##### 3.3. Génération automatique de `.github/copilot-instructions.md`
+
+> ✅ **Automatique** — Aucune action manuelle requise.
+
+Lorsque vous ouvrez le projet enfant dans VS Code, l'extension **génère automatiquement** (et **régénère à chaque activation**, donc à chaque rechargement de fenêtre) le fichier `.github/copilot-instructions.md` à partir du fichier source situé dans le repo de l'extension. Ce fichier instruit GitHub Copilot à :
+
+1. Lire `tasks.md` pour trouver la tâche à implémenter
+2. Écrire `.task_runtime/current-task.json` **avant** de commencer, avec `status: "in_progress"` pour la tâche en cours **et un instantané complet du statut de toutes les tâches** de `tasks.md` (`tasks: {...}`)
+3. Mettre à jour ce même fichier après completion, avec `status: "done"` et le même instantané complet mis à jour
+
+**Format du fichier généré** (identique à chaque projet) :
+```json
+{
+  "task_id": "T001",
+  "file": "src/app.js",
+  "status": "in_progress",
+  "project_name": "mon-projet-test",
+  "updated_at": "2026-08-11T10:30:00.000000+00:00",
+  "tasks": {
+    "T001": "in_progress",
+    "T002": "todo",
+    "T003": "todo"
+  }
+}
+```
+
+> ⚠️ **Le champ `tasks` (instantané complet) est ce qui permet au statut de "rattraper" son retard** si le backend n'était pas démarré pendant que Copilot travaillait sur plusieurs tâches d'affilée : à la prochaine écriture du fichier, `tasks` contient le statut réel de toutes les tâches et le backend les synchronise en une fois. Sans ce champ, seule la dernière tâche touchée serait mise à jour.
+
+> ⚠️ **`/ingest` (ou le bouton "Ingest Tasks" du frontend) ne change JAMAIS le statut d'un ticket.** Il ne fait que rafraîchir le titre, la description et l'état visuel de la case à cocher (`checkbox_state`, affichage uniquement) depuis `tasks.md`. **Seul `.task_runtime/current-task.json`**, lu par le watcher backend, peut faire passer un ticket de `todo` à `in_progress` ou `done`. Si vos tickets restent bloqués en `todo` alors que `tasks.md` montre des cases cochées, vérifiez que `current-task.json` existe et contient bien un objet `tasks` à jour — pas que vous avez ré-ingéré.
+
+---
+
+#### 4. Démarrage dans VS Code
+
+```bash
+code .
+```
+
+L'extension démarre automatiquement au chargement :
+
+| Canal Output | Rôle | Ce que vous verrez |
+|--------------|------|---------------------|
+| **AgentDocx Server** | FastAPI + LangGraph | Logs du serveur, progression des agents, KPIs |
+| **AgentDocx Watcher** | Watcher de fichiers | Détection de changements dans `specs/`, file d'attente |
+
+Vérifiez les logs : `View` → `Output` → dropdown `AgentDocx Server` / `AgentDocx Watcher`
+
+---
+
+#### 5. Workflow Complet : Du Spec au Kanban
+
+##### Étape 1 — Ingérer les tâches en BDD
+Le watcher détecte `specs/tasks.md` → le backend ingère les tickets dans la base PostgreSQL.
+
+##### Étape 2 — Copilot implémente les tâches
+1. Ouvrez GitHub Copilot Chat dans le projet enfant
+2. Copilot lit `.github/copilot-instructions.md` (généré automatiquement)
+3. Copilot lit `specs/tasks.md` et commence à implémenter `T001`
+4. **Avant** de coder : Copilot écrit `.task_runtime/current-task.json` avec `status: "in_progress"`
+5. **Après** avoir fini : Copilot met à jour le fichier avec `status: "done"`
+
+##### Étape 3 — Synchronisation automatique (Backend Watcher)
+Le watcher backend (dans `app/main.py`) surveille `.task_runtime/current-task.json` :
+- Détecte le changement → lit le `task_id` et le `status`
+- Met à jour le ticket correspondant en BDD (`TicketStatus.in_progress` → `TicketStatus.done`)
+- Le frontend Kanban se met à jour en temps réel
+
+##### Étape 4 — Générer les PDFs
+Pour déclencher la génération de documents PDF à partir des specs :
+1. Palette de commandes (`Ctrl+Shift+P`) → `AgentDocx SpecKit: Trigger Pipeline`
+2. Ou : modifiez un fichier `.md` dans `specs/` → le watcher détecte le changement
+3. Le pipeline s'exécute : Parsing → Summary → Glossary → Diagram → DocWriter → Layout → PDF
+4. Les livrables sont stockés dans `outputs/<projectName>/pdf/`
+
+---
+
+#### 6. Vérification des résultats
+
+| Où | Quoi |
+|----|------|
+| **Logs Server** | Progression agents (Parsing → Summary → Glossary → Diagram → DocWriter → Layout) |
+| **Frontend** | Onglet Documents → nouvelle entrée avec KPIs ; Onglet Kanban → tickets mis à jour |
+| **Outputs** | `outputs/<projectName>/pdf/` → PDFs générés et versionnés |
+| **BDD** | Table `tickets` → statuts synchronisés avec `current-task.json` |
+
+---
+
+
+
+### 🔄 Workflow multi-projets
+
+> ⚠️ **Le lien `backend` (junction/symlink, §3.1) ne résout PAS le multi-projets.** Il détermine uniquement quel *code* backend s'exécute — pas quel projet est surveillé. La preuve : `BASE_DIR` dans `backend/app/config.py` est calculé via `Path(__file__).resolve()`, qui **traverse la jonction jusqu'au repo source physique**, quel que soit le projet enfant depuis lequel le serveur a été démarré. Concrètement : `Path("<n'importe quel projet enfant>/backend/app/config.py").resolve()` renvoie toujours `<repo source>/backend/app/config.py`. Donc **tous les projets enfants liés au même repo source partagent le même `.env`, donc le même `TARGET_PROJECT_PATH`**.
+
+Chaque projet enfant a **sa propre config** dans son `.vscode/settings.json`, mais le **repo source ne peut watcher qu'un seul projet enfant à la fois** (via `TARGET_PROJECT_PATH` dans son `.env` unique).
+
+**Option A — Séquentiel (le plus simple)** : basculez `TARGET_PROJECT_PATH` selon le projet sur lequel vous travaillez activement.
+
+```
+# Repo source .env (UN seul projet actif à la fois)
+TARGET_PROJECT_PATH=C:\Users\MSI\Bureau\projet-A
+
+projet-A/backend  →  (junction vers le repo source)
+projet-A/specs/tasks.md
+projet-A/.task_runtime/current-task.json
+
+projet-B/backend  →  (junction vers le MÊME repo source)
+projet-B/specs/tasks.md
+projet-B/.task_runtime/current-task.json
+```
+
+> Pour passer au projet B : modifiez `TARGET_PROJECT_PATH` dans le `.env` du repo source, puis redémarrez le serveur. Les tickets du projet A restent en base et restent consultables/sélectionnables dans le frontend — ils ne reçoivent simplement plus de mises à jour de statut en temps réel tant que vous n'y revenez pas.
+
+**Option B — Surveillance simultanée réelle** : nécessite un **clone physique séparé** du backend par projet enfant (pas une simple jonction vers un clone partagé), chacun avec son propre `.env` (`TARGET_PROJECT_PATH` différent) et son propre port. Chaque projet enfant lie alors son dossier `backend` vers **son propre clone dédié** plutôt que vers un clone commun :
+
+```
+projet-A/backend  →  C:\...\clone-A\backend   (.env : TARGET_PROJECT_PATH=projet-A, port 8000)
+projet-B/backend  →  C:\...\clone-B\backend   (.env : TARGET_PROJECT_PATH=projet-B, port 8001)
+```
+
+Plus lourd à maintenir (garder N clones synchronisés), mais c'est la seule façon d'avoir deux backends qui surveillent réellement deux projets en parallèle avec le code actuel.
+
+---
+
 ## 🚀 Quick Start (Guide de Lancement)
 
 Suivez ces étapes pour mettre en place l'environnement Spec Kit sur votre machine.
@@ -145,54 +585,6 @@ Avant de démarrer les services, assurez-vous impérativement que :
 
 ---
 
-### 🛠️ Méthode 1 : Scripts Standalone (Version Actuelle — 4 Terminaux)
-
-> **Approche classique** avec scripts Python standalone. Idéale pour développement sans l'extension.
-
-#### Prérequis Base de Données
-- PostgreSQL lancé (ou pgAdmin4 connecté)
-
-#### Procédure de Lancement
-
-**Étape 0 : Environnement Virtuel Python & Dépendances**
-```bash
-# Créer l'environnement virtuel
-python -m venv env
-
-# Activer l'environnement
-# Sur Windows : env\Scripts\activate
-# Sur Linux/Mac : source env/bin/activate
-
-# Installer les dépendances
-pip install -r requirements.txt
-```
-
-**Étape 1 : Démarrer le Backend FastAPI** (Terminal 1)
-```bash
-cd backend
-uvicorn app.main:app --reload --port 8000
-```
-
-**Étape 2 : Démarrer l'interface Frontend React** (Terminal 2)
-```bash
-cd frontend
-npm install
-npm start
-```
-> 💡 Si erreurs (dépendances, Node.js, `cross-env`, ports) → voir `configFrontEnd.pdf` à la racine.
-
-**Étape 3 : Lancer le Watcher Temps Réel** (Terminal 3)
-```bash
-python scripts/python/spec_watcher.py
-```
-
-**Étape 4 : Exécuter Spec Kit via Claude Code** (Terminal 4)
-```bash
-ollama launch claude
-```
-*Utilisez les commandes Spec Kit (ex: `/speckit-specify`, `/doc-pipeline`) pour générer vos spécifications.*
-
----
 
 ### 🛠️ Méthode 2 : Extension VS Code (Installation .vsix — Recommandé)
 
@@ -236,26 +628,11 @@ ollama launch claude
 
 ---
 
-## 🔄 Résumé : Quelle méthode choisir ?
-
-| Critère | Méthode 1 (Scripts) | Méthode 2 (Extension .vsix) |
-|---------|---------------------|---------------------------|
-| **Statut** | Production | Recommandé (via .vsix) |
-| **Terminaux** | 4 | 2 (Frontend + Claude) + Extension |
-| **Logs** | Unifiés dans terminaux | Séparés : `AgentDocx Watcher` / `AgentDocx Server` |
-| **Progression v2+** | Visible seulement à la fin | Temps réel (DocVersion `pending` → `completed`) |
-| **Installation** | Standard (Python) | VSIX + Root requirements |
-
-> Pour les détails complets sur l'extension : voir branche [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) et documentation dans `agentdocx-speckit/README.md`.
-
----
-
 ### 📚 Ressources Complémentaires
-- `configFrontEnd.pdf` — Dépannage Frontend
-- `scripts/README.md` — Documentation scripts Python
-- `agentdocx-speckit/README.md` — Doc extension (branche `extension`)
-- `configFrontEnd.pdf` — Configuration Frontend détaillée
+- `configFrontEnd.pdf` — Dépannage et configuration Frontend
+- Branche [`extension`](https://github.com/ahmed200346/Extension_GithubSpecKit/tree/extension) — code complet et documentation de l'extension VS Code
+- `.github/copilot-instructions.md` — Source du fichier généré dans chaque projet enfant ; toute modification ici se propage à tous les projets enfants à la prochaine activation de l'extension
 
 ---
 
-*Dernière mise à jour : 2026-07-31 — Spec Kit v0.0.2 (Extension en développement)*
+
